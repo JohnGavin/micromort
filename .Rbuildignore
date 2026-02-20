@@ -4,3 +4,4 @@
 ^nix-shell-root$
 ^\.gemini$
 ^LICENSE\.md$
+push_to_cachix.sh
