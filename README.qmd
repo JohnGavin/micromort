@@ -1,6 +1,6 @@
 ---
 title: "micromort: Estimate and Visualize Risks"
-output: github_document
+format: gfm
 ---
 
 <!-- README.md is generated from README.qmd. Please edit that file -->
@@ -83,6 +83,4 @@ print(daily_loss)
 
 ## Project Structure
 
-```{r structure, echo=FALSE}
-fs::dir_tree(recurse = 1)
-```
+(Tree view requires fs package)
