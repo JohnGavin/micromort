@@ -1,0 +1,88 @@
+---
+title: "micromort: Estimate and Visualize Risks"
+output: github_document
+---
+
+<!-- README.md is generated from README.qmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+# library(micromort) # Not installed in library yet
+devtools::load_all()
+library(ggplot2)
+```
+
+# micromort
+
+The goal of `micromort` is to provide tools to quantify, compare, and visualize risks using standardized units such as **micromorts** (acute risk of death) and **microlives** (chronic impact on life expectancy).
+
+## Installation
+
+You can install the development version of micromort from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("JohnGavin/micromort")
+```
+
+### Nix Users
+
+This project provides a reproducible Nix environment.
+
+```bash
+# Enter project shell
+./default.sh
+
+# Start R
+R
+```
+
+## Concepts
+
+*   **Micromort:** A one-in-a-million chance of death. Used for acute risks (e.g., skydiving).
+*   **Microlife:** A 30-minute change in life expectancy. Used for chronic risks (e.g., smoking).
+*   **VSL (Value of Statistical Life):** Economic value used to justify safety spending.
+
+## Example
+
+### Acute Risks (Micromorts)
+
+How risky is skydiving compared to driving?
+
+```{r example}
+# library(micromort)
+
+# Convert probability to micromorts
+as_micromort(1/1000000) # 1 micromort
+
+# Common risks
+head(common_risks())
+```
+
+### Visualizing Risks
+
+```{r plot}
+plot_risks()
+```
+
+### Chronic Risks (Microlives)
+
+How much life expectancy do you lose by smoking?
+
+```{r chronic}
+# 1 cigarette = approx 1 microlife lost (30 mins)
+# Pack a day (20 cigs) = 20 microlives = 10 hours lost per day
+daily_loss <- as_microlife(20 * 30)
+print(daily_loss)
+```
+
+## Project Structure
+
+```{r structure, echo=FALSE}
+fs::dir_tree(recurse = 1)
+```
