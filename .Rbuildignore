@@ -1,0 +1,6 @@
+^default\.nix$
+^default\.R$
+^default\.sh$
+^nix-shell-root$
+^\.gemini$
+^LICENSE\.md$

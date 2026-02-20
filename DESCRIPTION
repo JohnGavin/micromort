@@ -1,0 +1,24 @@
+Package: micromort
+Title: Estimate and Visualize Acute and Chronic Risks
+Version: 0.0.0.9000
+Authors@R: 
+    person("John", "Gavin", , "john.b.gavin@gmail.com", role = c("aut", "cre"))
+Description: Provides tools to quantify, compare, and visualize risks using standardized units such as micromorts (acute risk of death) and microlives (chronic impact on life expectancy). Includes functions for Value of Statistical Life (VSL) calculations and Loss of Life Expectancy (LLE) estimations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    checkmate,
+    ggplot2,
+    scales,
+    tibble
+Suggests: 
+    dplyr,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/johngavin/micromort
+BugReports: https://github.com/johngavin/micromort/issues

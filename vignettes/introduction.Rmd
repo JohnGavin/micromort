@@ -1,0 +1,103 @@
+---
+title: "Introduction to Micromorts and Risk Visualization"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to Micromorts and Risk Visualization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(micromort)
+library(ggplot2)
+library(dplyr)
+```
+
+This vignette introduces the **micromort** package, which provides tools for understanding and visualizing risks.
+
+## 1. Micromorts (Acute Risk)
+
+A **micromort** is a unit of risk representing a one-in-a-million chance of death. It is used to measure acute risks—risks that can kill you immediately (e.g., skydiving, driving).
+
+```{r}
+# 1 in 10,000 chance of death = 100 micromorts
+prob <- 1/10000
+as_micromort(prob)
+
+# Compare common risks
+risks <- common_risks()
+print(risks)
+```
+
+### Visualizing Risks
+
+Using `plot_risks()`, we can see the relative magnitude of different activities on a logarithmic scale.
+
+```{r, fig.width=7, fig.height=5}
+plot_risks()
+```
+
+## 2. Microlives (Chronic Risk)
+
+While micromorts measure sudden death, **microlives** measure the impact of chronic habits on your life expectancy. A microlife represents a 30-minute change in life expectancy.
+
+Common chronic risks:
+*   Smoking 1 cigarette: -1 microlife (approx 1 micromort equivalent risk)
+*   Being 5kg overweight: -1 microlife per day
+*   First 20 mins moderate exercise: +2 microlives
+
+```{r}
+# If smoking 20 cigarettes a day costs 1 microlife each (approx 30 mins)
+daily_loss_minutes <- 20 * 30
+daily_loss_microlives <- as_microlife(daily_loss_minutes)
+print(daily_loss_microlives) # 20 microlives lost per day
+```
+
+## 3. Value of Statistical Life (VSL)
+
+The **Value of a Statistical Life (VSL)** is the monetary value used to justify safety spending. It is NOT the value of an individual life, but the aggregate willingness to pay for small risk reductions.
+
+Example: If a safety feature costs $50 and saves 1 life in 100,000 people (10 micromorts), is it worth it?
+Cost per micromort saved = $50 / 10 = $5.
+If VSL = $10M, then 1 micromort = $10. Since $5 < $10, it is cost-effective.
+
+```{r}
+# Standard VSL of $10M implies $10 per micromort
+value_of_micromort(vsl = 10000000)
+
+# Higher VSL implies higher safety spending
+value_of_micromort(vsl = 15000000)
+```
+
+## 4. Loss of Life Expectancy (LLE)
+
+**LLE** estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is tiny.
+
+```{r}
+# Loss of life expectancy from 1 micromort (assuming 40 years remaining)
+lle_minutes <- lle(prob = 1/1e6, life_expectancy = 40)
+print(lle_minutes)
+# Result is in minutes. 1 micromort ~ 21 minutes lost?
+# No, 1 micromort = 1e-6 * 40 years = 40e-6 years = ~21 minutes
+# Wait, check calculation:
+# 40 years * 365.25 days * 24 hours * 60 minutes = ~21 million minutes
+# 1e-6 * 21 million = ~21 minutes
+```
+
+## 5. QALY / DALY (Brief Overview)
+
+*   **QALY (Quality-Adjusted Life Year):** Measures years of life adjusted for quality. 1 QALY = 1 year of perfect health. Used to assess medical interventions.
+*   **DALY (Disability-Adjusted Life Year):** Measures years of life lost due to premature death + years lived with disability. Used to assess disease burden.
+
+These metrics go beyond simple mortality risk to capture morbidity and quality of life.
+
+## Conclusion
+
+The `micromort` package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts) and chronic risks (microlives), individuals and policymakers can make more informed choices.
