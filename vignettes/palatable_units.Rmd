@@ -1,0 +1,110 @@
+---
+title: "Palatable Units: The Spiegelhalter Philosophy"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Palatable Units: The Spiegelhalter Philosophy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(micromort)
+library(dplyr)
+library(ggplot2)
+```
+
+**"Statistics are not just numbers; they are the way we make sense of the world."** — Sir David Spiegelhalter
+
+This vignette outlines the philosophy of **"Palatable Units"** championed by David Spiegelhalter (Winton Professor for the Public Understanding of Risk, Cambridge). His core argument is that abstract probabilities (e.g., "0.00004% hazard ratio") are meaningless to most people. To demystify risk, we must translate these into concrete, relatable units.
+
+## 1. The Core Philosophy: Compare Apples to Oranges
+
+The goal of palatable units is to create a common currency for risk. This allows us to strip away the emotional "dread factor" from scary-sounding events and compare them rationally against mundane activities.
+
+### The Standard Units
+
+*   **Micromort:** 1-in-a-million chance of **acute** death (sudden event).
+*   **Microlife:** 30 minutes of life expectancy lost/gained (chronic **attrition**).
+
+## 2. Micromorts: Measuring "Stopping Living"
+
+A micromort measures the immediate risk of an event stopping your life.
+
+### Comparative Risk Table
+
+The following table demonstrates how disparate activities can be compared using the micromort. Notice how "scary" events like anesthesia carry similar risks to mundane travel.
+
+```{r}
+risks <- tibble::tribble(
+  ~Activity, ~Micromorts, ~Category, ~Context,
+  "Living (age 30)", 1, "Baseline", "Daily background risk for a young adult",
+  "Driving 230 miles", 1, "Travel", "Routine long-distance drive",
+  "Walking 20 miles", 1, "Travel", "Pedestrian accident risk",
+  "Scuba Diving", 5, "Sport", "Per dive (PADI certified)",
+  "Skydiving", 7, "Sport", "Per jump (USPA stats)",
+  "Motorcycling 60 miles", 10, "Travel", "High-risk transport",
+  "General Anesthesia", 10, "Medical", "Per emergency operation",
+  "Running a Marathon", 7, "Sport", "Cardiovascular stress per race"
+) %>% 
+  arrange(desc(Micromorts))
+
+knitr::kable(risks, caption = "Risk comparison in Micromorts (ordered by decreasing risk)")
+```
+
+> **Insight:** Riding a motorcycle for just 60 miles carries the same acute death risk (~10 micromorts) as undergoing general anesthesia.
+
+## 3. Microlives: Measuring "Speed of Aging"
+
+While micromorts measure sudden death, **Microlives** measure the **rate of attrition** caused by lifestyle habits.
+
+*   **Definition:** 1 Microlife = 30 minutes of life expectancy.
+*   **Logic:** A young adult (~30 years old) has roughly 1 million half-hours left to live. A microlife is one-millionth of their remaining lifespan.
+*   **Sign:**
+    *   **-1 Microlife:** You lose 30 minutes (aging faster).
+    *   **+1 Microlife:** You gain 30 minutes (aging slower).
+
+### Daily Habits Table
+
+```{r}
+chronic_risks <- tibble::tribble(
+  ~Habit, ~Impact_Microlives, ~Time_Effect,
+  "Smoking 2 cigarettes", -1, "Lose 30 minutes",
+  "Being 5kg overweight", -1, "Lose 30 minutes (per day)",
+  "Second pint of beer", -1, "Lose 30 minutes",
+  "First 20 mins exercise", +1, "Gain 30 minutes",
+  "Eating portion of fruit", +1, "Gain 30 minutes"
+)
+
+knitr::kable(chronic_risks, caption = "Impact of daily habits in Microlives")
+```
+
+> **Clarification:** A value of **-1 Microlife** is a **loss** of life. It means you have "spent" 30 minutes of your future life expectancy today. If you smoke 20 cigarettes (1 pack) a day, you lose ~10 microlives (5 hours) every day.
+
+## 4. Visualization: The Risk Ladder
+
+Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization helps placing rare risks (like asteroid impacts or terrorism) in context with daily risks.
+
+*   **Why Log Scale?** Because risks span vast orders of magnitude (1 in 10 to 1 in 10 million).
+*   **Interpretation:** A "100% increase" in a very rare risk (e.g., eating bacon increasing bowel cancer risk) might look huge in headlines but is often negligible on the ladder compared to the baseline risk of driving.
+
+```{r, fig.width=7, fig.height=5}
+# Using the package's built-in plotting function which implements this ladder concept
+plot_risks()
+```
+
+## 5. Recommended Tools
+
+While David Spiegelhalter focuses on concepts rather than specific software, the following R packages align with his mission of clear risk communication:
+
+*   **`riskCommunicator`:** Designed for public health to provide interpretable effect measures (risk differences, number needed to treat) rather than abstract regression coefficients.
+*   **`ggplot2`:** The standard for creating custom visuals like Risk Ladders and icon arrays.
+*   **`micromort` (this package):** Specifically built to implement the palatable units framework.
+
+## References
+
+1.  Spiegelhalter, D., & Blastland, M. (2013). *The Norm Chronicles: Stories and numbers about danger*. Profile Books.
+2.  Spiegelhalter, D. (2019). *The Art of Statistics: Learning from Data*. Pelican.
