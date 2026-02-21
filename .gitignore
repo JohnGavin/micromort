@@ -3,8 +3,5 @@
 .RData
 .DS_Store
 nix-shell-root
-*.nix
-default.R
-default.sh
 _targets/
 README_files/
