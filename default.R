@@ -24,7 +24,7 @@ r_pkgs <- unique(c(desc_deps, dev_extras)) |> sort()
 # Generate default.nix
 rix(
   r_pkgs = r_pkgs,
-  system_pkgs = NULL,
+  system_pkgs = c("qpdf"),
   git_pkgs = NULL,
   ide = "none",  # Always "none" for project shells
   project_path = ".",

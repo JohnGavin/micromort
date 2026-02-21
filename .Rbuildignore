@@ -6,3 +6,5 @@
 ^LICENSE\.md$
 push_to_cachix.sh
 ^Rplots\.pdf$
+^_targets\.R$
+^README\.qmd$
