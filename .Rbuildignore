@@ -5,3 +5,4 @@
 ^\.gemini$
 ^LICENSE\.md$
 push_to_cachix.sh
+^Rplots\.pdf$

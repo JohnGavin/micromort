@@ -30,59 +30,63 @@ The goal of palatable units is to create a common currency for risk. This allows
 *   **Micromort:** 1-in-a-million chance of **acute** death (sudden event).
 *   **Microlife:** 30 minutes of life expectancy lost/gained (chronic **attrition**).
 
-## 2. Micromorts: Measuring "Stopping Living"
+## 2. Micromorts: Measuring "Stopping Living" (Hazard)
 
-A micromort measures the immediate risk of an event stopping your life.
+A micromort measures **acute hazard**: the immediate probability of an event causing death.
+
+*   **Normalization:** Risk is normalized **per event** (or per unit distance), independent of the event's duration.
+*   **Time Horizon:** The "time" is the discrete event itself.
+    *   **Skydiving:** The risk is ~7 micromorts *per jump*. Whether the freefall lasts 30 seconds or 60 seconds is secondary to the event of jumping.
+    *   **Scuba Diving:** The risk is ~5 micromorts *per dive*. A 30-minute dive and a 45-minute dive are treated as single "dive events" in broad statistics, though technically longer exposure increases risk.
+    *   **Anesthesia:** ~10 micromorts *per operation*.
 
 ### Comparative Risk Table
 
-The following table demonstrates how disparate activities can be compared using the micromort. Notice how "scary" events like anesthesia carry similar risks to mundane travel.
+The following table demonstrates how disparate activities can be compared using the micromort.
 
 ```{r}
 risks <- tibble::tribble(
   ~Activity, ~Micromorts, ~Category, ~Context,
-  "Living (age 30)", 1, "Baseline", "Daily background risk for a young adult",
-  "Driving 230 miles", 1, "Travel", "Routine long-distance drive",
-  "Walking 20 miles", 1, "Travel", "Pedestrian accident risk",
-  "Scuba Diving", 5, "Sport", "Per dive (PADI certified)",
-  "Skydiving", 7, "Sport", "Per jump (USPA stats)",
   "Motorcycling 60 miles", 10, "Travel", "High-risk transport",
   "General Anesthesia", 10, "Medical", "Per emergency operation",
-  "Running a Marathon", 7, "Sport", "Cardiovascular stress per race"
-) %>% 
-  arrange(desc(Micromorts))
+  "Skydiving", 7, "Sport", "Per jump (USPA stats)",
+  "Running a Marathon", 7, "Sport", "Cardiovascular stress per race",
+  "Scuba Diving", 5, "Sport", "Per dive (PADI certified)",
+  "Living (age 30)", 1, "Baseline", "Daily background risk for a young adult",
+  "Driving 230 miles", 1, "Travel", "Routine long-distance drive",
+  "Walking 20 miles", 1, "Travel", "Pedestrian accident risk"
+)
 
 knitr::kable(risks, caption = "Risk comparison in Micromorts (ordered by decreasing risk)")
 ```
 
-> **Insight:** Riding a motorcycle for just 60 miles carries the same acute death risk (~10 micromorts) as undergoing general anesthesia.
+> **Comparison:** Riding a motorcycle for just 60 miles carries the same acute death risk (~10 micromorts) as undergoing general anesthesia.
 
-## 3. Microlives: Measuring "Speed of Aging"
+## 3. Microlives: Measuring "Speed of Aging" (Attrition)
 
-While micromorts measure sudden death, **Microlives** measure the **rate of attrition** caused by lifestyle habits.
+While micromorts measure sudden death (Hazard), **Microlives** measure **chronic attrition**: the rate at which you are "using up" your life expectancy.
 
 *   **Definition:** 1 Microlife = 30 minutes of life expectancy.
-*   **Logic:** A young adult (~30 years old) has roughly 1 million half-hours left to live. A microlife is one-millionth of their remaining lifespan.
-*   **Sign:**
-    *   **-1 Microlife:** You lose 30 minutes (aging faster).
-    *   **+1 Microlife:** You gain 30 minutes (aging slower).
+*   **Normalization:** Risk is normalized **per day** of maintaining a habit.
+*   **Unit of Attrition:** The "unit" is the expected lifespan. -1 Microlife means your expected lifespan has shrunk by 30 minutes.
+*   **Time Horizon:** Continuous. If you smoke 20 cigarettes a day, you are losing 10 microlives (5 hours) *every single day*.
 
 ### Daily Habits Table
 
 ```{r}
 chronic_risks <- tibble::tribble(
   ~Habit, ~Impact_Microlives, ~Time_Effect,
-  "Smoking 2 cigarettes", -1, "Lose 30 minutes",
-  "Being 5kg overweight", -1, "Lose 30 minutes (per day)",
+  "Smoking 2 cigarettes", -1, "Lose 30 minutes life expectancy",
+  "Being 5kg overweight", -1, "Lose 30 minutes (per day of being overweight)",
   "Second pint of beer", -1, "Lose 30 minutes",
-  "First 20 mins exercise", +1, "Gain 30 minutes",
+  "First 20 mins exercise", +1, "Gain 30 minutes life expectancy",
   "Eating portion of fruit", +1, "Gain 30 minutes"
 )
 
 knitr::kable(chronic_risks, caption = "Impact of daily habits in Microlives")
 ```
 
-> **Clarification:** A value of **-1 Microlife** is a **loss** of life. It means you have "spent" 30 minutes of your future life expectancy today. If you smoke 20 cigarettes (1 pack) a day, you lose ~10 microlives (5 hours) every day.
+> **Clarification:** A value of **-1 Microlife** is a **loss** (attrition). It effectively means you are aging 30 minutes faster than normal. Over a year, a -1 daily deficit sums to ~180 hours (7.5 days) of lost life.
 
 ## 4. Visualization: The Risk Ladder
 
