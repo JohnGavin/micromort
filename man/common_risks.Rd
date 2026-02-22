@@ -7,12 +7,20 @@
 common_risks()
 }
 \value{
-A tibble with columns: activity, risk_micromorts, category.
+A tibble with columns: activity, micromorts, microlives, category,
+period, source_url.
 }
 \description{
-A dataset of common activities and their associated risk in micromorts.
-Source: Wikipedia and other public risk assessments.
+A dataset of common activities and their associated risk in micromorts,
+with calculated microlives and source references.
+}
+\details{
+Micromort: one-in-a-million chance of death (acute risk).
+Microlife: 30 minutes of life expectancy lost (chronic risk).
+
+COVID-19 data from CDC MMWR (Sep-Dec 2022, Omicron BA.4/BA.5 period).
 }
 \examples{
 common_risks()
+common_risks() |> dplyr::filter(category == "COVID-19")
 }
