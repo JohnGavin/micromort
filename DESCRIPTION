@@ -20,5 +20,5 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://github.com/johngavin/micromort
+URL: https://johngavin.github.io/micromort/, https://github.com/johngavin/micromort
 BugReports: https://github.com/johngavin/micromort/issues
