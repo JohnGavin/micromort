@@ -36,9 +36,7 @@ jobs:
 
       - name: Generate default.nix
         run: |
-          nix-shell \
-            --expr "let pkgs = import <nixpkgs> {}; in pkgs.mkShell { buildInputs = [ pkgs.R pkgs.rPackages.rix ]; }"
-            --command "Rscript default.R"
+          nix-shell --expr "let pkgs = import <nixpkgs> {}; in pkgs.mkShell { buildInputs = [ pkgs.R pkgs.rPackages.rix ]; }" --command "Rscript default.R"
 
       - name: Build site
         run: |
