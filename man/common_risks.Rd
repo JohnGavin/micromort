@@ -2,7 +2,7 @@
 % Please edit documentation in R/risks.R
 \name{common_risks}
 \alias{common_risks}
-\title{Common Risks in Micromorts}
+\title{Acute Risks in Micromorts}
 \usage{
 common_risks()
 }
@@ -11,16 +11,25 @@ A tibble with columns: activity, micromorts, microlives, category,
 period, source_url.
 }
 \description{
-A dataset of common activities and their associated risk in micromorts,
-with calculated microlives and source references.
+A comprehensive dataset of activities and their associated acute mortality
+risk in micromorts, with calculated microlives and source references.
 }
 \details{
 Micromort: one-in-a-million chance of death (acute risk).
-Microlife: 30 minutes of life expectancy lost (chronic risk).
+Microlife: 30 minutes of life expectancy lost.
 
-COVID-19 data from CDC MMWR (Sep-Dec 2022, Omicron BA.4/BA.5 period).
+Data sources: Wikipedia, micromorts.rip, CDC MMWR, academic literature.
 }
 \examples{
 common_risks()
 common_risks() |> dplyr::filter(category == "COVID-19")
+common_risks() |> dplyr::filter(micromorts > 100)
+}
+\references{
+Howard RA (1980). "On Making Life and Death Decisions." In Schwing & Albers
+(eds), Societal Risk Assessment: How Safe Is Safe Enough?
+
+\url{https://en.wikipedia.org/wiki/Micromort}
+
+\url{https://micromorts.rip/}
 }
