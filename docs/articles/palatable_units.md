@@ -1,0 +1,163 @@
+# Palatable Units: The Spiegelhalter Philosophy
+
+**“Statistics are not just numbers; they are the way we make sense of
+the world.”** — Sir David Spiegelhalter
+
+This vignette outlines the philosophy of **“Palatable Units”**
+championed by David Spiegelhalter (Winton Professor for the Public
+Understanding of Risk, Cambridge). His core argument is that abstract
+probabilities (e.g., “0.00004% hazard ratio”) are meaningless to most
+people. To demystify risk, we must translate these into concrete,
+relatable units.
+
+## 1. The Core Philosophy: Compare Apples to Oranges
+
+The goal of palatable units is to create a common currency for risk.
+This allows us to strip away the emotional “dread factor” from
+scary-sounding events and compare them rationally against mundane
+activities.
+
+### The Standard Units
+
+- **Micromort:** 1-in-a-million chance of **acute** death (sudden
+  event).
+- **Microlife:** 30 minutes of life expectancy lost/gained (chronic
+  **attrition**).
+
+## 2. Micromorts: Measuring “Stopping Living” (Hazard)
+
+A micromort measures **acute hazard**: the immediate probability of an
+event causing death.
+
+- **Normalization:** Risk is normalized **per event** (or per unit
+  distance), independent of the event’s duration.
+- **Time Horizon:** The “time” is the discrete event itself.
+  - **Skydiving:** The risk is ~7 micromorts *per jump*. Whether the
+    freefall lasts 30 seconds or 60 seconds is secondary to the event of
+    jumping.
+  - **Scuba Diving:** The risk is ~5 micromorts *per dive*. A 30-minute
+    dive and a 45-minute dive are treated as single “dive events” in
+    broad statistics, though technically longer exposure increases risk.
+  - **Anesthesia:** ~10 micromorts *per operation*.
+
+### Comparative Risk Table
+
+The following table demonstrates how disparate activities can be
+compared using the micromort.
+
+``` r
+risks <- tibble::tribble(
+  ~Activity, ~Micromorts, ~Category, ~Context,
+  "Motorcycling 60 miles", 10, "Travel", "High-risk transport",
+  "General Anesthesia", 10, "Medical", "Per emergency operation",
+  "Skydiving", 7, "Sport", "Per jump (USPA stats)",
+  "Running a Marathon", 7, "Sport", "Cardiovascular stress per race",
+  "Scuba Diving", 5, "Sport", "Per dive (PADI certified)",
+  "Living (age 30)", 1, "Baseline", "Daily background risk for a young adult",
+  "Driving 230 miles", 1, "Travel", "Routine long-distance drive",
+  "Walking 20 miles", 1, "Travel", "Pedestrian accident risk"
+)
+
+knitr::kable(risks, caption = "Risk comparison in Micromorts (ordered by decreasing risk)")
+```
+
+| Activity | Micromorts | Category | Context |
+|:---|---:|:---|:---|
+| Motorcycling 60 miles | 10 | Travel | High-risk transport |
+| General Anesthesia | 10 | Medical | Per emergency operation |
+| Skydiving | 7 | Sport | Per jump (USPA stats) |
+| Running a Marathon | 7 | Sport | Cardiovascular stress per race |
+| Scuba Diving | 5 | Sport | Per dive (PADI certified) |
+| Living (age 30) | 1 | Baseline | Daily background risk for a young adult |
+| Driving 230 miles | 1 | Travel | Routine long-distance drive |
+| Walking 20 miles | 1 | Travel | Pedestrian accident risk |
+
+Risk comparison in Micromorts (ordered by decreasing risk)
+
+> **Comparison:** Riding a motorcycle for just 60 miles carries the same
+> acute death risk (~10 micromorts) as undergoing general anesthesia.
+
+## 3. Microlives: Measuring “Speed of Aging” (Attrition)
+
+While micromorts measure sudden death (Hazard), **Microlives** measure
+**chronic attrition**: the rate at which you are “using up” your life
+expectancy.
+
+- **Definition:** 1 Microlife = 30 minutes of life expectancy.
+- **Normalization:** Risk is normalized **per day** of maintaining a
+  habit.
+- **Unit of Attrition:** The “unit” is the expected lifespan. -1
+  Microlife means your expected lifespan has shrunk by 30 minutes.
+- **Time Horizon:** Continuous. If you smoke 20 cigarettes a day, you
+  are losing 10 microlives (5 hours) *every single day*.
+
+### Daily Habits Table
+
+``` r
+chronic_risks <- tibble::tribble(
+  ~Habit, ~Impact_Microlives, ~Time_Effect,
+  "Smoking 2 cigarettes", -1, "Lose 30 minutes life expectancy",
+  "Being 5kg overweight", -1, "Lose 30 minutes (per day of being overweight)",
+  "Second pint of beer", -1, "Lose 30 minutes",
+  "First 20 mins exercise", +1, "Gain 30 minutes life expectancy",
+  "Eating portion of fruit", +1, "Gain 30 minutes"
+)
+
+knitr::kable(chronic_risks, caption = "Impact of daily habits in Microlives")
+```
+
+| Habit | Impact_Microlives | Time_Effect |
+|:---|---:|:---|
+| Smoking 2 cigarettes | -1 | Lose 30 minutes life expectancy |
+| Being 5kg overweight | -1 | Lose 30 minutes (per day of being overweight) |
+| Second pint of beer | -1 | Lose 30 minutes |
+| First 20 mins exercise | 1 | Gain 30 minutes life expectancy |
+| Eating portion of fruit | 1 | Gain 30 minutes |
+
+Impact of daily habits in Microlives
+
+> **Clarification:** A value of **-1 Microlife** is a **loss**
+> (attrition). It effectively means you are aging 30 minutes faster than
+> normal. Over a year, a -1 daily deficit sums to ~180 hours (7.5 days)
+> of lost life.
+
+## 4. Visualization: The Risk Ladder
+
+Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This
+visualization helps placing rare risks (like asteroid impacts or
+terrorism) in context with daily risks.
+
+- **Why Log Scale?** Because risks span vast orders of magnitude (1 in
+  10 to 1 in 10 million).
+- **Interpretation:** A “100% increase” in a very rare risk (e.g.,
+  eating bacon increasing bowel cancer risk) might look huge in
+  headlines but is often negligible on the ladder compared to the
+  baseline risk of driving.
+
+``` r
+# Using the package's built-in plotting function which implements this ladder concept
+plot_risks()
+```
+
+![](palatable_units_files/figure-html/unnamed-chunk-4-1.png)
+
+## 5. Recommended Tools
+
+While David Spiegelhalter focuses on concepts rather than specific
+software, the following R packages align with his mission of clear risk
+communication:
+
+- **`riskCommunicator`:** Designed for public health to provide
+  interpretable effect measures (risk differences, number needed to
+  treat) rather than abstract regression coefficients.
+- **`ggplot2`:** The standard for creating custom visuals like Risk
+  Ladders and icon arrays.
+- **`micromort` (this package):** Specifically built to implement the
+  palatable units framework.
+
+## References
+
+1.  Spiegelhalter, D., & Blastland, M. (2013). *The Norm Chronicles:
+    Stories and numbers about danger*. Profile Books.
+2.  Spiegelhalter, D. (2019). *The Art of Statistics: Learning from
+    Data*. Pelican.

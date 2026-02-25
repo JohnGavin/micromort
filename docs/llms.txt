@@ -1,0 +1,180 @@
+# micromort: Estimate and Visualize Risks
+
+# micromort
+
+The goal of `micromort` is to provide tools to quantify, compare, and
+visualize risks using standardized units such as **micromorts** (acute
+risk of death) and **microlives** (chronic impact on life expectancy).
+
+## Installation
+
+You can install the development version of micromort from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("JohnGavin/micromort")
+```
+
+### Nix Users
+
+This project provides a reproducible Nix environment.
+
+``` bash
+# Enter project shell
+./default.sh
+
+# Start R
+R
+```
+
+## Concepts
+
+- **Micromort:** A one-in-a-million chance of death. Used for acute
+  risks (e.g., skydiving).
+- **Microlife:** A 30-minute change in life expectancy. Used for chronic
+  risks (e.g., smoking).
+- **VSL (Value of Statistical Life):** Economic value used to justify
+  safety spending.
+
+## Example
+
+### Acute Risks (Micromorts)
+
+How risky is skydiving compared to driving?
+
+``` r
+# library(micromort)
+
+# Convert probability to micromorts
+as_micromort(1/1000000) # 1 micromort
+#> [1] 1
+
+# Common risks
+head(common_risks())
+#> # A tibble: 6 × 3
+#>   activity                risk_micromorts category
+#>   <chr>                             <dbl> <chr>   
+#> 1 Skydiving (one jump)                7   Sport   
+#> 2 Running a marathon                  7   Sport   
+#> 3 Scuba diving (per dive)             5   Sport   
+#> 4 Skiing (one day)                    0.5 Sport   
+#> 5 Motorcycling (60 miles)            10   Travel  
+#> 6 Walking (20 miles)                  1   Travel
+```
+
+### Visualizing Risks
+
+``` r
+plot_risks()
+```
+
+![](reference/figures/README-plot-1.png)
+
+### Chronic Risks (Microlives)
+
+How much life expectancy do you lose by smoking?
+
+``` r
+# 1 cigarette = approx 1 microlife lost (30 mins)
+# Pack a day (20 cigs) = 20 microlives = 10 hours lost per day
+daily_loss <- as_microlife(20 * 30)
+print(daily_loss)
+#> [1] 20
+```
+
+## Project Structure
+
+(Tree view requires fs package)
+
+# Package index
+
+## Datasets
+
+Core data exports
+
+- [`acute_risks`](https://johngavin.github.io/micromort/reference/acute_risks.md)
+  : Acute Risks Dataset
+- [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md)
+  : Chronic Risks Dataset
+- [`risk_sources`](https://johngavin.github.io/micromort/reference/risk_sources.md)
+  : Risk Sources Registry
+
+## Data Loaders
+
+Load parquet datasets
+
+- [`load_acute_risks()`](https://johngavin.github.io/micromort/reference/load_acute_risks.md)
+  : Load Acute Risks Dataset
+- [`load_chronic_risks()`](https://johngavin.github.io/micromort/reference/load_chronic_risks.md)
+  : Load Chronic Risks Dataset
+- [`load_sources()`](https://johngavin.github.io/micromort/reference/load_sources.md)
+  : Load Risk Sources Registry
+
+## Legacy Data Functions
+
+Original data functions (retained for compatibility)
+
+- [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
+  : Acute Risks in Micromorts
+- [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md)
+  : Chronic Risks Dataset
+- [`demographic_factors()`](https://johngavin.github.io/micromort/reference/demographic_factors.md)
+  : Demographic Life Expectancy Factors
+- [`covid_vaccine_rr()`](https://johngavin.github.io/micromort/reference/covid_vaccine_rr.md)
+  : COVID-19 Vaccine Relative Risks
+- [`risk_data_sources()`](https://johngavin.github.io/micromort/reference/risk_data_sources.md)
+  : Data Sources for Micromort and Microlife Research
+
+## Conversion Functions
+
+Convert between risk units
+
+- [`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md)
+  : Convert Probability to Micromorts
+- [`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md)
+  : Convert to Microlives
+- [`as_probability()`](https://johngavin.github.io/micromort/reference/as_probability.md)
+  : Convert Micromorts to Probability
+- [`lle()`](https://johngavin.github.io/micromort/reference/lle.md) :
+  Loss of Life Expectancy (LLE)
+- [`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
+  : Value of a Statistical Life (VSL) to Micromort Value
+
+## Analysis Functions
+
+Risk analysis and modeling
+
+- [`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md)
+  : Compare Lifestyle Interventions
+- [`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md)
+  : Calculate Lifestyle Tradeoff
+- [`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md)
+  : Daily Hazard Rate by Age
+- [`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md)
+  : Annual Risk Budget
+
+## Visualization
+
+Risk visualization
+
+- [`plot_risks()`](https://johngavin.github.io/micromort/reference/plot_risks.md)
+  : Plot Risk Comparison
+
+## Interactive Tools
+
+API and dashboard
+
+- [`launch_api()`](https://johngavin.github.io/micromort/reference/launch_api.md)
+  : Launch Micromort REST API
+- [`launch_dashboard()`](https://johngavin.github.io/micromort/reference/launch_dashboard.md)
+  : Launch Risk Explorer Dashboard
+
+# Articles
+
+### All vignettes
+
+- [Introduction to Micromorts and Risk
+  Visualization](https://johngavin.github.io/micromort/articles/introduction.md):
+- [Palatable Units: The Spiegelhalter
+  Philosophy](https://johngavin.github.io/micromort/articles/palatable_units.md):

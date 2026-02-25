@@ -18,22 +18,10 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: "Getting Started"
+      - text: "Introduction"
         href: articles/introduction.html
-      - text: "---"
-      - text: "Datasets"
-      - text: "Acute Risks"
-        href: articles/acute-risks.html
-      - text: "Chronic Risks"
-        href: articles/chronic-risks.html
-      - text: "Data Sources"
-        href: articles/data-sources.html
-      - text: "---"
-      - text: "Analysis"
-      - text: "Lifestyle Comparisons"
-        href: articles/lifestyle-comparisons.html
-      - text: "Risk Budgeting"
-        href: articles/risk-budgeting.html
+      - text: "Palatable Units"
+        href: articles/palatable_units.html
 
 reference:
 - title: "Datasets"
