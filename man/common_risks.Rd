@@ -7,8 +7,17 @@
 common_risks()
 }
 \value{
-A tibble with columns: activity, micromorts, microlives, category,
-period, source_url.
+A tibble with columns:
+\describe{
+\item{activity}{Activity name}
+\item{micromorts}{Risk in micromorts (1 = 1-in-a-million death probability)}
+\item{microlives}{Equivalent microlives (micromorts × 0.7)}
+\item{category}{Activity category}
+\item{period}{Human-readable period description}
+\item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}
+\item{period_days}{Typical duration in days (for cross-activity comparison)}
+\item{source_url}{Data source URL}
+}
 }
 \description{
 A comprehensive dataset of activities and their associated acute mortality

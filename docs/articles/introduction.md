@@ -12,6 +12,7 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
+library(DT)
 ```
 
 This vignette introduces the **micromort** package, which provides tools
@@ -29,23 +30,15 @@ prob <- 1/10000
 as_micromort(prob)
 #> [1] 100
 
-# Compare common risks
+# Compare common risks (sortable table - click column headers)
 risks <- common_risks()
-print(risks)
-#> # A tibble: 62 × 6
-#>    activity                     micromorts microlives category period source_url
-#>    <chr>                             <dbl>      <dbl> <chr>    <chr>  <chr>     
-#>  1 Mt. Everest ascent                37932     26552. Mountai… per a… https://m…
-#>  2 Himalayan mountaineering          12000      8400  Mountai… per e… https://m…
-#>  3 COVID-19 infection (unvacci…      10000      7000  Disease  per i… https://m…
-#>  4 Spanish flu infection              3000      2100  Disease  per i… https://m…
-#>  5 Matterhorn ascent                  2840      1988  Mountai… per a… https://m…
-#>  6 Living in US during COVID-1…        500       350  Disease  per m… https://m…
-#>  7 Living (one day, age 90)            463       324. Daily L… per d… https://m…
-#>  8 Base jumping (per jump)             430       301  Sport    per e… https://m…
-#>  9 First day of life (newborn)         430       301  Daily L… per d… https://m…
-#> 10 COVID-19 unvaccinated (age …        234       164. COVID-19 11 we… https://w…
-#> # ℹ 52 more rows
+DT::datatable(
+  risks,
+  caption = "Common risks in micromorts (click column headers to sort, use search box to filter)",
+  filter = "top",
+  options = list(pageLength = 10, scrollX = TRUE),
+  rownames = FALSE
+)
 ```
 
 ### Visualizing Risks
@@ -79,7 +72,61 @@ print(daily_loss_microlives) # 20 microlives lost per day
 #> [1] 20
 ```
 
-## 3. Value of Statistical Life (VSL)
+## 3. Relationship Between Micromorts and Microlives
+
+### Theoretical Conversion
+
+Micromorts (acute risk) and microlives (chronic attrition) measure
+different phenomena, but they can be approximately converted:
+
+**Key relationship:** 1 micromort ≈ 0.7 microlives (assuming 40 years
+remaining life expectancy)
+
+**Mathematical derivation:**
+
+``` r
+# 1 micromort = 1-in-a-million death probability
+# Expected life lost = probability × remaining life expectancy
+remaining_years <- 40
+prob_death <- 1e-6  # 1 micromort
+
+# Life lost in years
+life_lost_years <- prob_death * remaining_years
+cat("Life lost (years):", life_lost_years, "\n")
+#> Life lost (years): 4e-05
+
+# Convert to minutes
+life_lost_minutes <- life_lost_years * 365.25 * 24 * 60
+cat("Life lost (minutes):", round(life_lost_minutes, 1), "\n")
+#> Life lost (minutes): 21
+
+# 1 microlife = 30 minutes
+microlives_equivalent <- life_lost_minutes / 30
+cat("Microlives equivalent:", round(microlives_equivalent, 2), "\n")
+#> Microlives equivalent: 0.7
+```
+
+This is why the `microlives` column in
+[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
+uses the conversion `microlives = micromorts × 0.7`.
+
+### Statistical Properties
+
+| Metric | Best For | Statistical Properties |
+|----|----|----|
+| **Micromorts** | Rare acute events (traffic deaths, skydiving) | Poisson-like; large samples needed; stable rates |
+| **Microlives** | Chronic exposures (smoking, diet) | Cumulative effects; epidemiological cohort studies |
+
+### When to Use Each
+
+- **Use micromorts** when comparing discrete events with immediate risk
+  (surgery, travel, sports)
+- **Use microlives** when assessing lifestyle changes over time
+  (quitting smoking, weight loss)
+- **Convert between them** when making policy decisions that involve
+  both acute and chronic risks
+
+## 4. Value of Statistical Life (VSL)
 
 The **Value of a Statistical Life (VSL)** is the monetary value used to
 justify safety spending. It is NOT the value of an individual life, but
@@ -100,7 +147,7 @@ value_of_micromort(vsl = 15000000)
 #> [1] 15
 ```
 
-## 4. Loss of Life Expectancy (LLE)
+## 5. Loss of Life Expectancy (LLE)
 
 **LLE** estimates the average time lost from a lifespan due to a
 specific risk. For a 1-in-a-million risk (1 micromort), the LLE is tiny.
@@ -121,21 +168,89 @@ print(lle_minutes)
 # 1e-6 * 21 million = ~21 minutes
 ```
 
-## 5. QALY / DALY (Brief Overview)
+## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
-- **QALY (Quality-Adjusted Life Year):** Measures years of life adjusted
-  for quality. 1 QALY = 1 year of perfect health. Used to assess medical
-  interventions.
-- **DALY (Disability-Adjusted Life Year):** Measures years of life lost
-  due to premature death + years lived with disability. Used to assess
-  disease burden.
+Micromorts and microlives focus on mortality. But many conditions (like
+the common cold) cause significant quality of life loss without being
+fatal. Complementary metrics capture this morbidity burden.
 
-These metrics go beyond simple mortality risk to capture morbidity and
-quality of life.
+### QALY (Quality-Adjusted Life Year)
 
-## Conclusion
+Measures years of life adjusted for quality. **1 QALY = 1 year of
+perfect health.**
+
+- Health states are weighted 0 (death) to 1 (perfect health)
+- A year with chronic pain at 0.7 quality = 0.7 QALYs
+- Used to assess cost-effectiveness of medical interventions (e.g.,
+  £20,000-30,000 per QALY threshold in UK)
+
+### DALY (Disability-Adjusted Life Years)
+
+Measures disease burden as the sum of:
+
+- **YLL (Years of Life Lost):** From premature mortality
+- **YLD (Years Lived with Disability):** From morbidity, weighted by
+  disability severity
+
+**Formula:** `DALY = YLL + YLD`
+
+For fatal diseases like COVID-19, YLL dominates. For non-fatal
+conditions like the common cold, YLD dominates.
+
+### Capturing Non-Fatal Burden: The “Microburden” Concept
+
+The common cold doesn’t kill many people, but millions of work/school
+days are lost annually. How do we capture this in a microlife-like
+metric?
+
+**Proposed “Microburden”:** Population-level quality of life lost per
+million person-days.
+
+``` r
+# Example: Common cold burden calculation
+# Disability weight for common cold: ~0.006 (WHO GBD)
+# Average duration: 5-7 days
+# Episodes per person per year: ~2-3
+
+cold_disability_weight <- 0.006
+cold_duration_days <- 6
+episodes_per_year <- 2.5
+
+# QALD (Quality-Adjusted Life Days) lost per episode
+qald_per_episode <- cold_disability_weight * cold_duration_days
+
+# Annual burden per person (in days of perfect health equivalent)
+annual_burden_days <- qald_per_episode * episodes_per_year
+cat("Annual quality burden (QALD/person):", round(annual_burden_days, 4), "\n")
+#> Annual quality burden (QALD/person): 0.09
+
+# For 1 million people
+population <- 1e6
+total_qald_lost <- annual_burden_days * population
+cat("Population burden (QALD/million):", format(total_qald_lost, big.mark = ","), "\n")
+#> Population burden (QALD/million): 90,000
+```
+
+### Comparing Metrics
+
+| Metric | Focus | Unit | Best For |
+|----|----|----|----|
+| Micromort | Acute mortality | 1-in-million death risk | Comparing immediate dangers |
+| Microlife | Chronic mortality | 30 min life expectancy | Lifestyle interventions |
+| QALY | Quality + quantity | 1 year perfect health | Healthcare economics |
+| DALY | Disease burden | Years lost/disabled | Global health priorities |
+| QALD | Daily morbidity | 1 day perfect health | Common illnesses |
+
+### References
+
+- WHO Global Burden of Disease:
+  [ghdx.healthdata.org](https://ghdx.healthdata.org/)
+- Spiegelhalter D (2012). BMJ 2012;345:e8223. <doi:10.1136/bmj.e8223>
+
+## 7. Conclusion
 
 The `micromort` package helps translate abstract probabilities into
 concrete units for better decision-making. By comparing acute risks
-(micromorts) and chronic risks (microlives), individuals and
-policymakers can make more informed choices.
+(micromorts), chronic risks (microlives), and quality-of-life metrics
+(QALYs, DALYs), individuals and policymakers can make more informed
+choices about risk trade-offs.

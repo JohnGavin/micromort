@@ -51,8 +51,14 @@
 
 
 
-
-<div class="row">
+<link href="introduction_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="introduction_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="introduction_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="introduction_files/datatables-binding-0.34.0/datatables.js"></script><link href="introduction_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="introduction_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="introduction_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="introduction_files/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="introduction_files/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="introduction_files/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="introduction_files/selectize-0.12.0/selectize.min.js"></script><link href="introduction_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="introduction_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Introduction to Micromorts and Risk Visualization</h1>
@@ -75,7 +81,8 @@
 <span><span class="co">#&gt;     filter, lag</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/DT" class="external-link">DT</a></span><span class="op">)</span></span></code></pre></div>
 <p>This vignette introduces the <strong>micromort</strong> package,
 which provides tools for understanding and visualizing risks.</p>
 <div class="section level2">
@@ -91,31 +98,24 @@ driving).</p>
 <span><span class="fu"><a href="../reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 100</span></span>
 <span></span>
-<span><span class="co"># Compare common risks</span></span>
+<span><span class="co"># Compare common risks (sortable table - click column headers)</span></span>
 <span><span class="va">risks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">risks</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 62 × 6</span></span></span>
-<span><span class="co">#&gt;    activity                     micromorts microlives category period source_url</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Mt. Everest ascent                <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Himalayan mountaineering          <span style="text-decoration: underline;">12</span>000      <span style="text-decoration: underline;">8</span>400  Mountai… per e… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> COVID-19 infection (unvacci…      <span style="text-decoration: underline;">10</span>000      <span style="text-decoration: underline;">7</span>000  Disease  per i… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Spanish flu infection              <span style="text-decoration: underline;">3</span>000      <span style="text-decoration: underline;">2</span>100  Disease  per i… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Matterhorn ascent                  <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Living in US during COVID-1…        500       350  Disease  per m… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Living (one day, age 90)            463       324. Daily L… per d… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Base jumping (per jump)             430       301  Sport    per e… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> First day of life (newborn)         430       301  Daily L… per d… https://m…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> COVID-19 unvaccinated (age …        234       164. COVID-19 11 we… https://w…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 52 more rows</span></span></span></code></pre></div>
-<div class="section level3">
+<span><span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
+<span>  <span class="va">risks</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Common risks in micromorts (click column headers to sort, use search box to filter)"</span>,</span>
+<span>  filter <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span>, scrollX <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.05\" data-max=\"37932\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"26552.4\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.01\" data-max=\"365\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"3000\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","caption":"<caption>Common risks in micromorts (click column headers to sort, use search box to filter)<\/caption>","data":[["Mt. Everest ascent","Himalayan mountaineering","COVID-19 infection (unvaccinated)","Spanish flu infection","Matterhorn ascent","Living in US during COVID-19 (Jul 2020)","Living (one day, age 90)","Base jumping (per jump)","First day of life (newborn)","COVID-19 unvaccinated (age 80+)","Caesarean birth (mother)","Scuba diving (per year, trained)","Vaginal birth (mother)","Living (one day, age 75)","COVID-19 unvaccinated (age 65-79)","Night in hospital","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","Heroin use (per dose)","US military in Afghanistan (2010)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","American football (per game)","Living (one day, under age 1)","Ecstasy/MDMA (per dose)","Swimming (drowning risk)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump, general)","COVID-19 monovalent vaccine (age 65-79)","Skydiving (per jump, US)","Skydiving (per jump, UK)","COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Running a marathon","Living in Maryland COVID-19 (Mar-May 2020)","Living (one day, age 45)","Scuba diving (per dive, trained)","Living (one day, age 50)","COVID-19 monovalent vaccine (all ages)","Rock climbing (per climb)","COVID-19 bivalent booster (age 65-79)","COVID-19 monovalent vaccine (age 50-64)","COVID-19 unvaccinated (age 18-49)","Living 2 months with a smoker","Walking (20 miles)","Driving (230 miles)","Flying (1000 miles)","Train (1000 miles)","Eating 1000 bananas (radiation)","1 hour in a coal mine","Eating 40 tbsp peanut butter (aflatoxin)","Eating 100 charbroiled steaks","Living (one day, age 20)","Living (one day, age 30)","COVID-19 bivalent booster (all ages)","COVID-19 bivalent booster (age 50-64)","Skiing (per day)","Horseback riding","COVID-19 monovalent vaccine (age 18-49)","Kangaroo encounter","COVID-19 bivalent booster (age 18-49)"],[37932,12000,10000,3000,2840,500,463,430,430,234,170,164,120,105,76,75,55,50,30,25,23,20,20,15,13,12,10,10,10,9,8,8,8,8,7,7,6,5,4,4,3,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.7,0.5,0.2,0.1,0.05],[26552.4,8400,7000,2100,1988,350,324.1,301,301,163.8,119,114.8,84,73.5,53.2,52.5,38.5,35,21,17.5,16.1,14,14,10.5,9.1,8.4,7,7,7,6.3,5.6,5.6,5.6,5.6,4.9,4.9,4.2,3.5,2.8,2.8,2.1,2.1,1.4,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.5,0.3,0.1,0.1,0],["Mountaineering","Mountaineering","COVID-19","Disease","Mountaineering","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Medical","Sport","Medical","Daily Life","COVID-19","Medical","COVID-19","COVID-19","Drugs","Military","COVID-19","COVID-19","Sport","Daily Life","Drugs","Sport","Medical","Travel","Sport","COVID-19","Sport","Sport","COVID-19","Sport","Sport","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Sport","COVID-19","COVID-19","COVID-19","Environment","Travel","Travel","Travel","Travel","Diet","Occupation","Diet","Diet","Daily Life","Daily Life","COVID-19","COVID-19","Sport","Sport","COVID-19","Wildlife","COVID-19"],["per ascent","per expedition","per infection","per infection","per ascent","per month","per day","per event","per day","11 weeks (2022)","per event","per year","per event","per day","11 weeks (2022)","per night","11 weeks (2022)","per 8 weeks","per dose","per day","11 weeks (2022)","11 weeks (2022)","per game","per day","per dose","per swim","per event","per trip","per event","11 weeks (2022)","per event","per event","11 weeks (2022)","per event","per event","per 8 weeks","per day","per event","per day","11 weeks (2022)","per event","11 weeks (2022)","11 weeks (2022)","11 weeks (2022)","per 2 months","per trip","per trip","per trip","per trip","per event","per hour","per event","per event","per day","per day","11 weeks (2022)","11 weeks (2022)","per day","per ride","11 weeks (2022)","per encounter","11 weeks (2022)"],["event","event","event","event","event","month","day","event","day","period","event","year","event","day","period","day","period","period","event","day","period","period","event","day","event","event","event","event","event","period","event","event","period","event","event","period","day","event","day","period","event","period","period","period","event","event","event","event","event","event","hour","event","event","day","day","period","period","day","event","period","event","period"],[60,45,14,14,60,30,1,1,1,77,1,365,1,1,77,1,77,56,0.01,1,77,77,0.13,1,0.01,0.04,1,0.17,1,77,1,1,77,1,1,56,1,1,1,77,1,77,77,77,60,0.17,0.17,0.17,0.17,1,0.04166666666666666,1,1,1,1,77,77,1,0.08,77,0.01,77],[632.2,266.67,714.29,214.29,47.33,16.67,463,430,430,3.04,170,0.45,120,105,0.99,75,0.71,0.89,3000,25,0.3,0.26,153.85,15,1300,300,10,58.82,10,0.12,8,8,0.1,8,7,0.12,6,5,4,0.05,3,0.04,0.03,0.01,0.02,5.88,5.88,5.88,5.88,1,24,1,1,1,1,0.01,0.01,0.7,6.25,0,10,0],["https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>activity<\/th>\n      <th>micromorts<\/th>\n      <th>microlives<\/th>\n      <th>category<\/th>\n      <th>period<\/th>\n      <th>period_type<\/th>\n      <th>period_days<\/th>\n      <th>micromorts_per_day<\/th>\n      <th>source_url<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[1,2,6,7]},{"name":"activity","targets":0},{"name":"micromorts","targets":1},{"name":"microlives","targets":2},{"name":"category","targets":3},{"name":"period","targets":4},{"name":"period_type","targets":5},{"name":"period_days","targets":6},{"name":"micromorts_per_day","targets":7},{"name":"source_url","targets":8}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script><div class="section level3">
 <h3 id="visualizing-risks">Visualizing Risks<a class="anchor" aria-label="anchor" href="#visualizing-risks"></a>
 </h3>
 <p>Using <code><a href="../reference/plot_risks.html">plot_risks()</a></code>, we can see the relative magnitude of
 different activities on a logarithmic scale.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="introduction_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 </div>
 <div class="section level2">
@@ -135,7 +135,86 @@ micromort equivalent risk) * Being 5kg overweight: -1 microlife per day
 <span><span class="co">#&gt; [1] 20</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="value-of-statistical-life-vsl">3. Value of Statistical Life (VSL)<a class="anchor" aria-label="anchor" href="#value-of-statistical-life-vsl"></a>
+<h2 id="relationship-between-micromorts-and-microlives">3. Relationship Between Micromorts and Microlives<a class="anchor" aria-label="anchor" href="#relationship-between-micromorts-and-microlives"></a>
+</h2>
+<div class="section level3">
+<h3 id="theoretical-conversion">Theoretical Conversion<a class="anchor" aria-label="anchor" href="#theoretical-conversion"></a>
+</h3>
+<p>Micromorts (acute risk) and microlives (chronic attrition) measure
+different phenomena, but they can be approximately converted:</p>
+<p><strong>Key relationship:</strong> 1 micromort ≈ 0.7 microlives
+(assuming 40 years remaining life expectancy)</p>
+<p><strong>Mathematical derivation:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1 micromort = 1-in-a-million death probability</span></span>
+<span><span class="co"># Expected life lost = probability × remaining life expectancy</span></span>
+<span><span class="va">remaining_years</span> <span class="op">&lt;-</span> <span class="fl">40</span></span>
+<span><span class="va">prob_death</span> <span class="op">&lt;-</span> <span class="fl">1e-6</span>  <span class="co"># 1 micromort</span></span>
+<span></span>
+<span><span class="co"># Life lost in years</span></span>
+<span><span class="va">life_lost_years</span> <span class="op">&lt;-</span> <span class="va">prob_death</span> <span class="op">*</span> <span class="va">remaining_years</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Life lost (years):"</span>, <span class="va">life_lost_years</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Life lost (years): 4e-05</span></span>
+<span></span>
+<span><span class="co"># Convert to minutes</span></span>
+<span><span class="va">life_lost_minutes</span> <span class="op">&lt;-</span> <span class="va">life_lost_years</span> <span class="op">*</span> <span class="fl">365.25</span> <span class="op">*</span> <span class="fl">24</span> <span class="op">*</span> <span class="fl">60</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Life lost (minutes):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">life_lost_minutes</span>, <span class="fl">1</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Life lost (minutes): 21</span></span>
+<span></span>
+<span><span class="co"># 1 microlife = 30 minutes</span></span>
+<span><span class="va">microlives_equivalent</span> <span class="op">&lt;-</span> <span class="va">life_lost_minutes</span> <span class="op">/</span> <span class="fl">30</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Microlives equivalent:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">microlives_equivalent</span>, <span class="fl">2</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Microlives equivalent: 0.7</span></span></code></pre></div>
+<p>This is why the <code>microlives</code> column in
+<code><a href="../reference/common_risks.html">common_risks()</a></code> uses the conversion
+<code>microlives = micromorts × 0.7</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="statistical-properties">Statistical Properties<a class="anchor" aria-label="anchor" href="#statistical-properties"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="25%">
+<col width="55%">
+</colgroup>
+<thead><tr class="header">
+<th>Metric</th>
+<th>Best For</th>
+<th>Statistical Properties</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Micromorts</strong></td>
+<td>Rare acute events (traffic deaths, skydiving)</td>
+<td>Poisson-like; large samples needed; stable rates</td>
+</tr>
+<tr class="even">
+<td><strong>Microlives</strong></td>
+<td>Chronic exposures (smoking, diet)</td>
+<td>Cumulative effects; epidemiological cohort studies</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="when-to-use-each">When to Use Each<a class="anchor" aria-label="anchor" href="#when-to-use-each"></a>
+</h3>
+<ul>
+<li>
+<strong>Use micromorts</strong> when comparing discrete events with
+immediate risk (surgery, travel, sports)</li>
+<li>
+<strong>Use microlives</strong> when assessing lifestyle changes
+over time (quitting smoking, weight loss)</li>
+<li>
+<strong>Convert between them</strong> when making policy decisions
+that involve both acute and chronic risks</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="value-of-statistical-life-vsl">4. Value of Statistical Life (VSL)<a class="anchor" aria-label="anchor" href="#value-of-statistical-life-vsl"></a>
 </h2>
 <p>The <strong>Value of a Statistical Life (VSL)</strong> is the
 monetary value used to justify safety spending. It is NOT the value of
@@ -145,7 +224,7 @@ reductions.</p>
 people (10 micromorts), is it worth it? Cost per micromort saved = $50 /
 10 = $5. If VSL = $10M, then 1 micromort = $10. Since $5 &lt; $10, it is
 cost-effective.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard VSL of $10M implies $10 per micromort</span></span>
 <span><span class="fu"><a href="../reference/value_of_micromort.html">value_of_micromort</a></span><span class="op">(</span>vsl <span class="op">=</span> <span class="fl">10000000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 10</span></span>
@@ -155,12 +234,12 @@ cost-effective.</p>
 <span><span class="co">#&gt; [1] 15</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="loss-of-life-expectancy-lle">4. Loss of Life Expectancy (LLE)<a class="anchor" aria-label="anchor" href="#loss-of-life-expectancy-lle"></a>
+<h2 id="loss-of-life-expectancy-lle">5. Loss of Life Expectancy (LLE)<a class="anchor" aria-label="anchor" href="#loss-of-life-expectancy-lle"></a>
 </h2>
 <p><strong>LLE</strong> estimates the average time lost from a lifespan
 due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE
 is tiny.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Loss of life expectancy from 1 micromort (assuming 40 years remaining)</span></span>
 <span><span class="va">lle_minutes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lle.html">lle</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1e6</span>, life_expectancy <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">lle_minutes</span><span class="op">)</span></span>
@@ -176,28 +255,140 @@ is tiny.</p>
 <span><span class="co"># 1e-6 * 21 million = ~21 minutes</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="qaly-daly-brief-overview">5. QALY / DALY (Brief Overview)<a class="anchor" aria-label="anchor" href="#qaly-daly-brief-overview"></a>
+<h2 id="complementary-metrics-qaly-daly-and-morbidity">6. Complementary Metrics: QALY, DALY, and Morbidity<a class="anchor" aria-label="anchor" href="#complementary-metrics-qaly-daly-and-morbidity"></a>
 </h2>
+<p>Micromorts and microlives focus on mortality. But many conditions
+(like the common cold) cause significant quality of life loss without
+being fatal. Complementary metrics capture this morbidity burden.</p>
+<div class="section level3">
+<h3 id="qaly-quality-adjusted-life-year">QALY (Quality-Adjusted Life Year)<a class="anchor" aria-label="anchor" href="#qaly-quality-adjusted-life-year"></a>
+</h3>
+<p>Measures years of life adjusted for quality. <strong>1 QALY = 1 year
+of perfect health.</strong></p>
+<ul>
+<li>Health states are weighted 0 (death) to 1 (perfect health)</li>
+<li>A year with chronic pain at 0.7 quality = 0.7 QALYs</li>
+<li>Used to assess cost-effectiveness of medical interventions (e.g.,
+£20,000-30,000 per QALY threshold in UK)</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="daly-disability-adjusted-life-years">DALY (Disability-Adjusted Life Years)<a class="anchor" aria-label="anchor" href="#daly-disability-adjusted-life-years"></a>
+</h3>
+<p>Measures disease burden as the sum of:</p>
 <ul>
 <li>
-<strong>QALY (Quality-Adjusted Life Year):</strong> Measures years
-of life adjusted for quality. 1 QALY = 1 year of perfect health. Used to
-assess medical interventions.</li>
+<strong>YLL (Years of Life Lost):</strong> From premature
+mortality</li>
 <li>
-<strong>DALY (Disability-Adjusted Life Year):</strong> Measures
-years of life lost due to premature death + years lived with disability.
-Used to assess disease burden.</li>
+<strong>YLD (Years Lived with Disability):</strong> From morbidity,
+weighted by disability severity</li>
 </ul>
-<p>These metrics go beyond simple mortality risk to capture morbidity
-and quality of life.</p>
+<p><strong>Formula:</strong> <code>DALY = YLL + YLD</code></p>
+<p>For fatal diseases like COVID-19, YLL dominates. For non-fatal
+conditions like the common cold, YLD dominates.</p>
+</div>
+<div class="section level3">
+<h3 id="capturing-non-fatal-burden-the-microburden-concept">Capturing Non-Fatal Burden: The “Microburden” Concept<a class="anchor" aria-label="anchor" href="#capturing-non-fatal-burden-the-microburden-concept"></a>
+</h3>
+<p>The common cold doesn’t kill many people, but millions of work/school
+days are lost annually. How do we capture this in a microlife-like
+metric?</p>
+<p><strong>Proposed “Microburden”:</strong> Population-level quality of
+life lost per million person-days.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example: Common cold burden calculation</span></span>
+<span><span class="co"># Disability weight for common cold: ~0.006 (WHO GBD)</span></span>
+<span><span class="co"># Average duration: 5-7 days</span></span>
+<span><span class="co"># Episodes per person per year: ~2-3</span></span>
+<span></span>
+<span><span class="va">cold_disability_weight</span> <span class="op">&lt;-</span> <span class="fl">0.006</span></span>
+<span><span class="va">cold_duration_days</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
+<span><span class="va">episodes_per_year</span> <span class="op">&lt;-</span> <span class="fl">2.5</span></span>
+<span></span>
+<span><span class="co"># QALD (Quality-Adjusted Life Days) lost per episode</span></span>
+<span><span class="va">qald_per_episode</span> <span class="op">&lt;-</span> <span class="va">cold_disability_weight</span> <span class="op">*</span> <span class="va">cold_duration_days</span></span>
+<span></span>
+<span><span class="co"># Annual burden per person (in days of perfect health equivalent)</span></span>
+<span><span class="va">annual_burden_days</span> <span class="op">&lt;-</span> <span class="va">qald_per_episode</span> <span class="op">*</span> <span class="va">episodes_per_year</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Annual quality burden (QALD/person):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">annual_burden_days</span>, <span class="fl">4</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Annual quality burden (QALD/person): 0.09</span></span>
+<span></span>
+<span><span class="co"># For 1 million people</span></span>
+<span><span class="va">population</span> <span class="op">&lt;-</span> <span class="fl">1e6</span></span>
+<span><span class="va">total_qald_lost</span> <span class="op">&lt;-</span> <span class="va">annual_burden_days</span> <span class="op">*</span> <span class="va">population</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Population burden (QALD/million):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">total_qald_lost</span>, big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Population burden (QALD/million): 90,000</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="comparing-metrics">Comparing Metrics<a class="anchor" aria-label="anchor" href="#comparing-metrics"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="22%">
+<col width="19%">
+<col width="32%">
+</colgroup>
+<thead><tr class="header">
+<th>Metric</th>
+<th>Focus</th>
+<th>Unit</th>
+<th>Best For</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Micromort</td>
+<td>Acute mortality</td>
+<td>1-in-million death risk</td>
+<td>Comparing immediate dangers</td>
+</tr>
+<tr class="even">
+<td>Microlife</td>
+<td>Chronic mortality</td>
+<td>30 min life expectancy</td>
+<td>Lifestyle interventions</td>
+</tr>
+<tr class="odd">
+<td>QALY</td>
+<td>Quality + quantity</td>
+<td>1 year perfect health</td>
+<td>Healthcare economics</td>
+</tr>
+<tr class="even">
+<td>DALY</td>
+<td>Disease burden</td>
+<td>Years lost/disabled</td>
+<td>Global health priorities</td>
+</tr>
+<tr class="odd">
+<td>QALD</td>
+<td>Daily morbidity</td>
+<td>1 day perfect health</td>
+<td>Common illnesses</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<ul>
+<li>WHO Global Burden of Disease: <a href="https://ghdx.healthdata.org/" class="external-link">ghdx.healthdata.org</a>
+</li>
+<li>Spiegelhalter D (2012). BMJ 2012;345:e8223. <a href="doi:10.1136/bmj.e8223" class="uri">doi:10.1136/bmj.e8223</a>
+</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
-<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+<h2 id="conclusion">7. Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
 <p>The <code>micromort</code> package helps translate abstract
 probabilities into concrete units for better decision-making. By
-comparing acute risks (micromorts) and chronic risks (microlives),
-individuals and policymakers can make more informed choices.</p>
+comparing acute risks (micromorts), chronic risks (microlives), and
+quality-of-life metrics (QALYs, DALYs), individuals and policymakers can
+make more informed choices about risk trade-offs.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
