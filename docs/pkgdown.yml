@@ -1,0 +1,10 @@
+pandoc: 3.7.0.2
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  introduction: introduction.html
+  palatable_units: palatable_units.html
+last_built: 2026-02-25T12:15Z
+urls:
+  reference: https://johngavin.github.io/micromort/reference
+  article: https://johngavin.github.io/micromort/articles

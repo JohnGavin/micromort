@@ -5,3 +5,4 @@
 nix-shell-root
 _targets/
 README_files/
+inst/extdata/logs/

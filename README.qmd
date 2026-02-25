@@ -1,5 +1,5 @@
 ---
-title: "micromort: Estimate and Visualize Risks"
+title: "micromort: Curated Micromort and Microlife Risk Datasets"
 format: gfm
 ---
 
@@ -12,27 +12,35 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-# library(micromort) # Not installed in library yet
 devtools::load_all()
 library(ggplot2)
 ```
 
 # micromort
 
-The goal of `micromort` is to provide tools to quantify, compare, and visualize risks using standardized units such as **micromorts** (acute risk of death) and **microlives** (chronic impact on life expectancy).
+A **data package** providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature.
+
+## Features
+
+- **62 acute risks** measured in micromorts (one-in-a-million death chance)
+- **22 chronic factors** measured in microlives (30 minutes of life expectancy)
+- **14 authoritative sources** with full provenance tracking
+- **Parquet datasets** for cross-language compatibility (R, Python, Arrow)
+- **Plumber REST API** for programmatic access
+- **Interactive dashboard** for data exploration
+- **targets pipeline** for reproducible data updates
 
 ## Installation
 
-You can install the development version of micromort from [GitHub](https://github.com/) with:
-
-``` r
+```r
+# Install from GitHub
 # install.packages("devtools")
 devtools::install_github("JohnGavin/micromort")
 ```
 
 ### Nix Users
 
-This project provides a reproducible Nix environment.
+This project provides a reproducible Nix environment:
 
 ```bash
 # Enter project shell
@@ -42,45 +50,146 @@ This project provides a reproducible Nix environment.
 R
 ```
 
-## Concepts
+## Quick Start
 
-*   **Micromort:** A one-in-a-million chance of death. Used for acute risks (e.g., skydiving).
-*   **Microlife:** A 30-minute change in life expectancy. Used for chronic risks (e.g., smoking).
-*   **VSL (Value of Statistical Life):** Economic value used to justify safety spending.
+### Load the Datasets
 
-## Example
+```{r load-data}
+library(micromort)
 
-### Acute Risks (Micromorts)
+# Load acute risks (micromorts)
+acute <- load_acute_risks()
+nrow(acute)
 
-How risky is skydiving compared to driving?
+# Load chronic risks (microlives)
+chronic <- load_chronic_risks()
+nrow(chronic)
 
-```{r example}
-# library(micromort)
-
-# Convert probability to micromorts
-as_micromort(1/1000000) # 1 micromort
-
-# Common risks
-head(common_risks())
+# Load source registry
+sources <- load_sources()
+nrow(sources)
 ```
 
-### Visualizing Risks
+### Explore Acute Risks
+
+```{r acute}
+# Top 10 riskiest activities
+acute |>
+  dplyr::select(activity, micromorts, category) |>
+  head(10)
+```
+
+### Explore Chronic Factors
+
+```{r chronic}
+# Factors that reduce life expectancy
+chronic |>
+  dplyr::filter(direction == "loss") |>
+  dplyr::select(factor, microlives_per_day, category) |>
+  head(10)
+```
+
+### Visualize Risks
 
 ```{r plot}
 plot_risks()
 ```
 
-### Chronic Risks (Microlives)
+## Analysis Functions
 
-How much life expectancy do you lose by smoking?
+### Compare Lifestyle Interventions
 
-```{r chronic}
-# 1 cigarette = approx 1 microlife lost (30 mins)
-# Pack a day (20 cigs) = 20 microlives = 10 hours lost per day
-daily_loss <- as_microlife(20 * 30)
-print(daily_loss)
+```{r compare}
+# Compare quitting smoking vs losing weight
+compare_interventions(list(
+  "Quit 10 cigarettes/day" = list(factor = "Smoking 10 cigarettes", change = -1),
+  "Lose 5kg" = list(factor = "Being 5 kg overweight", change = -1)
+))
+```
+
+### Calculate Baseline Risk by Age
+
+```{r hazard}
+# Daily baseline risk at age 35
+daily_hazard_rate(35)
+```
+
+### Lifestyle Tradeoffs
+
+```{r tradeoff}
+# How much exercise offsets smoking?
+lifestyle_tradeoff("Smoking 2 cigarettes", "20 min moderate exercise")
+```
+
+## API Access
+
+Launch the REST API for programmatic access:
+
+```r
+launch_api()
+# API available at http://localhost:8080
+# Swagger docs at http://localhost:8080/__docs__/
+```
+
+Endpoints:
+- `GET /v1/acute` - Acute risks dataset
+- `GET /v1/chronic` - Chronic risks dataset
+- `GET /v1/sources` - Source registry
+- `GET /v1/hazard?age=35` - Daily hazard rate
+
+## Interactive Dashboard
+
+Launch the Shiny dashboard:
+
+```r
+launch_dashboard()
 ```
 
 ## Project Structure
 
-(Tree view requires fs package)
+```{r tree, echo=FALSE, results='asis'}
+cat("```\n")
+cat("micromort/\n")
+cat("├── R/                    # Package functions\n")
+cat("│   ├── data.R            # Dataset loaders\n")
+cat("│   ├── models.R          # Analysis functions\n")
+cat("│   ├── api.R             # API launcher\n")
+cat("│   └── tar_plans/        # Pipeline plans\n")
+cat("├── box/                  # box modules\n")
+cat("│   ├── data/             # Data loading\n")
+cat("│   ├── models/           # Analysis\n")
+cat("│   └── api/              # API endpoints\n")
+cat("├── data-raw/             # Source data\n")
+cat("│   └── sources/          # CSV source files\n")
+cat("├── inst/extdata/         # Parquet datasets\n")
+cat("│   ├── acute_risks.parquet\n")
+cat("│   ├── chronic_risks.parquet\n")
+cat("│   └── risk_sources.parquet\n")
+cat("└── _targets.R            # Pipeline orchestrator\n")
+cat("```\n")
+```
+
+## Data Sources
+
+| Source | Type | Data |
+|--------|------|------|
+| Wikipedia: Micromort | Encyclopedia | ~50 acute risks |
+| Wikipedia: Microlife | Encyclopedia | ~20 chronic risks |
+| micromorts.rip | Database | ~45 acute risks |
+| CDC MMWR | Government | COVID vaccine data |
+| Spiegelhalter (2012) BMJ | Academic | Microlife framework |
+
+## Concepts
+
+- **Micromort:** A one-in-a-million chance of death. Used for acute risks.
+- **Microlife:** 30 minutes of life expectancy gained or lost. Used for chronic risks.
+- **Conversion:** 1 micromort ≈ 0.7 microlives (assuming 40 years remaining)
+
+## References
+
+- Howard RA (1980). "On Making Life and Death Decisions."
+- Spiegelhalter D (2012). BMJ 2012;345:e8223. [DOI: 10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
+
+## License
+
+MIT

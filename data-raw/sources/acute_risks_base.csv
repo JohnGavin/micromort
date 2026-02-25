@@ -1,0 +1,63 @@
+activity,micromorts,microlives,category,period,source_url,source_id,confidence,year,geography,age_group,last_accessed
+Mt. Everest ascent,37932,26552.4,Mountaineering,per ascent,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Himalayan mountaineering,12000,8400,Mountaineering,per expedition,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 infection (unvaccinated),10000,7000,Disease,per infection,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Spanish flu infection,3000,2100,Disease,per infection,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Matterhorn ascent,2840,1988,Mountaineering,per ascent,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Living in US during COVID-19 (Jul 2020),500,350,Disease,per month,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Living (one day, age 90)",463,324.1,Daily Life,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Base jumping (per jump),430,301,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+First day of life (newborn),430,301,Daily Life,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 unvaccinated (age 80+),234,163.8,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Caesarean birth (mother),170,119,Medical,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Scuba diving (per year, trained)",164,114.8,Sport,per year,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Vaginal birth (mother),120,84,Medical,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Living (one day, age 75)",105,73.5,Daily Life,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 unvaccinated (age 65-79),76,53.2,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Night in hospital,75,52.5,Medical,per night,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 monovalent vaccine (age 80+),55,38.5,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Living in NYC COVID-19 (Mar-May 2020),50,35,Disease,per 8 weeks,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Heroin use (per dose),30,21,Drugs,per dose,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+US military in Afghanistan (2010),25,17.5,Military,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 bivalent booster (age 80+),23,16.1,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+COVID-19 unvaccinated (all ages),20,14,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+American football (per game),20,14,Sport,per game,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Living (one day, under age 1)",15,10.5,Daily Life,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Ecstasy/MDMA (per dose),13,9.1,Drugs,per dose,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Swimming (drowning risk),12,8.4,Sport,per swim,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+General anesthesia (emergency),10,7,Medical,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Motorcycling (60 miles),10,7,Travel,per trip,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+"Skydiving (per jump, general)",10,7,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 monovalent vaccine (age 65-79),9,6.3,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+"Skydiving (per jump, US)",8,5.6,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Skydiving (per jump, UK)",8,5.6,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 unvaccinated (age 50-64),8,5.6,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Hang gliding (per flight),8,5.6,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Running a marathon,7,4.9,Sport,per event,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+Living in Maryland COVID-19 (Mar-May 2020),7,4.9,Disease,per 8 weeks,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Living (one day, age 45)",6,4.2,Daily Life,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Scuba diving (per dive, trained)",5,3.5,Sport,per event,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+"Living (one day, age 50)",4,2.8,Daily Life,per day,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+COVID-19 monovalent vaccine (all ages),4,2.8,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Rock climbing (per climb),3,2.1,Sport,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 bivalent booster (age 65-79),3,2.1,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+COVID-19 monovalent vaccine (age 50-64),2,1.4,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+COVID-19 unvaccinated (age 18-49),1,0.7,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Living 2 months with a smoker,1,0.7,Environment,per 2 months,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Walking (20 miles),1,0.7,Travel,per trip,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+Driving (230 miles),1,0.7,Travel,per trip,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+Flying (1000 miles),1,0.7,Travel,per trip,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+Train (1000 miles),1,0.7,Travel,per trip,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Eating 1000 bananas (radiation),1,0.7,Diet,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+1 hour in a coal mine,1,0.7,Occupation,per hour,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Eating 40 tbsp peanut butter (aflatoxin),1,0.7,Diet,per event,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+Eating 100 charbroiled steaks,1,0.7,Diet,per event,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+"Living (one day, age 20)",1,0.7,Daily Life,per day,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+"Living (one day, age 30)",1,0.7,Daily Life,per day,https://en.wikipedia.org/wiki/Micromort,wikipedia_micromort,medium,2025,global,all,2026-02-25
+COVID-19 bivalent booster (all ages),1,0.7,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+COVID-19 bivalent booster (age 50-64),1,0.7,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Skiing (per day),0.7,0.5,Sport,per day,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+Horseback riding,0.5,0.3,Sport,per ride,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 monovalent vaccine (age 18-49),0.2,0.1,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25
+Kangaroo encounter,0.1,0.1,Wildlife,per encounter,https://micromorts.rip/,micromorts_rip,medium,2025,global,all,2026-02-25
+COVID-19 bivalent booster (age 18-49),0.05,0,COVID-19,11 weeks (2022),https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,cdc_mmwr,high,2025,global,all,2026-02-25

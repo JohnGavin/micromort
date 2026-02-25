@@ -11,3 +11,7 @@ push_to_cachix.sh
 ^README\.qmd$
 ^README_files$
 ^\.github$
+^box$
+^data-raw$
+^inst/extdata/logs$
+^_pkgdown\.yml$

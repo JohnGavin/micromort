@@ -1,23 +1,42 @@
 Package: micromort
-Title: Estimate and Visualize Acute and Chronic Risks
-Version: 0.0.0.9000
-Authors@R: 
+Title: Curated Micromort and Microlife Risk Datasets
+Version: 0.1.0
+Authors@R:
     person("John", "Gavin", , "john.b.gavin@gmail.com", role = c("aut", "cre"))
-Description: Provides tools to quantify, compare, and visualize risks using standardized units such as micromorts (acute risk of death) and microlives (chronic impact on life expectancy). Includes functions for Value of Statistical Life (VSL) calculations and Loss of Life Expectancy (LLE) estimations.
+Description: A data package providing curated datasets of micromort (acute risk)
+    and microlife (chronic risk) values from authoritative sources including
+    Wikipedia, CDC MMWR, and academic literature. Includes tools for risk
+    comparison, lifestyle analysis, and a Plumber API for data distribution.
+    All data normalized to unified schemas with full provenance tracking.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-Imports: 
+Imports:
+    arrow,
     checkmate,
+    cli,
+    dplyr,
     ggplot2,
     scales,
     tibble
-Suggests: 
-    dplyr,
+Suggests:
+    box,
+    digest,
+    DT,
+    jsonlite,
     knitr,
+    pkgdown,
+    plotly,
+    plumber,
+    purrr,
+    readr,
+    rlang,
     rmarkdown,
-    testthat (>= 3.0.0)
+    shiny,
+    targets,
+    testthat (>= 3.0.0),
+    usethis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://johngavin.github.io/micromort/, https://github.com/johngavin/micromort

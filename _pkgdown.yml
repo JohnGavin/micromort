@@ -1,0 +1,93 @@
+url: https://johngavin.github.io/micromort/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: Micromort - Curated Risk Datasets
+  description: >
+    A data package providing curated datasets of micromort (acute risk)
+    and microlife (chronic risk) values from authoritative sources.
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: "Getting Started"
+        href: articles/introduction.html
+      - text: "---"
+      - text: "Datasets"
+      - text: "Acute Risks"
+        href: articles/acute-risks.html
+      - text: "Chronic Risks"
+        href: articles/chronic-risks.html
+      - text: "Data Sources"
+        href: articles/data-sources.html
+      - text: "---"
+      - text: "Analysis"
+      - text: "Lifestyle Comparisons"
+        href: articles/lifestyle-comparisons.html
+      - text: "Risk Budgeting"
+        href: articles/risk-budgeting.html
+
+reference:
+- title: "Datasets"
+  desc: "Core data exports"
+  contents:
+  - acute_risks
+  - chronic_risks
+  - risk_sources
+
+- title: "Data Loaders"
+  desc: "Load parquet datasets"
+  contents:
+  - load_acute_risks
+  - load_chronic_risks
+  - load_sources
+
+- title: "Legacy Data Functions"
+  desc: "Original data functions (retained for compatibility)"
+  contents:
+  - common_risks
+  - chronic_risks
+  - demographic_factors
+  - covid_vaccine_rr
+  - risk_data_sources
+
+- title: "Conversion Functions"
+  desc: "Convert between risk units"
+  contents:
+  - as_micromort
+  - as_microlife
+  - as_probability
+  - lle
+  - value_of_micromort
+
+- title: "Analysis Functions"
+  desc: "Risk analysis and modeling"
+  contents:
+  - compare_interventions
+  - lifestyle_tradeoff
+  - daily_hazard_rate
+  - annual_risk_budget
+
+- title: "Visualization"
+  desc: "Risk visualization"
+  contents:
+  - plot_risks
+
+- title: "Interactive Tools"
+  desc: "API and dashboard"
+  contents:
+  - launch_api
+  - launch_dashboard
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
