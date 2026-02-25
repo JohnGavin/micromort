@@ -402,3 +402,340 @@ risk_data_sources <- function() {
       "Government", "Vaccinated vs unvaccinated death rates"
   )
 }
+
+#' Cancer Risks by Type, Sex, and Age
+#'
+#' Mortality rates for major cancers stratified by sex and age group,
+#' expressed in micromorts per year and daily microlives.
+#'
+#' Data from SEER Cancer Statistics (NCI) and American Cancer Society 2024-2026.
+#'
+#' @return A tibble with columns: cancer_type, sex, age_group, deaths_per_100k,
+#'   micromorts_per_year, microlives_per_day, family_history_rr, rank_by_sex,
+#'   source_url.
+#' @export
+#' @references
+#' SEER Cancer Statistics Factsheets. National Cancer Institute.
+#' \url{https://seer.cancer.gov/statfacts/}
+#'
+#' Siegel RL, et al. Cancer statistics, 2024. CA Cancer J Clin. 2024;74:12-49.
+#' @examples
+#' cancer_risks()
+#' cancer_risks() |> dplyr::filter(sex == "Female")
+#' cancer_risks() |> dplyr::filter(age_group == "50-64")
+cancer_risks <- function() {
+  seer_url <- "https://seer.cancer.gov/statfacts/"
+  acs_url <- "https://www.cancer.org/research/cancer-facts-statistics.html"
+
+
+  # Death rates per 100,000 population (age-adjusted, SEER 2019-2023)
+  # Convert: deaths per 100k/year * 10 = micromorts per year
+  # Then: micromorts_per_year / 365 * 0.7 = microlives per day (approximate)
+
+  tibble::tribble(
+    ~cancer_type, ~sex, ~age_group, ~deaths_per_100k, ~family_history_rr,
+
+    # Males - All ages (ranked by mortality)
+    "Lung & Bronchus", "Male", "All ages", 37.2, 2.0,
+    "Prostate", "Male", "All ages", 19.2, 2.5,
+    "Colon & Rectum", "Male", "All ages", 15.3, 2.0,
+    "Pancreas", "Male", "All ages", 12.9, 1.8,
+    "Liver", "Male", "All ages", 10.2, 1.5,
+    "Leukemia", "Male", "All ages", 7.8, 1.3,
+    "Esophagus", "Male", "All ages", 7.1, 1.5,
+    "Bladder", "Male", "All ages", 6.5, 1.8,
+    "All cancers", "Male", "All ages", 183.5, 1.5,
+
+    # Females - All ages (ranked by mortality)
+    "Lung & Bronchus", "Female", "All ages", 27.1, 2.0,
+    "Breast", "Female", "All ages", 19.2, 2.0,
+    "Colon & Rectum", "Female", "All ages", 10.8, 2.0,
+    "Pancreas", "Female", "All ages", 9.9, 1.8,
+    "Ovary", "Female", "All ages", 6.1, 3.0,
+    "Uterus", "Female", "All ages", 5.3, 2.5,
+    "Leukemia", "Female", "All ages", 4.8, 1.3,
+    "Liver", "Female", "All ages", 4.2, 1.5,
+    "All cancers", "Female", "All ages", 128.1, 1.5,
+
+    # Age-stratified (both sexes, all cancers)
+    "All cancers", "Both", "0-19", 2.3, 1.2,
+    "All cancers", "Both", "20-34", 4.0, 1.3,
+    "All cancers", "Both", "35-49", 24.0, 1.4,
+    "All cancers", "Both", "50-64", 125.0, 1.5,
+    "All cancers", "Both", "65-74", 380.0, 1.5,
+    "All cancers", "Both", "75-84", 750.0, 1.4,
+    "All cancers", "Both", "85+", 1200.0, 1.3,
+
+    # Top 3 male cancers by age
+    "Lung & Bronchus", "Male", "50-64", 45.0, 2.0,
+    "Prostate", "Male", "50-64", 8.0, 2.5,
+    "Colon & Rectum", "Male", "50-64", 18.0, 2.0,
+    "Lung & Bronchus", "Male", "65-74", 120.0, 2.0,
+    "Prostate", "Male", "65-74", 45.0, 2.5,
+    "Colon & Rectum", "Male", "65-74", 40.0, 2.0,
+
+    # Top 3 female cancers by age
+    "Lung & Bronchus", "Female", "50-64", 35.0, 2.0,
+    "Breast", "Female", "50-64", 25.0, 2.0,
+    "Colon & Rectum", "Female", "50-64", 12.0, 2.0,
+    "Lung & Bronchus", "Female", "65-74", 95.0, 2.0,
+    "Breast", "Female", "65-74", 45.0, 2.0,
+    "Colon & Rectum", "Female", "65-74", 28.0, 2.0
+  ) |>
+    dplyr::mutate(
+      # Convert deaths per 100k/year to micromorts per year
+      micromorts_per_year = deaths_per_100k * 10,
+      # Convert to microlives per day (1 mm ≈ 0.7 ml)
+      microlives_per_day = round(micromorts_per_year / 365 * 0.7, 2),
+      # With family history
+      micromorts_with_family_history = round(micromorts_per_year * family_history_rr, 0),
+      source_url = seer_url
+    ) |>
+    dplyr::group_by(sex, age_group) |>
+    dplyr::mutate(
+      rank_by_sex = dplyr::row_number(dplyr::desc(deaths_per_100k))
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::select(
+      cancer_type, sex, age_group, deaths_per_100k,
+      micromorts_per_year, microlives_per_day,
+      family_history_rr, micromorts_with_family_history,
+      rank_by_sex, source_url
+    )
+}
+
+#' Vaccination Risk Reduction
+#'
+#' Mortality risk reduction from vaccination schedules compared to unvaccinated
+#' baseline, expressed in micromorts avoided per year.
+#'
+#' Data from CDC, WHO, and Lancet 2024 Global Vaccine Impact Study.
+#'
+#' @return A tibble with vaccination schedules and their risk reduction metrics.
+#' @export
+#' @references
+#' CDC. Health and Economic Benefits of Routine Childhood Immunizations.
+#' MMWR 2024;73:1-8. \url{https://www.cdc.gov/mmwr/}
+#'
+#' Lancet 2024. Contribution of vaccination to improved survival: 50 years of EPI.
+#' \url{https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext}
+#' @examples
+#' vaccination_risks()
+#' vaccination_risks() |> dplyr::filter(country == "US")
+#' vaccination_risks() |> dplyr::filter(age_group == "Childhood")
+vaccination_risks <- function() {
+  cdc_url <- "https://www.cdc.gov/mmwr/"
+  lancet_url <- "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext"
+
+  tibble::tribble(
+    ~vaccine_schedule, ~age_group, ~country, ~mortality_reduction_pct,
+    ~micromorts_avoided_per_year, ~description,
+
+    # Childhood vaccination (complete schedule)
+    "Complete childhood schedule", "0-5", "US", 27,
+      500, "DTaP, MMR, Polio, Hib, HepB, PCV, Rotavirus, Varicella",
+    "Complete childhood schedule", "0-5", "UK", 27,
+      480, "6-in-1, MMR, PCV, MenB, Rotavirus",
+    "Complete childhood schedule", "0-5", "Australia", 27,
+      450, "DTPa, MMR, IPV, Hib, HepB, PCV, Rotavirus",
+    "Complete childhood schedule", "0-5", "Global average", 24,
+      400, "WHO EPI schedule coverage",
+
+    # Individual childhood vaccines (annual risk avoided, ages 0-5)
+    "Measles vaccine", "0-5", "US", 15,
+      150, "Two-dose MMR; measles caused 2.6M deaths/year pre-vaccine",
+    "DTP vaccine", "0-5", "US", 10,
+      100, "Diphtheria, Tetanus, Pertussis",
+    "Rotavirus vaccine", "0-5", "US", 4,
+      40, "Prevents severe diarrhea mortality",
+    "Hib vaccine", "0-5", "US", 3,
+      30, "Haemophilus influenzae type b meningitis",
+    "Pneumococcal vaccine", "0-5", "US", 2,
+      20, "PCV13/PCV15 for pneumonia",
+
+    # Adult vaccinations (annual risk reduction)
+    "Annual influenza vaccine", "65+", "US", 4,
+      200, "~40-60% efficacy; prevents 50k+ deaths/year in US",
+    "Annual influenza vaccine", "65+", "UK", 4,
+      180, "NHS winter vaccination programme",
+    "Pneumococcal vaccine", "65+", "US", 2,
+      100, "PPSV23 or PCV20; one-time or booster",
+    "Shingles vaccine", "50+", "US", 1,
+      30, "Shingrix; prevents PHN complications",
+    "COVID-19 vaccine (annual)", "65+", "US", 15,
+      800, "Bivalent/updated; high-risk age group",
+    "COVID-19 vaccine (annual)", "18-64", "US", 3,
+      50, "Lower baseline risk in younger adults",
+
+    # Unvaccinated baseline (risk exposure)
+    "Unvaccinated baseline", "0-5", "US", 0,
+      0, "Reference: pre-vaccine era mortality risk",
+    "Unvaccinated baseline", "65+", "US", 0,
+      0, "Reference: no flu/pneumonia/COVID vaccines"
+  ) |>
+    dplyr::mutate(
+      # Microlives gained per day from vaccination
+      microlives_gained_per_day = round(micromorts_avoided_per_year / 365 * 0.7, 2),
+      # Annual effect in days of life
+      annual_life_days_gained = round(micromorts_avoided_per_year / 365 * 0.7 * 365 * 30 / (24 * 60), 1),
+      source_url = cdc_url
+    )
+}
+
+#' Conditional Risk Comparison (Hedged vs Unhedged)
+#'
+#' Compare mortality risk between "hedged" (optimal lifestyle/interventions) and
+#' "unhedged" (baseline/suboptimal) scenarios for major disease categories.
+#'
+#' @param disease Character. Disease category: "cardiovascular", "cancer",
+#'   "respiratory", "infectious", or "all".
+#' @return A tibble comparing hedged vs unhedged risks in micromorts and microlives.
+#' @export
+#' @examples
+#' conditional_risk("cardiovascular")
+#' conditional_risk("cancer")
+#' conditional_risk("all")
+conditional_risk <- function(disease = "all") {
+  checkmate::assert_choice(disease, c("cardiovascular", "cancer", "respiratory",
+                                       "infectious", "all"))
+
+  all_risks <- tibble::tribble(
+    ~disease_category, ~risk_factor, ~unhedged_state, ~hedged_state,
+    ~unhedged_microlives_per_day, ~hedged_microlives_per_day, ~reduction_pct, ~evidence_quality,
+
+    # Cardiovascular disease
+    "cardiovascular", "Smoking", "20 cigarettes/day", "Non-smoker",
+      -10, 0, 100, "High",
+    "cardiovascular", "Blood pressure", "Untreated hypertension", "Controlled <130/80",
+      -4, 0, 100, "High",
+    "cardiovascular", "Exercise", "Sedentary (<30 min/week)", "150 min moderate/week",
+      -2, 2, 200, "High",
+    "cardiovascular", "Diet", "Western diet (high processed)", "Mediterranean diet",
+      -2, 2, 200, "High",
+    "cardiovascular", "Cholesterol", "High LDL untreated", "Statin therapy if indicated",
+      -2, 1, 150, "High",
+    "cardiovascular", "Weight", "15 kg overweight", "Healthy BMI",
+      -3, 0, 100, "High",
+    "cardiovascular", "Diabetes", "Poorly controlled T2D", "Well-controlled HbA1c <7%",
+      -3, -1, 67, "High",
+    "cardiovascular", "Alcohol", "Heavy (4+ drinks/day)", "Moderate (1 drink/day)",
+      -2, 1, 150, "Moderate",
+
+    # Cancer
+    "cancer", "Smoking", "20 cigarettes/day", "Non-smoker",
+      -8, 0, 100, "High",
+    "cancer", "Alcohol", "Heavy drinking", "No alcohol",
+      -1, 0, 100, "High",
+    "cancer", "Physical activity", "Sedentary", "Regular exercise",
+      -1, 1, 200, "Moderate",
+    "cancer", "Diet", "Low fiber, high processed meat", "High fiber, plant-based",
+      -2, 1, 150, "Moderate",
+    "cancer", "Screening", "No screening", "Age-appropriate screening",
+      -1, 1, 200, "High",
+    "cancer", "Sun exposure", "Frequent sunburn", "Sun protection",
+      -0.5, 0, 100, "Moderate",
+    "cancer", "Family history", "Strong family history, no surveillance", "Enhanced surveillance",
+      -2, -1, 50, "Moderate",
+
+    # Respiratory
+    "respiratory", "Smoking", "Current smoker", "Never/quit 10+ years",
+      -5, 0, 100, "High",
+    "respiratory", "Air quality", "High pollution exposure", "Low pollution",
+      -1, 0, 100, "High",
+    "respiratory", "Vaccination", "No flu/pneumonia vaccines", "Annual flu + PPSV23",
+      -1, 0, 100, "High",
+    "respiratory", "Occupational", "Dust/fume exposure without PPE", "PPE compliant",
+      -1, 0, 100, "Moderate",
+
+    # Infectious disease
+    "infectious", "Childhood vaccines", "Unvaccinated", "Complete schedule",
+      -1.5, 0, 100, "High",
+    "infectious", "Adult vaccines", "No flu/COVID vaccines", "Up to date",
+      -1, 0, 100, "High",
+    "infectious", "COVID-19 (age 65+)", "Unvaccinated", "Bivalent booster",
+      -3, -0.1, 97, "High",
+    "infectious", "Hygiene", "Poor hand hygiene", "Regular handwashing",
+      -0.3, 0, 100, "Moderate"
+  )
+
+  if (disease != "all") {
+    all_risks <- all_risks |>
+      dplyr::filter(disease_category == disease)
+  }
+
+  all_risks |>
+    dplyr::mutate(
+      # Net microlives gained by hedging
+      microlives_gained = hedged_microlives_per_day - unhedged_microlives_per_day,
+      # Annual effect in days
+      annual_days_gained = round(microlives_gained * 365 * 30 / (24 * 60), 1),
+      # Convert to micromorts equivalent
+      micromorts_equivalent_per_day = round(microlives_gained / 0.7, 1)
+    )
+}
+
+#' Hedged Portfolio Risk Summary
+#'
+#' Calculate total risk reduction from adopting an optimal "hedged" lifestyle
+#' across multiple disease categories.
+#'
+#' @param include_diseases Character vector. Which disease categories to include.
+#'   Default is all: cardiovascular, cancer, respiratory, infectious.
+#' @return A tibble with total hedged vs unhedged comparison and breakdown.
+#' @export
+#' @examples
+#' hedged_portfolio()
+#' hedged_portfolio(include_diseases = c("cardiovascular", "cancer"))
+hedged_portfolio <- function(include_diseases = c("cardiovascular", "cancer",
+                                                    "respiratory", "infectious")) {
+  # Get all conditional risks
+  all_risks <- conditional_risk("all") |>
+    dplyr::filter(disease_category %in% include_diseases)
+
+  # Sum by disease category (avoiding double-counting smoking)
+  by_category <- all_risks |>
+    dplyr::group_by(disease_category) |>
+    dplyr::summarise(
+      n_factors = dplyr::n(),
+      total_unhedged_ml = sum(unhedged_microlives_per_day),
+      total_hedged_ml = sum(hedged_microlives_per_day),
+      total_ml_gained = sum(microlives_gained),
+      .groups = "drop"
+    )
+
+  # Calculate portfolio totals
+  # Note: Some factors (smoking) affect multiple diseases - we take max effect
+  smoking_effect <- all_risks |>
+    dplyr::filter(risk_factor == "Smoking") |>
+    dplyr::summarise(max_effect = max(microlives_gained)) |>
+    dplyr::pull(max_effect)
+
+  # Deduplicated total (remove smoking overlap)
+  overlap_adjustment <- smoking_effect * (length(unique(all_risks$disease_category[all_risks$risk_factor == "Smoking"])) - 1)
+
+  portfolio_total <- tibble::tibble(
+    metric = c(
+      "Total microlives gained per day (raw)",
+      "Overlap adjustment (smoking affects multiple diseases)",
+      "Net microlives gained per day",
+      "Annual days of life gained",
+      "Equivalent micromorts avoided per day",
+      "Life expectancy gain over 40 years (days)"
+    ),
+    value = c(
+      sum(by_category$total_ml_gained),
+      -overlap_adjustment,
+      sum(by_category$total_ml_gained) - overlap_adjustment,
+      round((sum(by_category$total_ml_gained) - overlap_adjustment) * 365 * 30 / (24 * 60), 1),
+      round((sum(by_category$total_ml_gained) - overlap_adjustment) / 0.7, 1),
+      round((sum(by_category$total_ml_gained) - overlap_adjustment) * 365 * 40 * 30 / (24 * 60), 0)
+    )
+  )
+
+  list(
+    by_category = by_category,
+    portfolio_summary = portfolio_total,
+    included_diseases = include_diseases,
+    note = "Smoking effects deduplicated across disease categories to avoid double-counting."
+  )
+}
