@@ -3,16 +3,32 @@
 #' Visualizes the risk of different activities in micromorts.
 #'
 #' @param risks Tibble. Dataframe of risks, defaults to common_risks().
+#' @param facet Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1 stacked).
+#'   Default is TRUE.
 #' @return A ggplot2 object.
 #' @importFrom stats reorder
 #' @export
 #' @examples
 #' plot_risks()
-plot_risks <- function(risks = common_risks()) {
-  ggplot2::ggplot(risks, ggplot2::aes(x = reorder(activity, micromorts), y = micromorts, fill = category)) +
+#' plot_risks(facet = FALSE)
+plot_risks <- function(risks = common_risks(), facet = TRUE) {
+  # Add facet grouping variable
+  risks <- risks |>
+    dplyr::mutate(
+      facet_group = ifelse(category == "COVID-19", "COVID-19 Risks", "Other Risks")
+    )
+
+  p <- ggplot2::ggplot(risks, ggplot2::aes(
+    x = reorder(activity, micromorts),
+    y = micromorts,
+    fill = category
+  )) +
     ggplot2::geom_col() +
     ggplot2::coord_flip() +
-    ggplot2::scale_y_log10(labels = scales::comma) +
+    ggplot2::scale_y_log10(
+      labels = scales::comma,
+      limits = c(0.01, NA)  # Set minimum to avoid log(0) issues
+    ) +
     ggplot2::labs(
       title = "Risk of Activities in Micromorts",
       subtitle = "Logarithmic Scale (1 micromort = 1 in a million chance of death)",
@@ -21,7 +37,128 @@ plot_risks <- function(risks = common_risks()) {
       fill = "Category",
       caption = "Sources: Wikipedia, CDC MMWR (https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm)"
     ) +
-    ggplot2::theme_minimal()
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      strip.text = ggplot2::element_text(size = 12, face = "bold"),
+      axis.text.y = ggplot2::element_text(size = 8)
+    )
+
+  if (facet) {
+    p <- p +
+      ggplot2::facet_wrap(
+        ~ facet_group,
+        ncol = 1,
+        scales = "free_y"
+      )
+  }
+
+  p
+}
+
+#' Interactive Risk Plot
+#'
+#' Creates an interactive plotly visualization of risks with category filtering.
+#'
+#' @param risks Tibble. Dataframe of risks, defaults to common_risks().
+#' @return A plotly object with interactive filtering.
+#' @export
+#' @examples
+#' if (requireNamespace("plotly", quietly = TRUE)) {
+#'   plot_risks_interactive()
+#' }
+plot_risks_interactive <- function(risks = common_risks()) {
+  if (!requireNamespace("plotly", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "x" = "Package {.pkg plotly} is required for interactive plots.",
+      "i" = "Install it with: {.code install.packages(\"plotly\")}"
+    ))
+  }
+
+  # Prepare data with hover text
+  risks <- risks |>
+    dplyr::arrange(dplyr::desc(micromorts)) |>
+    dplyr::mutate(
+      hover_text = paste0(
+        "<b>", activity, "</b><br>",
+        "Micromorts: ", scales::comma(micromorts), "<br>",
+        "Microlives: ", microlives, "<br>",
+        "Period: ", period, "<br>",
+        "Category: ", category
+      )
+    )
+
+  # Create plotly figure with dropdown filter
+  fig <- plotly::plot_ly(
+    data = risks,
+    x = ~micromorts,
+    y = ~reorder(activity, micromorts),
+    type = "bar",
+    orientation = "h",
+    color = ~category,
+    text = ~hover_text,
+    hoverinfo = "text"
+  ) |>
+    plotly::layout(
+      title = list(
+        text = "Risk of Activities in Micromorts<br><sup>Click legend to filter categories</sup>",
+        font = list(size = 16)
+      ),
+      xaxis = list(
+        title = "Micromorts (Log Scale)",
+        type = "log",
+        tickformat = ",d"
+      ),
+      yaxis = list(
+        title = "",
+        tickfont = list(size = 9)
+      ),
+      legend = list(
+        title = list(text = "Category"),
+        orientation = "h",
+        y = -0.15
+      ),
+      margin = list(l = 200, r = 50, t = 80, b = 100),
+      # Add dropdown menu for category filter
+      updatemenus = list(
+        list(
+          type = "dropdown",
+          active = 0,
+          x = 1.0,
+          y = 1.15,
+          buttons = list(
+            list(
+              label = "All Categories",
+              method = "update",
+              args = list(list(visible = TRUE))
+            ),
+            list(
+              label = "COVID-19 Only",
+              method = "update",
+              args = list(list(
+                visible = vapply(
+                  unique(risks$category),
+                  function(cat) cat == "COVID-19",
+                  logical(1)
+                )
+              ))
+            ),
+            list(
+              label = "Non-COVID Only",
+              method = "update",
+              args = list(list(
+                visible = vapply(
+                  unique(risks$category),
+                  function(cat) cat != "COVID-19",
+                  logical(1)
+                )
+              ))
+            )
+          )
+        )
+      )
+    )
+
+  fig
 }
 
 utils::globalVariables(c(
@@ -33,5 +170,7 @@ utils::globalVariables(c(
   # chronic_risks()
   "factor", "microlives_per_day", "direction", "description", "annual_effect_days",
   # demographic_factors()
-  "comparison", "source"
+  "comparison", "source",
+  # plot_risks()
+  "facet_group", "hover_text"
 ))

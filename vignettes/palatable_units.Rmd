@@ -108,9 +108,20 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 *   **Why Log Scale?** Because risks span vast orders of magnitude (1 in 10 to 1 in 10 million).
 *   **Interpretation:** A "100% increase" in a very rare risk (e.g., eating bacon increasing bowel cancer risk) might look huge in headlines but is often negligible on the ladder compared to the baseline risk of driving.
 
-```{r, fig.width=8, fig.height=12}
-# Using the package's built-in plotting function which implements this ladder concept
+```{r, fig.width=8, fig.height=14}
+# Risk ladder visualization - faceted by COVID-19 vs Other risks
+# This helps compare like-with-like while maintaining the logarithmic scale
 plot_risks()
+```
+
+For interactive exploration, use `plot_risks_interactive()` which provides:
+
+*   Hover details showing micromorts, microlives, and period
+*   Click legend to show/hide categories
+*   Dropdown filter for COVID-19 vs Other risks
+
+```{r}
+plot_risks_interactive()
 ```
 
 ## 5. Recommended Tools
