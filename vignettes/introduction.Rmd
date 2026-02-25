@@ -45,10 +45,19 @@ DT::datatable(
 
 ### Visualizing Risks
 
-Using `plot_risks()`, we can see the relative magnitude of different activities on a logarithmic scale.
-
-```{r, fig.width=8, fig.height=12}
+Using [`plot_risks()`](../reference/plot_risks.html), we can see the relative magnitude of different activities on a logarithmic scale. The plot is split into COVID-19 and Other risks to make comparisons easier:
+```{r, fig.width=8, fig.height=14}
+# Default: faceted by COVID-19 vs Other
 plot_risks()
+```
+
+#### Interactive Version
+
+For interactive exploration with hover details and category filtering, use [`plot_risks_interactive()`](../reference/plot_risks_interactive.html):
+
+```{r}
+# plotly version with dropdown filter and hover details
+plot_risks_interactive()
 ```
 
 ## 2. Microlives (Chronic Risk)
@@ -61,10 +70,24 @@ Common chronic risks:
 *   First 20 mins moderate exercise: +2 microlives
 
 ```{r}
-# If smoking 20 cigarettes a day costs 1 microlife each (approx 30 mins)
-daily_loss_minutes <- 20 * 30
-daily_loss_microlives <- as_microlife(daily_loss_minutes)
-print(daily_loss_microlives) # 20 microlives lost per day
+# as_microlife() converts minutes of life expectancy to microlives
+# where 1 microlife = 30 minutes of life expectancy
+
+# Example 1: A heavy smoker (20 cigarettes/day)
+# Each cigarette costs ~15-30 minutes of life expectancy
+# Total daily cost: 20 cigarettes × 30 minutes = 600 minutes
+as_microlife(600)  # = 20 microlives lost per day
+
+# Example 2: Moderate exercise (20 mins) gains ~60 mins life expectancy
+as_microlife(60)   # = 2 microlives gained
+
+# Example 3: Being 5kg overweight costs ~30 mins per day
+as_microlife(30)   # = 1 microlife lost per day
+
+# Compare: How much exercise offsets smoking 2 cigarettes?
+# Smoking 2 cigs = 60 mins lost = 2 microlives
+# Exercise 20 mins = 60 mins gained = 2 microlives
+# They roughly cancel out!
 ```
 
 ## 3. Relationship Between Micromorts and Microlives

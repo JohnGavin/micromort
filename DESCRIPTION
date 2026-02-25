@@ -25,6 +25,7 @@ Suggests:
     box,
     digest,
     DT,
+    fs,
     jsonlite,
     knitr,
     pkgdown,

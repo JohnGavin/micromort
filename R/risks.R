@@ -200,27 +200,60 @@ chronic_risks <- function() {
     ~factor, ~microlives_per_day, ~category, ~description,
 
     # Losses (negative microlives)
+    # Smoking
     "Smoking 20 cigarettes", -10, "Smoking", "Heavy smoking accelerates aging to 29 hours/day",
     "Smoking 10 cigarettes", -5, "Smoking", "Moderate smoking",
     "Smoking 2 cigarettes", -1, "Smoking", "Each cigarette costs ~15 minutes",
+
+    # Weight
     "Being 5 kg overweight", -1, "Weight", "Per 5 kg above optimum BMI weight",
     "Being 10 kg overweight", -2, "Weight", "Cumulative effect of excess weight",
     "Being 15 kg overweight", -3, "Weight", "Cumulative effect of excess weight",
+
+    # Alcohol
     "2nd-3rd alcoholic drink", -1, "Alcohol", "After first drink, additional drinks cost",
     "4th-5th alcoholic drink", -2, "Alcohol", "Heavy drinking costs more",
+
+    # Diet
     "Red meat (1 portion/day)", -1, "Diet", "Daily red meat consumption",
-    "Processed meat (1 portion/day)", -1, "Diet", "Bacon, sausages, etc.",
+    "Processed meat (1 portion/day)", -1, "Diet", "Bacon, sausages, etc. (cancer risk)",
+    "Low fiber diet", -1, "Diet", "Less than 25g fiber daily (colorectal cancer risk)",
+    "High sugar diet", -1, "Diet", "Excess refined sugar (diabetes, CVD risk)",
+
+    # Sedentary
     "2 hours TV watching", -1, "Sedentary", "Prolonged sitting/inactivity",
+    "Sitting 8+ hours/day", -2, "Sedentary", "Office work without breaks (CVD risk)",
+
+    # Environment
     "Living with a smoker", -1, "Environment", "Second-hand smoke exposure",
-    "2-3 cups coffee (men)", -1, "Diet", "Heavy coffee consumption (men only)",
     "Air pollution (high)", -1, "Environment", "Living in polluted urban area",
+
+    # Cardiovascular disease risk factors
+    "Untreated hypertension", -4, "Cardiovascular", "Systolic BP >140 mmHg untreated",
+    "Type 2 diabetes (poorly controlled)", -3, "Cardiovascular", "HbA1c >8% increases CVD risk",
+    "High LDL cholesterol (untreated)", -2, "Cardiovascular", "LDL >160 mg/dL without statins",
+    "Family history of heart disease", -2, "Cardiovascular", "First-degree relative with CVD <55y",
+
+    # Cancer risk factors
+    "Family history of cancer", -1, "Cancer", "First-degree relative with cancer",
+    "Low physical activity", -1, "Cancer", "Less than 150 min exercise/week (cancer risk)",
+    "Excessive alcohol (cancer)", -1, "Cancer", "More than 2 drinks/day increases cancer risk",
+
+    # Other
+    "2-3 cups coffee (men)", -1, "Diet", "Heavy coffee consumption (men only)",
     "Being male (vs female)", -4, "Demographics", "Male sex disadvantage",
+    "Chronic stress/poor sleep", -1, "Mental Health", "Cortisol elevation, inflammation",
 
     # Gains (positive microlives)
     "First alcoholic drink", 1, "Alcohol", "Moderate alcohol has protective effect",
     "20 min moderate exercise", 2, "Exercise", "Daily moderate physical activity",
+    "150 min weekly exercise", 3, "Exercise", "Meeting WHO recommendations (CVD/cancer prevention)",
     "5 servings fruit/veg", 4, "Diet", "Daily fruit and vegetable intake",
+    "High fiber diet", 2, "Diet", "25g+ fiber daily (colorectal cancer prevention)",
+    "Mediterranean diet", 2, "Diet", "Reduces CVD and cancer risk",
     "Statin therapy (if indicated)", 1, "Medical", "Cholesterol-lowering medication",
+    "Blood pressure control", 2, "Medical", "Achieving target BP <130/80 mmHg",
+    "Cancer screening (age-appropriate)", 1, "Medical", "Early detection improves outcomes",
     "Being female (vs male)", 4, "Demographics", "Female sex advantage",
     "Living in 2010 vs 1910", 15, "Historical", "Medical/social progress",
     "Living in Sweden vs Russia (male)", 21, "Demographics", "Geographic health advantage"

@@ -4,10 +4,13 @@
 \alias{plot_risks}
 \title{Plot Risk Comparison}
 \usage{
-plot_risks(risks = common_risks())
+plot_risks(risks = common_risks(), facet = TRUE)
 }
 \arguments{
 \item{risks}{Tibble. Dataframe of risks, defaults to common_risks().}
+
+\item{facet}{Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1 stacked).
+Default is TRUE.}
 }
 \value{
 A ggplot2 object.
@@ -17,4 +20,5 @@ Visualizes the risk of different activities in micromorts.
 }
 \examples{
 plot_risks()
+plot_risks(facet = FALSE)
 }

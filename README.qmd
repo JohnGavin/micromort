@@ -32,6 +32,15 @@ A **data package** providing curated datasets of micromort (acute risk) and micr
 
 ## Installation
 
+### R-Universe (Recommended)
+
+```r
+# Install from r-universe
+install.packages("micromort", repos = "https://johngavin.r-universe.dev")
+```
+
+### GitHub
+
 ```r
 # Install from GitHub
 # install.packages("devtools")
@@ -40,14 +49,35 @@ devtools::install_github("JohnGavin/micromort")
 
 ### Nix Users
 
-This project provides a reproducible Nix environment:
+This project provides a reproducible Nix environment with pre-built binaries from the `johngavin` cachix cache:
 
 ```bash
-# Enter project shell
+# Enter project shell (uses cachix cache for fast builds)
 ./default.sh
 
 # Start R
 R
+```
+
+#### Using with rix
+
+To include micromort in your own Nix-based R project:
+
+```r
+library(rix)
+
+rix(
+  r_pkgs = c("dplyr", "ggplot2"),
+  git_pkgs = list(
+    list(
+      package_name = "micromort",
+      repo_url = "https://github.com/JohnGavin/micromort",
+      commit = "main"  # Or specific SHA for reproducibility
+    )
+  ),
+  project_path = ".",
+  overwrite = TRUE
+)
 ```
 
 ## Quick Start
@@ -147,26 +177,8 @@ launch_dashboard()
 
 ## Project Structure
 
-```{r tree, echo=FALSE, results='asis'}
-cat("```\n")
-cat("micromort/\n")
-cat("├── R/                    # Package functions\n")
-cat("│   ├── data.R            # Dataset loaders\n")
-cat("│   ├── models.R          # Analysis functions\n")
-cat("│   ├── api.R             # API launcher\n")
-cat("│   └── tar_plans/        # Pipeline plans\n")
-cat("├── box/                  # box modules\n")
-cat("│   ├── data/             # Data loading\n")
-cat("│   ├── models/           # Analysis\n")
-cat("│   └── api/              # API endpoints\n")
-cat("├── data-raw/             # Source data\n")
-cat("│   └── sources/          # CSV source files\n")
-cat("├── inst/extdata/         # Parquet datasets\n")
-cat("│   ├── acute_risks.parquet\n")
-cat("│   ├── chronic_risks.parquet\n")
-cat("│   └── risk_sources.parquet\n")
-cat("└── _targets.R            # Pipeline orchestrator\n")
-cat("```\n")
+```{r tree, echo=FALSE}
+fs::dir_tree(recurse = 2, regexp = "^[^._]")
 ```
 
 ## Data Sources
@@ -181,9 +193,21 @@ cat("```\n")
 
 ## Concepts
 
-- **Micromort:** A one-in-a-million chance of death. Used for acute risks.
-- **Microlife:** 30 minutes of life expectancy gained or lost. Used for chronic risks.
-- **Conversion:** 1 micromort ≈ 0.7 microlives (assuming 40 years remaining)
+### Mortality Metrics
+
+- **Micromort:** A one-in-a-million chance of death. Used for acute risks (immediate events like skydiving, surgery).
+- **Microlife:** 30 minutes of life expectancy gained or lost. Used for chronic risks (daily habits like smoking, exercise).
+- **Conversion:** 1 micromort ≈ 0.7 microlives (assuming 40 years remaining life expectancy)
+
+### Morbidity Metrics
+
+Micromorts and microlives focus on mortality, but many conditions cause quality-of-life loss without death:
+
+- **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. A year lived at 0.7 quality = 0.7 QALYs. Used in healthcare economics (e.g., £20,000-30,000 per QALY threshold in UK).
+- **DALY (Disability-Adjusted Life Years):** Disease burden = YLL (Years of Life Lost) + YLD (Years Lived with Disability).
+- **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. Useful for common illnesses like colds.
+
+See the [Introduction vignette](https://johngavin.github.io/micromort/articles/introduction.html) for detailed examples including the "microburden" concept for non-fatal conditions
 
 ## References
 
