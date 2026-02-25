@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 library(micromort)
 library(dplyr)
 library(ggplot2)
+library(DT)
 ```
 
 **"Statistics are not just numbers; they are the way we make sense of the world."** — Sir David Spiegelhalter
@@ -57,7 +58,13 @@ risks <- tibble::tribble(
   "Walking 20 miles", 1, "Travel", "Pedestrian accident risk"
 )
 
-knitr::kable(risks, caption = "Risk comparison in Micromorts (ordered by decreasing risk)")
+DT::datatable(
+  risks,
+  caption = "Risk comparison in Micromorts (click column headers to sort)",
+  filter = "top",
+  options = list(pageLength = 10, dom = "Bfrtip"),
+  rownames = FALSE
+)
 ```
 
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same acute death risk (~10 micromorts) as undergoing general anesthesia.
@@ -74,7 +81,7 @@ While micromorts measure sudden death (Hazard), **Microlives** measure **chronic
 ### Daily Habits Table
 
 ```{r}
-chronic_risks <- tibble::tribble(
+chronic_risks_table <- tibble::tribble(
   ~Habit, ~Impact_Microlives, ~Time_Effect,
   "Smoking 2 cigarettes", -1, "Lose 30 minutes life expectancy",
   "Being 5kg overweight", -1, "Lose 30 minutes (per day of being overweight)",
@@ -83,7 +90,13 @@ chronic_risks <- tibble::tribble(
   "Eating portion of fruit", +1, "Gain 30 minutes"
 )
 
-knitr::kable(chronic_risks, caption = "Impact of daily habits in Microlives")
+DT::datatable(
+  chronic_risks_table,
+  caption = "Impact of daily habits in Microlives (click column headers to sort)",
+  filter = "top",
+  options = list(pageLength = 10, dom = "Bfrtip"),
+  rownames = FALSE
+)
 ```
 
 > **Clarification:** A value of **-1 Microlife** is a **loss** (attrition). It effectively means you are aging 30 minutes faster than normal. Over a year, a -1 daily deficit sums to ~180 hours (7.5 days) of lost life.
@@ -95,7 +108,7 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 *   **Why Log Scale?** Because risks span vast orders of magnitude (1 in 10 to 1 in 10 million).
 *   **Interpretation:** A "100% increase" in a very rare risk (e.g., eating bacon increasing bowel cancer risk) might look huge in headlines but is often negligible on the ladder compared to the baseline risk of driving.
 
-```{r, fig.width=7, fig.height=5}
+```{r, fig.width=8, fig.height=12}
 # Using the package's built-in plotting function which implements this ladder concept
 plot_risks()
 ```

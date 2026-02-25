@@ -27,6 +27,7 @@ plot_risks <- function(risks = common_risks()) {
 utils::globalVariables(c(
   # common_risks()
   "activity", "micromorts", "microlives", "category", "period", "source_url",
+  "period_type", "period_days", "period_parsed", "micromorts_per_day",
   # covid_vaccine_rr()
   "age_group", "vaccination_status", "deaths_per_100k", "relative_risk",
   # chronic_risks()

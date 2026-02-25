@@ -58,21 +58,14 @@ risks <- tibble::tribble(
   "Walking 20 miles", 1, "Travel", "Pedestrian accident risk"
 )
 
-knitr::kable(risks, caption = "Risk comparison in Micromorts (ordered by decreasing risk)")
+DT::datatable(
+  risks,
+  caption = "Risk comparison in Micromorts (click column headers to sort)",
+  filter = "top",
+  options = list(pageLength = 10, dom = "Bfrtip"),
+  rownames = FALSE
+)
 ```
-
-| Activity | Micromorts | Category | Context |
-|:---|---:|:---|:---|
-| Motorcycling 60 miles | 10 | Travel | High-risk transport |
-| General Anesthesia | 10 | Medical | Per emergency operation |
-| Skydiving | 7 | Sport | Per jump (USPA stats) |
-| Running a Marathon | 7 | Sport | Cardiovascular stress per race |
-| Scuba Diving | 5 | Sport | Per dive (PADI certified) |
-| Living (age 30) | 1 | Baseline | Daily background risk for a young adult |
-| Driving 230 miles | 1 | Travel | Routine long-distance drive |
-| Walking 20 miles | 1 | Travel | Pedestrian accident risk |
-
-Risk comparison in Micromorts (ordered by decreasing risk)
 
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same
 > acute death risk (~10 micromorts) as undergoing general anesthesia.
@@ -94,7 +87,7 @@ expectancy.
 ### Daily Habits Table
 
 ``` r
-chronic_risks <- tibble::tribble(
+chronic_risks_table <- tibble::tribble(
   ~Habit, ~Impact_Microlives, ~Time_Effect,
   "Smoking 2 cigarettes", -1, "Lose 30 minutes life expectancy",
   "Being 5kg overweight", -1, "Lose 30 minutes (per day of being overweight)",
@@ -103,18 +96,14 @@ chronic_risks <- tibble::tribble(
   "Eating portion of fruit", +1, "Gain 30 minutes"
 )
 
-knitr::kable(chronic_risks, caption = "Impact of daily habits in Microlives")
+DT::datatable(
+  chronic_risks_table,
+  caption = "Impact of daily habits in Microlives (click column headers to sort)",
+  filter = "top",
+  options = list(pageLength = 10, dom = "Bfrtip"),
+  rownames = FALSE
+)
 ```
-
-| Habit | Impact_Microlives | Time_Effect |
-|:---|---:|:---|
-| Smoking 2 cigarettes | -1 | Lose 30 minutes life expectancy |
-| Being 5kg overweight | -1 | Lose 30 minutes (per day of being overweight) |
-| Second pint of beer | -1 | Lose 30 minutes |
-| First 20 mins exercise | 1 | Gain 30 minutes life expectancy |
-| Eating portion of fruit | 1 | Gain 30 minutes |
-
-Impact of daily habits in Microlives
 
 > **Clarification:** A value of **-1 Microlife** is a **loss**
 > (attrition). It effectively means you are aging 30 minutes faster than

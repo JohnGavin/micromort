@@ -51,8 +51,14 @@
 
 
 
-
-<div class="row">
+<link href="palatable_units_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="palatable_units_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="palatable_units_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="palatable_units_files/datatables-binding-0.34.0/datatables.js"></script><link href="palatable_units_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="palatable_units_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<script src="palatable_units_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="palatable_units_files/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<script src="palatable_units_files/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="palatable_units_files/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="palatable_units_files/selectize-0.12.0/selectize.min.js"></script><link href="palatable_units_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="palatable_units_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Palatable Units: The Spiegelhalter Philosophy</h1>
@@ -139,74 +145,15 @@ compared using the micromort.</p>
 <span>  <span class="st">"Walking 20 miles"</span>, <span class="fl">1</span>, <span class="st">"Travel"</span>, <span class="st">"Pedestrian accident risk"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">risks</span>, caption <span class="op">=</span> <span class="st">"Risk comparison in Micromorts (ordered by decreasing risk)"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>Risk comparison in Micromorts (ordered by decreasing
-risk)</caption>
-<colgroup>
-<col width="26%">
-<col width="13%">
-<col width="10%">
-<col width="48%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Activity</th>
-<th align="right">Micromorts</th>
-<th align="left">Category</th>
-<th align="left">Context</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Motorcycling 60 miles</td>
-<td align="right">10</td>
-<td align="left">Travel</td>
-<td align="left">High-risk transport</td>
-</tr>
-<tr class="even">
-<td align="left">General Anesthesia</td>
-<td align="right">10</td>
-<td align="left">Medical</td>
-<td align="left">Per emergency operation</td>
-</tr>
-<tr class="odd">
-<td align="left">Skydiving</td>
-<td align="right">7</td>
-<td align="left">Sport</td>
-<td align="left">Per jump (USPA stats)</td>
-</tr>
-<tr class="even">
-<td align="left">Running a Marathon</td>
-<td align="right">7</td>
-<td align="left">Sport</td>
-<td align="left">Cardiovascular stress per race</td>
-</tr>
-<tr class="odd">
-<td align="left">Scuba Diving</td>
-<td align="right">5</td>
-<td align="left">Sport</td>
-<td align="left">Per dive (PADI certified)</td>
-</tr>
-<tr class="even">
-<td align="left">Living (age 30)</td>
-<td align="right">1</td>
-<td align="left">Baseline</td>
-<td align="left">Daily background risk for a young adult</td>
-</tr>
-<tr class="odd">
-<td align="left">Driving 230 miles</td>
-<td align="right">1</td>
-<td align="left">Travel</td>
-<td align="left">Routine long-distance drive</td>
-</tr>
-<tr class="even">
-<td align="left">Walking 20 miles</td>
-<td align="right">1</td>
-<td align="left">Travel</td>
-<td align="left">Pedestrian accident risk</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
+<span><span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
+<span>  <span class="va">risks</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Risk comparison in Micromorts (click column headers to sort)"</span>,</span>
+<span>  filter <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span>, dom <span class="op">=</span> <span class="st">"Bfrtip"</span><span class="op">)</span>,</span>
+<span>  rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"1\" data-max=\"10\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","caption":"<caption>Risk comparison in Micromorts (click column headers to sort)<\/caption>","data":[["Motorcycling 60 miles","General Anesthesia","Skydiving","Running a Marathon","Scuba Diving","Living (age 30)","Driving 230 miles","Walking 20 miles"],[10,10,7,7,5,1,1,1],["Travel","Medical","Sport","Sport","Sport","Baseline","Travel","Travel"],["High-risk transport","Per emergency operation","Per jump (USPA stats)","Cardiovascular stress per race","Per dive (PADI certified)","Daily background risk for a young adult","Routine long-distance drive","Pedestrian accident risk"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Activity<\/th>\n      <th>Micromorts<\/th>\n      <th>Category<\/th>\n      <th>Context<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"Bfrtip","columnDefs":[{"className":"dt-right","targets":1},{"name":"Activity","targets":0},{"name":"Micromorts","targets":1},{"name":"Category","targets":2},{"name":"Context","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script><blockquote>
 <p><strong>Comparison:</strong> Riding a motorcycle for just 60 miles
 carries the same acute death risk (~10 micromorts) as undergoing general
 anesthesia.</p>
@@ -239,7 +186,7 @@ single day</em>.</li>
 <h3 id="daily-habits-table">Daily Habits Table<a class="anchor" aria-label="anchor" href="#daily-habits-table"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">chronic_risks</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">chronic_risks_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">Habit</span>, <span class="op">~</span><span class="va">Impact_Microlives</span>, <span class="op">~</span><span class="va">Time_Effect</span>,</span>
 <span>  <span class="st">"Smoking 2 cigarettes"</span>, <span class="op">-</span><span class="fl">1</span>, <span class="st">"Lose 30 minutes life expectancy"</span>,</span>
 <span>  <span class="st">"Being 5kg overweight"</span>, <span class="op">-</span><span class="fl">1</span>, <span class="st">"Lose 30 minutes (per day of being overweight)"</span>,</span>
@@ -248,48 +195,15 @@ single day</em>.</li>
 <span>  <span class="st">"Eating portion of fruit"</span>, <span class="op">+</span><span class="fl">1</span>, <span class="st">"Gain 30 minutes"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">chronic_risks</span>, caption <span class="op">=</span> <span class="st">"Impact of daily habits in Microlives"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<caption>Impact of daily habits in Microlives</caption>
-<colgroup>
-<col width="27%">
-<col width="20%">
-<col width="52%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">Habit</th>
-<th align="right">Impact_Microlives</th>
-<th align="left">Time_Effect</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Smoking 2 cigarettes</td>
-<td align="right">-1</td>
-<td align="left">Lose 30 minutes life expectancy</td>
-</tr>
-<tr class="even">
-<td align="left">Being 5kg overweight</td>
-<td align="right">-1</td>
-<td align="left">Lose 30 minutes (per day of being overweight)</td>
-</tr>
-<tr class="odd">
-<td align="left">Second pint of beer</td>
-<td align="right">-1</td>
-<td align="left">Lose 30 minutes</td>
-</tr>
-<tr class="even">
-<td align="left">First 20 mins exercise</td>
-<td align="right">1</td>
-<td align="left">Gain 30 minutes life expectancy</td>
-</tr>
-<tr class="odd">
-<td align="left">Eating portion of fruit</td>
-<td align="right">1</td>
-<td align="left">Gain 30 minutes</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
+<span><span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
+<span>  <span class="va">chronic_risks_table</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Impact of daily habits in Microlives (click column headers to sort)"</span>,</span>
+<span>  filter <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span>, dom <span class="op">=</span> <span class="st">"Bfrtip"</span><span class="op">)</span>,</span>
+<span>  rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"-1\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","caption":"<caption>Impact of daily habits in Microlives (click column headers to sort)<\/caption>","data":[["Smoking 2 cigarettes","Being 5kg overweight","Second pint of beer","First 20 mins exercise","Eating portion of fruit"],[-1,-1,-1,1,1],["Lose 30 minutes life expectancy","Lose 30 minutes (per day of being overweight)","Lose 30 minutes","Gain 30 minutes life expectancy","Gain 30 minutes"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Habit<\/th>\n      <th>Impact_Microlives<\/th>\n      <th>Time_Effect<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"Bfrtip","columnDefs":[{"className":"dt-right","targets":1},{"name":"Habit","targets":0},{"name":"Impact_Microlives","targets":1},{"name":"Time_Effect","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script><blockquote>
 <p><strong>Clarification:</strong> A value of <strong>-1
 Microlife</strong> is a <strong>loss</strong> (attrition). It
 effectively means you are aging 30 minutes faster than normal. Over a
@@ -316,7 +230,7 @@ baseline risk of driving.</li>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using the package's built-in plotting function which implements this ladder concept</span></span>
 <span><span class="fu"><a href="../reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="palatable_units_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="palatable_units_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level2">
 <h2 id="recommended-tools">5. Recommended Tools<a class="anchor" aria-label="anchor" href="#recommended-tools"></a>

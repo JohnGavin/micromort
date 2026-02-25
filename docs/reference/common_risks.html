@@ -51,9 +51,32 @@ risk in micromorts, with calculated microlives and source references.</p>
 
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble with columns: activity, micromorts, microlives, category,
-period, source_url.</p>
-    </div>
+    <p>A tibble with columns:</p><dl><dt>activity</dt>
+<dd><p>Activity name</p></dd>
+
+<dt>micromorts</dt>
+<dd><p>Risk in micromorts (1 = 1-in-a-million death probability)</p></dd>
+
+<dt>microlives</dt>
+<dd><p>Equivalent microlives (micromorts × 0.7)</p></dd>
+
+<dt>category</dt>
+<dd><p>Activity category</p></dd>
+
+<dt>period</dt>
+<dd><p>Human-readable period description</p></dd>
+
+<dt>period_type</dt>
+<dd><p>Normalized period type: "event", "day", "hour", "year", "period"</p></dd>
+
+<dt>period_days</dt>
+<dd><p>Typical duration in days (for cross-activity comparison)</p></dd>
+
+<dt>source_url</dt>
+<dd><p>Data source URL</p></dd>
+
+
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Micromort: one-in-a-million chance of death (acute risk).
@@ -71,57 +94,64 @@ Microlife: 30 minutes of life expectancy lost.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 62 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    activity                     micromorts microlives category period source_url</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest ascent                <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan mountaineering          <span style="text-decoration: underline;">12</span>000      <span style="text-decoration: underline;">8</span>400  Mountai… per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infection (unvacci…      <span style="text-decoration: underline;">10</span>000      <span style="text-decoration: underline;">7</span>000  Disease  per i… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu infection              <span style="text-decoration: underline;">3</span>000      <span style="text-decoration: underline;">2</span>100  Disease  per i… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn ascent                  <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US during COVID-1…        500       350  Disease  per m… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one day, age 90)            463       324. Daily L… per d… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (per jump)             430       301  Sport    per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of life (newborn)         430       301  Daily L… per d… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvaccinated (age …        234       164. COVID-19 11 we… https://w…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 62 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… event                60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan moun…      <span style="text-decoration: underline;">12</span>000      <span style="text-decoration: underline;">8</span>400  Mountai… per e… event                45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infec…      <span style="text-decoration: underline;">10</span>000      <span style="text-decoration: underline;">7</span>000  COVID-19 per i… event                14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu in…       <span style="text-decoration: underline;">3</span>000      <span style="text-decoration: underline;">2</span>100  Disease  per i… event                14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… event                60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…        500       350  COVID-19 per m… month                30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…        463       324. Daily L… per d… day                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430       301  Sport    per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430       301  Daily L… per d… day                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234       164. COVID-19 11 we… period               77</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 52 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">category</span> <span class="op">==</span> <span class="st">"COVID-19"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    activity                     micromorts microlives category period source_url</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> COVID-19 unvaccinated (age …     234         164.  COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> COVID-19 unvaccinated (age …      76          53.2 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 monovalent vaccine…      55          38.5 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> COVID-19 bivalent booster (…      23          16.1 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> COVID-19 unvaccinated (all …      20          14   COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> COVID-19 monovalent vaccine…       9           6.3 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> COVID-19 unvaccinated (age …       8           5.6 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> COVID-19 monovalent vaccine…       4           2.8 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> COVID-19 bivalent booster (…       3           2.1 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 monovalent vaccine…       2           1.4 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> COVID-19 unvaccinated (age …       1           0.7 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> COVID-19 bivalent booster (…       1           0.7 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> COVID-19 bivalent booster (…       1           0.7 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> COVID-19 monovalent vaccine…       0.2         0.1 COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> COVID-19 bivalent booster (…       0.05        0   COVID-19 11 we… https://w…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 19 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> COVID-19 infec…   <span style="text-decoration: underline;">10</span>000        <span style="text-decoration: underline;">7</span>000   COVID-19 per i… event                14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Living in US d…     500         350   COVID-19 per m… month                30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 unvac…     234         164.  COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> COVID-19 unvac…      76          53.2 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> COVID-19 monov…      55          38.5 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in NYC …      50          35   COVID-19 per 8… period               56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> COVID-19 bival…      23          16.1 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> COVID-19 unvac…      20          14   COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> COVID-19 monov…       9           6.3 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…       8           5.6 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> Living in Mary…       7           4.9 COVID-19 per 8… period               56</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> COVID-19 monov…       4           2.8 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> COVID-19 bival…       3           2.1 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> COVID-19 monov…       2           1.4 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> COVID-19 unvac…       1           0.7 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> COVID-19 bival…       1           0.7 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> COVID-19 bival…       1           0.7 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> COVID-19 monov…       0.2         0.1 COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> COVID-19 bival…       0.05        0   COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    activity                     micromorts microlives category period source_url</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest ascent                <span style="text-decoration: underline;">37</span>932    <span style="text-decoration: underline;">26</span>552.  Mountai… per a… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan mountaineering          <span style="text-decoration: underline;">12</span>000     <span style="text-decoration: underline;">8</span>400   Mountai… per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infection (unvacci…      <span style="text-decoration: underline;">10</span>000     <span style="text-decoration: underline;">7</span>000   Disease  per i… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu infection              <span style="text-decoration: underline;">3</span>000     <span style="text-decoration: underline;">2</span>100   Disease  per i… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn ascent                  <span style="text-decoration: underline;">2</span>840     <span style="text-decoration: underline;">1</span>988   Mountai… per a… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US during COVID-1…        500      350   Disease  per m… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one day, age 90)            463      324.  Daily L… per d… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (per jump)             430      301   Sport    per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of life (newborn)         430      301   Daily L… per d… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvaccinated (age …        234      164.  COVID-19 11 we… https://w…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> Caesarean birth (mother)            170      119   Medical  per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Scuba diving (per year, tra…        164      115.  Sport    per y… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> Vaginal birth (mother)              120       84   Medical  per e… https://m…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Living (one day, age 75)            105       73.5 Daily L… per d… https://m…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932    <span style="text-decoration: underline;">26</span>552.  Mountai… per a… event                60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan moun…      <span style="text-decoration: underline;">12</span>000     <span style="text-decoration: underline;">8</span>400   Mountai… per e… event                45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infec…      <span style="text-decoration: underline;">10</span>000     <span style="text-decoration: underline;">7</span>000   COVID-19 per i… event                14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu in…       <span style="text-decoration: underline;">3</span>000     <span style="text-decoration: underline;">2</span>100   Disease  per i… event                14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840     <span style="text-decoration: underline;">1</span>988   Mountai… per a… event                60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…        500      350   COVID-19 per m… month                30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…        463      324.  Daily L… per d… day                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430      301   Sport    per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430      301   Daily L… per d… day                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234      164.  COVID-19 11 we… period               77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> Caesarean birt…        170      119   Medical  per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Scuba diving (…        164      115.  Sport    per y… year                365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> Vaginal birth …        120       84   Medical  per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Living (one da…        105       73.5 Daily L… per d… day                   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
