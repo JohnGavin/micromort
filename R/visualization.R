@@ -172,5 +172,17 @@ utils::globalVariables(c(
   # demographic_factors()
   "comparison", "source",
   # plot_risks()
-  "facet_group", "hover_text"
+  "facet_group", "hover_text",
+  # cancer_risks()
+  "cancer_type", "sex", "family_history_rr", "micromorts_per_year",
+  "micromorts_with_family_history", "rank_by_sex",
+  # vaccination_risks()
+  "vaccine_schedule", "country", "mortality_reduction_pct",
+  "micromorts_avoided_per_year", "microlives_gained_per_day", "annual_life_days_gained",
+  # conditional_risk()
+  "disease_category", "risk_factor", "unhedged_state", "hedged_state",
+  "unhedged_microlives_per_day", "hedged_microlives_per_day", "reduction_pct",
+  "evidence_quality", "microlives_gained", "annual_days_gained", "micromorts_equivalent_per_day",
+  # hedged_portfolio()
+  "n_factors", "total_unhedged_ml", "total_hedged_ml", "total_ml_gained", "max_effect"
 ))
