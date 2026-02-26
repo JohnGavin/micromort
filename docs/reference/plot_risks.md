@@ -5,7 +5,7 @@ Visualizes the risk of different activities in micromorts.
 ## Usage
 
 ``` r
-plot_risks(risks = common_risks())
+plot_risks(risks = common_risks(), facet = TRUE)
 ```
 
 ## Arguments
@@ -13,6 +13,11 @@ plot_risks(risks = common_risks())
 - risks:
 
   Tibble. Dataframe of risks, defaults to common_risks().
+
+- facet:
+
+  Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1
+  stacked). Default is TRUE.
 
 ## Value
 
@@ -22,4 +27,6 @@ A ggplot2 object.
 
 ``` r
 plot_risks()
+
+plot_risks(facet = FALSE)
 ```

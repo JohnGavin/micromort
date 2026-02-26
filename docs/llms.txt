@@ -117,14 +117,25 @@ Original data functions (retained for compatibility)
 
 - [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
   : Acute Risks in Micromorts
-- [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md)
-  : Chronic Risks Dataset
 - [`demographic_factors()`](https://johngavin.github.io/micromort/reference/demographic_factors.md)
   : Demographic Life Expectancy Factors
 - [`covid_vaccine_rr()`](https://johngavin.github.io/micromort/reference/covid_vaccine_rr.md)
   : COVID-19 Vaccine Relative Risks
 - [`risk_data_sources()`](https://johngavin.github.io/micromort/reference/risk_data_sources.md)
   : Data Sources for Micromort and Microlife Research
+
+## Conditional Risk Analysis
+
+Compare hedged vs unhedged risk scenarios
+
+- [`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md)
+  : Cancer Risks by Type, Sex, and Age
+- [`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
+  : Vaccination Risk Reduction
+- [`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md)
+  : Conditional Risk Comparison (Hedged vs Unhedged)
+- [`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+  : Hedged Portfolio Risk Summary
 
 ## Conversion Functions
 
@@ -160,6 +171,8 @@ Risk visualization
 
 - [`plot_risks()`](https://johngavin.github.io/micromort/reference/plot_risks.md)
   : Plot Risk Comparison
+- [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
+  : Interactive Risk Plot
 
 ## Interactive Tools
 

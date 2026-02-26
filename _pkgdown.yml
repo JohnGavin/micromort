@@ -42,10 +42,17 @@ reference:
   desc: "Original data functions (retained for compatibility)"
   contents:
   - common_risks
-  - chronic_risks
   - demographic_factors
   - covid_vaccine_rr
   - risk_data_sources
+
+- title: "Conditional Risk Analysis"
+  desc: "Compare hedged vs unhedged risk scenarios"
+  contents:
+  - cancer_risks
+  - vaccination_risks
+  - conditional_risk
+  - hedged_portfolio
 
 - title: "Conversion Functions"
   desc: "Convert between risk units"
@@ -68,6 +75,7 @@ reference:
   desc: "Risk visualization"
   contents:
   - plot_risks
+  - plot_risks_interactive
 
 - title: "Interactive Tools"
   desc: "API and dashboard"

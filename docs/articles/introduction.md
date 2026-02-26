@@ -46,13 +46,30 @@ DT::datatable(
 Using
 [`plot_risks()`](https://johngavin.github.io/micromort/reference/plot_risks.md),
 we can see the relative magnitude of different activities on a
-logarithmic scale.
+logarithmic scale. The plot is split into COVID-19 and Other risks to
+make comparisons easier:
 
 ``` r
+# Default: faceted by COVID-19 vs Other
 plot_risks()
 ```
 
 ![](introduction_files/figure-html/unnamed-chunk-3-1.png)
+
+#### Interactive Version
+
+For interactive exploration with hover details and category filtering,
+use
+[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md):
+
+``` r
+# plotly version with dropdown filter and hover details
+plot_risks_interactive()
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
+```
 
 ## 2. Microlives (Chronic Risk)
 
@@ -65,11 +82,27 @@ micromort equivalent risk) \* Being 5kg overweight: -1 microlife per day
 \* First 20 mins moderate exercise: +2 microlives
 
 ``` r
-# If smoking 20 cigarettes a day costs 1 microlife each (approx 30 mins)
-daily_loss_minutes <- 20 * 30
-daily_loss_microlives <- as_microlife(daily_loss_minutes)
-print(daily_loss_microlives) # 20 microlives lost per day
+# as_microlife() converts minutes of life expectancy to microlives
+# where 1 microlife = 30 minutes of life expectancy
+
+# Example 1: A heavy smoker (20 cigarettes/day)
+# Each cigarette costs ~15-30 minutes of life expectancy
+# Total daily cost: 20 cigarettes × 30 minutes = 600 minutes
+as_microlife(600)  # = 20 microlives lost per day
 #> [1] 20
+
+# Example 2: Moderate exercise (20 mins) gains ~60 mins life expectancy
+as_microlife(60)   # = 2 microlives gained
+#> [1] 2
+
+# Example 3: Being 5kg overweight costs ~30 mins per day
+as_microlife(30)   # = 1 microlife lost per day
+#> [1] 1
+
+# Compare: How much exercise offsets smoking 2 cigarettes?
+# Smoking 2 cigs = 60 mins lost = 2 microlives
+# Exercise 20 mins = 60 mins gained = 2 microlives
+# They roughly cancel out!
 ```
 
 ## 3. Relationship Between Micromorts and Microlives
@@ -247,10 +280,143 @@ cat("Population burden (QALD/million):", format(total_qald_lost, big.mark = ",")
   [ghdx.healthdata.org](https://ghdx.healthdata.org/)
 - Spiegelhalter D (2012). BMJ 2012;345:e8223. <doi:10.1136/bmj.e8223>
 
-## 7. Conclusion
+## 7. Conditional Risks: Cancer, Vaccination, and Risk Hedging
+
+### Cancer Risks by Type and Sex
+
+The
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md)
+function provides mortality data stratified by cancer type, sex, and age
+group:
+
+``` r
+# Top 3 cancers by mortality for each sex
+cancer_risks() |>
+  dplyr::filter(age_group == "All ages", sex != "Both") |>
+  dplyr::group_by(sex) |>
+  dplyr::slice_min(rank_by_sex, n = 3) |>
+  dplyr::select(cancer_type, sex, deaths_per_100k, micromorts_per_year, family_history_rr) |>
+  DT::datatable(
+    caption = "Top 3 cancers by mortality rate (click to sort)",
+    options = list(pageLength = 6, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+**Family history impact:** The `family_history_rr` column shows relative
+risk increase with a first-degree relative’s diagnosis. For example,
+prostate cancer risk increases 2.5× with family history.
+
+``` r
+# Compare risk with vs without family history (male, age 50-64)
+cancer_risks() |>
+  dplyr::filter(sex == "Male", age_group == "50-64") |>
+  dplyr::select(cancer_type, micromorts_per_year, micromorts_with_family_history) |>
+  dplyr::mutate(
+    increase_mm = micromorts_with_family_history - micromorts_per_year
+  ) |>
+  DT::datatable(
+    caption = "Cancer risk with family history (Male, 50-64 years)",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+### Vaccination Risk Reduction
+
+The
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
+function quantifies micromorts avoided through vaccination:
+
+``` r
+# Childhood vaccination impact by country
+vaccination_risks() |>
+  dplyr::filter(age_group == "0-5", grepl("Complete", vaccine_schedule)) |>
+  dplyr::select(country, mortality_reduction_pct, micromorts_avoided_per_year, annual_life_days_gained) |>
+  DT::datatable(
+    caption = "Complete childhood vaccination schedule impact",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+``` r
+# Adult vaccination benefits (age 65+)
+vaccination_risks() |>
+  dplyr::filter(age_group == "65+", country == "US") |>
+  dplyr::select(vaccine_schedule, micromorts_avoided_per_year, microlives_gained_per_day) |>
+  DT::datatable(
+    caption = "Adult vaccination benefits (US, age 65+)",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+### Hedged vs Unhedged: Optimal Lifestyle Comparison
+
+The
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md)
+function compares risk factors between optimal (“hedged”) and suboptimal
+(“unhedged”) states:
+
+``` r
+# Cardiovascular risk hedging
+conditional_risk("cardiovascular") |>
+  dplyr::select(risk_factor, unhedged_state, hedged_state, microlives_gained, annual_days_gained) |>
+  DT::datatable(
+    caption = "Cardiovascular hedging: microlives gained by optimal choices",
+    options = list(pageLength = 10, scrollX = TRUE),
+    rownames = FALSE
+  )
+```
+
+### Total Portfolio Effect
+
+The
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+function calculates total life expectancy gain from adopting all optimal
+lifestyle choices:
+
+``` r
+portfolio <- hedged_portfolio()
+
+# Summary by disease category
+portfolio$by_category |>
+  DT::datatable(
+    caption = "Microlives gained by disease category",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+``` r
+# Overall portfolio impact
+portfolio$portfolio_summary |>
+  DT::datatable(
+    caption = "Total hedged portfolio effect",
+    options = list(pageLength = 6, dom = "t"),
+    rownames = FALSE
+  )
+```
+
+**Interpretation:** A fully “hedged” individual (non-smoker, regular
+exercise, healthy diet, vaccinated, etc.) can expect to gain
+approximately 1.3444^{4} days of life expectancy over 40 years compared
+to an “unhedged” baseline.
+
+## 8. Conclusion
 
 The `micromort` package helps translate abstract probabilities into
 concrete units for better decision-making. By comparing acute risks
 (micromorts), chronic risks (microlives), and quality-of-life metrics
 (QALYs, DALYs), individuals and policymakers can make more informed
 choices about risk trade-offs.
+
+The new conditional risk functions enable:
+
+- **Cancer risk assessment:** Compare baseline risk to family history
+  scenarios
+- **Vaccination value:** Quantify micromorts avoided through vaccination
+  schedules
+- **Lifestyle optimization:** Calculate total life expectancy gain from
+  adopting optimal “hedged” behaviors

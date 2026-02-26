@@ -42,33 +42,30 @@ event causing death.
 
 ### Comparative Risk Table
 
-The following table demonstrates how disparate activities can be
-compared using the micromort.
+The following table uses
+[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md),
+the package’s curated dataset of 62 acute risks with full provenance
+tracking:
 
 ``` r
-risks <- tibble::tribble(
-  ~Activity, ~Micromorts, ~Category, ~Context,
-  "Motorcycling 60 miles", 10, "Travel", "High-risk transport",
-  "General Anesthesia", 10, "Medical", "Per emergency operation",
-  "Skydiving", 7, "Sport", "Per jump (USPA stats)",
-  "Running a Marathon", 7, "Sport", "Cardiovascular stress per race",
-  "Scuba Diving", 5, "Sport", "Per dive (PADI certified)",
-  "Living (age 30)", 1, "Baseline", "Daily background risk for a young adult",
-  "Driving 230 miles", 1, "Travel", "Routine long-distance drive",
-  "Walking 20 miles", 1, "Travel", "Pedestrian accident risk"
-)
+# Use the package's curated dataset
+risks <- common_risks() |>
+  dplyr::filter(category %in% c("Travel", "Medical", "Sport", "Daily Life")) |>
+  dplyr::select(activity, micromorts, microlives, category, period)
 
 DT::datatable(
   risks,
-  caption = "Risk comparison in Micromorts (click column headers to sort)",
+  caption = "Acute risks from common_risks() dataset (click column headers to sort)",
   filter = "top",
-  options = list(pageLength = 10, dom = "Bfrtip"),
+  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
   rownames = FALSE
 )
 ```
 
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same
 > acute death risk (~10 micromorts) as undergoing general anesthesia.
+> Using a standardized dataset enables apples-to-apples comparisons
+> across activities.
 
 ## 3. Microlives: Measuring “Speed of Aging” (Attrition)
 
@@ -86,29 +83,29 @@ expectancy.
 
 ### Daily Habits Table
 
+Using
+[`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md),
+the package’s curated dataset of 22 chronic lifestyle factors:
+
 ``` r
-chronic_risks_table <- tibble::tribble(
-  ~Habit, ~Impact_Microlives, ~Time_Effect,
-  "Smoking 2 cigarettes", -1, "Lose 30 minutes life expectancy",
-  "Being 5kg overweight", -1, "Lose 30 minutes (per day of being overweight)",
-  "Second pint of beer", -1, "Lose 30 minutes",
-  "First 20 mins exercise", +1, "Gain 30 minutes life expectancy",
-  "Eating portion of fruit", +1, "Gain 30 minutes"
-)
+# Use the package's curated chronic risks dataset
+chronic_table <- chronic_risks() |>
+  dplyr::select(factor, microlives_per_day, category, direction, annual_effect_days)
 
 DT::datatable(
-  chronic_risks_table,
-  caption = "Impact of daily habits in Microlives (click column headers to sort)",
+  chronic_table,
+  caption = "Chronic lifestyle factors from chronic_risks() dataset (click to sort)",
   filter = "top",
-  options = list(pageLength = 10, dom = "Bfrtip"),
+  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
   rownames = FALSE
 )
 ```
 
 > **Clarification:** A value of **-1 Microlife** is a **loss**
 > (attrition). It effectively means you are aging 30 minutes faster than
-> normal. Over a year, a -1 daily deficit sums to ~180 hours (7.5 days)
-> of lost life.
+> normal. The `annual_effect_days` column shows the cumulative impact
+> over a year—a -1 daily deficit sums to ~7.5 days of lost life
+> annually.
 
 ## 4. Visualization: The Risk Ladder
 
@@ -124,13 +121,79 @@ terrorism) in context with daily risks.
   baseline risk of driving.
 
 ``` r
-# Using the package's built-in plotting function which implements this ladder concept
+# Risk ladder visualization - faceted by COVID-19 vs Other risks
+# This helps compare like-with-like while maintaining the logarithmic scale
 plot_risks()
 ```
 
 ![](palatable_units_files/figure-html/unnamed-chunk-4-1.png)
 
-## 5. Recommended Tools
+For interactive exploration, use
+[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
+which provides:
+
+- Hover details showing micromorts, microlives, and period
+- Click legend to show/hide categories
+- Dropdown filter for COVID-19 vs Other risks
+
+``` r
+plot_risks_interactive()
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
+```
+
+## 5. Media Perception vs. Actual Risk
+
+A key motivation for palatable units is correcting the **perception
+gap** between what we fear and what actually kills us.
+
+### The Mismatch
+
+According to [Our World in
+Data](https://ourworldindata.org/does-the-news-reflect-what-we-die-from),
+media coverage dramatically misrepresents actual causes of death:
+
+| Cause of Death | Actual Deaths (%) | Media Coverage (%) | Ratio   |
+|----------------|-------------------|--------------------|---------|
+| Heart disease  | 29%               | ~2%                | 0.07x   |
+| Cancer         | 27%               | ~5%                | 0.19x   |
+| Homicide       | 0.9%              | ~39%               | 43x     |
+| Terrorism      | \<0.01%           | ~18%               | \>1800x |
+
+**Key insight:** Heart disease and cancer cause 56% of deaths but
+receive only 7% of media coverage. Meanwhile, terrorism (causing 16
+deaths in 2023) received 18,000× more coverage than its proportional
+death rate.
+
+### Why This Matters
+
+Micromorts and microlives provide a standardized currency to cut through
+emotional reactions:
+
+- **Terrorism** (flying in 2001): ~0.01 micromorts per flight
+- **Daily baseline** (age 40): ~2 micromorts per day
+- **Driving 230 miles**: 1 micromort
+
+The fear of flying after 9/11 led many Americans to drive instead,
+resulting in an estimated 1,600 additional road deaths—far exceeding the
+attack’s direct toll.
+
+### Applying Palatable Units
+
+When news reports a “50% increase in cancer risk,” use this framework:
+
+1.  **Find the baseline**: What’s the absolute risk? (e.g., 1 in 10,000)
+2.  **Convert to micromorts**: 1 in 10,000 = 100 micromorts
+3.  **Apply the increase**: 50% more = 150 micromorts
+4.  **Compare to familiar risks**: 150 micromorts ≈ driving 150 × 230 =
+    34,500 miles
+
+This contextualization reveals whether a “scary” headline represents a
+meaningful risk change.
+
+## 6. Recommended Tools
 
 While David Spiegelhalter focuses on concepts rather than specific
 software, the following R packages align with his mission of clear risk
@@ -146,7 +209,33 @@ communication:
 
 ## References
 
+### Primary Sources
+
 1.  Spiegelhalter, D., & Blastland, M. (2013). *The Norm Chronicles:
     Stories and numbers about danger*. Profile Books.
 2.  Spiegelhalter, D. (2019). *The Art of Statistics: Learning from
     Data*. Pelican.
+
+### Media Perception and Risk Communication
+
+3.  [Does the news reflect what we die
+    from?](https://ourworldindata.org/does-the-news-reflect-what-we-die-from) -
+    Our World in Data analysis of media coverage vs actual causes of
+    death.
+4.  [Causes of Death](https://ourworldindata.org/causes-of-death) - Our
+    World in Data global mortality statistics.
+5.  [How the news changes the way we think and
+    behave](https://www.bbc.com/future/article/20200512-how-the-news-changes-the-way-we-think-and-behave) -
+    BBC Future on media influence.
+6.  [Media Bias in Portrayals of Mortality
+    Risks](https://www.researchgate.net/publication/386057693_Media_Bias_in_Portrayals_of_Mortality_Risks_Comparison_of_Newspaper_Coverage_to_Death_Rates) -
+    Academic study comparing newspaper coverage to death rates.
+7.  [Terrorism and You: The Real
+    Odds](https://www.aei.org/articles/terrorism-and-you-the-real-odds/) -
+    American Enterprise Institute analysis of terrorism risk perception.
+8.  [Risk communication in the
+    news](https://researchbriefings.files.parliament.uk/documents/POST-PN-0564/POST-PN-0564.pdf) -
+    UK Parliamentary Office of Science and Technology briefing.
+9.  [Media Coverage and Mortality Risk
+    Assessment](https://pmc.ncbi.nlm.nih.gov/articles/PMC10102679/) -
+    PMC research on media effects on risk perception.
