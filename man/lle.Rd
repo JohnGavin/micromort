@@ -20,3 +20,13 @@ Estimates the average time lost from a lifespan due to a specific risk.
 \examples{
 lle(1/1000000, 40) # Loss from 1 micromort
 }
+\seealso{
+\code{\link[=as_micromort]{as_micromort()}}, \code{\link[=as_microlife]{as_microlife()}}, \code{\link[=value_of_micromort]{value_of_micromort()}}
+
+Other conversion: 
+\code{\link{as_microlife}()},
+\code{\link{as_micromort}()},
+\code{\link{as_probability}()},
+\code{\link{value_of_micromort}()}
+}
+\concept{conversion}

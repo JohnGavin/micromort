@@ -1,8 +1,10 @@
 # Risk Sources Registry
 
 A registry of data sources used to compile the risk datasets. Each
-source has a unique identifier that links to records in acute_risks and
-chronic_risks.
+source has a unique identifier that links to records in
+[acute_risks](https://johngavin.github.io/micromort/reference/acute_risks.md)
+and
+[chronic_risks](https://johngavin.github.io/micromort/reference/chronic_risks.md).
 
 ## Format
 

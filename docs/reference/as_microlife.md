@@ -34,6 +34,18 @@ per day.
 
 - Positive microlives = life expectancy gain (beneficial)
 
+## See also
+
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`lle()`](https://johngavin.github.io/micromort/reference/lle.md),
+[`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md)
+
+Other conversion:
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`as_probability()`](https://johngavin.github.io/micromort/reference/as_probability.md),
+[`lle()`](https://johngavin.github.io/micromort/reference/lle.md),
+[`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
+
 ## Examples
 
 ``` r

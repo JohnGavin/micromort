@@ -19,6 +19,17 @@ value_of_micromort(vsl = 1e+07)
 
 Numeric value of one micromort.
 
+## See also
+
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`lle()`](https://johngavin.github.io/micromort/reference/lle.md)
+
+Other conversion:
+[`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md),
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`as_probability()`](https://johngavin.github.io/micromort/reference/as_probability.md),
+[`lle()`](https://johngavin.github.io/micromort/reference/lle.md)
+
 ## Examples
 
 ``` r

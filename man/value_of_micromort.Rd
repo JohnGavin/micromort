@@ -18,3 +18,13 @@ Calculates the monetary value of one micromort based on the Value of a Statistic
 \examples{
 value_of_micromort(10000000) # $10
 }
+\seealso{
+\code{\link[=as_micromort]{as_micromort()}}, \code{\link[=lle]{lle()}}
+
+Other conversion: 
+\code{\link{as_microlife}()},
+\code{\link{as_micromort}()},
+\code{\link{as_probability}()},
+\code{\link{lle}()}
+}
+\concept{conversion}

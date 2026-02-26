@@ -7,7 +7,7 @@
 plot_risks_interactive(risks = common_risks())
 }
 \arguments{
-\item{risks}{Tibble. Dataframe of risks, defaults to common_risks().}
+\item{risks}{Tibble. Dataframe of risks, defaults to \code{\link[=common_risks]{common_risks()}}.}
 }
 \value{
 A plotly object with interactive filtering.
@@ -20,3 +20,10 @@ if (requireNamespace("plotly", quietly = TRUE)) {
   plot_risks_interactive()
 }
 }
+\seealso{
+\code{\link[=plot_risks]{plot_risks()}}, \code{\link[=common_risks]{common_risks()}}
+
+Other visualization: 
+\code{\link{plot_risks}()}
+}
+\concept{visualization}

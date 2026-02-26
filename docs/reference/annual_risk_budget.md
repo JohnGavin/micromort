@@ -13,7 +13,8 @@ annual_risk_budget(activities, age = NULL)
 - activities:
 
   Named numeric vector of activity frequencies per year. Names should
-  match activity names in the acute risks dataset.
+  match activity names in
+  [`load_acute_risks()`](https://johngavin.github.io/micromort/reference/load_acute_risks.md).
 
 - age:
 
@@ -42,6 +43,16 @@ A tibble with risk budget breakdown including:
 - pct_of_total:
 
   Percentage of total risk budget
+
+## See also
+
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
+[`load_acute_risks()`](https://johngavin.github.io/micromort/reference/load_acute_risks.md)
+
+Other analysis:
+[`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md),
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
+[`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md)
 
 ## Examples
 

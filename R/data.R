@@ -93,7 +93,7 @@ NULL
 #'
 #' A registry of data sources used to compile the risk datasets.
 #' Each source has a unique identifier that links to records in
-#' acute_risks and chronic_risks.
+#' [acute_risks] and [chronic_risks].
 #'
 #' @format A tibble with 14 rows and 7 columns:
 #' \describe{

@@ -8,7 +8,7 @@ annual_risk_budget(activities, age = NULL)
 }
 \arguments{
 \item{activities}{Named numeric vector of activity frequencies per year.
-Names should match activity names in the acute risks dataset.}
+Names should match activity names in \code{\link[=load_acute_risks]{load_acute_risks()}}.}
 
 \item{age}{Optional age for baseline risk calculation}
 }
@@ -33,3 +33,12 @@ annual_risk_budget(c(
   "Running a marathon" = 2
 ), age = 35)
 }
+\seealso{
+\code{\link[=daily_hazard_rate]{daily_hazard_rate()}}, \code{\link[=load_acute_risks]{load_acute_risks()}}
+
+Other analysis: 
+\code{\link{compare_interventions}()},
+\code{\link{daily_hazard_rate}()},
+\code{\link{lifestyle_tradeoff}()}
+}
+\concept{analysis}

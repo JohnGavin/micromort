@@ -29,3 +29,12 @@ SEER Cancer Statistics Factsheets. National Cancer Institute.
 
 Siegel RL, et al. Cancer statistics, 2024. CA Cancer J Clin. 2024;74:12-49.
 }
+\seealso{
+\code{\link[=vaccination_risks]{vaccination_risks()}}, \code{\link[=conditional_risk]{conditional_risk()}}, \code{\link[=hedged_portfolio]{hedged_portfolio()}}
+
+Other conditional-risk: 
+\code{\link{conditional_risk}()},
+\code{\link{hedged_portfolio}()},
+\code{\link{vaccination_risks}()}
+}
+\concept{conditional-risk}

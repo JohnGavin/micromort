@@ -39,3 +39,13 @@ as_microlife(60)        # +2 microlives (life gained)
 # Being 5kg overweight: costs ~30 mins/day
 as_microlife(-30)       # -1 microlife (life lost)
 }
+\seealso{
+\code{\link[=as_micromort]{as_micromort()}}, \code{\link[=lle]{lle()}}, \code{\link[=chronic_risks]{chronic_risks()}}
+
+Other conversion: 
+\code{\link{as_micromort}()},
+\code{\link{as_probability}()},
+\code{\link{lle}()},
+\code{\link{value_of_micromort}()}
+}
+\concept{conversion}

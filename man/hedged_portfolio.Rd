@@ -23,3 +23,12 @@ across multiple disease categories.
 hedged_portfolio()
 hedged_portfolio(include_diseases = c("cardiovascular", "cancer"))
 }
+\seealso{
+\code{\link[=cancer_risks]{cancer_risks()}}, \code{\link[=vaccination_risks]{vaccination_risks()}}, \code{\link[=conditional_risk]{conditional_risk()}}
+
+Other conditional-risk: 
+\code{\link{cancer_risks}()},
+\code{\link{conditional_risk}()},
+\code{\link{vaccination_risks}()}
+}
+\concept{conditional-risk}

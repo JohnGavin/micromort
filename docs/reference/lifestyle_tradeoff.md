@@ -12,15 +12,27 @@ lifestyle_tradeoff(bad_habit, good_habit)
 
 - bad_habit:
 
-  Factor name of the bad habit (from chronic_risks)
+  Factor name of the bad habit (from
+  [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md))
 
 - good_habit:
 
-  Factor name of the compensating behavior
+  Factor name of the compensating behavior (from
+  [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md))
 
 ## Value
 
 A tibble showing the tradeoff ratio
+
+## See also
+
+[`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md),
+[`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md)
+
+Other analysis:
+[`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md),
+[`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md),
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md)
 
 ## Examples
 

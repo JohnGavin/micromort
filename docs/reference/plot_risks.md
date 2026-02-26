@@ -12,7 +12,8 @@ plot_risks(risks = common_risks(), facet = TRUE)
 
 - risks:
 
-  Tibble. Dataframe of risks, defaults to common_risks().
+  Tibble. Dataframe of risks, defaults to
+  [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md).
 
 - facet:
 
@@ -22,6 +23,14 @@ plot_risks(risks = common_risks(), facet = TRUE)
 ## Value
 
 A ggplot2 object.
+
+## See also
+
+[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md),
+[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
+
+Other visualization:
+[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
 
 ## Examples
 

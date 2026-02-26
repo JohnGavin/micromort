@@ -18,3 +18,13 @@ Convert Micromorts to Probability
 \examples{
 as_probability(1) # 1e-6
 }
+\seealso{
+\code{\link[=as_micromort]{as_micromort()}}, \code{\link[=as_microlife]{as_microlife()}}
+
+Other conversion: 
+\code{\link{as_microlife}()},
+\code{\link{as_micromort}()},
+\code{\link{lle}()},
+\code{\link{value_of_micromort}()}
+}
+\concept{conversion}

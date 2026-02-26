@@ -2,11 +2,13 @@
 #'
 #' Visualizes the risk of different activities in micromorts.
 #'
-#' @param risks Tibble. Dataframe of risks, defaults to common_risks().
+#' @param risks Tibble. Dataframe of risks, defaults to [common_risks()].
 #' @param facet Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1 stacked).
 #'   Default is TRUE.
 #' @return A ggplot2 object.
 #' @importFrom stats reorder
+#' @family visualization
+#' @seealso [plot_risks_interactive()], [common_risks()]
 #' @export
 #' @examples
 #' plot_risks()
@@ -68,8 +70,10 @@ plot_risks <- function(risks = common_risks(), facet = TRUE) {
 #'
 #' Creates an interactive plotly visualization of risks with category filtering.
 #'
-#' @param risks Tibble. Dataframe of risks, defaults to common_risks().
+#' @param risks Tibble. Dataframe of risks, defaults to [common_risks()].
 #' @return A plotly object with interactive filtering.
+#' @family visualization
+#' @seealso [plot_risks()], [common_risks()]
 #' @export
 #' @examples
 #' if (requireNamespace("plotly", quietly = TRUE)) {
