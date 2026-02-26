@@ -54,93 +54,589 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="micromort-estimate-and-visualize-risks">micromort: Estimate and Visualize Risks<a class="anchor" aria-label="anchor" href="#micromort-estimate-and-visualize-risks"></a>
+<div class="page-header"><h1 id="micromort-curated-micromort-and-microlife-risk-datasets">micromort: Curated Micromort and Microlife Risk Datasets<a class="anchor" aria-label="anchor" href="#micromort-curated-micromort-and-microlife-risk-datasets"></a>
 </h1></div>
 <!-- README.md is generated from README.qmd. Please edit that file -->
 </div>
 <div class="section level1">
 <h1 id="micromort">micromort<a class="anchor" aria-label="anchor" href="#micromort"></a>
 </h1>
-<p>The goal of <code>micromort</code> is to provide tools to quantify, compare, and visualize risks using standardized units such as <strong>micromorts</strong> (acute risk of death) and <strong>microlives</strong> (chronic impact on life expectancy).</p>
+<p>A <strong>data package</strong> providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature. ## Features</p>
+<ul>
+<li>
+<strong>62 acute risks</strong> measured in micromorts (one-in-a-million death probability per event)</li>
+<li>
+<strong>35+ chronic factors</strong> measured in microlives (30-minute life expectancy change per day)</li>
+<li>
+<strong>14 authoritative sources</strong> with full provenance tracking</li>
+<li>
+<strong>Parquet datasets</strong> for cross-language compatibility (R, Python, Arrow)</li>
+<li>
+<strong>Plumber REST API</strong> for programmatic access</li>
+<li>
+<strong>Interactive dashboard</strong> for data exploration</li>
+<li>
+<strong>targets pipeline</strong> for reproducible data updates</li>
+</ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of micromort from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="section level3">
+<h3 id="r-universe-recommended">R-Universe (Recommended)<a class="anchor" aria-label="anchor" href="#r-universe-recommended"></a>
+</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<code class="sourceCode R"><span><span class="co"># Install from r-universe (pre-built binaries, fast)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"micromort"</span>, repos <span class="op">=</span> <span class="st">"https://johngavin.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="github">GitHub<a class="anchor" aria-label="anchor" href="#github"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install from GitHub (source)</span></span>
+<span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JohnGavin/micromort"</span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="nix-users">Nix Users<a class="anchor" aria-label="anchor" href="#nix-users"></a>
 </h3>
-<p>This project provides a reproducible Nix environment.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Enter project shell</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="ex">./default.sh</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Start R</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="ex">R</span></span></code></pre></div>
+<p>This project provides a reproducible Nix environment with pre-built binaries from the <code>johngavin</code> cachix cache:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Enter project shell (uses cachix cache for fast builds)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">./default.sh</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Start R</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="ex">R</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="using-with-rix">Using with rix<a class="anchor" aria-label="anchor" href="#using-with-rix"></a>
+</h4>
+<p>To include micromort in your own Nix-based R project:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/rix/" class="external-link">rix</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/rix/reference/rix.html" class="external-link">rix</a></span><span class="op">(</span></span>
+<span>  r_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span><span class="op">)</span>,</span>
+<span>  git_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>      package_name <span class="op">=</span> <span class="st">"micromort"</span>,</span>
+<span>      repo_url <span class="op">=</span> <span class="st">"https://github.com/JohnGavin/micromort"</span>,</span>
+<span>      commit <span class="op">=</span> <span class="st">"main"</span>  <span class="co"># Or specific SHA for reproducibility</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  project_path <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="concepts">Concepts<a class="anchor" aria-label="anchor" href="#concepts"></a>
 </h2>
+<div class="section level3">
+<h3 id="micromort-acute-risk">Micromort (Acute Risk)<a class="anchor" aria-label="anchor" href="#micromort-acute-risk"></a>
+</h3>
+<p>A <strong>micromort</strong> is a unit of mortality risk equal to a <strong>one-in-a-million probability of death per specific event</strong>.</p>
 <ul>
 <li>
-<strong>Micromort:</strong> A one-in-a-million chance of death. Used for acute risks (e.g., skydiving).</li>
+<strong>Unit:</strong> 1 micromort = 1/1,000,000 = 0.0001% death probability</li>
 <li>
-<strong>Microlife:</strong> A 30-minute change in life expectancy. Used for chronic risks (e.g., smoking).</li>
+<strong>Scope:</strong> Per discrete event (e.g., one skydive, one surgery, one flight)</li>
 <li>
-<strong>VSL (Value of Statistical Life):</strong> Economic value used to justify safety spending.</li>
+<strong>Sign:</strong> Always non-negative (it’s a probability)</li>
+<li>
+<strong>Example:</strong> Skydiving has ~8 micromorts per jump (8-in-a-million death chance per jump)</li>
 </ul>
 </div>
+<div class="section level3">
+<h3 id="microlife-chronic-risk">Microlife (Chronic Risk)<a class="anchor" aria-label="anchor" href="#microlife-chronic-risk"></a>
+</h3>
+<p>A <strong>microlife</strong> is a unit of life expectancy change equal to <strong>30 minutes of expected lifespan, measured per day</strong> of exposure.</p>
+<ul>
+<li>
+<strong>Unit:</strong> 1 microlife = 30 minutes of life expectancy</li>
+<li>
+<strong>Scope:</strong> Per day of maintaining a habit or exposure</li>
+<li>
+<strong>Sign:</strong> Positive (life gained) or negative (life lost)</li>
+<li>
+<strong>Example:</strong> Smoking 2 cigarettes daily costs -1 microlife/day (losing 30 mins of life expectancy each day you smoke)</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="conversion">Conversion<a class="anchor" aria-label="anchor" href="#conversion"></a>
+</h3>
+<p><strong>1 micromort ≈ 0.7 microlives</strong> (assuming 40 years remaining life expectancy)</p>
+<p>This allows comparing acute events to chronic habits on a common scale.</p>
+</div>
+<div class="section level3">
+<h3 id="morbidity-metrics">Morbidity Metrics<a class="anchor" aria-label="anchor" href="#morbidity-metrics"></a>
+</h3>
+<p>Micromorts and microlives focus on mortality. For quality-of-life impacts:</p>
+<ul>
+<li>
+<strong>QALY (Quality-Adjusted Life Year):</strong> 1 year of perfect health. Used in healthcare economics.</li>
+<li>
+<strong>DALY (Disability-Adjusted Life Years):</strong> Disease burden = YLL + YLD.</li>
+<li>
+<strong>QALD (Quality-Adjusted Life Days):</strong> 1 day of perfect health. For common illnesses.</li>
+</ul>
+<p>See the <a href="https://johngavin.github.io/micromort/articles/introduction.html">Introduction vignette</a> for detailed examples.</p>
+</div>
+</div>
 <div class="section level2">
-<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <div class="section level3">
-<h3 id="acute-risks-micromorts">Acute Risks (Micromorts)<a class="anchor" aria-label="anchor" href="#acute-risks-micromorts"></a>
+<h3 id="load-the-datasets">Load the Datasets<a class="anchor" aria-label="anchor" href="#load-the-datasets"></a>
 </h3>
-<p>How risky is skydiving compared to driving?</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># library(micromort)</span></span>
-<span></span>
-<span><span class="co"># Convert probability to micromorts</span></span>
-<span><span class="fu"><a href="reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">1000000</span><span class="op">)</span> <span class="co"># 1 micromort</span></span>
-<span><span class="co">#&gt; [1] 1</span></span>
-<span></span>
-<span><span class="co"># Common risks</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 6 × 3</span></span>
-<span><span class="co">#&gt;   activity                risk_micromorts category</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;                             &lt;dbl&gt; &lt;chr&gt;   </span></span>
-<span><span class="co">#&gt; 1 Skydiving (one jump)                7   Sport   </span></span>
-<span><span class="co">#&gt; 2 Running a marathon                  7   Sport   </span></span>
-<span><span class="co">#&gt; 3 Scuba diving (per dive)             5   Sport   </span></span>
-<span><span class="co">#&gt; 4 Skiing (one day)                    0.5 Sport   </span></span>
-<span><span class="co">#&gt; 5 Motorcycling (60 miles)            10   Travel  </span></span>
-<span><span class="co">#&gt; 6 Walking (20 miles)                  1   Travel</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="visualizing-risks">Visualizing Risks<a class="anchor" aria-label="anchor" href="#visualizing-risks"></a>
-</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-plot-1.png" style="width:100.0%"></p>
-</div>
-<div class="section level3">
-<h3 id="chronic-risks-microlives">Chronic Risks (Microlives)<a class="anchor" aria-label="anchor" href="#chronic-risks-microlives"></a>
-</h3>
-<p>How much life expectancy do you lose by smoking?</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1 cigarette = approx 1 microlife lost (30 mins)</span></span>
-<span><span class="co"># Pack a day (20 cigs) = 20 microlives = 10 hours lost per day</span></span>
-<span><span class="va">daily_loss</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/as_microlife.html">as_microlife</a></span><span class="op">(</span><span class="fl">20</span> <span class="op">*</span> <span class="fl">30</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">daily_loss</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 20</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://johngavin.github.io/micromort/">micromort</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load acute risks (micromorts per event)</span></span>
+<span><span class="va">acute</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_acute_risks.html">load_acute_risks</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">acute</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 62</span></span>
+<span></span>
+<span><span class="co"># Load chronic risks (microlives per day)</span></span>
+<span><span class="va">chronic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_chronic_risks.html">load_chronic_risks</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">chronic</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 22</span></span>
+<span></span>
+<span><span class="co"># Load source registry</span></span>
+<span><span class="va">sources</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_sources.html">load_sources</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sources</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 14</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="acute-risks-micromorts-per-event">Acute Risks (Micromorts per Event)<a class="anchor" aria-label="anchor" href="#acute-risks-micromorts-per-event"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Convert a probability to micromorts</span></span>
+<span><span class="co"># Example: 1 in 10,000 chance = 100 micromorts</span></span>
+<span><span class="fu"><a href="reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 100</span></span>
+<span></span>
+<span><span class="co"># Top 10 riskiest activities (micromorts per event/period)</span></span>
+<span><span class="va">acute</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">activity</span>, <span class="va">micromorts</span>, <span class="va">category</span>, <span class="va">period</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 4</span></span>
+<span><span class="co">#&gt;    activity                                micromorts category       period     </span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                                        &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;      </span></span>
+<span><span class="co">#&gt;  1 Mt. Everest ascent                           37932 Mountaineering per ascent </span></span>
+<span><span class="co">#&gt;  2 Himalayan mountaineering                     12000 Mountaineering per expedi…</span></span>
+<span><span class="co">#&gt;  3 COVID-19 infection (unvaccinated)            10000 Disease        per infect…</span></span>
+<span><span class="co">#&gt;  4 Spanish flu infection                         3000 Disease        per infect…</span></span>
+<span><span class="co">#&gt;  5 Matterhorn ascent                             2840 Mountaineering per ascent </span></span>
+<span><span class="co">#&gt;  6 Living in US during COVID-19 (Jul 2020)        500 Disease        per month  </span></span>
+<span><span class="co">#&gt;  7 Living (one day, age 90)                       463 Daily Life     per day    </span></span>
+<span><span class="co">#&gt;  8 Base jumping (per jump)                        430 Sport          per event  </span></span>
+<span><span class="co">#&gt;  9 First day of life (newborn)                    430 Daily Life     per day    </span></span>
+<span><span class="co">#&gt; 10 COVID-19 unvaccinated (age 80+)                234 COVID-19       11 weeks (…</span></span></code></pre></div>
+<p><strong>Caption:</strong> Micromorts represent probability of death per event. Higher values = higher risk per occurrence.</p>
+</div>
+<div class="section level3">
+<h3 id="chronic-risks-microlives-per-day">Chronic Risks (Microlives per Day)<a class="anchor" aria-label="anchor" href="#chronic-risks-microlives-per-day"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Factors that reduce life expectancy (microlives lost per day)</span></span>
+<span><span class="va">chronic</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">factor</span>, <span class="va">microlives_per_day</span>, <span class="va">category</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 3</span></span>
+<span><span class="co">#&gt;    factor                   microlives_per_day category    </span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;                                 &lt;dbl&gt; &lt;chr&gt;       </span></span>
+<span><span class="co">#&gt;  1 Smoking 20 cigarettes                   -10 Smoking     </span></span>
+<span><span class="co">#&gt;  2 Smoking 10 cigarettes                    -5 Smoking     </span></span>
+<span><span class="co">#&gt;  3 Being male (vs female)                   -4 Demographics</span></span>
+<span><span class="co">#&gt;  4 Being 15 kg overweight                   -3 Weight      </span></span>
+<span><span class="co">#&gt;  5 Being 10 kg overweight                   -2 Weight      </span></span>
+<span><span class="co">#&gt;  6 4th-5th alcoholic drink                  -2 Alcohol     </span></span>
+<span><span class="co">#&gt;  7 Smoking 2 cigarettes                     -1 Smoking     </span></span>
+<span><span class="co">#&gt;  8 Being 5 kg overweight                    -1 Weight      </span></span>
+<span><span class="co">#&gt;  9 2nd-3rd alcoholic drink                  -1 Alcohol     </span></span>
+<span><span class="co">#&gt; 10 Red meat (1 portion/day)                 -1 Diet</span></span></code></pre></div>
+<p><strong>Caption:</strong> Microlives per day. Negative values = life expectancy loss; positive = gain. Effects accumulate daily.</p>
+</div>
+<div class="section level3">
+<h3 id="visualize-risks">Visualize Risks<a class="anchor" aria-label="anchor" href="#visualize-risks"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Filter to show only activities with micromorts &gt;= 1 for clarity on log scale</span></span>
+<span><span class="fu"><a href="reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plot-1.png" style="width:100.0%" alt="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity."></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="analysis-functions">Analysis Functions<a class="anchor" aria-label="anchor" href="#analysis-functions"></a>
+</h2>
+<div class="section level3">
+<h3 id="compare-lifestyle-interventions">Compare Lifestyle Interventions<a class="anchor" aria-label="anchor" href="#compare-lifestyle-interventions"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Compare quitting smoking vs losing weight (microlives gained per day)</span></span>
+<span><span class="fu"><a href="reference/compare_interventions.html">compare_interventions</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Quit 10 cigarettes/day"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Smoking 10 cigarettes"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>  <span class="st">"Lose 5kg"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Being 5 kg overweight"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
+<span><span class="co">#&gt;   intervention      factor original_ml_per_day change net_ml_per_day annual_days</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;                &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Quit 10 cigarett… Smoki…                  -5     -1             -5       -38  </span></span>
+<span><span class="co">#&gt; 2 Lose 5kg          Being…                  -1     -1             -1        -7.6</span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: lifetime_years &lt;dbl&gt;</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="calculate-baseline-risk-by-age">Calculate Baseline Risk by Age<a class="anchor" aria-label="anchor" href="#calculate-baseline-risk-by-age"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Daily baseline mortality risk at age 35 (micromorts per day just from being alive)</span></span>
+<span><span class="fu"><a href="reference/daily_hazard_rate.html">daily_hazard_rate</a></span><span class="op">(</span><span class="fl">35</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
+<span><span class="co">#&gt;     age sex   daily_prob micromorts microlives_consumed interpretation          </span></span>
+<span><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;               &lt;dbl&gt; &lt;chr&gt;                   </span></span>
+<span><span class="co">#&gt; 1    35 male  0.00000296          3                0.05 At age 35 (male): 3.0 m…</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="lifestyle-tradeoffs">Lifestyle Tradeoffs<a class="anchor" aria-label="anchor" href="#lifestyle-tradeoffs"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># How much exercise offsets smoking? (in microlives per day)</span></span>
+<span><span class="fu"><a href="reference/lifestyle_tradeoff.html">lifestyle_tradeoff</a></span><span class="op">(</span><span class="st">"Smoking 2 cigarettes"</span>, <span class="st">"20 min moderate exercise"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
+<span><span class="co">#&gt;   bad_habit            bad_ml_per_day good_habit    good_ml_per_day units_needed</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                         &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;        &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Smoking 2 cigarettes             -1 20 min moder…               2          0.5</span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: interpretation &lt;chr&gt;</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="api-access">API Access<a class="anchor" aria-label="anchor" href="#api-access"></a>
+</h2>
+<p>Launch the REST API for programmatic access:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/launch_api.html">launch_api</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># API available at http://localhost:8080</span></span>
+<span><span class="co"># Swagger docs at http://localhost:8080/__docs__/</span></span></code></pre></div>
+<p>Endpoints: - <code>GET /v1/acute</code> - Acute risks dataset (micromorts per event) - <code>GET /v1/chronic</code> - Chronic risks dataset (microlives per day) - <code>GET /v1/sources</code> - Source registry - <code>GET /v1/hazard?age=35</code> - Daily hazard rate (micromorts per day)</p>
+</div>
+<div class="section level2">
+<h2 id="interactive-dashboard">Interactive Dashboard<a class="anchor" aria-label="anchor" href="#interactive-dashboard"></a>
+</h2>
+<p>Launch the Shiny dashboard:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/launch_dashboard.html">launch_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="37%">
+<col width="20%">
+<col width="42%">
+</colgroup>
+<thead><tr>
+<th>Source</th>
+<th>Type</th>
+<th>Data</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Wikipedia: Micromort</td>
+<td>Encyclopedia</td>
+<td>~50 acute risks</td>
+</tr>
+<tr>
+<td>Wikipedia: Microlife</td>
+<td>Encyclopedia</td>
+<td>~20 chronic risks</td>
+</tr>
+<tr>
+<td>micromorts.rip</td>
+<td>Database</td>
+<td>~45 acute risks</td>
+</tr>
+<tr>
+<td>CDC MMWR</td>
+<td>Government</td>
+<td>COVID vaccine data</td>
+</tr>
+<tr>
+<td>Spiegelhalter (2012) BMJ</td>
+<td>Academic</td>
+<td>Microlife framework</td>
+</tr>
+<tr>
+<td>SEER Cancer Statistics</td>
+<td>Government</td>
+<td>Cancer mortality by type/sex</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="project-structure">Project Structure<a class="anchor" aria-label="anchor" href="#project-structure"></a>
 </h2>
-<p>(Tree view requires fs package)</p>
+<details><summary>
+Click to expand project tree
+</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; .</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; ├── DESCRIPTION</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE.md</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; ├── NAMESPACE</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; ├── R</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; │   ├── api.R</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard.R</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; │   ├── data.R</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; │   ├── dev</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; │   ├── micromort.R</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; │   ├── models.R</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; │   ├── risks.R</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; │   ├── tar_plans</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; │   │   └── plan_validation.R</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; │   └── visualization.R</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; ├── README.md</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; ├── README.qmd</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; ├── README.rmarkdown</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; ├── README_files</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; │   └── libs</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; │       ├── bootstrap</span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt; │       ├── clipboard</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; │       └── quarto-html</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; ├── box</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; │   ├── api</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; │   │   └── endpoints.R</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; │   │   ├── server.R</span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; │   │   └── ui.R</span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; │   ├── data</span></span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt; │   │   ├── loaders.R</span></span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt; │   │   ├── parsers.R</span></span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt; │   │   └── schemas.R</span></span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt; │   └── models</span></span>
+<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a><span class="co">#&gt; │       ├── __init__.R</span></span>
+<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a><span class="co">#&gt; │       ├── compare.R</span></span>
+<span id="cb14-47"><a href="#cb14-47" tabindex="-1"></a><span class="co">#&gt; │       └── hazard.R</span></span>
+<span id="cb14-48"><a href="#cb14-48" tabindex="-1"></a><span class="co">#&gt; ├── data-raw</span></span>
+<span id="cb14-49"><a href="#cb14-49" tabindex="-1"></a><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
+<span id="cb14-50"><a href="#cb14-50" tabindex="-1"></a><span class="co">#&gt; │   └── sources</span></span>
+<span id="cb14-51"><a href="#cb14-51" tabindex="-1"></a><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
+<span id="cb14-52"><a href="#cb14-52" tabindex="-1"></a><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
+<span id="cb14-53"><a href="#cb14-53" tabindex="-1"></a><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
+<span id="cb14-54"><a href="#cb14-54" tabindex="-1"></a><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
+<span id="cb14-55"><a href="#cb14-55" tabindex="-1"></a><span class="co">#&gt; │       └── risk_sources.csv</span></span>
+<span id="cb14-56"><a href="#cb14-56" tabindex="-1"></a><span class="co">#&gt; ├── default.R</span></span>
+<span id="cb14-57"><a href="#cb14-57" tabindex="-1"></a><span class="co">#&gt; ├── default.nix</span></span>
+<span id="cb14-58"><a href="#cb14-58" tabindex="-1"></a><span class="co">#&gt; ├── default.sh</span></span>
+<span id="cb14-59"><a href="#cb14-59" tabindex="-1"></a><span class="co">#&gt; ├── docs</span></span>
+<span id="cb14-60"><a href="#cb14-60" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.html</span></span>
+<span id="cb14-61"><a href="#cb14-61" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.md</span></span>
+<span id="cb14-62"><a href="#cb14-62" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
+<span id="cb14-63"><a href="#cb14-63" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
+<span id="cb14-64"><a href="#cb14-64" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.html</span></span>
+<span id="cb14-65"><a href="#cb14-65" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.md</span></span>
+<span id="cb14-66"><a href="#cb14-66" tabindex="-1"></a><span class="co">#&gt; │   ├── articles</span></span>
+<span id="cb14-67"><a href="#cb14-67" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb14-68"><a href="#cb14-68" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb14-69"><a href="#cb14-69" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.html</span></span>
+<span id="cb14-70"><a href="#cb14-70" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.md</span></span>
+<span id="cb14-71"><a href="#cb14-71" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction_files</span></span>
+<span id="cb14-72"><a href="#cb14-72" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
+<span id="cb14-73"><a href="#cb14-73" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
+<span id="cb14-74"><a href="#cb14-74" tabindex="-1"></a><span class="co">#&gt; │   │   └── palatable_units_files</span></span>
+<span id="cb14-75"><a href="#cb14-75" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.html</span></span>
+<span id="cb14-76"><a href="#cb14-76" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.md</span></span>
+<span id="cb14-77"><a href="#cb14-77" tabindex="-1"></a><span class="co">#&gt; │   ├── deps</span></span>
+<span id="cb14-78"><a href="#cb14-78" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-5.3.1</span></span>
+<span id="cb14-79"><a href="#cb14-79" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-toc-1.0.1</span></span>
+<span id="cb14-80"><a href="#cb14-80" tabindex="-1"></a><span class="co">#&gt; │   │   ├── clipboard.js-2.0.11</span></span>
+<span id="cb14-81"><a href="#cb14-81" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
+<span id="cb14-82"><a href="#cb14-82" tabindex="-1"></a><span class="co">#&gt; │   │   ├── font-awesome-6.5.2</span></span>
+<span id="cb14-83"><a href="#cb14-83" tabindex="-1"></a><span class="co">#&gt; │   │   ├── headroom-0.11.0</span></span>
+<span id="cb14-84"><a href="#cb14-84" tabindex="-1"></a><span class="co">#&gt; │   │   ├── jquery-3.6.0</span></span>
+<span id="cb14-85"><a href="#cb14-85" tabindex="-1"></a><span class="co">#&gt; │   │   └── search-1.0.0</span></span>
+<span id="cb14-86"><a href="#cb14-86" tabindex="-1"></a><span class="co">#&gt; │   ├── index.html</span></span>
+<span id="cb14-87"><a href="#cb14-87" tabindex="-1"></a><span class="co">#&gt; │   ├── index.md</span></span>
+<span id="cb14-88"><a href="#cb14-88" tabindex="-1"></a><span class="co">#&gt; │   ├── katex-auto.js</span></span>
+<span id="cb14-89"><a href="#cb14-89" tabindex="-1"></a><span class="co">#&gt; │   ├── lightswitch.js</span></span>
+<span id="cb14-90"><a href="#cb14-90" tabindex="-1"></a><span class="co">#&gt; │   ├── link.svg</span></span>
+<span id="cb14-91"><a href="#cb14-91" tabindex="-1"></a><span class="co">#&gt; │   ├── llms.txt</span></span>
+<span id="cb14-92"><a href="#cb14-92" tabindex="-1"></a><span class="co">#&gt; │   ├── news</span></span>
+<span id="cb14-93"><a href="#cb14-93" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.js</span></span>
+<span id="cb14-94"><a href="#cb14-94" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
+<span id="cb14-95"><a href="#cb14-95" tabindex="-1"></a><span class="co">#&gt; │   ├── reference</span></span>
+<span id="cb14-96"><a href="#cb14-96" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
+<span id="cb14-97"><a href="#cb14-97" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
+<span id="cb14-98"><a href="#cb14-98" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
+<span id="cb14-99"><a href="#cb14-99" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
+<span id="cb14-100"><a href="#cb14-100" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
+<span id="cb14-101"><a href="#cb14-101" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
+<span id="cb14-102"><a href="#cb14-102" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
+<span id="cb14-103"><a href="#cb14-103" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
+<span id="cb14-104"><a href="#cb14-104" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
+<span id="cb14-105"><a href="#cb14-105" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
+<span id="cb14-106"><a href="#cb14-106" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
+<span id="cb14-107"><a href="#cb14-107" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
+<span id="cb14-108"><a href="#cb14-108" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
+<span id="cb14-109"><a href="#cb14-109" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
+<span id="cb14-110"><a href="#cb14-110" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
+<span id="cb14-111"><a href="#cb14-111" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
+<span id="cb14-112"><a href="#cb14-112" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
+<span id="cb14-113"><a href="#cb14-113" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
+<span id="cb14-114"><a href="#cb14-114" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
+<span id="cb14-115"><a href="#cb14-115" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
+<span id="cb14-116"><a href="#cb14-116" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
+<span id="cb14-117"><a href="#cb14-117" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
+<span id="cb14-118"><a href="#cb14-118" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
+<span id="cb14-119"><a href="#cb14-119" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
+<span id="cb14-120"><a href="#cb14-120" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
+<span id="cb14-121"><a href="#cb14-121" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
+<span id="cb14-122"><a href="#cb14-122" tabindex="-1"></a><span class="co">#&gt; │   │   ├── figures</span></span>
+<span id="cb14-123"><a href="#cb14-123" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
+<span id="cb14-124"><a href="#cb14-124" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
+<span id="cb14-125"><a href="#cb14-125" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb14-126"><a href="#cb14-126" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb14-127"><a href="#cb14-127" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
+<span id="cb14-128"><a href="#cb14-128" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
+<span id="cb14-129"><a href="#cb14-129" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
+<span id="cb14-130"><a href="#cb14-130" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
+<span id="cb14-131"><a href="#cb14-131" tabindex="-1"></a><span class="co">#&gt; │   │   ├── libs</span></span>
+<span id="cb14-132"><a href="#cb14-132" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
+<span id="cb14-133"><a href="#cb14-133" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
+<span id="cb14-134"><a href="#cb14-134" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.html</span></span>
+<span id="cb14-135"><a href="#cb14-135" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.md</span></span>
+<span id="cb14-136"><a href="#cb14-136" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
+<span id="cb14-137"><a href="#cb14-137" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
+<span id="cb14-138"><a href="#cb14-138" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
+<span id="cb14-139"><a href="#cb14-139" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
+<span id="cb14-140"><a href="#cb14-140" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
+<span id="cb14-141"><a href="#cb14-141" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
+<span id="cb14-142"><a href="#cb14-142" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
+<span id="cb14-143"><a href="#cb14-143" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
+<span id="cb14-144"><a href="#cb14-144" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
+<span id="cb14-145"><a href="#cb14-145" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
+<span id="cb14-146"><a href="#cb14-146" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
+<span id="cb14-147"><a href="#cb14-147" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
+<span id="cb14-148"><a href="#cb14-148" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
+<span id="cb14-149"><a href="#cb14-149" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
+<span id="cb14-150"><a href="#cb14-150" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
+<span id="cb14-151"><a href="#cb14-151" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
+<span id="cb14-152"><a href="#cb14-152" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
+<span id="cb14-153"><a href="#cb14-153" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
+<span id="cb14-154"><a href="#cb14-154" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
+<span id="cb14-155"><a href="#cb14-155" tabindex="-1"></a><span class="co">#&gt; │   │   └── value_of_micromort.md</span></span>
+<span id="cb14-156"><a href="#cb14-156" tabindex="-1"></a><span class="co">#&gt; │   ├── search.json</span></span>
+<span id="cb14-157"><a href="#cb14-157" tabindex="-1"></a><span class="co">#&gt; │   ├── sitemap.xml</span></span>
+<span id="cb14-158"><a href="#cb14-158" tabindex="-1"></a><span class="co">#&gt; │   └── tutorials</span></span>
+<span id="cb14-159"><a href="#cb14-159" tabindex="-1"></a><span class="co">#&gt; ├── inst</span></span>
+<span id="cb14-160"><a href="#cb14-160" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb14-161"><a href="#cb14-161" tabindex="-1"></a><span class="co">#&gt; │   │   └── about.md</span></span>
+<span id="cb14-162"><a href="#cb14-162" tabindex="-1"></a><span class="co">#&gt; │   ├── extdata</span></span>
+<span id="cb14-163"><a href="#cb14-163" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
+<span id="cb14-164"><a href="#cb14-164" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
+<span id="cb14-165"><a href="#cb14-165" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logs</span></span>
+<span id="cb14-166"><a href="#cb14-166" tabindex="-1"></a><span class="co">#&gt; │   │   └── risk_sources.parquet</span></span>
+<span id="cb14-167"><a href="#cb14-167" tabindex="-1"></a><span class="co">#&gt; │   └── plumber</span></span>
+<span id="cb14-168"><a href="#cb14-168" tabindex="-1"></a><span class="co">#&gt; │       └── api.R</span></span>
+<span id="cb14-169"><a href="#cb14-169" tabindex="-1"></a><span class="co">#&gt; ├── man</span></span>
+<span id="cb14-170"><a href="#cb14-170" tabindex="-1"></a><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
+<span id="cb14-171"><a href="#cb14-171" tabindex="-1"></a><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
+<span id="cb14-172"><a href="#cb14-172" tabindex="-1"></a><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
+<span id="cb14-173"><a href="#cb14-173" tabindex="-1"></a><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
+<span id="cb14-174"><a href="#cb14-174" tabindex="-1"></a><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
+<span id="cb14-175"><a href="#cb14-175" tabindex="-1"></a><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
+<span id="cb14-176"><a href="#cb14-176" tabindex="-1"></a><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
+<span id="cb14-177"><a href="#cb14-177" tabindex="-1"></a><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
+<span id="cb14-178"><a href="#cb14-178" tabindex="-1"></a><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
+<span id="cb14-179"><a href="#cb14-179" tabindex="-1"></a><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
+<span id="cb14-180"><a href="#cb14-180" tabindex="-1"></a><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
+<span id="cb14-181"><a href="#cb14-181" tabindex="-1"></a><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
+<span id="cb14-182"><a href="#cb14-182" tabindex="-1"></a><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
+<span id="cb14-183"><a href="#cb14-183" tabindex="-1"></a><span class="co">#&gt; │   ├── figures</span></span>
+<span id="cb14-184"><a href="#cb14-184" tabindex="-1"></a><span class="co">#&gt; │   │   └── README-plot-1.png</span></span>
+<span id="cb14-185"><a href="#cb14-185" tabindex="-1"></a><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
+<span id="cb14-186"><a href="#cb14-186" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
+<span id="cb14-187"><a href="#cb14-187" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
+<span id="cb14-188"><a href="#cb14-188" tabindex="-1"></a><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
+<span id="cb14-189"><a href="#cb14-189" tabindex="-1"></a><span class="co">#&gt; │   ├── lle.Rd</span></span>
+<span id="cb14-190"><a href="#cb14-190" tabindex="-1"></a><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
+<span id="cb14-191"><a href="#cb14-191" tabindex="-1"></a><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
+<span id="cb14-192"><a href="#cb14-192" tabindex="-1"></a><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
+<span id="cb14-193"><a href="#cb14-193" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
+<span id="cb14-194"><a href="#cb14-194" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
+<span id="cb14-195"><a href="#cb14-195" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
+<span id="cb14-196"><a href="#cb14-196" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
+<span id="cb14-197"><a href="#cb14-197" tabindex="-1"></a><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
+<span id="cb14-198"><a href="#cb14-198" tabindex="-1"></a><span class="co">#&gt; │   └── value_of_micromort.Rd</span></span>
+<span id="cb14-199"><a href="#cb14-199" tabindex="-1"></a><span class="co">#&gt; ├── nix-shell-root</span></span>
+<span id="cb14-200"><a href="#cb14-200" tabindex="-1"></a><span class="co">#&gt; ├── push_to_cachix.sh</span></span>
+<span id="cb14-201"><a href="#cb14-201" tabindex="-1"></a><span class="co">#&gt; ├── tests</span></span>
+<span id="cb14-202"><a href="#cb14-202" tabindex="-1"></a><span class="co">#&gt; │   └── testthat</span></span>
+<span id="cb14-203"><a href="#cb14-203" tabindex="-1"></a><span class="co">#&gt; │       └── test-adversarial.R</span></span>
+<span id="cb14-204"><a href="#cb14-204" tabindex="-1"></a><span class="co">#&gt; └── vignettes</span></span>
+<span id="cb14-205"><a href="#cb14-205" tabindex="-1"></a><span class="co">#&gt;     ├── introduction.Rmd</span></span>
+<span id="cb14-206"><a href="#cb14-206" tabindex="-1"></a><span class="co">#&gt;     └── palatable_units.Rmd</span></span></code></pre></div>
+</details>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Contributions are welcome! Please:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Report issues</strong> at <a href="https://github.com/JohnGavin/micromort/issues" class="external-link">GitHub Issues</a>
+</li>
+<li>
+<strong>Submit PRs</strong> following the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>
+</li>
+<li>
+<strong>Add data</strong> - New risk sources welcome! Include:
+<ul>
+<li>Source URL with citation</li>
+<li>Units (micromorts per event OR microlives per day)</li>
+<li>Period specification (per jump, per day, per year, etc.)</li>
+</ul>
+</li>
+</ol>
+<div class="section level3">
+<h3 id="development-setup">Development Setup<a class="anchor" aria-label="anchor" href="#development-setup"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Clone and enter Nix environment</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/JohnGavin/micromort.git</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="bu">cd</span> micromort</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="ex">./default.sh</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># Run tests</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co"># Check package</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<ul>
+<li>Howard RA (1980). “On Making Life and Death Decisions.” <em>Societal Risk Assessment</em>.</li>
+<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.” BMJ 345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">DOI: 10.1136/bmj.e8223</a>
+</li>
+<li>Blastland M, Spiegelhalter D (2013). <em>The Norm Chronicles: Stories and Numbers About Danger</em>.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT © <a href="https://github.com/JohnGavin" class="external-link">John Gavin</a></p>
+<p>See <a href="LICENSE">LICENSE</a> for details.</p>
 </div>
 </div>
 

@@ -85,24 +85,20 @@ micromort equivalent risk) \* Being 5kg overweight: -1 microlife per day
 # as_microlife() converts minutes of life expectancy to microlives
 # where 1 microlife = 30 minutes of life expectancy
 
-# Example 1: A heavy smoker (20 cigarettes/day)
-# Each cigarette costs ~15-30 minutes of life expectancy
-# Total daily cost: 20 cigarettes × 30 minutes = 600 minutes
-as_microlife(600)  # = 20 microlives lost per day
+# Heavy smoker (20 cigarettes/day × 30 mins each)
+as_microlife(20 * 30)  # = 20 microlives lost per day
 #> [1] 20
 
-# Example 2: Moderate exercise (20 mins) gains ~60 mins life expectancy
-as_microlife(60)   # = 2 microlives gained
+# Moderate exercise (20 mins → 60 mins life gained)
+as_microlife(60)       # = 2 microlives gained
 #> [1] 2
 
-# Example 3: Being 5kg overweight costs ~30 mins per day
-as_microlife(30)   # = 1 microlife lost per day
+# Being 5kg overweight costs 30 mins per day
+as_microlife(30)       # = 1 microlife lost per day
 #> [1] 1
 
-# Compare: How much exercise offsets smoking 2 cigarettes?
-# Smoking 2 cigs = 60 mins lost = 2 microlives
-# Exercise 20 mins = 60 mins gained = 2 microlives
-# They roughly cancel out!
+# Exercise roughly offsets smoking 2 cigarettes:
+# 2 cigs × 30 mins = 60 mins lost vs 20 min exercise → 60 mins gained
 ```
 
 ## 3. Relationship Between Micromorts and Microlives
