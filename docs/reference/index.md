@@ -55,7 +55,7 @@ Convert between risk units
 - [`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md)
   : Convert Probability to Micromorts
 - [`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md)
-  : Convert to Microlives
+  : Convert Minutes to Microlives
 - [`as_probability()`](https://johngavin.github.io/micromort/reference/as_probability.md)
   : Convert Micromorts to Probability
 - [`lle()`](https://johngavin.github.io/micromort/reference/lle.md) :

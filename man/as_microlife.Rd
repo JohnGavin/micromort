@@ -2,20 +2,40 @@
 % Please edit documentation in R/micromort.R
 \name{as_microlife}
 \alias{as_microlife}
-\title{Convert to Microlives}
+\title{Convert Minutes to Microlives}
 \usage{
-as_microlife(minutes_lost)
+as_microlife(minutes)
 }
 \arguments{
-\item{minutes_lost}{Numeric. Life expectancy lost in minutes.}
+\item{minutes}{Numeric. Life expectancy change in minutes.
+\itemize{
+\item Positive values = life gained (e.g., from exercise)
+\item Negative values = life lost (e.g., from smoking)
+}}
 }
 \value{
-Numeric. Value in microlives.
+Numeric. Value in microlives (same sign as input).
 }
 \description{
-A microlife represents a 30-minute change in life expectancy.
-This function estimates the impact of a chronic risk in microlives.
+A microlife represents a 30-minute change in life expectancy per day.
+This function converts minutes of life expectancy change to microlives.
+}
+\details{
+\strong{Unit definition:} 1 microlife = 30 minutes of life expectancy change per day.
+
+\strong{Sign convention:}
+\itemize{
+\item Negative microlives = life expectancy loss (harmful)
+\item Positive microlives = life expectancy gain (beneficial)
+}
 }
 \examples{
-as_microlife(30) # 1 microlife
+# Smoking 20 cigarettes/day: each costs ~30 mins = -600 mins total
+as_microlife(-20 * 30)  # -20 microlives (life lost)
+
+# Exercise 20 mins/day: gains ~60 mins life expectancy
+as_microlife(60)        # +2 microlives (life gained)
+
+# Being 5kg overweight: costs ~30 mins/day
+as_microlife(-30)       # -1 microlife (life lost)
 }

@@ -63,17 +63,33 @@ lle <- function(prob, life_expectancy = 40) {
   structure(loss_minutes, class = c("micromort_lle", "numeric"), units = "minutes")
 }
 
-#' Convert to Microlives
+#' Convert Minutes to Microlives
 #'
-#' A microlife represents a 30-minute change in life expectancy.
-#' This function estimates the impact of a chronic risk in microlives.
+#' A microlife represents a 30-minute change in life expectancy per day.
+#' This function converts minutes of life expectancy change to microlives.
 #'
-#' @param minutes_lost Numeric. Life expectancy lost in minutes.
-#' @return Numeric. Value in microlives.
+#' @param minutes Numeric. Life expectancy change in minutes.
+#'   - Positive values = life gained (e.g., from exercise)
+#'   - Negative values = life lost (e.g., from smoking)
+#' @return Numeric. Value in microlives (same sign as input).
+#' @details
+#' **Unit definition:** 1 microlife = 30 minutes of life expectancy change per day.
+#'
+#' **Sign convention:**
+#' - Negative microlives = life expectancy loss (harmful)
+#' - Positive microlives = life expectancy gain (beneficial)
+#'
 #' @export
 #' @examples
-#' as_microlife(30) # 1 microlife
-as_microlife <- function(minutes_lost) {
-  checkmate::assert_numeric(minutes_lost)
-  minutes_lost / 30
+#' # Smoking 20 cigarettes/day: each costs ~30 mins = -600 mins total
+#' as_microlife(-20 * 30)  # -20 microlives (life lost)
+#'
+#' # Exercise 20 mins/day: gains ~60 mins life expectancy
+#' as_microlife(60)        # +2 microlives (life gained)
+#'
+#' # Being 5kg overweight: costs ~30 mins/day
+#' as_microlife(-30)       # -1 microlife (life lost)
+as_microlife <- function(minutes) {
+  checkmate::assert_numeric(minutes)
+  minutes / 30
 }

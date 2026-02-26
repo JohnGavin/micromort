@@ -12,10 +12,16 @@
 #' plot_risks()
 #' plot_risks(facet = FALSE)
 plot_risks <- function(risks = common_risks(), facet = TRUE) {
-  # Add facet grouping variable
+
+  # Filter to micromorts >= 0.1 to avoid invisible bars on log scale
   risks <- risks |>
+    dplyr::filter(micromorts >= 0.1) |>
     dplyr::mutate(
-      facet_group = ifelse(category == "COVID-19", "COVID-19 Risks", "Other Risks")
+      # Label panels clearly
+      facet_group = factor(
+        ifelse(category == "COVID-19", "COVID-19 Risks", "Non-COVID Risks"),
+        levels = c("Non-COVID Risks", "COVID-19 Risks")  # Non-COVID first (on top)
+      )
     )
 
   p <- ggplot2::ggplot(risks, ggplot2::aes(
@@ -39,8 +45,11 @@ plot_risks <- function(risks = common_risks(), facet = TRUE) {
     ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      strip.text = ggplot2::element_text(size = 12, face = "bold"),
-      axis.text.y = ggplot2::element_text(size = 8)
+      strip.text = ggplot2::element_text(size = 14, face = "bold"),
+      axis.text.y = ggplot2::element_text(size = 12),  # Increased from 8
+      axis.title = ggplot2::element_text(size = 12),
+      plot.title = ggplot2::element_text(size = 16, face = "bold"),
+      plot.subtitle = ggplot2::element_text(size = 11)
     )
 
   if (facet) {
@@ -96,7 +105,12 @@ plot_risks_interactive <- function(risks = common_risks()) {
     orientation = "h",
     color = ~category,
     text = ~hover_text,
-    hoverinfo = "text"
+    hoverinfo = "text",
+    hoverlabel = list(
+      bgcolor = "white",
+      font = list(color = "black", size = 12),
+      bordercolor = "black"
+    )
   ) |>
     plotly::layout(
       title = list(
