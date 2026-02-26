@@ -1,0 +1,50 @@
+/* pkgdown extra CSS - TOC and content width customization */
+
+/* Expand main content to use more width */
+.container {
+  max-width: 95%;
+}
+
+.col-md-9 {
+  flex: 0 0 80%;
+  max-width: 80%;
+}
+
+/* Smaller TOC to avoid overlap with tables */
+.col-md-3 {
+  flex: 0 0 20%;
+  max-width: 20%;
+}
+
+/* Smaller TOC font */
+#toc {
+  font-size: 0.85rem;
+}
+
+#toc .nav-link {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Make TOC collapsible on mobile */
+@media (max-width: 991.98px) {
+  #toc {
+    display: none;
+  }
+}
+
+/* Tables should not overflow */
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* DT datatable styling */
+.dataTables_wrapper {
+  width: 100%;
+  overflow-x: auto;
+}

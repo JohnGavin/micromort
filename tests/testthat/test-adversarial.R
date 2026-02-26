@@ -17,7 +17,7 @@ test_that("as_microlife handles inputs correctly", {
   # Negative values (gains life)
   expect_equal(as_microlife(-30), -1)
   
-  expect_error(as_microlife("text"), "Assertion on 'minutes_lost' failed")
+  expect_error(as_microlife("text"), "Assertion on 'minutes' failed")
 })
 
 test_that("lle returns correct structure", {

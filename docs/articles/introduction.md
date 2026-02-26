@@ -82,78 +82,102 @@ micromort equivalent risk) \* Being 5kg overweight: -1 microlife per day
 \* First 20 mins moderate exercise: +2 microlives
 
 ``` r
-# as_microlife() converts minutes of life expectancy to microlives
-# where 1 microlife = 30 minutes of life expectancy
+# as_microlife() converts minutes of life expectancy change to microlives
+# Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
+# Sign: negative = loss, positive = gain
 
-# Heavy smoker (20 cigarettes/day × 30 mins each)
-as_microlife(20 * 30)  # = 20 microlives lost per day
-#> [1] 20
+# Heavy smoker (20 cigarettes/day × 30 mins each = 600 mins LOST)
+as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
+#> [1] -20
 
-# Moderate exercise (20 mins → 60 mins life gained)
-as_microlife(60)       # = 2 microlives gained
+# Moderate exercise (20 mins exercise → 60 mins life GAINED)
+as_microlife(60)        # = +2 microlives/day (life gained)
 #> [1] 2
 
 # Being 5kg overweight costs 30 mins per day
-as_microlife(30)       # = 1 microlife lost per day
-#> [1] 1
+as_microlife(-30)       # = -1 microlife/day (life lost)
+#> [1] -1
 
-# Exercise roughly offsets smoking 2 cigarettes:
-# 2 cigs × 30 mins = 60 mins lost vs 20 min exercise → 60 mins gained
+# Exercise can offset smoking:
+# 2 cigarettes = -60 mins, 20 min exercise = +60 mins → net zero
+as_microlife(-60) + as_microlife(60)  # = 0 (they cancel out)
+#> [1] 0
 ```
 
 ## 3. Relationship Between Micromorts and Microlives
 
 ### Theoretical Conversion
 
-Micromorts (acute risk) and microlives (chronic attrition) measure
-different phenomena, but they can be approximately converted:
+Micromorts (acute, per-event risk) and microlives (chronic, per-day
+attrition) measure different phenomena, but can be approximately
+converted using expected value theory.
 
-**Key relationship:** 1 micromort ≈ 0.7 microlives (assuming 40 years
-remaining life expectancy)
+**Key relationship:** 1 micromort ≈ 0.7 microlives
+
+**Assumptions for this conversion:** 1. Remaining life expectancy = 40
+years (adjust for actual age) 2. Death occurs immediately upon the event
+(worst case) 3. Linear approximation (valid for small probabilities)
 
 **Mathematical derivation:**
 
 ``` r
-# 1 micromort = 1-in-a-million death probability
-# Expected life lost = probability × remaining life expectancy
-remaining_years <- 40
-prob_death <- 1e-6  # 1 micromort
+# UNITS: 1 micromort = 1-in-a-million probability of IMMEDIATE DEATH per EVENT
+# Question: What is the expected life lost from ONE micromort event?
 
-# Life lost in years
+remaining_years <- 40  # Assumed remaining life expectancy (years)
+prob_death <- 1e-6     # 1 micromort = 1/1,000,000 death probability
+
+# Expected life lost = probability × life forfeited if death occurs
+# If the event kills you, you lose all remaining years
 life_lost_years <- prob_death * remaining_years
-cat("Life lost (years):", life_lost_years, "\n")
-#> Life lost (years): 4e-05
+cat("Expected life lost (years):", life_lost_years, "\n")
+#> Expected life lost (years): 4e-05
+cat("  = 1e-6 × 40 = 4e-5 years\n\n")
+#>   = 1e-6 × 40 = 4e-5 years
 
-# Convert to minutes
+# Convert years to minutes: 1 year = 365.25 × 24 × 60 = 525,960 minutes
 life_lost_minutes <- life_lost_years * 365.25 * 24 * 60
-cat("Life lost (minutes):", round(life_lost_minutes, 1), "\n")
-#> Life lost (minutes): 21
+cat("Expected life lost (minutes):", round(life_lost_minutes, 1), "\n")
+#> Expected life lost (minutes): 21
+cat("  = 4e-5 × 525,960 ≈ 21 minutes\n\n")
+#>   = 4e-5 × 525,960 ≈ 21 minutes
 
-# 1 microlife = 30 minutes
+# 1 microlife = 30 minutes of life expectancy change
+# So 21 minutes ≈ 0.7 microlives
 microlives_equivalent <- life_lost_minutes / 30
 cat("Microlives equivalent:", round(microlives_equivalent, 2), "\n")
 #> Microlives equivalent: 0.7
 ```
 
-This is why the `microlives` column in
+**Why
 [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
-uses the conversion `microlives = micromorts × 0.7`.
+uses microlives = micromorts × 0.7:**
 
-### Statistical Properties
+The conversion allows comparing a single risky event (like one skydive
+at 8 micromorts) to chronic daily habits (like smoking at -10
+microlives/day). However, **the approximation breaks down when:**
 
-| Metric | Best For | Statistical Properties |
-|----|----|----|
-| **Micromorts** | Rare acute events (traffic deaths, skydiving) | Poisson-like; large samples needed; stable rates |
-| **Microlives** | Chronic exposures (smoking, diet) | Cumulative effects; epidemiological cohort studies |
+1.  **Remaining life expectancy differs** from 40 years (a 20-year-old
+    loses more per micromort than an 80-year-old)
+2.  **The risk is not immediate death** (injuries, disabilities are not
+    captured)
+3.  **Repeated exposures** compound non-linearly
+
+### Unit Definitions (Summary)
+
+| Metric | Unit Definition | Scope | Sign |
+|----|----|----|----|
+| **Micromort** | 1-in-a-million probability of death | Per discrete event (1 surgery, 1 flight) | Always ≥ 0 |
+| **Microlife** | 30 minutes of life expectancy change | Per day of exposure/habit | \+ = gain, − = loss |
 
 ### When to Use Each
 
-- **Use micromorts** when comparing discrete events with immediate risk
-  (surgery, travel, sports)
-- **Use microlives** when assessing lifestyle changes over time
-  (quitting smoking, weight loss)
-- **Convert between them** when making policy decisions that involve
-  both acute and chronic risks
+- **Use micromorts** for discrete, short-duration events with binary
+  outcomes (death or survival): surgery, skydiving, a single car trip
+- **Use microlives** for chronic, daily habits that accumulate over a
+  lifetime: smoking, exercise, diet
+- **Convert between them** for policy decisions, but state your
+  assumptions (age, remaining life expectancy)
 
 ## 4. Value of Statistical Life (VSL)
 
@@ -262,13 +286,13 @@ cat("Population burden (QALD/million):", format(total_qald_lost, big.mark = ",")
 
 ### Comparing Metrics
 
-| Metric | Focus | Unit | Best For |
-|----|----|----|----|
-| Micromort | Acute mortality | 1-in-million death risk | Comparing immediate dangers |
-| Microlife | Chronic mortality | 30 min life expectancy | Lifestyle interventions |
-| QALY | Quality + quantity | 1 year perfect health | Healthcare economics |
-| DALY | Disease burden | Years lost/disabled | Global health priorities |
-| QALD | Daily morbidity | 1 day perfect health | Common illnesses |
+| Metric | Unit Definition | Scope | Sign | Best For |
+|----|----|----|----|----|
+| **Micromort** | 1/1,000,000 death probability | Per discrete event (surgery, flight, climb) | ≥ 0 (probability) | Comparing single risky activities |
+| **Microlife** | 30 min life expectancy change | Per day of chronic exposure | \+ gain / − loss | Daily lifestyle interventions |
+| **QALY** | 1 year at perfect health (quality=1.0) | Per treatment/intervention | ≥ 0 | Cost-effectiveness in healthcare |
+| **DALY** | 1 year lost to disease (YLL + YLD) | Per condition/population | ≥ 0 (burden) | Global health prioritization |
+| **QALD** | 1 day at perfect health | Per illness episode | ≥ 0 | Short-term morbidity (colds, flu) |
 
 ### References
 

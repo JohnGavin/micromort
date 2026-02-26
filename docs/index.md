@@ -484,6 +484,8 @@ Click to expand project tree
 #> │   ├── vaccination_risks.Rd
 #> │   └── value_of_micromort.Rd
 #> ├── nix-shell-root
+#> ├── pkgdown
+#> │   └── extra.css
 #> ├── push_to_cachix.sh
 #> ├── tests
 #> │   └── testthat
