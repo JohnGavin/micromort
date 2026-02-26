@@ -14,16 +14,16 @@ knitr::opts_chunk$set(
 )
 devtools::load_all()
 library(ggplot2)
+library(dplyr)
 ```
 
 # micromort
 
 A **data package** providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature.
-
 ## Features
 
-- **62 acute risks** measured in micromorts (one-in-a-million death chance)
-- **22 chronic factors** measured in microlives (30 minutes of life expectancy)
+- **62 acute risks** measured in micromorts (one-in-a-million death probability per event)
+- **35+ chronic factors** measured in microlives (30-minute life expectancy change per day)
 - **14 authoritative sources** with full provenance tracking
 - **Parquet datasets** for cross-language compatibility (R, Python, Arrow)
 - **Plumber REST API** for programmatic access
@@ -35,14 +35,14 @@ A **data package** providing curated datasets of micromort (acute risk) and micr
 ### R-Universe (Recommended)
 
 ```r
-# Install from r-universe
+# Install from r-universe (pre-built binaries, fast)
 install.packages("micromort", repos = "https://johngavin.r-universe.dev")
 ```
 
 ### GitHub
 
 ```r
-# Install from GitHub
+# Install from GitHub (source)
 # install.packages("devtools")
 devtools::install_github("JohnGavin/micromort")
 ```
@@ -80,6 +80,41 @@ rix(
 )
 ```
 
+## Concepts
+
+### Micromort (Acute Risk)
+A **micromort** is a unit of mortality risk equal to a **one-in-a-million probability of death per specific event**.
+
+- **Unit:** 1 micromort = 1/1,000,000 = 0.0001% death probability
+- **Scope:** Per discrete event (e.g., one skydive, one surgery, one flight)
+- **Sign:** Always non-negative (it's a probability)
+- **Example:** Skydiving has ~8 micromorts per jump (8-in-a-million death chance per jump)
+
+### Microlife (Chronic Risk)
+
+A **microlife** is a unit of life expectancy change equal to **30 minutes of expected lifespan, measured per day** of exposure.
+
+- **Unit:** 1 microlife = 30 minutes of life expectancy
+- **Scope:** Per day of maintaining a habit or exposure
+- **Sign:** Positive (life gained) or negative (life lost)
+- **Example:** Smoking 2 cigarettes daily costs -1 microlife/day (losing 30 mins of life expectancy each day you smoke)
+
+### Conversion
+
+**1 micromort ≈ 0.7 microlives** (assuming 40 years remaining life expectancy)
+
+This allows comparing acute events to chronic habits on a common scale.
+
+### Morbidity Metrics
+
+Micromorts and microlives focus on mortality. For quality-of-life impacts:
+
+- **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. Used in healthcare economics.
+- **DALY (Disability-Adjusted Life Years):** Disease burden = YLL + YLD.
+- **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. For common illnesses.
+
+See the [Introduction vignette](https://johngavin.github.io/micromort/articles/introduction.html) for detailed examples.
+
 ## Quick Start
 
 ### Load the Datasets
@@ -87,11 +122,11 @@ rix(
 ```{r load-data}
 library(micromort)
 
-# Load acute risks (micromorts)
+# Load acute risks (micromorts per event)
 acute <- load_acute_risks()
 nrow(acute)
 
-# Load chronic risks (microlives)
+# Load chronic risks (microlives per day)
 chronic <- load_chronic_risks()
 nrow(chronic)
 
@@ -100,29 +135,38 @@ sources <- load_sources()
 nrow(sources)
 ```
 
-### Explore Acute Risks
+### Acute Risks (Micromorts per Event)
 
 ```{r acute}
-# Top 10 riskiest activities
+# Convert a probability to micromorts
+# Example: 1 in 10,000 chance = 100 micromorts
+as_micromort(1/10000)
+
+# Top 10 riskiest activities (micromorts per event/period)
 acute |>
-  dplyr::select(activity, micromorts, category) |>
+  dplyr::select(activity, micromorts, category, period) |>
   head(10)
 ```
 
-### Explore Chronic Factors
+**Caption:** Micromorts represent probability of death per event. Higher values = higher risk per occurrence.
+
+### Chronic Risks (Microlives per Day)
 
 ```{r chronic}
-# Factors that reduce life expectancy
+# Factors that reduce life expectancy (microlives lost per day)
 chronic |>
   dplyr::filter(direction == "loss") |>
   dplyr::select(factor, microlives_per_day, category) |>
   head(10)
 ```
 
+**Caption:** Microlives per day. Negative values = life expectancy loss; positive = gain. Effects accumulate daily.
+
 ### Visualize Risks
 
-```{r plot}
-plot_risks()
+```{r plot, fig.cap="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity."}
+# Filter to show only activities with micromorts >= 1 for clarity on log scale
+plot_risks(common_risks() |> dplyr::filter(micromorts >= 1))
 ```
 
 ## Analysis Functions
@@ -130,7 +174,7 @@ plot_risks()
 ### Compare Lifestyle Interventions
 
 ```{r compare}
-# Compare quitting smoking vs losing weight
+# Compare quitting smoking vs losing weight (microlives gained per day)
 compare_interventions(list(
   "Quit 10 cigarettes/day" = list(factor = "Smoking 10 cigarettes", change = -1),
   "Lose 5kg" = list(factor = "Being 5 kg overweight", change = -1)
@@ -140,14 +184,14 @@ compare_interventions(list(
 ### Calculate Baseline Risk by Age
 
 ```{r hazard}
-# Daily baseline risk at age 35
+# Daily baseline mortality risk at age 35 (micromorts per day just from being alive)
 daily_hazard_rate(35)
 ```
 
 ### Lifestyle Tradeoffs
 
 ```{r tradeoff}
-# How much exercise offsets smoking?
+# How much exercise offsets smoking? (in microlives per day)
 lifestyle_tradeoff("Smoking 2 cigarettes", "20 min moderate exercise")
 ```
 
@@ -162,10 +206,10 @@ launch_api()
 ```
 
 Endpoints:
-- `GET /v1/acute` - Acute risks dataset
-- `GET /v1/chronic` - Chronic risks dataset
+- `GET /v1/acute` - Acute risks dataset (micromorts per event)
+- `GET /v1/chronic` - Chronic risks dataset (microlives per day)
 - `GET /v1/sources` - Source registry
-- `GET /v1/hazard?age=35` - Daily hazard rate
+- `GET /v1/hazard?age=35` - Daily hazard rate (micromorts per day)
 
 ## Interactive Dashboard
 
@@ -173,12 +217,6 @@ Launch the Shiny dashboard:
 
 ```r
 launch_dashboard()
-```
-
-## Project Structure
-
-```{r tree, echo=FALSE}
-fs::dir_tree(recurse = 2, regexp = "^[^._]")
 ```
 
 ## Data Sources
@@ -190,30 +228,57 @@ fs::dir_tree(recurse = 2, regexp = "^[^._]")
 | micromorts.rip | Database | ~45 acute risks |
 | CDC MMWR | Government | COVID vaccine data |
 | Spiegelhalter (2012) BMJ | Academic | Microlife framework |
+| SEER Cancer Statistics | Government | Cancer mortality by type/sex |
 
-## Concepts
+## Project Structure
 
-### Mortality Metrics
+<details>
+<summary>Click to expand project tree</summary>
 
-- **Micromort:** A one-in-a-million chance of death. Used for acute risks (immediate events like skydiving, surgery).
-- **Microlife:** 30 minutes of life expectancy gained or lost. Used for chronic risks (daily habits like smoking, exercise).
-- **Conversion:** 1 micromort ≈ 0.7 microlives (assuming 40 years remaining life expectancy)
+```{r tree, echo=FALSE, message=FALSE}
+if (requireNamespace("fs", quietly = TRUE)) {
+  fs::dir_tree(recurse = 2, regexp = "^[^._]")
+} else {
+  cat("Install fs package to see directory tree: install.packages('fs')\n")
+}
+```
 
-### Morbidity Metrics
+</details>
 
-Micromorts and microlives focus on mortality, but many conditions cause quality-of-life loss without death:
+## Contributing
 
-- **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. A year lived at 0.7 quality = 0.7 QALYs. Used in healthcare economics (e.g., £20,000-30,000 per QALY threshold in UK).
-- **DALY (Disability-Adjusted Life Years):** Disease burden = YLL (Years of Life Lost) + YLD (Years Lived with Disability).
-- **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. Useful for common illnesses like colds.
+Contributions are welcome! Please:
 
-See the [Introduction vignette](https://johngavin.github.io/micromort/articles/introduction.html) for detailed examples including the "microburden" concept for non-fatal conditions
+1. **Report issues** at [GitHub Issues](https://github.com/JohnGavin/micromort/issues)
+2. **Submit PRs** following the [tidyverse style guide](https://style.tidyverse.org/)
+3. **Add data** - New risk sources welcome! Include:
+   - Source URL with citation
+   - Units (micromorts per event OR microlives per day)
+   - Period specification (per jump, per day, per year, etc.)
+
+### Development Setup
+
+```bash
+# Clone and enter Nix environment
+git clone https://github.com/JohnGavin/micromort.git
+cd micromort
+./default.sh
+
+# Run tests
+Rscript -e "devtools::test()"
+
+# Check package
+Rscript -e "devtools::check()"
+```
 
 ## References
 
-- Howard RA (1980). "On Making Life and Death Decisions."
-- Spiegelhalter D (2012). BMJ 2012;345:e8223. [DOI: 10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
+- Howard RA (1980). "On Making Life and Death Decisions." *Societal Risk Assessment*.
+- Spiegelhalter D (2012). "Using speed of ageing and 'microlives'." BMJ 345:e8223. [DOI: 10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
+- Blastland M, Spiegelhalter D (2013). *The Norm Chronicles: Stories and Numbers About Danger*.
 
 ## License
 
-MIT
+MIT © [John Gavin](https://github.com/JohnGavin)
+
+See [LICENSE](LICENSE) for details.
