@@ -9,7 +9,7 @@ compare_interventions(interventions)
 \arguments{
 \item{interventions}{Named list of interventions. Each element should have:
 \describe{
-\item{factor}{Name of the chronic risk factor (must match chronic_risks)}
+\item{factor}{Name of the chronic risk factor (must match \code{\link[=chronic_risks]{chronic_risks()}})}
 \item{change}{Numeric change multiplier (e.g., -1 to remove the factor)}
 }}
 }
@@ -37,3 +37,12 @@ compare_interventions(list(
   "Lose 5kg" = list(factor = "Being 5 kg overweight", change = -1)
 ))
 }
+\seealso{
+\code{\link[=lifestyle_tradeoff]{lifestyle_tradeoff()}}, \code{\link[=daily_hazard_rate]{daily_hazard_rate()}}, \code{\link[=annual_risk_budget]{annual_risk_budget()}}
+
+Other analysis: 
+\code{\link{annual_risk_budget}()},
+\code{\link{daily_hazard_rate}()},
+\code{\link{lifestyle_tradeoff}()}
+}
+\concept{analysis}

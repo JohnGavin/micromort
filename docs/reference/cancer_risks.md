@@ -28,6 +28,17 @@ SEER Cancer Statistics Factsheets. National Cancer Institute.
 Siegel RL, et al. Cancer statistics, 2024. CA Cancer J Clin.
 2024;74:12-49.
 
+## See also
+
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md),
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+
+Other conditional-risk:
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md),
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
+
 ## Examples
 
 ``` r

@@ -26,6 +26,17 @@ Lancet 2024. Contribution of vaccination to improved survival: 50 years
 of EPI.
 <https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext>
 
+## See also
+
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+
+Other conditional-risk:
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+
 ## Examples
 
 ``` r

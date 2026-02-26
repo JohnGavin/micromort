@@ -6,7 +6,7 @@
 #'
 #' @param interventions Named list of interventions. Each element should have:
 #' \describe{
-#'   \item{factor}{Name of the chronic risk factor (must match chronic_risks)}
+#'   \item{factor}{Name of the chronic risk factor (must match [chronic_risks()])}
 #'   \item{change}{Numeric change multiplier (e.g., -1 to remove the factor)}
 #' }
 #' @return A tibble comparing effects of each intervention:
@@ -19,6 +19,8 @@
 #'   \item{annual_days}{Days of life gained/lost per year}
 #'   \item{lifetime_years}{Years of life gained/lost over 57 years}
 #' }
+#' @family analysis
+#' @seealso [lifestyle_tradeoff()], [daily_hazard_rate()], [annual_risk_budget()]
 #' @export
 #' @examples
 #' # Compare quitting smoking vs losing weight
@@ -62,9 +64,11 @@ compare_interventions <- function(interventions) {
 #'
 #' Calculate how much of one good habit compensates for a bad habit.
 #'
-#' @param bad_habit Factor name of the bad habit (from chronic_risks)
-#' @param good_habit Factor name of the compensating behavior
+#' @param bad_habit Factor name of the bad habit (from [chronic_risks()])
+#' @param good_habit Factor name of the compensating behavior (from [chronic_risks()])
 #' @return A tibble showing the tradeoff ratio
+#' @family analysis
+#' @seealso [compare_interventions()], [chronic_risks()]
 #' @export
 #' @examples
 #' # How much exercise offsets 2 cigarettes?
@@ -116,6 +120,8 @@ lifestyle_tradeoff <- function(bad_habit, good_habit) {
 #'   \item{microlives_consumed}{Estimated microlives consumed per day}
 #'   \item{interpretation}{Human-readable summary}
 #' }
+#' @family analysis
+#' @seealso [annual_risk_budget()], [compare_interventions()]
 #' @export
 #' @references
 #' Gompertz B (1825). "On the Nature of the Function Expressive of the Law of
@@ -168,7 +174,7 @@ daily_hazard_rate <- function(age, sex = "male") {
 #' Calculate total annual micromort exposure from a list of activities.
 #'
 #' @param activities Named numeric vector of activity frequencies per year.
-#'   Names should match activity names in the acute risks dataset.
+#'   Names should match activity names in [load_acute_risks()].
 #' @param age Optional age for baseline risk calculation
 #' @return A tibble with risk budget breakdown including:
 #' \describe{
@@ -178,6 +184,8 @@ daily_hazard_rate <- function(age, sex = "male") {
 #'   \item{annual_micromorts}{Total annual micromorts}
 #'   \item{pct_of_total}{Percentage of total risk budget}
 #' }
+#' @family analysis
+#' @seealso [daily_hazard_rate()], [load_acute_risks()]
 #' @export
 #' @examples
 #' # Calculate annual risk from recreational activities

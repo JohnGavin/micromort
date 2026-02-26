@@ -38,3 +38,12 @@ daily_hazard_rate(65, "female")
 Gompertz B (1825). "On the Nature of the Function Expressive of the Law of
 Human Mortality." Philosophical Transactions of the Royal Society.
 }
+\seealso{
+\code{\link[=annual_risk_budget]{annual_risk_budget()}}, \code{\link[=compare_interventions]{compare_interventions()}}
+
+Other analysis: 
+\code{\link{annual_risk_budget}()},
+\code{\link{compare_interventions}()},
+\code{\link{lifestyle_tradeoff}()}
+}
+\concept{analysis}

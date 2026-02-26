@@ -18,7 +18,8 @@ compare_interventions(interventions)
 
   factor
 
-  :   Name of the chronic risk factor (must match chronic_risks)
+  :   Name of the chronic risk factor (must match
+      [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md))
 
   change
 
@@ -55,6 +56,17 @@ A tibble comparing effects of each intervention:
 - lifetime_years:
 
   Years of life gained/lost over 57 years
+
+## See also
+
+[`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md),
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
+[`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md)
+
+Other analysis:
+[`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md),
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
+[`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md)
 
 ## Examples
 

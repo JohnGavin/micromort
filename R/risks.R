@@ -419,6 +419,8 @@ risk_data_sources <- function() {
 #' \url{https://seer.cancer.gov/statfacts/}
 #'
 #' Siegel RL, et al. Cancer statistics, 2024. CA Cancer J Clin. 2024;74:12-49.
+#' @family conditional-risk
+#' @seealso [vaccination_risks()], [conditional_risk()], [hedged_portfolio()]
 #' @examples
 #' cancer_risks()
 #' cancer_risks() |> dplyr::filter(sex == "Female")
@@ -519,6 +521,8 @@ cancer_risks <- function() {
 #'
 #' Lancet 2024. Contribution of vaccination to improved survival: 50 years of EPI.
 #' \url{https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext}
+#' @family conditional-risk
+#' @seealso [cancer_risks()], [conditional_risk()], [hedged_portfolio()]
 #' @examples
 #' vaccination_risks()
 #' vaccination_risks() |> dplyr::filter(country == "US")
@@ -591,6 +595,8 @@ vaccination_risks <- function() {
 #'   "respiratory", "infectious", or "all".
 #' @return A tibble comparing hedged vs unhedged risks in micromorts and microlives.
 #' @export
+#' @family conditional-risk
+#' @seealso [cancer_risks()], [vaccination_risks()], [hedged_portfolio()]
 #' @examples
 #' conditional_risk("cardiovascular")
 #' conditional_risk("cancer")
@@ -683,6 +689,8 @@ conditional_risk <- function(disease = "all") {
 #'   Default is all: cardiovascular, cancer, respiratory, infectious.
 #' @return A tibble with total hedged vs unhedged comparison and breakdown.
 #' @export
+#' @family conditional-risk
+#' @seealso [cancer_risks()], [vaccination_risks()], [conditional_risk()]
 #' @examples
 #' hedged_portfolio()
 #' hedged_portfolio(include_diseases = c("cardiovascular", "cancer"))

@@ -7,9 +7,9 @@
 lifestyle_tradeoff(bad_habit, good_habit)
 }
 \arguments{
-\item{bad_habit}{Factor name of the bad habit (from chronic_risks)}
+\item{bad_habit}{Factor name of the bad habit (from \code{\link[=chronic_risks]{chronic_risks()}})}
 
-\item{good_habit}{Factor name of the compensating behavior}
+\item{good_habit}{Factor name of the compensating behavior (from \code{\link[=chronic_risks]{chronic_risks()}})}
 }
 \value{
 A tibble showing the tradeoff ratio
@@ -21,3 +21,12 @@ Calculate how much of one good habit compensates for a bad habit.
 # How much exercise offsets 2 cigarettes?
 lifestyle_tradeoff("Smoking 2 cigarettes", "20 min moderate exercise")
 }
+\seealso{
+\code{\link[=compare_interventions]{compare_interventions()}}, \code{\link[=chronic_risks]{chronic_risks()}}
+
+Other analysis: 
+\code{\link{annual_risk_budget}()},
+\code{\link{compare_interventions}()},
+\code{\link{daily_hazard_rate}()}
+}
+\concept{analysis}

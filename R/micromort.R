@@ -5,6 +5,8 @@
 #'
 #' @param prob Numeric. Probability of death (0 to 1).
 #' @return Numeric value in micromorts.
+#' @family conversion
+#' @seealso [as_probability()], [as_microlife()], [value_of_micromort()]
 #' @export
 #' @examples
 #' as_micromort(1/1000000) # 1 micromort
@@ -18,6 +20,8 @@ as_micromort <- function(prob) {
 #'
 #' @param micromorts Numeric. Risk in micromorts.
 #' @return Numeric probability.
+#' @family conversion
+#' @seealso [as_micromort()], [as_microlife()]
 #' @export
 #' @examples
 #' as_probability(1) # 1e-6
@@ -32,6 +36,8 @@ as_probability <- function(micromorts) {
 #'
 #' @param vsl Numeric. Value of a Statistical Life (default $10,000,000).
 #' @return Numeric value of one micromort.
+#' @family conversion
+#' @seealso [as_micromort()], [lle()]
 #' @export
 #' @examples
 #' value_of_micromort(10000000) # $10
@@ -47,6 +53,8 @@ value_of_micromort <- function(vsl = 10000000) {
 #' @param prob Numeric. Probability of death.
 #' @param life_expectancy Numeric. Remaining life expectancy in years (default 40).
 #' @return Numeric. Loss of life expectancy in seconds, minutes, or days (estimated).
+#' @family conversion
+#' @seealso [as_micromort()], [as_microlife()], [value_of_micromort()]
 #' @export
 #' @examples
 #' lle(1/1000000, 40) # Loss from 1 micromort
@@ -79,6 +87,8 @@ lle <- function(prob, life_expectancy = 40) {
 #' - Negative microlives = life expectancy loss (harmful)
 #' - Positive microlives = life expectancy gain (beneficial)
 #'
+#' @family conversion
+#' @seealso [as_micromort()], [lle()], [chronic_risks()]
 #' @export
 #' @examples
 #' # Smoking 20 cigarettes/day: each costs ~30 mins = -600 mins total

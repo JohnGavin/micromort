@@ -18,7 +18,7 @@ A tibble with 14 rows and 7 columns:
 \description{
 A registry of data sources used to compile the risk datasets.
 Each source has a unique identifier that links to records in
-acute_risks and chronic_risks.
+\link{acute_risks} and \link{chronic_risks}.
 }
 \examples{
 # Load the source registry

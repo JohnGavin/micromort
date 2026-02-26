@@ -18,6 +18,17 @@ as_probability(micromorts)
 
 Numeric probability.
 
+## See also
+
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md)
+
+Other conversion:
+[`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md),
+[`as_micromort()`](https://johngavin.github.io/micromort/reference/as_micromort.md),
+[`lle()`](https://johngavin.github.io/micromort/reference/lle.md),
+[`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
+
 ## Examples
 
 ``` r

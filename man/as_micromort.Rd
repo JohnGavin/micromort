@@ -20,3 +20,13 @@ This function converts a raw probability of death into micromorts.
 as_micromort(1/1000000) # 1 micromort
 as_micromort(1/10000)   # 100 micromorts
 }
+\seealso{
+\code{\link[=as_probability]{as_probability()}}, \code{\link[=as_microlife]{as_microlife()}}, \code{\link[=value_of_micromort]{value_of_micromort()}}
+
+Other conversion: 
+\code{\link{as_microlife}()},
+\code{\link{as_probability}()},
+\code{\link{lle}()},
+\code{\link{value_of_micromort}()}
+}
+\concept{conversion}

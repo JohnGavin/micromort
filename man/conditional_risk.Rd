@@ -22,3 +22,12 @@ conditional_risk("cardiovascular")
 conditional_risk("cancer")
 conditional_risk("all")
 }
+\seealso{
+\code{\link[=cancer_risks]{cancer_risks()}}, \code{\link[=vaccination_risks]{vaccination_risks()}}, \code{\link[=hedged_portfolio]{hedged_portfolio()}}
+
+Other conditional-risk: 
+\code{\link{cancer_risks}()},
+\code{\link{hedged_portfolio}()},
+\code{\link{vaccination_risks}()}
+}
+\concept{conditional-risk}

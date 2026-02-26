@@ -22,6 +22,17 @@ conditional_risk(disease = "all")
 A tibble comparing hedged vs unhedged risks in micromorts and
 microlives.
 
+## See also
+
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
+
+Other conditional-risk:
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md),
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
+
 ## Examples
 
 ``` r

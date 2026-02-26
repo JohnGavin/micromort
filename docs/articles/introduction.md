@@ -21,8 +21,44 @@ for understanding and visualizing risks.
 ## 1. Micromorts (Acute Risk)
 
 A **micromort** is a unit of risk representing a one-in-a-million chance
-of death. It is used to measure acute risks—risks that can kill you
-immediately (e.g., skydiving, driving).
+of death. More precisely, it’s a **microprobability** of death — a
+one-in-a-million chance of a specific event (death) occurring.
+
+### Definition
+
+| Term | Definition | Example |
+|----|----|----|
+| **Microprobability** | 1-in-a-million chance of any event | 1 micromort = microprobability of death |
+| **Micromort** | 1-in-a-million chance of death, per event | Skydiving: 8 micromorts per jump |
+
+### Comparing Risks: Period Matters!
+
+**CRITICAL:** When comparing micromort values, ensure the **period is
+the same**. For example:
+
+| Activity     | Micromorts | Period   | Comparable?                         |
+|--------------|------------|----------|-------------------------------------|
+| Scuba diving | 5          | per dive | ✓ Per-event                         |
+| Scuba diving | 164        | per year | ✗ Per-year (assumes ~33 dives/year) |
+| Skydiving    | 8          | per jump | ✓ Per-event                         |
+
+The “per year” figure (164) conflates frequency with risk-per-event. A
+diver doing 5 dives/year vs 50 dives/year faces very different annual
+risk.
+
+### Conditional Risks
+
+Many activities have **selection effects**. For example:
+
+- **Marathon running (7 micromorts):** Runners are self-selected for
+  fitness. This low figure reflects the health of participants, not the
+  risk to an average person attempting a marathon.
+- **Motorcycle riding (10 micromorts/60 miles):** Experienced riders
+  face lower risk than novices, but the quoted figure is an average.
+
+These figures answer: “Given that someone completed this activity, what
+was their death risk?” Not: “What would happen if a random person
+attempted this?”
 
 ``` r
 # 1 in 10,000 chance of death = 100 micromorts
@@ -77,9 +113,30 @@ While micromorts measure sudden death, **microlives** measure the impact
 of chronic habits on your life expectancy. A microlife represents a
 30-minute change in life expectancy.
 
-Common chronic risks: \* Smoking 1 cigarette: -1 microlife (approx 1
-micromort equivalent risk) \* Being 5kg overweight: -1 microlife per day
-\* First 20 mins moderate exercise: +2 microlives
+### Living at Different Speeds
+
+A useful way to think about microlives: we all “use up” **48 microlives
+per day** just by living (24 hours = 48 × 30 minutes). Unhealthy habits
+accelerate this consumption, while healthy habits slow it down.
+
+A smoker who smokes 20 cigarettes per day uses up an additional 10
+microlives, which can be interpreted as **rushing towards death at 29
+hours per day** instead of 24. Conversely, someone with excellent
+lifestyle habits might effectively live at only 22 hours per day.
+
+**Healthcare bonus:** Modern healthcare and healthier lifestyles give us
+a “payback” of approximately **12 microlives per day** — our expected
+death is moving away from us even as we age.
+
+### Common Chronic Risks
+
+| Factor                   | Microlives/day | Interpretation              |
+|--------------------------|----------------|-----------------------------|
+| Smoking 1 cigarette      | -1             | Lose 30 min life expectancy |
+| Being 5kg overweight     | -1             | Lose 30 min/day             |
+| 20 min moderate exercise | +2             | Gain 60 min life expectancy |
+| 2+ hours TV daily        | -1             | Sedentary behavior          |
+| 5+ servings fruit/veg    | +2             | Healthy diet                |
 
 ``` r
 # as_microlife() converts minutes of life expectancy change to microlives
@@ -87,6 +144,7 @@ micromort equivalent risk) \* Being 5kg overweight: -1 microlife per day
 # Sign: negative = loss, positive = gain
 
 # Heavy smoker (20 cigarettes/day × 30 mins each = 600 mins LOST)
+# They're living at 24 + (20×0.5) = 29 hours/day towards death!
 as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
 #> [1] -20
 
@@ -185,20 +243,47 @@ The **Value of a Statistical Life (VSL)** is the monetary value used to
 justify safety spending. It is NOT the value of an individual life, but
 the aggregate willingness to pay for small risk reductions.
 
+### US Valuation
+
 Example: If a safety feature costs \$50 and saves 1 life in 100,000
 people (10 micromorts), is it worth it? Cost per micromort saved = \$50
 / 10 = \$5. If VSL = \$10M, then 1 micromort = \$10. Since \$5 \< \$10,
 it is cost-effective.
 
 ``` r
-# Standard VSL of $10M implies $10 per micromort
+# Standard US VSL of $10M implies $10 per micromort
 value_of_micromort(vsl = 10000000)
 #> [1] 10
-
-# Higher VSL implies higher safety spending
-value_of_micromort(vsl = 15000000)
-#> [1] 15
 ```
+
+### UK Valuation: Micromorts ≈ Microlives
+
+Interestingly, two UK government agencies arrive at similar valuations
+for micromorts and microlives:
+
+| Agency | Metric | Value | Per Unit |
+|----|----|----|----|
+| **NICE** (NHS) | 1 QALY | ~£30,000 | **£1.70 per microlife** |
+| **Dept of Transport** | Value of Statistical Life | £1,600,000 | **£1.60 per micromort** |
+
+This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the
+theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
+
+``` r
+# UK Department of Transport VSL: £1.6M → £1.60 per micromort
+value_of_micromort(vsl = 1600000)
+#> [1] 1.6
+
+# Compare: NICE prices a microlife at ~£1.70
+# (£30,000 per QALY ÷ 365 days ÷ 48 microlives/day ≈ £1.71)
+nice_per_microlife <- 30000 / 365 / 48
+round(nice_per_microlife, 2)
+#> [1] 1.71
+```
+
+This consistency suggests that policy decisions affecting acute risks
+(transport safety) and chronic risks (healthcare interventions) can be
+compared on a common scale.
 
 ## 5. Loss of Life Expectancy (LLE)
 
@@ -296,9 +381,16 @@ cat("Population burden (QALD/million):", format(total_qald_lost, big.mark = ",")
 
 ### References
 
+- Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.” BMJ
+  2012;345:e8223.
+  [doi:10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
+- Spiegelhalter D (2012). “Understanding uncertainty: Microlives.” Plus
+  Magazine.
+  [plus.maths.org](https://plus.maths.org/content/understanding-uncertainty-microlives)
 - WHO Global Burden of Disease:
   [ghdx.healthdata.org](https://ghdx.healthdata.org/)
-- Spiegelhalter D (2012). BMJ 2012;345:e8223. <doi:10.1136/bmj.e8223>
+- NICE Methods Guide:
+  [nice.org.uk](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case)
 
 ## 7. Conditional Risks: Cancer, Vaccination, and Risk Hedging
 

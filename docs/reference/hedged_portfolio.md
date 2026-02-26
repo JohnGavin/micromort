@@ -22,6 +22,17 @@ hedged_portfolio(
 
 A tibble with total hedged vs unhedged comparison and breakdown.
 
+## See also
+
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md),
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md)
+
+Other conditional-risk:
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md),
+[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md),
+[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
+
 ## Examples
 
 ``` r

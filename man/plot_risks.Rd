@@ -7,7 +7,7 @@
 plot_risks(risks = common_risks(), facet = TRUE)
 }
 \arguments{
-\item{risks}{Tibble. Dataframe of risks, defaults to common_risks().}
+\item{risks}{Tibble. Dataframe of risks, defaults to \code{\link[=common_risks]{common_risks()}}.}
 
 \item{facet}{Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1 stacked).
 Default is TRUE.}
@@ -22,3 +22,10 @@ Visualizes the risk of different activities in micromorts.
 plot_risks()
 plot_risks(facet = FALSE)
 }
+\seealso{
+\code{\link[=plot_risks_interactive]{plot_risks_interactive()}}, \code{\link[=common_risks]{common_risks()}}
+
+Other visualization: 
+\code{\link{plot_risks_interactive}()}
+}
+\concept{visualization}
