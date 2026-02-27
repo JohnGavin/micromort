@@ -446,6 +446,9 @@ cancer_risks <- function() {
     "Leukemia", "Male", "All ages", 7.8, 1.3,
     "Esophagus", "Male", "All ages", 7.1, 1.5,
     "Bladder", "Male", "All ages", 6.5, 1.8,
+    "Non-Hodgkin Lymphoma", "Male", "All ages", 5.6, 1.7,
+    "Multiple Myeloma", "Male", "All ages", 3.3, 3.7,
+    "Hodgkin Lymphoma", "Male", "All ages", 0.4, 3.0,
     "All cancers", "Male", "All ages", 183.5, 1.5,
 
     # Females - All ages (ranked by mortality)
@@ -457,6 +460,9 @@ cancer_risks <- function() {
     "Uterus", "Female", "All ages", 5.3, 2.5,
     "Leukemia", "Female", "All ages", 4.8, 1.3,
     "Liver", "Female", "All ages", 4.2, 1.5,
+    "Non-Hodgkin Lymphoma", "Female", "All ages", 3.6, 1.7,
+    "Multiple Myeloma", "Female", "All ages", 2.1, 3.7,
+    "Hodgkin Lymphoma", "Female", "All ages", 0.3, 3.0,
     "All cancers", "Female", "All ages", 128.1, 1.5,
 
     # Age-stratified (both sexes, all cancers)
