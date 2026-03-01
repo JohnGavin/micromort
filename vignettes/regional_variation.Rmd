@@ -24,6 +24,23 @@ library(DT)
 
 This vignette explores **regional variation in life expectancy** across Western Europe, based on research by Bonnet et al. (2026) published in *Nature Communications*.
 
+## Understanding the Data Structure
+
+**Each row represents aggregated population statistics for one region-year-sex combination**, NOT individual survey responses.
+
+| region_code | year | sex | life_expectancy | What this means |
+|-------------|------|-----|-----------------|-----------------|
+| FR10 | 2019 | Male | 82.5 | Average LE for **all males** in Île-de-France in 2019 |
+| FR10 | 2019 | Female | 87.1 | Average LE for **all females** in Île-de-France in 2019 |
+| FR10 | 2019 | Total | 84.8 | Average LE for **entire population** of Île-de-France in 2019 |
+
+The underlying Eurostat data represents **~400 million people** across Western Europe. Life expectancy is calculated from official death registrations and census population counts—not a sample survey.
+
+**Row count formula:** `regions × years × 3 sex categories`
+
+- Sample data: 11 regions × 28 years × 3 = **924 rows**
+- Full dataset: 450 regions × 28 years × 3 = **37,800 rows**
+
 ## Key Finding: A Two-Tiered Europe
 
 Since the mid-2000s, Western Europe has fragmented into:

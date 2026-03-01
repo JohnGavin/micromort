@@ -45,13 +45,20 @@ Other regional:
 ``` r
 # Laggard regions in 2019
 laggard_regions(year = 2019, sex = "Total")
-#> # A tibble: 4 × 9
-#>   region_code region_name            country_code  year sex   life_expectancy
-#>   <chr>       <chr>                  <chr>        <int> <chr>           <dbl>
-#> 1 BE32        Hainaut (Wallonia)     BE            2019 Total            75.9
-#> 2 DE80        Mecklenburg-Vorpommern DE            2019 Total            75.9
-#> 3 FRE1        Nord (Hauts-de-France) FR            2019 Total            75.9
-#> 4 UKC1        Tees Valley and Durham UK            2019 Total            75.9
+#> # A tibble: 81 × 9
+#>    region_code region_name           country_code  year sex   life_expectancy
+#>    <chr>       <chr>                 <chr>        <int> <chr>           <dbl>
+#>  1 AT13        Wien                  AT            2019 Total            81.1
+#>  2 AT22        Steiermark            AT            2019 Total            82.2
+#>  3 AT32        Salzburg              AT            2019 Total            82.8
+#>  4 AT33        Tirol                 AT            2019 Total            83  
+#>  5 AT34        Vorarlberg            AT            2019 Total            83.3
+#>  6 BE32        Prov. Hainaut         BE            2019 Total            79.6
+#>  7 BE33        Prov. Liège           BE            2019 Total            80.6
+#>  8 BE34        Prov. Luxembourg (BE) BE            2019 Total            80.6
+#>  9 BE35        Prov. Namur           BE            2019 Total            80.3
+#> 10 DE11        Stuttgart             DE            2019 Total            82.6
+#> # ℹ 71 more rows
 #> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
 #> #   source_url <chr>
 ```

@@ -114,6 +114,17 @@ returns all.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
 
 <div class="section">
+<h3 id="data-structure-aggregated-population-statistics">Data Structure: Aggregated Population Statistics<a class="anchor" aria-label="anchor" href="#data-structure-aggregated-population-statistics"></a></h3>
+
+
+<p><strong>Each row represents one region-year-sex combination</strong>, NOT individual survey
+responses. For example, a dataset with 450 regions × 28 years × 3 sex categories
+= 37,800 rows of aggregated statistics.</p><table class="table table"><tr><td>region_code</td><td>year</td><td>sex</td><td>life_expectancy</td><td>Meaning</td></tr><tr><td>FR10</td><td>2019</td><td>Male</td><td>82.5</td><td>Avg LE for all males in Île-de-France in 2019</td></tr><tr><td>FR10</td><td>2019</td><td>Female</td><td>87.1</td><td>Avg LE for all females in Île-de-France in 2019</td></tr><tr><td>FR10</td><td>2019</td><td>Total</td><td>84.8</td><td>Avg LE for entire population of Île-de-France in 2019</td></tr></table><p>The underlying Eurostat data represents <strong>~400 million people</strong> across Western
+Europe. Life expectancy is calculated from official death registrations and
+census population counts—not a sample survey.</p>
+</div>
+
+<div class="section">
 <h3 id="data-source">Data Source<a class="anchor" aria-label="anchor" href="#data-source"></a></h3>
 
 
@@ -169,34 +180,39 @@ in human longevity." Nature Communications 17, 996.
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># All data</span></span></span>
 <span class="r-in"><span><span class="fu">regional_life_expectancy</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 924 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    region_code region_name             country_code  year sex    life_expectancy</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>992 Female            80.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>992 Male              74  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>992 Total             77  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>993 Female            80.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>993 Male              74.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>993 Total             77.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>994 Female            80.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>994 Male              74.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>994 Total             77.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> BE10        Brussels-Capital Region BE            <span style="text-decoration: underline;">1</span>995 Female            80.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 914 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17,221 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    region_code region_name country_code  year sex    life_expectancy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>992 Female            79  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>992 Male              71.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>992 Total             75.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>993 Female            79.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>993 Male              72.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>993 Total             76.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>994 Female            80  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>994 Male              72.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>994 Total             76.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> AT11        Burgenland  AT            <span style="text-decoration: underline;">1</span>996 Female            79.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 17,211 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: microlives_vs_eu_avg &lt;dbl&gt;, classification &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># French regions in 2019</span></span></span>
 <span class="r-in"><span><span class="fu">regional_life_expectancy</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"FR"</span>, year <span class="op">=</span> <span class="fl">2019</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   region_code region_name               country_code  year sex   life_expectancy</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> FR10        Île-de-France (Paris reg… FR            <span style="text-decoration: underline;">2</span>019 Fema…            85.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> FR10        Île-de-France (Paris reg… FR            <span style="text-decoration: underline;">2</span>019 Male             81.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> FR10        Île-de-France (Paris reg… FR            <span style="text-decoration: underline;">2</span>019 Total            83  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> FRE1        Nord (Hauts-de-France)    FR            <span style="text-decoration: underline;">2</span>019 Fema…            79.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> FRE1        Nord (Hauts-de-France)    FR            <span style="text-decoration: underline;">2</span>019 Male             73.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> FRE1        Nord (Hauts-de-France)    FR            <span style="text-decoration: underline;">2</span>019 Total            75.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 78 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    region_code region_name           country_code  year sex    life_expectancy</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> FR10        Ile de France         FR            <span style="text-decoration: underline;">2</span>019 Female            87.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> FR10        Ile de France         FR            <span style="text-decoration: underline;">2</span>019 Male              81.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> FR10        Ile de France         FR            <span style="text-decoration: underline;">2</span>019 Total             84.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> FRB0        Centre — Val de Loire FR            <span style="text-decoration: underline;">2</span>019 Female            85.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> FRB0        Centre — Val de Loire FR            <span style="text-decoration: underline;">2</span>019 Male              79.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> FRB0        Centre — Val de Loire FR            <span style="text-decoration: underline;">2</span>019 Total             82.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> FRC1        Bourgogne             FR            <span style="text-decoration: underline;">2</span>019 Female            85.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> FRC1        Bourgogne             FR            <span style="text-decoration: underline;">2</span>019 Male              79.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> FRC1        Bourgogne             FR            <span style="text-decoration: underline;">2</span>019 Total             82.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> FRC2        Franche-Comté         FR            <span style="text-decoration: underline;">2</span>019 Female            85.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 68 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: microlives_vs_eu_avg &lt;dbl&gt;, classification &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -207,39 +223,36 @@ in human longevity." Nature Communications 17, 996.
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   classification mean_le</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> average           79.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> laggard           75.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> vanguard          83  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> average           82.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> laggard           81.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> vanguard          84.3</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Top 10 regions by life expectancy (2019, Total)</span></span></span>
 <span class="r-in"><span><span class="fu">regional_life_expectancy</span><span class="op">(</span>year <span class="op">=</span> <span class="fl">2019</span>, sex <span class="op">=</span> <span class="st">"Total"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">life_expectancy</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 11 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    region_code region_name              country_code  year sex   life_expectancy</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> CH03        Northwestern Switzerland CH            <span style="text-decoration: underline;">2</span>019 Total            83  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ES51        Catalonia                ES            <span style="text-decoration: underline;">2</span>019 Total            83  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> FR10        Île-de-France (Paris re… FR            <span style="text-decoration: underline;">2</span>019 Total            83  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ITC4        Lombardy                 IT            <span style="text-decoration: underline;">2</span>019 Total            83  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> BE10        Brussels-Capital Region  BE            <span style="text-decoration: underline;">2</span>019 Total            79.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> DE21        Upper Bavaria            DE            <span style="text-decoration: underline;">2</span>019 Total            79.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> NL32        North Holland            NL            <span style="text-decoration: underline;">2</span>019 Total            79.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> BE32        Hainaut (Wallonia)       BE            <span style="text-decoration: underline;">2</span>019 Total            75.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> DE80        Mecklenburg-Vorpommern   DE            <span style="text-decoration: underline;">2</span>019 Total            75.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> FRE1        Nord (Hauts-de-France)   FR            <span style="text-decoration: underline;">2</span>019 Total            75.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> UKC1        Tees Valley and Durham   UK            <span style="text-decoration: underline;">2</span>019 Total            75.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ES30        Comunidad de Madrid      ES            <span style="text-decoration: underline;">2</span>019 Total            85.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> CH07        Ticino                   CH            <span style="text-decoration: underline;">2</span>019 Total            85  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ES22        Comunidad Foral de Nava… ES            <span style="text-decoration: underline;">2</span>019 Total            85  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ITH2        Provincia Autonoma di T… IT            <span style="text-decoration: underline;">2</span>019 Total            84.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ES41        Castilla y León          ES            <span style="text-decoration: underline;">2</span>019 Total            84.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> CH01        Région lémanique         CH            <span style="text-decoration: underline;">2</span>019 Total            84.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> FR10        Ile de France            FR            <span style="text-decoration: underline;">2</span>019 Total            84.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ES21        País Vasco               ES            <span style="text-decoration: underline;">2</span>019 Total            84.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ITH1        Provincia Autonoma di B… IT            <span style="text-decoration: underline;">2</span>019 Total            84.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ITI2        Umbria                   IT            <span style="text-decoration: underline;">2</span>019 Total            84.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: microlives_vs_eu_avg &lt;dbl&gt;, classification &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Microlives advantage of Catalonia vs EU average</span></span></span>
 <span class="r-in"><span><span class="fu">regional_life_expectancy</span><span class="op">(</span>country <span class="op">=</span> <span class="st">"ES"</span>, year <span class="op">=</span> <span class="fl">2019</span>, sex <span class="op">=</span> <span class="st">"Total"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Catalonia"</span>, <span class="va">region_name</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   region_code region_name country_code  year sex   life_expectancy</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ES51        Catalonia   ES            <span style="text-decoration: underline;">2</span>019 Total              83</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: microlives_vs_eu_avg &lt;dbl&gt;, classification &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 0 × 9</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 variables: region_code &lt;chr&gt;, region_name &lt;chr&gt;, country_code &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   year &lt;int&gt;, sex &lt;chr&gt;, life_expectancy &lt;dbl&gt;, microlives_vs_eu_avg &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   classification &lt;chr&gt;, source_url &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -32,6 +32,22 @@ utils::globalVariables(c(
 #' }
 #'
 #' @details
+#' ## Data Structure: Aggregated Population Statistics
+#'
+#' **Each row represents one region-year-sex combination**, NOT individual survey
+#' responses. For example, a dataset with 450 regions × 28 years × 3 sex categories
+#' = 37,800 rows of aggregated statistics.
+#'
+#' | region_code | year | sex | life_expectancy | Meaning |
+#' |-------------|------|-----|-----------------|---------|
+#' | FR10 | 2019 | Male | 82.5 | Avg LE for all males in Île-de-France in 2019 |
+#' | FR10 | 2019 | Female | 87.1 | Avg LE for all females in Île-de-France in 2019 |
+#' | FR10 | 2019 | Total | 84.8 | Avg LE for entire population of Île-de-France in 2019 |
+#'
+#' The underlying Eurostat data represents **~400 million people** across Western
+#' Europe. Life expectancy is calculated from official death registrations and
+#' census population counts—not a sample survey.
+#'
 #' ## Data Source
 #'
 #' Primary data from Eurostat dataset `demo_r_mlifexp`. Regional classifications

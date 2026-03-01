@@ -19,6 +19,26 @@ This vignette explores **regional variation in life expectancy** across
 Western Europe, based on research by Bonnet et al. (2026) published in
 *Nature Communications*.
 
+## Understanding the Data Structure
+
+**Each row represents aggregated population statistics for one
+region-year-sex combination**, NOT individual survey responses.
+
+| region_code | year | sex | life_expectancy | What this means |
+|----|----|----|----|----|
+| FR10 | 2019 | Male | 82.5 | Average LE for **all males** in Île-de-France in 2019 |
+| FR10 | 2019 | Female | 87.1 | Average LE for **all females** in Île-de-France in 2019 |
+| FR10 | 2019 | Total | 84.8 | Average LE for **entire population** of Île-de-France in 2019 |
+
+The underlying Eurostat data represents **~400 million people** across
+Western Europe. Life expectancy is calculated from official death
+registrations and census population counts—not a sample survey.
+
+**Row count formula:** `regions × years × 3 sex categories`
+
+- Sample data: 11 regions × 28 years × 3 = **924 rows**
+- Full dataset: 450 regions × 28 years × 3 = **37,800 rows**
+
 ## Key Finding: A Two-Tiered Europe
 
 Since the mid-2000s, Western Europe has fragmented into: - **Vanguard
@@ -64,15 +84,15 @@ le_gap <- diff(gap_data$mean_le)
 lifetime_microlives_gap <- abs(le_gap) * 17520
 
 cat("Life expectancy gap:", round(abs(le_gap), 1), "years\n")
-#> Life expectancy gap: 7.1 years
+#> Life expectancy gap: 2.6 years
 cat("Lifetime microlives difference:", format(round(lifetime_microlives_gap), big.mark = ","), "\n")
-#> Lifetime microlives difference: 124,392
+#> Lifetime microlives difference: 45,496
 cat("Daily microlives difference:", round(abs(le_gap) * 1.2, 1), "per day\n")
-#> Daily microlives difference: 8.5 per day
+#> Daily microlives difference: 3.1 per day
 ```
 
 **Interpretation:** Living in a vanguard region vs a laggard region
-corresponds to ~8.5 microlives per day—roughly equivalent to the benefit
+corresponds to ~3.1 microlives per day—roughly equivalent to the benefit
 of 30 minutes of daily exercise.
 
 ## Regional Data Explorer

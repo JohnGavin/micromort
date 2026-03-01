@@ -28,6 +28,8 @@ Suggests:
     eurostat,
     fs,
     here,
+    stringr,
+    tidyr,
     jsonlite,
     knitr,
     pkgdown,

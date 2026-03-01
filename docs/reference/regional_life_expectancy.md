@@ -78,6 +78,23 @@ A tibble with columns:
 
 ## Details
 
+### Data Structure: Aggregated Population Statistics
+
+**Each row represents one region-year-sex combination**, NOT individual
+survey responses. For example, a dataset with 450 regions × 28 years × 3
+sex categories = 37,800 rows of aggregated statistics.
+
+|  |  |  |  |  |
+|----|----|----|----|----|
+| region_code | year | sex | life_expectancy | Meaning |
+| FR10 | 2019 | Male | 82.5 | Avg LE for all males in Île-de-France in 2019 |
+| FR10 | 2019 | Female | 87.1 | Avg LE for all females in Île-de-France in 2019 |
+| FR10 | 2019 | Total | 84.8 | Avg LE for entire population of Île-de-France in 2019 |
+
+The underlying Eurostat data represents **~400 million people** across
+Western Europe. Life expectancy is calculated from official death
+registrations and census population counts—not a sample survey.
+
 ### Data Source
 
 Primary data from Eurostat dataset `demo_r_mlifexp`. Regional
@@ -142,34 +159,39 @@ Other regional:
 ``` r
 # All data
 regional_life_expectancy()
-#> # A tibble: 924 × 9
-#>    region_code region_name             country_code  year sex    life_expectancy
-#>  * <chr>       <chr>                   <chr>        <int> <chr>            <dbl>
-#>  1 BE10        Brussels-Capital Region BE            1992 Female            80.5
-#>  2 BE10        Brussels-Capital Region BE            1992 Male              74  
-#>  3 BE10        Brussels-Capital Region BE            1992 Total             77  
-#>  4 BE10        Brussels-Capital Region BE            1993 Female            80.6
-#>  5 BE10        Brussels-Capital Region BE            1993 Male              74.1
-#>  6 BE10        Brussels-Capital Region BE            1993 Total             77.1
-#>  7 BE10        Brussels-Capital Region BE            1994 Female            80.7
-#>  8 BE10        Brussels-Capital Region BE            1994 Male              74.2
-#>  9 BE10        Brussels-Capital Region BE            1994 Total             77.2
-#> 10 BE10        Brussels-Capital Region BE            1995 Female            80.8
-#> # ℹ 914 more rows
+#> # A tibble: 17,221 × 9
+#>    region_code region_name country_code  year sex    life_expectancy
+#>    <chr>       <chr>       <chr>        <int> <chr>            <dbl>
+#>  1 AT11        Burgenland  AT            1992 Female            79  
+#>  2 AT11        Burgenland  AT            1992 Male              71.8
+#>  3 AT11        Burgenland  AT            1992 Total             75.5
+#>  4 AT11        Burgenland  AT            1993 Female            79.6
+#>  5 AT11        Burgenland  AT            1993 Male              72.7
+#>  6 AT11        Burgenland  AT            1993 Total             76.2
+#>  7 AT11        Burgenland  AT            1994 Female            80  
+#>  8 AT11        Burgenland  AT            1994 Male              72.5
+#>  9 AT11        Burgenland  AT            1994 Total             76.3
+#> 10 AT11        Burgenland  AT            1996 Female            79.7
+#> # ℹ 17,211 more rows
 #> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
 #> #   source_url <chr>
 
 # French regions in 2019
 regional_life_expectancy(country = "FR", year = 2019)
-#> # A tibble: 6 × 9
-#>   region_code region_name               country_code  year sex   life_expectancy
-#>   <chr>       <chr>                     <chr>        <int> <chr>           <dbl>
-#> 1 FR10        Île-de-France (Paris reg… FR            2019 Fema…            85.4
-#> 2 FR10        Île-de-France (Paris reg… FR            2019 Male             81.1
-#> 3 FR10        Île-de-France (Paris reg… FR            2019 Total            83  
-#> 4 FRE1        Nord (Hauts-de-France)    FR            2019 Fema…            79.7
-#> 5 FRE1        Nord (Hauts-de-France)    FR            2019 Male             73.1
-#> 6 FRE1        Nord (Hauts-de-France)    FR            2019 Total            75.9
+#> # A tibble: 78 × 9
+#>    region_code region_name           country_code  year sex    life_expectancy
+#>    <chr>       <chr>                 <chr>        <int> <chr>            <dbl>
+#>  1 FR10        Ile de France         FR            2019 Female            87.1
+#>  2 FR10        Ile de France         FR            2019 Male              81.8
+#>  3 FR10        Ile de France         FR            2019 Total             84.6
+#>  4 FRB0        Centre — Val de Loire FR            2019 Female            85.7
+#>  5 FRB0        Centre — Val de Loire FR            2019 Male              79.6
+#>  6 FRB0        Centre — Val de Loire FR            2019 Total             82.7
+#>  7 FRC1        Bourgogne             FR            2019 Female            85.6
+#>  8 FRC1        Bourgogne             FR            2019 Male              79.3
+#>  9 FRC1        Bourgogne             FR            2019 Total             82.4
+#> 10 FRC2        Franche-Comté         FR            2019 Female            85.9
+#> # ℹ 68 more rows
 #> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
 #> #   source_url <chr>
 
@@ -180,37 +202,34 @@ regional_life_expectancy(year = 2019, sex = "Total") |>
 #> # A tibble: 3 × 2
 #>   classification mean_le
 #>   <chr>            <dbl>
-#> 1 average           79.8
-#> 2 laggard           75.9
-#> 3 vanguard          83  
+#> 1 average           82.8
+#> 2 laggard           81.7
+#> 3 vanguard          84.3
 
 # Top 10 regions by life expectancy (2019, Total)
 regional_life_expectancy(year = 2019, sex = "Total") |>
   dplyr::slice_max(life_expectancy, n = 10)
-#> # A tibble: 11 × 9
+#> # A tibble: 10 × 9
 #>    region_code region_name              country_code  year sex   life_expectancy
 #>    <chr>       <chr>                    <chr>        <int> <chr>           <dbl>
-#>  1 CH03        Northwestern Switzerland CH            2019 Total            83  
-#>  2 ES51        Catalonia                ES            2019 Total            83  
-#>  3 FR10        Île-de-France (Paris re… FR            2019 Total            83  
-#>  4 ITC4        Lombardy                 IT            2019 Total            83  
-#>  5 BE10        Brussels-Capital Region  BE            2019 Total            79.8
-#>  6 DE21        Upper Bavaria            DE            2019 Total            79.8
-#>  7 NL32        North Holland            NL            2019 Total            79.8
-#>  8 BE32        Hainaut (Wallonia)       BE            2019 Total            75.9
-#>  9 DE80        Mecklenburg-Vorpommern   DE            2019 Total            75.9
-#> 10 FRE1        Nord (Hauts-de-France)   FR            2019 Total            75.9
-#> 11 UKC1        Tees Valley and Durham   UK            2019 Total            75.9
+#>  1 ES30        Comunidad de Madrid      ES            2019 Total            85.8
+#>  2 CH07        Ticino                   CH            2019 Total            85  
+#>  3 ES22        Comunidad Foral de Nava… ES            2019 Total            85  
+#>  4 ITH2        Provincia Autonoma di T… IT            2019 Total            84.9
+#>  5 ES41        Castilla y León          ES            2019 Total            84.7
+#>  6 CH01        Région lémanique         CH            2019 Total            84.6
+#>  7 FR10        Ile de France            FR            2019 Total            84.6
+#>  8 ES21        País Vasco               ES            2019 Total            84.5
+#>  9 ITH1        Provincia Autonoma di B… IT            2019 Total            84.5
+#> 10 ITI2        Umbria                   IT            2019 Total            84.5
 #> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
 #> #   source_url <chr>
 
 # Microlives advantage of Catalonia vs EU average
 regional_life_expectancy(country = "ES", year = 2019, sex = "Total") |>
   dplyr::filter(grepl("Catalonia", region_name))
-#> # A tibble: 1 × 9
-#>   region_code region_name country_code  year sex   life_expectancy
-#>   <chr>       <chr>       <chr>        <int> <chr>           <dbl>
-#> 1 ES51        Catalonia   ES            2019 Total              83
-#> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
-#> #   source_url <chr>
+#> # A tibble: 0 × 9
+#> # ℹ 9 variables: region_code <chr>, region_name <chr>, country_code <chr>,
+#> #   year <int>, sex <chr>, life_expectancy <dbl>, microlives_vs_eu_avg <dbl>,
+#> #   classification <chr>, source_url <chr>
 ```

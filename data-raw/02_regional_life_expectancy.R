@@ -40,7 +40,7 @@ cli::cli_alert_success("Downloaded {nrow(raw_data)} rows")
 
 # Get region labels
 region_labels <- eurostat::get_eurostat_dic("geo") |>
-  rename(geo = code, region_name = name)
+  rename(geo = code_name, region_name = full_name)
 
 # Western European countries (matching Nature Communications study scope)
 western_europe <- c(

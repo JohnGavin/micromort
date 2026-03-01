@@ -43,6 +43,23 @@ Life expectancy at birth by NUTS2 region for Western European countries,
 based on Eurostat data and the methodology from Bonnet et al. (2026).
 }
 \details{
+\subsection{Data Structure: Aggregated Population Statistics}{
+
+\strong{Each row represents one region-year-sex combination}, NOT individual survey
+responses. For example, a dataset with 450 regions × 28 years × 3 sex categories
+= 37,800 rows of aggregated statistics.\tabular{lllll}{
+   region_code \tab year \tab sex \tab life_expectancy \tab Meaning \cr
+   FR10 \tab 2019 \tab Male \tab 82.5 \tab Avg LE for all males in Île-de-France in 2019 \cr
+   FR10 \tab 2019 \tab Female \tab 87.1 \tab Avg LE for all females in Île-de-France in 2019 \cr
+   FR10 \tab 2019 \tab Total \tab 84.8 \tab Avg LE for entire population of Île-de-France in 2019 \cr
+}
+
+
+The underlying Eurostat data represents \strong{~400 million people} across Western
+Europe. Life expectancy is calculated from official death registrations and
+census population counts—not a sample survey.
+}
+
 \subsection{Data Source}{
 
 Primary data from Eurostat dataset \code{demo_r_mlifexp}. Regional classifications

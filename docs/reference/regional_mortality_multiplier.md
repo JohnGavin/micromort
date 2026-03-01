@@ -56,7 +56,7 @@ regional_mortality_multiplier("ES51")
 #> # A tibble: 1 × 8
 #>   region_code region_name life_expectancy reference  reference_le le_difference
 #>   <chr>       <chr>                 <dbl> <chr>             <dbl>         <dbl>
-#> 1 ES51        Catalonia                83 EU average         79.6          3.45
+#> 1 ES51        Cataluña               84.3 EU average         82.4          1.86
 #> # ℹ 2 more variables: mortality_multiplier <dbl>, interpretation <chr>
 
 # Compare to national average
@@ -64,6 +64,6 @@ regional_mortality_multiplier("ES51", reference = "national")
 #> # A tibble: 1 × 8
 #>   region_code region_name life_expectancy reference  reference_le le_difference
 #>   <chr>       <chr>                 <dbl> <chr>             <dbl>         <dbl>
-#> 1 ES51        Catalonia                83 ES average           83             0
+#> 1 ES51        Cataluña               84.3 ES average         83.7          0.59
 #> # ℹ 2 more variables: mortality_multiplier <dbl>, interpretation <chr>
 ```

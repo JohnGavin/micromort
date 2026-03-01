@@ -45,13 +45,23 @@ Other regional:
 ``` r
 # Vanguard regions in 2019
 vanguard_regions(year = 2019, sex = "Total")
-#> # A tibble: 4 × 9
-#>   region_code region_name               country_code  year sex   life_expectancy
-#>   <chr>       <chr>                     <chr>        <int> <chr>           <dbl>
-#> 1 CH03        Northwestern Switzerland  CH            2019 Total              83
-#> 2 ES51        Catalonia                 ES            2019 Total              83
-#> 3 FR10        Île-de-France (Paris reg… FR            2019 Total              83
-#> 4 ITC4        Lombardy                  IT            2019 Total              83
+#> # A tibble: 14 × 9
+#>    region_code region_name              country_code  year sex   life_expectancy
+#>    <chr>       <chr>                    <chr>        <int> <chr>           <dbl>
+#>  1 CH01        Région lémanique         CH            2019 Total            84.6
+#>  2 CH03        Nordwestschweiz          CH            2019 Total            84  
+#>  3 CH06        Zentralschweiz           CH            2019 Total            84.4
+#>  4 ES13        Cantabria                ES            2019 Total            83.9
+#>  5 ES22        Comunidad Foral de Nava… ES            2019 Total            85  
+#>  6 ES24        Aragón                   ES            2019 Total            84.4
+#>  7 ES30        Comunidad de Madrid      ES            2019 Total            85.8
+#>  8 ES51        Cataluña                 ES            2019 Total            84.3
+#>  9 ES53        Illes Balears            ES            2019 Total            84.2
+#> 10 FI20        Åland                    FI            2019 Total            83.9
+#> 11 FRM0        Corse                    FR            2019 Total            84  
+#> 12 ITI4        Lazio                    IT            2019 Total            83.8
+#> 13 NO01        Oslo og Akershus (stati… NO            2019 Total            83.8
+#> 14 SE11        Stockholm                SE            2019 Total            83.9
 #> # ℹ 3 more variables: microlives_vs_eu_avg <dbl>, classification <chr>,
 #> #   source_url <chr>
 ```
