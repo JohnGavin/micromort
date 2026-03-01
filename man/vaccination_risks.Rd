@@ -19,7 +19,7 @@ Data from CDC, WHO, and Lancet 2024 Global Vaccine Impact Study.
 \examples{
 vaccination_risks()
 vaccination_risks() |> dplyr::filter(country == "US")
-vaccination_risks() |> dplyr::filter(age_group == "Childhood")
+vaccination_risks() |> dplyr::filter(age_group == "0-5")  # Childhood vaccines
 }
 \references{
 CDC. Health and Economic Benefits of Routine Childhood Immunizations.

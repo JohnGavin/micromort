@@ -24,6 +24,7 @@ if (requireNamespace("plotly", quietly = TRUE)) {
 \code{\link[=plot_risks]{plot_risks()}}, \code{\link[=common_risks]{common_risks()}}
 
 Other visualization: 
-\code{\link{plot_risks}()}
+\code{\link{plot_risks}()},
+\code{\link{prepare_risks_plot}()}
 }
 \concept{visualization}

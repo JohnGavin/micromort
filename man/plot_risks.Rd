@@ -4,28 +4,49 @@
 \alias{plot_risks}
 \title{Plot Risk Comparison}
 \usage{
-plot_risks(risks = common_risks(), facet = TRUE)
+plot_risks(risks = common_risks(), facet = TRUE, height = 12, label_size = 9)
 }
 \arguments{
-\item{risks}{Tibble. Dataframe of risks, defaults to \code{\link[=common_risks]{common_risks()}}.}
+\item{risks}{Tibble. Dataframe of risks from \code{\link[=prepare_risks_plot]{prepare_risks_plot()}} or
+\code{\link[=common_risks]{common_risks()}}. If not pre-filtered, applies default filtering.}
 
-\item{facet}{Logical. If TRUE, splits plot into COVID-19 and Other panels (2x1 stacked).
+\item{facet}{Logical. If TRUE, splits plot into COVID-19 and Other panels.
 Default is TRUE.}
+
+\item{height}{Numeric. Plot height in inches. Default is 12 (doubled from
+previous default of 6) to prevent label overlap.}
+
+\item{label_size}{Numeric. Y-axis label font size. Default is 9.}
 }
 \value{
 A ggplot2 object.
 }
 \description{
 Visualizes the risk of different activities in micromorts.
+For filtering by category, use \code{\link[=prepare_risks_plot]{prepare_risks_plot()}} first.
 }
 \examples{
+# Default plot (all risks)
 plot_risks()
+
+# Without faceting
 plot_risks(facet = FALSE)
+
+# Filter then plot
+prepare_risks_plot(categories = "Sport") |> plot_risks()
+
+# Exclude COVID-19 and show top 20
+prepare_risks_plot(exclude_categories = "COVID-19", top_n = 20) |>
+  plot_risks(facet = FALSE)
+
+# Custom height for many categories
+prepare_risks_plot(top_n = 50) |> plot_risks(height = 16)
 }
 \seealso{
-\code{\link[=plot_risks_interactive]{plot_risks_interactive()}}, \code{\link[=common_risks]{common_risks()}}
+\code{\link[=prepare_risks_plot]{prepare_risks_plot()}}, \code{\link[=plot_risks_interactive]{plot_risks_interactive()}}, \code{\link[=common_risks]{common_risks()}}
 
 Other visualization: 
-\code{\link{plot_risks_interactive}()}
+\code{\link{plot_risks_interactive}()},
+\code{\link{prepare_risks_plot}()}
 }
 \concept{visualization}

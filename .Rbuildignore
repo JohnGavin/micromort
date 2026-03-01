@@ -16,3 +16,6 @@ push_to_cachix.sh
 ^inst/extdata/logs$
 ^_pkgdown\.yml$
 ^docs$
+^\.claude$
+^pkgdown$
+^plans$

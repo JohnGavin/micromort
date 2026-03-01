@@ -532,7 +532,7 @@ cancer_risks <- function() {
 #' @examples
 #' vaccination_risks()
 #' vaccination_risks() |> dplyr::filter(country == "US")
-#' vaccination_risks() |> dplyr::filter(age_group == "Childhood")
+#' vaccination_risks() |> dplyr::filter(age_group == "0-5")  # Childhood vaccines
 vaccination_risks <- function() {
   cdc_url <- "https://www.cdc.gov/mmwr/"
   lancet_url <- "https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext"
