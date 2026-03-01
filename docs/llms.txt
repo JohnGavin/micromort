@@ -576,6 +576,19 @@ Original data functions (retained for compatibility)
 - [`risk_data_sources()`](https://johngavin.github.io/micromort/reference/risk_data_sources.md)
   : Data Sources for Micromort and Microlife Research
 
+## Regional Life Expectancy
+
+Geographic variation in mortality risk
+
+- [`regional_life_expectancy()`](https://johngavin.github.io/micromort/reference/regional_life_expectancy.md)
+  : Regional Life Expectancy in Western Europe
+- [`vanguard_regions()`](https://johngavin.github.io/micromort/reference/vanguard_regions.md)
+  : Vanguard Regions with Highest Life Expectancy
+- [`laggard_regions()`](https://johngavin.github.io/micromort/reference/laggard_regions.md)
+  : Laggard Regions with Stalled Life Expectancy Gains
+- [`regional_mortality_multiplier()`](https://johngavin.github.io/micromort/reference/regional_mortality_multiplier.md)
+  : Regional Mortality Multiplier
+
 ## Conditional Risk Analysis
 
 Compare hedged vs unhedged risk scenarios
@@ -645,3 +658,5 @@ API and dashboard
   Visualization](https://johngavin.github.io/micromort/articles/introduction.md):
 - [Palatable Units: The Spiegelhalter
   Philosophy](https://johngavin.github.io/micromort/articles/palatable_units.md):
+- [Regional Variation in Life
+  Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):

@@ -25,6 +25,8 @@ navbar:
         href: articles/introduction.html
       - text: "Palatable Units"
         href: articles/palatable_units.html
+      - text: "Regional Variation"
+        href: articles/regional_variation.html
 
 reference:
 - title: "Datasets"
@@ -48,6 +50,14 @@ reference:
   - demographic_factors
   - covid_vaccine_rr
   - risk_data_sources
+
+- title: "Regional Life Expectancy"
+  desc: "Geographic variation in mortality risk"
+  contents:
+  - regional_life_expectancy
+  - vanguard_regions
+  - laggard_regions
+  - regional_mortality_multiplier
 
 - title: "Conditional Risk Analysis"
   desc: "Compare hedged vs unhedged risk scenarios"

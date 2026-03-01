@@ -1,0 +1,169 @@
+---
+title: "Regional Variation in Life Expectancy"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Regional Variation in Life Expectancy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  class.source = "fold-hide"
+)
+```
+
+```{r setup}
+library(micromort)
+library(dplyr)
+library(ggplot2)
+library(DT)
+```
+
+This vignette explores **regional variation in life expectancy** across Western Europe, based on research by Bonnet et al. (2026) published in *Nature Communications*.
+
+## Key Finding: A Two-Tiered Europe
+
+Since the mid-2000s, Western Europe has fragmented into:
+- **Vanguard regions**: Continued progress (~2.5 months/year gain for men)
+- **Laggard regions**: Stalled improvement (<0.5 months/year gain)
+
+This divergence reversed decades of convergence observed in the 1990s.
+
+```{r}
+# Compare life expectancy by classification (2019)
+regional_life_expectancy(year = 2019, sex = "Total") |>
+  group_by(classification) |>
+  summarise(
+    n_regions = n(),
+    mean_le = round(mean(life_expectancy), 1),
+    min_le = round(min(life_expectancy), 1),
+    max_le = round(max(life_expectancy), 1),
+    mean_microlives_diff = round(mean(microlives_vs_eu_avg), 1)
+  ) |>
+  DT::datatable(
+    caption = "Life expectancy by region classification (2019)",
+    options = list(dom = "t", pageLength = 5),
+    rownames = FALSE
+  )
+```
+
+## The Microlives Gap
+
+The ~7 year gap between vanguard and laggard regions translates to a substantial lifetime difference in microlives:
+
+```{r}
+# Calculate microlives gap
+gap_data <- regional_life_expectancy(year = 2019, sex = "Total") |>
+  group_by(classification) |>
+  summarise(mean_le = mean(life_expectancy)) |>
+  filter(classification %in% c("vanguard", "laggard"))
+
+le_gap <- diff(gap_data$mean_le)
+
+# Convert to microlives
+# 1 year = 365 days × 48 microlives/day = 17,520 microlives
+lifetime_microlives_gap <- abs(le_gap) * 17520
+
+cat("Life expectancy gap:", round(abs(le_gap), 1), "years\n")
+cat("Lifetime microlives difference:", format(round(lifetime_microlives_gap), big.mark = ","), "\n")
+cat("Daily microlives difference:", round(abs(le_gap) * 1.2, 1), "per day\n")
+```
+
+**Interpretation:** Living in a vanguard region vs a laggard region corresponds to ~`r round(abs(le_gap) * 1.2, 1)` microlives per day—roughly equivalent to the benefit of 30 minutes of daily exercise.
+
+## Regional Data Explorer
+
+```{r}
+# Full data table
+regional_life_expectancy(year = 2019, sex = "Total") |>
+  select(region_name, country_code, life_expectancy, microlives_vs_eu_avg, classification) |>
+  arrange(desc(life_expectancy)) |>
+  DT::datatable(
+    caption = "Regional life expectancy (2019, click to sort/filter)",
+    filter = "top",
+    options = list(pageLength = 10, scrollX = TRUE),
+    rownames = FALSE
+  )
+```
+
+## Trends Over Time
+
+The divergence became pronounced after 2005:
+
+```{r, fig.width=8, fig.height=5}
+# Plot trends by classification
+regional_life_expectancy(sex = "Total") |>
+  group_by(year, classification) |>
+  summarise(mean_le = mean(life_expectancy), .groups = "drop") |>
+  ggplot(aes(x = year, y = mean_le, color = classification)) +
+  geom_line(linewidth = 1.2) +
+  geom_vline(xintercept = 2005, linetype = "dashed", alpha = 0.5) +
+  annotate("text", x = 2006, y = 74, label = "Divergence\nbegins", hjust = 0, size = 3) +
+  scale_color_manual(
+    values = c("vanguard" = "#2E7D32", "average" = "#1976D2", "laggard" = "#C62828"),
+    labels = c("Vanguard", "Average", "Laggard")
+  ) +
+  labs(
+    title = "Life Expectancy Trends by Region Classification",
+    subtitle = "Western Europe, 1992-2019",
+    x = "Year",
+    y = "Life Expectancy at Birth (years)",
+    color = "Classification",
+    caption = "Source: Eurostat demo_r_mlifexp; Classification per Bonnet et al. (2026)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+## Mortality Risk Multiplier
+
+Use `regional_mortality_multiplier()` to adjust baseline micromort estimates by location:
+
+```{r}
+# Compare Paris region to EU average
+regional_mortality_multiplier("FR10") |>
+  DT::datatable(
+    caption = "Île-de-France (Paris) mortality multiplier",
+    options = list(dom = "t"),
+    rownames = FALSE
+  )
+```
+
+**Application:** If the baseline risk for an activity is 10 micromorts, the location-adjusted risk in Paris would be approximately `10 × 0.93 = 9.3 micromorts` (7% lower due to favorable regional factors).
+
+## Ecological Fallacy Warning
+
+**IMPORTANT:** These regional statistics reflect population averages, not individual-level causation.
+
+High life expectancy in "vanguard" regions results from multiple interacting factors:
+
+| Factor | Mechanism |
+|--------|-----------|
+| Healthcare access | Better hospitals, preventive care |
+| Socioeconomic composition | Higher income, education levels |
+| Selection effects | Healthy/wealthy people move to desirable regions |
+| Historical factors | Long-term infrastructure investments |
+| Cultural factors | Diet, social cohesion, lifestyle norms |
+
+**Moving to Switzerland will NOT automatically extend your life.** The regional advantage reflects the aggregate characteristics of people who already live there.
+
+## Data Source
+
+The regional classification methodology follows Bonnet et al. (2026):
+
+> Bonnet F, et al. "Potential and challenges for sustainable progress in human longevity."
+> *Nature Communications* 17, 996 (2026). [doi:10.1038/s41467-026-68828-z](https://doi.org/10.1038/s41467-026-68828-z)
+
+Raw data from Eurostat `demo_r_mlifexp` dataset. Interactive exploration available at the [ReLoG_Europe tool](https://histdemo.shinyapps.io/ReLoG_Europe/).
+
+## Functions Reference
+
+| Function | Purpose |
+|----------|---------|
+| `regional_life_expectancy()` | Full dataset with filters |
+| `vanguard_regions()` | Top-performing regions only |
+| `laggard_regions()` | Stagnating regions only |
+| `regional_mortality_multiplier()` | Location-based risk adjustment |
