@@ -621,6 +621,8 @@ Risk analysis and modeling
 
 Risk visualization
 
+- [`prepare_risks_plot()`](https://johngavin.github.io/micromort/reference/prepare_risks_plot.md)
+  : Prepare Risk Data for Plotting
 - [`plot_risks()`](https://johngavin.github.io/micromort/reference/plot_risks.md)
   : Plot Risk Comparison
 - [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)

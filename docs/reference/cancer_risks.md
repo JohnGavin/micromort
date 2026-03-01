@@ -43,41 +43,44 @@ Other conditional-risk:
 
 ``` r
 cancer_risks()
-#> # A tibble: 37 × 10
-#>    cancer_type     sex    age_group deaths_per_100k micromorts_per_year
-#>    <chr>           <chr>  <chr>               <dbl>               <dbl>
-#>  1 Lung & Bronchus Male   All ages             37.2                 372
-#>  2 Prostate        Male   All ages             19.2                 192
-#>  3 Colon & Rectum  Male   All ages             15.3                 153
-#>  4 Pancreas        Male   All ages             12.9                 129
-#>  5 Liver           Male   All ages             10.2                 102
-#>  6 Leukemia        Male   All ages              7.8                  78
-#>  7 Esophagus       Male   All ages              7.1                  71
-#>  8 Bladder         Male   All ages              6.5                  65
-#>  9 All cancers     Male   All ages            184.                 1835
-#> 10 Lung & Bronchus Female All ages             27.1                 271
-#> # ℹ 27 more rows
+#> # A tibble: 43 × 10
+#>    cancer_type          sex   age_group deaths_per_100k micromorts_per_year
+#>    <chr>                <chr> <chr>               <dbl>               <dbl>
+#>  1 Lung & Bronchus      Male  All ages             37.2                 372
+#>  2 Prostate             Male  All ages             19.2                 192
+#>  3 Colon & Rectum       Male  All ages             15.3                 153
+#>  4 Pancreas             Male  All ages             12.9                 129
+#>  5 Liver                Male  All ages             10.2                 102
+#>  6 Leukemia             Male  All ages              7.8                  78
+#>  7 Esophagus            Male  All ages              7.1                  71
+#>  8 Bladder              Male  All ages              6.5                  65
+#>  9 Non-Hodgkin Lymphoma Male  All ages              5.6                  56
+#> 10 Multiple Myeloma     Male  All ages              3.3                  33
+#> # ℹ 33 more rows
 #> # ℹ 5 more variables: microlives_per_day <dbl>, family_history_rr <dbl>,
 #> #   micromorts_with_family_history <dbl>, rank_by_sex <int>, source_url <chr>
 cancer_risks() |> dplyr::filter(sex == "Female")
-#> # A tibble: 15 × 10
-#>    cancer_type     sex    age_group deaths_per_100k micromorts_per_year
-#>    <chr>           <chr>  <chr>               <dbl>               <dbl>
-#>  1 Lung & Bronchus Female All ages             27.1                 271
-#>  2 Breast          Female All ages             19.2                 192
-#>  3 Colon & Rectum  Female All ages             10.8                 108
-#>  4 Pancreas        Female All ages              9.9                  99
-#>  5 Ovary           Female All ages              6.1                  61
-#>  6 Uterus          Female All ages              5.3                  53
-#>  7 Leukemia        Female All ages              4.8                  48
-#>  8 Liver           Female All ages              4.2                  42
-#>  9 All cancers     Female All ages            128.                 1281
-#> 10 Lung & Bronchus Female 50-64                35                   350
-#> 11 Breast          Female 50-64                25                   250
-#> 12 Colon & Rectum  Female 50-64                12                   120
-#> 13 Lung & Bronchus Female 65-74                95                   950
-#> 14 Breast          Female 65-74                45                   450
-#> 15 Colon & Rectum  Female 65-74                28                   280
+#> # A tibble: 18 × 10
+#>    cancer_type          sex    age_group deaths_per_100k micromorts_per_year
+#>    <chr>                <chr>  <chr>               <dbl>               <dbl>
+#>  1 Lung & Bronchus      Female All ages             27.1                 271
+#>  2 Breast               Female All ages             19.2                 192
+#>  3 Colon & Rectum       Female All ages             10.8                 108
+#>  4 Pancreas             Female All ages              9.9                  99
+#>  5 Ovary                Female All ages              6.1                  61
+#>  6 Uterus               Female All ages              5.3                  53
+#>  7 Leukemia             Female All ages              4.8                  48
+#>  8 Liver                Female All ages              4.2                  42
+#>  9 Non-Hodgkin Lymphoma Female All ages              3.6                  36
+#> 10 Multiple Myeloma     Female All ages              2.1                  21
+#> 11 Hodgkin Lymphoma     Female All ages              0.3                   3
+#> 12 All cancers          Female All ages            128.                 1281
+#> 13 Lung & Bronchus      Female 50-64                35                   350
+#> 14 Breast               Female 50-64                25                   250
+#> 15 Colon & Rectum       Female 50-64                12                   120
+#> 16 Lung & Bronchus      Female 65-74                95                   950
+#> 17 Breast               Female 65-74                45                   450
+#> 18 Colon & Rectum       Female 65-74                28                   280
 #> # ℹ 5 more variables: microlives_per_day <dbl>, family_history_rr <dbl>,
 #> #   micromorts_with_family_history <dbl>, rank_by_sex <int>, source_url <chr>
 cancer_risks() |> dplyr::filter(age_group == "50-64")

@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  class.source = "fold-hide"  # Hide code by default, click to show
 )
 library(micromort)
 library(dplyr)

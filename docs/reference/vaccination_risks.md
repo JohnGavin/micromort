@@ -84,10 +84,21 @@ vaccination_risks() |> dplyr::filter(country == "US")
 #> # ℹ 5 more variables: micromorts_avoided_per_year <dbl>, description <chr>,
 #> #   microlives_gained_per_day <dbl>, annual_life_days_gained <dbl>,
 #> #   source_url <chr>
-vaccination_risks() |> dplyr::filter(age_group == "Childhood")
-#> # A tibble: 0 × 9
-#> # ℹ 9 variables: vaccine_schedule <chr>, age_group <chr>, country <chr>,
-#> #   mortality_reduction_pct <dbl>, micromorts_avoided_per_year <dbl>,
-#> #   description <chr>, microlives_gained_per_day <dbl>,
-#> #   annual_life_days_gained <dbl>, source_url <chr>
+vaccination_risks() |> dplyr::filter(age_group == "0-5")  # Childhood vaccines
+#> # A tibble: 10 × 9
+#>    vaccine_schedule            age_group country        mortality_reduction_pct
+#>    <chr>                       <chr>     <chr>                            <dbl>
+#>  1 Complete childhood schedule 0-5       US                                  27
+#>  2 Complete childhood schedule 0-5       UK                                  27
+#>  3 Complete childhood schedule 0-5       Australia                           27
+#>  4 Complete childhood schedule 0-5       Global average                      24
+#>  5 Measles vaccine             0-5       US                                  15
+#>  6 DTP vaccine                 0-5       US                                  10
+#>  7 Rotavirus vaccine           0-5       US                                   4
+#>  8 Hib vaccine                 0-5       US                                   3
+#>  9 Pneumococcal vaccine        0-5       US                                   2
+#> 10 Unvaccinated baseline       0-5       US                                   0
+#> # ℹ 5 more variables: micromorts_avoided_per_year <dbl>, description <chr>,
+#> #   microlives_gained_per_day <dbl>, annual_life_days_gained <dbl>,
+#> #   source_url <chr>
 ```

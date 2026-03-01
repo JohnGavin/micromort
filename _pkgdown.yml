@@ -3,6 +3,9 @@ url: https://johngavin.github.io/micromort/
 template:
   bootstrap: 5
   bootswatch: flatly
+  bslib:
+    code-fold: true
+    code-summary: "Show code"
 
 home:
   title: Micromort - Curated Risk Datasets
@@ -74,6 +77,7 @@ reference:
 - title: "Visualization"
   desc: "Risk visualization"
   contents:
+  - prepare_risks_plot
   - plot_risks
   - plot_risks_interactive
 
