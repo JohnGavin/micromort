@@ -147,7 +147,7 @@ regional_life_expectancy(sex = "Total") |>
   annotate("text", x = 2006, y = 74, label = "Divergence\nbegins", hjust = 0, size = 3) +
   scale_color_manual(
     values = c("vanguard" = "#2E7D32", "average" = "#1976D2", "laggard" = "#C62828"),
-    labels = c("Vanguard", "Average", "Laggard")
+    labels = c("vanguard" = "Vanguard", "average" = "Average", "laggard" = "Laggard")
   ) +
   labs(
     title = "Life Expectancy Trends by Region Classification",
