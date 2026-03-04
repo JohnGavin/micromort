@@ -16,10 +16,19 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(micromort)
-library(dplyr)
-library(ggplot2)
+library(targets)
 library(DT)
+
+# Safe tar_read with graceful fallback
+safe_tar_read <- function(name) {
+  tryCatch(
+    targets::tar_read_raw(name),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
 ```
 
 This vignette explores **regional variation in life expectancy** across Western Europe, based on research by Bonnet et al. (2026) published in *Nature Communications*.
@@ -50,16 +59,8 @@ Since the mid-2000s, Western Europe has fragmented into:
 This divergence reversed decades of convergence observed in the 1990s.
 
 ```{r}
-# Compare life expectancy by classification (2019)
-regional_life_expectancy(year = 2019, sex = "Total") |>
-  group_by(classification) |>
-  summarise(
-    n_regions = n(),
-    mean_le = round(mean(life_expectancy), 1),
-    min_le = round(min(life_expectancy), 1),
-    max_le = round(max(life_expectancy), 1),
-    mean_microlives_diff = round(mean(microlives_vs_eu_avg), 1)
-  ) |>
+#| echo: false
+safe_tar_read("vig_regional_classification_summary") |>
   DT::datatable(
     caption = "Life expectancy by region classification (2019)",
     options = list(dom = "t", pageLength = 5),
@@ -72,24 +73,16 @@ regional_life_expectancy(year = 2019, sex = "Total") |>
 The ~7 year gap between vanguard and laggard regions translates to a substantial lifetime difference in microlives:
 
 ```{r}
-# Calculate microlives gap
-gap_data <- regional_life_expectancy(year = 2019, sex = "Total") |>
-  group_by(classification) |>
-  summarise(mean_le = mean(life_expectancy)) |>
-  filter(classification %in% c("vanguard", "laggard"))
-
-le_gap <- diff(gap_data$mean_le)
-
-# Convert to microlives
-# 1 year = 365 days × 48 microlives/day = 17,520 microlives
-lifetime_microlives_gap <- abs(le_gap) * 17520
-
-cat("Life expectancy gap:", round(abs(le_gap), 1), "years\n")
-cat("Lifetime microlives difference:", format(round(lifetime_microlives_gap), big.mark = ","), "\n")
-cat("Daily microlives difference:", round(abs(le_gap) * 1.2, 1), "per day\n")
+#| echo: false
+gap_data <- safe_tar_read("vig_regional_le_gap")
+if (!is.null(gap_data)) {
+  cat("Life expectancy gap:", gap_data$le_gap_years, "years\n")
+  cat("Lifetime microlives difference:", gap_data$lifetime_microlives, "\n")
+  cat("Daily microlives difference:", gap_data$daily_microlives, "per day\n")
+}
 ```
 
-**Interpretation:** Living in a vanguard region vs a laggard region corresponds to ~`r round(abs(le_gap) * 1.2, 1)` microlives per day—roughly equivalent to the benefit of 30 minutes of daily exercise.
+**Interpretation:** Living in a vanguard region vs a laggard region corresponds to ~`r if(!is.null(gap_data)) gap_data$daily_microlives else "8.4"` microlives per day—roughly equivalent to the benefit of 30 minutes of daily exercise.
 
 ## Regional Data Explorer
 
@@ -114,10 +107,8 @@ cat("Daily microlives difference:", round(abs(le_gap) * 1.2, 1), "per day\n")
 - **Microlives interpretation:** +1.0 microlives/day ≈ +30 min life expectancy/day ≈ +7.6 days/year
 
 ```{r}
-# Full data table
-regional_life_expectancy(year = 2019, sex = "Total") |>
-  select(region_name, country_code, life_expectancy, microlives_vs_eu_avg, classification) |>
-  arrange(desc(life_expectancy)) |>
+#| echo: false
+safe_tar_read("vig_regional_explorer_data") |>
   DT::datatable(
     caption = htmltools::HTML(
       "<b>Regional Life Expectancy at Birth (2019)</b><br>
@@ -137,28 +128,8 @@ regional_life_expectancy(year = 2019, sex = "Total") |>
 The divergence became pronounced after 2005:
 
 ```{r, fig.width=8, fig.height=5}
-# Plot trends by classification
-regional_life_expectancy(sex = "Total") |>
-  group_by(year, classification) |>
-  summarise(mean_le = mean(life_expectancy), .groups = "drop") |>
-  ggplot(aes(x = year, y = mean_le, color = classification)) +
-  geom_line(linewidth = 1.2) +
-  geom_vline(xintercept = 2005, linetype = "dashed", alpha = 0.5) +
-  annotate("text", x = 2006, y = 74, label = "Divergence\nbegins", hjust = 0, size = 3) +
-  scale_color_manual(
-    values = c("vanguard" = "#2E7D32", "average" = "#1976D2", "laggard" = "#C62828"),
-    labels = c("vanguard" = "Vanguard", "average" = "Average", "laggard" = "Laggard")
-  ) +
-  labs(
-    title = "Life Expectancy Trends by Region Classification",
-    subtitle = "Western Europe, 1992-2019",
-    x = "Year",
-    y = "Life Expectancy at Birth (years)",
-    color = "Classification",
-    caption = "Source: Eurostat demo_r_mlifexp; Classification per Bonnet et al. (2026)"
-  ) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+#| echo: false
+print(safe_tar_read("vig_regional_trends_plot"))
 ```
 
 ## Mortality Risk Multiplier
@@ -166,8 +137,8 @@ regional_life_expectancy(sex = "Total") |>
 Use `regional_mortality_multiplier()` to adjust baseline micromort estimates by location:
 
 ```{r}
-# Compare Paris region to EU average
-regional_mortality_multiplier("FR10") |>
+#| echo: false
+safe_tar_read("vig_regional_paris_multiplier") |>
   DT::datatable(
     caption = "Île-de-France (Paris) mortality multiplier",
     options = list(dom = "t"),

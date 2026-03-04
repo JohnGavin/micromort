@@ -11,12 +11,25 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  class.source = "fold-hide"  # Hide code by default, click to show
+  class.source = "fold-hide"
 )
+```
+
+```{r setup}
 library(micromort)
-library(dplyr)
-library(ggplot2)
+library(targets)
 library(DT)
+
+# Safe tar_read with graceful fallback
+safe_tar_read <- function(name) {
+  tryCatch(
+    targets::tar_read_raw(name),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
 ```
 
 **"Statistics are not just numbers; they are the way we make sense of the world."** — Sir David Spiegelhalter
@@ -47,18 +60,14 @@ A micromort measures **acute hazard**: the immediate probability of an event cau
 The following table uses [`common_risks()`](../reference/common_risks.html), the package's curated dataset of 62 acute risks with full provenance tracking:
 
 ```{r}
-# Use the package's curated dataset
-risks <- common_risks() |>
-  dplyr::filter(category %in% c("Travel", "Medical", "Sport", "Daily Life")) |>
-  dplyr::select(activity, micromorts, microlives, category, period)
-
-DT::datatable(
-  risks,
-  caption = "Acute risks from common_risks() dataset (click column headers to sort)",
-  filter = "top",
-  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
-  rownames = FALSE
-)
+#| echo: false
+safe_tar_read("vig_palatable_risks_filtered") |>
+  DT::datatable(
+    caption = "Acute risks from common_risks() dataset (click column headers to sort)",
+    filter = "top",
+    options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
+    rownames = FALSE
+  )
 ```
 
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same acute death risk (~10 micromorts) as undergoing general anesthesia. Using a standardized dataset enables apples-to-apples comparisons across activities.
@@ -77,17 +86,14 @@ While micromorts measure sudden death (Hazard), **Microlives** measure **chronic
 Using [`chronic_risks()`](../reference/chronic_risks.html), the package's curated dataset of 22 chronic lifestyle factors:
 
 ```{r}
-# Use the package's curated chronic risks dataset
-chronic_table <- chronic_risks() |>
-  dplyr::select(factor, microlives_per_day, category, direction, annual_effect_days)
-
-DT::datatable(
-  chronic_table,
-  caption = "Chronic lifestyle factors from chronic_risks() dataset (click to sort)",
-  filter = "top",
-  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
-  rownames = FALSE
-)
+#| echo: false
+safe_tar_read("vig_palatable_chronic_risks") |>
+  DT::datatable(
+    caption = "Chronic lifestyle factors from chronic_risks() dataset (click to sort)",
+    filter = "top",
+    options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
+    rownames = FALSE
+  )
 ```
 
 > **Clarification:** A value of **-1 Microlife** is a **loss** (attrition). It effectively means you are aging 30 minutes faster than normal. The `annual_effect_days` column shows the cumulative impact over a year—a -1 daily deficit sums to ~7.5 days of lost life annually.
@@ -100,9 +106,8 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 *   **Interpretation:** A "100% increase" in a very rare risk (e.g., eating bacon increasing bowel cancer risk) might look huge in headlines but is often negligible on the ladder compared to the baseline risk of driving.
 
 ```{r, fig.width=8, fig.height=14}
-# Risk ladder visualization - faceted by COVID-19 vs Other risks
-# This helps compare like-with-like while maintaining the logarithmic scale
-plot_risks()
+#| echo: false
+print(safe_tar_read("vig_palatable_risk_plot"))
 ```
 
 For interactive exploration, use `plot_risks_interactive()` which provides:
@@ -112,7 +117,8 @@ For interactive exploration, use `plot_risks_interactive()` which provides:
 *   Dropdown filter for COVID-19 vs Other risks
 
 ```{r}
-plot_risks_interactive()
+#| echo: false
+safe_tar_read("vig_palatable_risk_plot_interactive")
 ```
 
 ## 5. Media Perception vs. Actual Risk

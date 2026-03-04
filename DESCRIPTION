@@ -28,6 +28,7 @@ Suggests:
     eurostat,
     fs,
     here,
+    htmltools,
     stringr,
     tidyr,
     jsonlite,
