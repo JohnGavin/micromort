@@ -27,6 +27,8 @@ navbar:
         href: articles/palatable_units.html
       - text: "Regional Variation"
         href: articles/regional_variation.html
+      - text: "Risk Equivalence"
+        href: articles/risk_equivalence.html
 
 reference:
 - title: "Datasets"
@@ -43,10 +45,23 @@ reference:
   - load_chronic_risks
   - load_sources
 
+- title: "Atomic Risk Schema"
+  desc: "Component-level risk data and decomposition"
+  contents:
+  - atomic_risks
+  - risk_components
+  - risk_for_duration
+  - common_risks
+
+- title: "Risk Equivalence"
+  desc: "Cross-activity risk comparison"
+  contents:
+  - risk_equivalence
+  - risk_exchange_matrix
+
 - title: "Legacy Data Functions"
   desc: "Original data functions (retained for compatibility)"
   contents:
-  - common_risks
   - demographic_factors
   - covid_vaccine_rr
   - risk_data_sources
@@ -90,6 +105,7 @@ reference:
   - prepare_risks_plot
   - plot_risks
   - plot_risks_interactive
+  - plot_risk_components
 
 - title: "Interactive Tools"
   desc: "API and dashboard"

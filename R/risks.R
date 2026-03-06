@@ -3,21 +3,33 @@
 #' A comprehensive dataset of activities and their associated acute mortality
 #' risk in micromorts, with calculated microlives and source references.
 #'
+#' Aggregates from [atomic_risks()], summing component-level micromorts
+#' per activity.
+#'
 #' Micromort: one-in-a-million chance of death (acute risk).
 #' Microlife: 30 minutes of life expectancy lost.
 #'
 #' Data sources: Wikipedia, micromorts.rip, CDC MMWR, academic literature.
 #'
+#' @param profile A named list of condition variables for filtering conditional
+#'   risks, e.g. `list(health_profile = "dvt_risk_factors")`. Default
+#'   `list()` returns unconditional/healthy defaults.
+#' @param duration_hours Optional numeric. For duration-dependent activities,
+#'   selects the nearest pre-computed duration bucket. `NULL` (default) returns
+#'   all duration buckets.
 #' @return A tibble with columns:
 #'   \describe{
 #'     \item{activity}{Activity name}
 #'     \item{micromorts}{Risk in micromorts (1 = 1-in-a-million death probability)}
-#'     \item{microlives}{Equivalent microlives (micromorts × 0.7)}
+#'     \item{microlives}{Equivalent microlives (micromorts x 0.7)}
 #'     \item{category}{Activity category}
 #'     \item{period}{Human-readable period description}
 #'     \item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}
 #'     \item{period_days}{Typical duration in days (for cross-activity comparison)}
+#'     \item{micromorts_per_day}{Micromorts normalized per day}
 #'     \item{source_url}{Data source URL}
+#'     \item{n_components}{Number of atomic components summed}
+#'     \item{hedgeable_pct}{Percent of total micromorts that are hedgeable}
 #'   }
 #' @export
 #' @references
@@ -27,146 +39,49 @@
 #' \url{https://en.wikipedia.org/wiki/Micromort}
 #'
 #' \url{https://micromorts.rip/}
+#' @seealso [atomic_risks()] for the component-level data.
 #' @examples
 #' common_risks()
 #' common_risks() |> dplyr::filter(category == "COVID-19")
 #' common_risks() |> dplyr::filter(micromorts > 100)
-common_risks <- function() {
- # Helper: convert micromorts to microlives
-  # 1 micromort with 40 years remaining = 21.075 minutes = 0.7 microlives
-  mm_to_ml <- function(mm) round(mm * 0.7, 1)
+common_risks <- function(profile = list(), duration_hours = NULL) {
+  risks <- atomic_risks() |>
+    filter_by_profile(profile)
 
-  # Helper: parse period to type and duration in days
-  parse_period <- function(period) {
-    period_type <- dplyr::case_when(
-      grepl("per day|per night", period) ~ "day",
-      grepl("per hour", period) ~ "hour",
-      grepl("per year", period) ~ "year",
-      grepl("per month", period) ~ "month",
-      grepl("weeks", period) ~ "period",
-      grepl("per event|per jump|per dose|per swim|per climb|per flight|per ride|per encounter|per game|per trip|per ascent|per expedition|per infection", period) ~ "event",
-      TRUE ~ "event"
-    )
-
-    # Duration in days (for cross-activity comparison)
-    period_days <- dplyr::case_when(
-      period_type == "day" ~ 1,
-      period_type == "hour" ~ 1/24,
-      period_type == "year" ~ 365,
-      period_type == "month" ~ 30,
-      grepl("11 weeks", period) ~ 77,
-      grepl("8 weeks", period) ~ 56,
-      grepl("2 months", period) ~ 60,
-      # Event durations (typical values)
-      grepl("Everest|ascent", period) ~ 60,        # ~2 month expedition
-      grepl("expedition", period) ~ 45,            # ~6 weeks
-      grepl("infection", period) ~ 14,             # ~2 weeks illness
-      grepl("birth|anesthesia|surgery", period) ~ 0.04,  # ~1 hour
-      grepl("jump|skydiving|base", period) ~ 0.003,      # ~4 minutes
-      grepl("dive", period) ~ 0.04,                # ~1 hour dive
-      grepl("flight|gliding", period) ~ 0.08,     # ~2 hours
-      grepl("marathon", period) ~ 0.17,           # ~4 hours
-      grepl("game", period) ~ 0.13,               # ~3 hours
-      grepl("climb", period) ~ 0.25,              # ~6 hours
-      grepl("swim", period) ~ 0.04,               # ~1 hour
-      grepl("ride", period) ~ 0.08,               # ~2 hours
-      grepl("trip", period) ~ 0.17,               # ~4 hours travel
-      grepl("dose", period) ~ 0.01,               # minutes
-      grepl("encounter", period) ~ 0.01,          # minutes
-      TRUE ~ 1                                    # default to 1 day
-    )
-
-    list(type = period_type, days = period_days)
+  if (!is.null(duration_hours)) {
+    risks <- filter_to_duration(risks, duration_hours)
   }
 
-  wiki_mm <- "https://en.wikipedia.org/wiki/Micromort"
-  mm_rip <- "https://micromorts.rip/"
-  cdc_mmwr <- "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+  # Preserve insertion order via row number
+  risks <- risks |>
+    dplyr::mutate(.row_order = dplyr::row_number())
 
-  tibble::tribble(
-    ~activity, ~micromorts, ~category, ~period, ~source_url,
-
-    # Extreme Risk (>1000 micromorts)
-    "Mt. Everest ascent", 37932, "Mountaineering", "per ascent", mm_rip,
-    "Himalayan mountaineering", 12000, "Mountaineering", "per expedition", mm_rip,
-    "COVID-19 infection (unvaccinated)", 10000, "COVID-19", "per infection", mm_rip,
-    "Spanish flu infection", 3000, "Disease", "per infection", mm_rip,
-    "Matterhorn ascent", 2840, "Mountaineering", "per ascent", mm_rip,
-
-    # Very High Risk (100-1000 micromorts)
-    "Living in US during COVID-19 (Jul 2020)", 500, "COVID-19", "per month", mm_rip,
-    "Living (one day, age 90)", 463, "Daily Life", "per day", mm_rip,
-    "Base jumping (per jump)", 430, "Sport", "per event", mm_rip,
-    "First day of life (newborn)", 430, "Daily Life", "per day", mm_rip,
-    "COVID-19 unvaccinated (age 80+)", 234, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Caesarean birth (mother)", 170, "Medical", "per event", mm_rip,
-    "Scuba diving (per year, trained)", 164, "Sport", "per year", mm_rip,
-    "Vaginal birth (mother)", 120, "Medical", "per event", mm_rip,
-    "Living (one day, age 75)", 105, "Daily Life", "per day", mm_rip,
-
-    # High Risk (10-100 micromorts)
-    "COVID-19 unvaccinated (age 65-79)", 76, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Night in hospital", 75, "Medical", "per night", mm_rip,
-    "COVID-19 monovalent vaccine (age 80+)", 55, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Living in NYC COVID-19 (Mar-May 2020)", 50, "COVID-19", "per 8 weeks", mm_rip,
-    "Heroin use (per dose)", 30, "Drugs", "per dose", mm_rip,
-    "US military in Afghanistan (2010)", 25, "Military", "per day", mm_rip,
-    "COVID-19 bivalent booster (age 80+)", 23, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "COVID-19 unvaccinated (all ages)", 20, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "American football (per game)", 20, "Sport", "per game", mm_rip,
-    "Living (one day, under age 1)", 15, "Daily Life", "per day", mm_rip,
-    "Ecstasy/MDMA (per dose)", 13, "Drugs", "per dose", mm_rip,
-    "Swimming (drowning risk)", 12, "Sport", "per swim", mm_rip,
-    "General anesthesia (emergency)", 10, "Medical", "per event", mm_rip,
-    "Motorcycling (60 miles)", 10, "Travel", "per trip", wiki_mm,
-    "Skydiving (per jump, general)", 10, "Sport", "per event", mm_rip,
-
-    # Moderate Risk (1-10 micromorts)
-    "COVID-19 monovalent vaccine (age 65-79)", 9, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Skydiving (per jump, US)", 8, "Sport", "per event", mm_rip,
-    "Skydiving (per jump, UK)", 8, "Sport", "per event", mm_rip,
-    "COVID-19 unvaccinated (age 50-64)", 8, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Hang gliding (per flight)", 8, "Sport", "per event", mm_rip,
-    "Running a marathon", 7, "Sport", "per event", wiki_mm,
-    "Living in Maryland COVID-19 (Mar-May 2020)", 7, "COVID-19", "per 8 weeks", mm_rip,
-    "Living (one day, age 45)", 6, "Daily Life", "per day", mm_rip,
-    "Scuba diving (per dive, trained)", 5, "Sport", "per event", wiki_mm,
-    "Living (one day, age 50)", 4, "Daily Life", "per day", wiki_mm,
-    "COVID-19 monovalent vaccine (all ages)", 4, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Rock climbing (per climb)", 3, "Sport", "per event", mm_rip,
-    "COVID-19 bivalent booster (age 65-79)", 3, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "COVID-19 monovalent vaccine (age 50-64)", 2, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "COVID-19 unvaccinated (age 18-49)", 1, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Living 2 months with a smoker", 1, "Environment", "per 2 months", mm_rip,
-    "Walking (20 miles)", 1, "Travel", "per trip", wiki_mm,
-    "Driving (230 miles)", 1, "Travel", "per trip", wiki_mm,
-    "Flying (1000 miles)", 1, "Travel", "per trip", wiki_mm,
-    "Train (1000 miles)", 1, "Travel", "per trip", mm_rip,
-    "Eating 1000 bananas (radiation)", 1, "Diet", "per event", mm_rip,
-    "1 hour in a coal mine", 1, "Occupation", "per hour", mm_rip,
-    "Eating 40 tbsp peanut butter (aflatoxin)", 1, "Diet", "per event", wiki_mm,
-    "Eating 100 charbroiled steaks", 1, "Diet", "per event", mm_rip,
-    "Living (one day, age 20)", 1, "Daily Life", "per day", wiki_mm,
-    "Living (one day, age 30)", 1, "Daily Life", "per day", wiki_mm,
-    "COVID-19 bivalent booster (all ages)", 1, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "COVID-19 bivalent booster (age 50-64)", 1, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-
-    # Low Risk (<1 micromort)
-    "Skiing (per day)", 0.7, "Sport", "per day", mm_rip,
-    "Horseback riding", 0.5, "Sport", "per ride", mm_rip,
-    "COVID-19 monovalent vaccine (age 18-49)", 0.2, "COVID-19", "11 weeks (2022)", cdc_mmwr,
-    "Kangaroo encounter", 0.1, "Wildlife", "per encounter", mm_rip,
-    "COVID-19 bivalent booster (age 18-49)", 0.05, "COVID-19", "11 weeks (2022)", cdc_mmwr
-  ) |>
+  risks |>
+    dplyr::group_by(activity_id, activity, category, period, period_type,
+                    source_url) |>
+    dplyr::summarise(
+      # hedgeable_pct MUST be computed before micromorts is overwritten
+      hedgeable_pct = dplyr::if_else(
+        sum(micromorts) > 0,
+        round(sum(hedgeable * micromorts) / sum(micromorts) * 100, 1),
+        0
+      ),
+      micromorts = sum(micromorts),
+      n_components = dplyr::n(),
+      .row_order = min(.row_order),
+      .groups = "drop"
+    ) |>
+    dplyr::arrange(.row_order) |>
     dplyr::mutate(
-      microlives = mm_to_ml(micromorts),
-      period_parsed = purrr::map(period, parse_period),
-      period_type = purrr::map_chr(period_parsed, "type"),
-      period_days = purrr::map_dbl(period_parsed, "days"),
+      microlives = round(micromorts * 0.7, 1),
+      period_days = compute_period_days(period, period_type),
       micromorts_per_day = round(micromorts / period_days, 2)
     ) |>
-    dplyr::select(activity, micromorts, microlives, category, period,
-                  period_type, period_days, micromorts_per_day, source_url)
+    dplyr::select(
+      activity, micromorts, microlives, category, period,
+      period_type, period_days, micromorts_per_day, source_url,
+      n_components, hedgeable_pct
+    )
 }
 
 #' Chronic Risks in Microlives

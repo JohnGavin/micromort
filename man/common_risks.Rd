@@ -4,19 +4,31 @@
 \alias{common_risks}
 \title{Acute Risks in Micromorts}
 \usage{
-common_risks()
+common_risks(profile = list(), duration_hours = NULL)
+}
+\arguments{
+\item{profile}{A named list of condition variables for filtering conditional
+risks, e.g. \code{list(health_profile = "dvt_risk_factors")}. Default
+\code{list()} returns unconditional/healthy defaults.}
+
+\item{duration_hours}{Optional numeric. For duration-dependent activities,
+selects the nearest pre-computed duration bucket. \code{NULL} (default) returns
+all duration buckets.}
 }
 \value{
 A tibble with columns:
 \describe{
 \item{activity}{Activity name}
 \item{micromorts}{Risk in micromorts (1 = 1-in-a-million death probability)}
-\item{microlives}{Equivalent microlives (micromorts × 0.7)}
+\item{microlives}{Equivalent microlives (micromorts x 0.7)}
 \item{category}{Activity category}
 \item{period}{Human-readable period description}
 \item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}
 \item{period_days}{Typical duration in days (for cross-activity comparison)}
+\item{micromorts_per_day}{Micromorts normalized per day}
 \item{source_url}{Data source URL}
+\item{n_components}{Number of atomic components summed}
+\item{hedgeable_pct}{Percent of total micromorts that are hedgeable}
 }
 }
 \description{
@@ -24,6 +36,9 @@ A comprehensive dataset of activities and their associated acute mortality
 risk in micromorts, with calculated microlives and source references.
 }
 \details{
+Aggregates from \code{\link[=atomic_risks]{atomic_risks()}}, summing component-level micromorts
+per activity.
+
 Micromort: one-in-a-million chance of death (acute risk).
 Microlife: 30 minutes of life expectancy lost.
 
@@ -41,4 +56,7 @@ Howard RA (1980). "On Making Life and Death Decisions." In Schwing & Albers
 \url{https://en.wikipedia.org/wiki/Micromort}
 
 \url{https://micromorts.rip/}
+}
+\seealso{
+\code{\link[=atomic_risks]{atomic_risks()}} for the component-level data.
 }
