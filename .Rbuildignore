@@ -1,10 +1,11 @@
 ^default\.nix$
 ^default\.R$
 ^default\.sh$
+^package\.nix$
 ^nix-shell-root$
 ^\.gemini$
 ^LICENSE\.md$
-push_to_cachix.sh
+^push_to_cachix\.sh$
 ^Rplots\.pdf$
 ^_targets\.R$
 ^_targets$

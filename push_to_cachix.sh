@@ -20,6 +20,7 @@ fi
 echo "Pushing built package to $CACHE_NAME..."
 
 # Build and push ONLY the package derivation (not full closure)
-cachix watch-exec $CACHE_NAME -- nix-build default.nix --no-out-link
+# package.nix (buildRPackage) != default.nix (mkShell)
+cachix watch-exec $CACHE_NAME --watch-mode auto -- nix-build package.nix --no-out-link
 
 echo "Done."
