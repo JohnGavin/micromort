@@ -5,8 +5,8 @@
 #
 # Usage:
 #   nix-build package.nix --no-out-link
-#   # Push ONLY this package (not deps!) via watch-exec:
-#   cachix watch-exec johngavin --watch-mode auto -- nix-build package.nix --no-out-link
+#   # Push ONLY this package (not deps!) to cachix:
+#   nix-build package.nix --no-out-link | cachix push johngavin
 
 let
   pkgs = import (fetchTarball "https://github.com/rstats-on-nix/nixpkgs/archive/2026-01-05.tar.gz") {};
