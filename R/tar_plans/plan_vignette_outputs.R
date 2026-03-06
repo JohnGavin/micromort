@@ -304,8 +304,11 @@ plan_vignette_outputs <- list(
     {
       cr <- common_risks()
       cr |>
-        dplyr::filter(grepl("radiation|X-ray|CT scan|Mammogram|angiogram|enema",
-                            activity)) |>
+        dplyr::filter(
+          category == "Medical",
+          grepl("radiation|X-ray|CT scan|Mammogram|angiogram|enema",
+                activity)
+        ) |>
         dplyr::arrange(micromorts)
     }
   ),

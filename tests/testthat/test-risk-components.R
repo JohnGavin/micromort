@@ -59,16 +59,33 @@ test_that("risk_components for medical radiation is atomic", {
 
 # ── risk_for_duration() tests ────────────────────────────────────────────────
 
-test_that("risk_for_duration returns nearest bucket", {
-  rd <- risk_for_duration("flying_8h", duration_hours = 7)
-  # Nearest to 7h is either 5h or 8h bucket; 8h is closer (|8-7|=1 vs |5-7|=2)
+test_that("risk_for_duration returns nearest bucket across all durations", {
+  rd <- risk_for_duration("flying", duration_hours = 7)
+  # Nearest to 7h is 8h bucket (|8-7|=1 < |5-7|=2)
   expect_equal(rd$duration_hours, 8)
+})
+
+test_that("risk_for_duration selects 2h bucket for short duration", {
+  rd <- risk_for_duration("flying", duration_hours = 1)
+  expect_equal(rd$duration_hours, 2)
+})
+
+test_that("risk_for_duration selects 12h bucket for long duration", {
+  rd <- risk_for_duration("flying", duration_hours = 15)
+  expect_equal(rd$duration_hours, 12)
 })
 
 test_that("risk_for_duration errors for non-duration activities", {
   expect_error(
-    risk_for_duration("mt_everest_ascent", duration_hours = 5),
+    risk_for_duration("mt_everest", duration_hours = 5),
     "not duration-dependent"
+  )
+})
+
+test_that("risk_for_duration errors for unknown prefix", {
+  expect_error(
+    risk_for_duration("nonexistent", duration_hours = 5),
+    "No activities match"
   )
 })
 

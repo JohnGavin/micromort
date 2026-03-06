@@ -180,6 +180,12 @@ atomic_risks <- function() {
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
+    # DVT risk factors row for 2h (still zero below 4h threshold)
+    "Flying (2h short-haul)", "flying_2h", "dvt", "medical", "Deep vein thrombosis",
+    0.0, 2, "per 2h flight",
+    TRUE, "Compression socks + hydration + aisle walks", 65,
+    "health_profile", "dvt_risk_factors", "medium",
+
     # ─ 5h medium-haul ─
     "Flying (5h medium-haul)", "flying_5h", "crash", "physical", "Aircraft crash",
     1.25, 5, "per 5h flight",
@@ -529,33 +535,60 @@ risk_components <- function(activity_id, profile = list(), risks = NULL) {
 
 #' Calculate Risk for Custom Duration
 #'
-#' For duration-dependent activities, selects the nearest pre-computed
-#' duration bucket and returns the aggregated risk.
+#' For duration-dependent activities, finds the nearest pre-computed
+#' duration bucket across all variants of an activity family and returns
+#' the aggregated risk.
 #'
-#' @param activity_id Character. The activity ID (e.g., `"flying_8h"`).
+#' @param activity_prefix Character. Activity family prefix (e.g.,
+#'   `"flying"` matches `flying_2h`, `flying_5h`, `flying_8h`,
+#'   `flying_12h`). Also accepts a full `activity_id`.
 #' @param duration_hours Numeric. Desired duration in hours.
 #' @param profile A named list of condition variables.
 #' @param risks Optional pre-computed [atomic_risks()] tibble.
-#' @return A tibble with one row: the aggregated risk for the nearest
-#'   duration bucket.
+#' @return A tibble with one row per component at the nearest duration
+#'   bucket, plus summary columns.
 #' @export
 #' @seealso [risk_components()], [common_risks()]
 #' @examples
-#' risk_for_duration("flying_8h", duration_hours = 10)
-risk_for_duration <- function(activity_id, duration_hours, profile = list(),
+#' risk_for_duration("flying", duration_hours = 7)
+#' risk_for_duration("flying", duration_hours = 3)
+risk_for_duration <- function(activity_prefix, duration_hours, profile = list(),
                               risks = NULL) {
-  components <- risk_components(activity_id, profile = profile, risks = risks)
+  if (is.null(risks)) risks <- atomic_risks()
 
-  if (all(is.na(components$duration_hours))) {
+  # Match all activity_ids starting with the prefix
+  pattern <- paste0("^", activity_prefix)
+  matching <- risks |>
+    dplyr::filter(grepl(pattern, activity_id))
+
+  if (nrow(matching) == 0L) {
     cli::cli_abort(c(
-      "x" = "Activity {.val {activity_id}} is not duration-dependent.",
+      "x" = "No activities match prefix {.val {activity_prefix}}",
+      "i" = "Use {.code atomic_risks()$activity_id} to see available IDs."
+    ))
+  }
+
+  # Filter by profile
+
+  matching <- filter_by_profile(matching, profile)
+
+  # Must have duration-dependent rows
+  if (all(is.na(matching$duration_hours))) {
+    cli::cli_abort(c(
+      "x" = "Activities matching {.val {activity_prefix}} are not duration-dependent.",
       "i" = "Use {.fn risk_components} instead."
     ))
   }
 
-  filter_to_duration(components, duration_hours) |>
+  # Find the single nearest duration bucket across all matching activity_ids
+  available_durations <- unique(stats::na.omit(matching$duration_hours))
+  nearest_dur <- available_durations[which.min(abs(available_durations - duration_hours))]
+
+  matching |>
+    dplyr::filter(.data$duration_hours == .env$nearest_dur) |>
     dplyr::summarise(
       activity = dplyr::first(activity),
+      activity_id = dplyr::first(activity_id),
       hedgeable_pct = dplyr::if_else(
         sum(micromorts) > 0,
         round(sum(hedgeable * micromorts) / sum(micromorts) * 100, 1),
@@ -563,6 +596,6 @@ risk_for_duration <- function(activity_id, duration_hours, profile = list(),
       ),
       micromorts = sum(micromorts),
       n_components = dplyr::n(),
-      duration_hours = dplyr::first(duration_hours)
+      duration_hours = nearest_dur
     )
 }

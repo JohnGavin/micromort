@@ -12,8 +12,10 @@ risks, e.g. \code{list(health_profile = "dvt_risk_factors")}. Default
 \code{list()} returns unconditional/healthy defaults.}
 
 \item{duration_hours}{Optional numeric. For duration-dependent activities,
-selects the nearest pre-computed duration bucket. \code{NULL} (default) returns
-all duration buckets.}
+selects the nearest pre-computed duration bucket \emph{within each activity}.
+All flying variants (2h, 5h, 8h, 12h) are retained. \code{NULL} (default)
+returns all duration buckets. Use \code{\link[=risk_for_duration]{risk_for_duration()}} to select a
+single activity family result.}
 }
 \value{
 A tibble with columns:

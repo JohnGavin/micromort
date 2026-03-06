@@ -15,8 +15,10 @@
 #'   risks, e.g. `list(health_profile = "dvt_risk_factors")`. Default
 #'   `list()` returns unconditional/healthy defaults.
 #' @param duration_hours Optional numeric. For duration-dependent activities,
-#'   selects the nearest pre-computed duration bucket. `NULL` (default) returns
-#'   all duration buckets.
+#'   selects the nearest pre-computed duration bucket *within each activity*.
+#'   All flying variants (2h, 5h, 8h, 12h) are retained. `NULL` (default)
+#'   returns all duration buckets. Use [risk_for_duration()] to select a
+#'   single activity family result.
 #' @return A tibble with columns:
 #'   \describe{
 #'     \item{activity}{Activity name}
@@ -52,7 +54,7 @@ common_risks <- function(profile = list(), duration_hours = NULL) {
     risks <- filter_to_duration(risks, duration_hours)
   }
 
-  # Preserve insertion order via row number
+  # Preserve insertion order via row number (AFTER filtering so order is stable)
   risks <- risks |>
     dplyr::mutate(.row_order = dplyr::row_number())
 

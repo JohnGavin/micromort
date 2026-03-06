@@ -38,8 +38,8 @@ test_that("atomic_risks() has correct column types", {
 
 test_that("atomic_risks() has expected row count", {
   ar <- atomic_risks()
-  # 61 legacy all_causes + 15 flight components + 8 medical radiation + 7 mundane
-  expect_equal(nrow(ar), 91)
+  # 61 legacy all_causes + 16 flight components + 8 medical radiation + 7 mundane = 92
+  expect_equal(nrow(ar), 92)
   # 61 legacy + 4 flight activities + 8 medical + 7 mundane = 80 unique IDs
   expect_equal(length(unique(ar$activity_id)), 80)
 })
@@ -151,6 +151,12 @@ test_that("legacy activity values preserved", {
 test_that("common_risks() preserves insertion order for legacy", {
   cr <- common_risks()
   expect_equal(cr$activity[1], "Mt. Everest ascent")
+})
+
+test_that("common_risks() ordering is deterministic across calls", {
+  cr1 <- common_risks()
+  cr2 <- common_risks()
+  expect_identical(cr1$activity, cr2$activity)
 })
 
 test_that("flight activities are aggregated correctly", {

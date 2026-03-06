@@ -43,7 +43,7 @@ risk_equivalence <- function(reference, risks = NULL, min_ratio = 0.01,
       ratio = round(micromorts / ref_mm, 2),
       equivalence = paste0(
         "1 ", activity, " = ",
-        round(micromorts / ref_mm, 1), " ", reference
+        format(round(micromorts / ref_mm, 1), scientific = FALSE), " ", reference
       )
     ) |>
     dplyr::filter(ratio >= min_ratio, ratio <= max_ratio) |>
@@ -100,6 +100,15 @@ risk_exchange_matrix <- function(activities = NULL, risks = NULL) {
     dplyr::filter(activity %in% activities) |>
     dplyr::select(activity, micromorts) |>
     dplyr::distinct()
+
+  # Guard against zero-micromort activities producing Inf/NaN
+  zero_acts <- subset$activity[subset$micromorts == 0]
+  if (length(zero_acts) > 0) {
+    cli::cli_abort(c(
+      "x" = "Cannot compute exchange rates for zero-micromort activities: {.val {zero_acts}}",
+      "i" = "Remove zero-risk activities or use {.fn risk_equivalence} instead."
+    ))
+  }
 
   # Build matrix: row i, col j = micromorts_i / micromorts_j
   mm <- subset$micromorts

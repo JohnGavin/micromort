@@ -4,10 +4,17 @@
 \alias{risk_for_duration}
 \title{Calculate Risk for Custom Duration}
 \usage{
-risk_for_duration(activity_id, duration_hours, profile = list(), risks = NULL)
+risk_for_duration(
+  activity_prefix,
+  duration_hours,
+  profile = list(),
+  risks = NULL
+)
 }
 \arguments{
-\item{activity_id}{Character. The activity ID (e.g., \code{"flying_8h"}).}
+\item{activity_prefix}{Character. Activity family prefix (e.g.,
+\code{"flying"} matches \code{flying_2h}, \code{flying_5h}, \code{flying_8h},
+\code{flying_12h}). Also accepts a full \code{activity_id}.}
 
 \item{duration_hours}{Numeric. Desired duration in hours.}
 
@@ -16,15 +23,17 @@ risk_for_duration(activity_id, duration_hours, profile = list(), risks = NULL)
 \item{risks}{Optional pre-computed \code{\link[=atomic_risks]{atomic_risks()}} tibble.}
 }
 \value{
-A tibble with one row: the aggregated risk for the nearest
-duration bucket.
+A tibble with one row per component at the nearest duration
+bucket, plus summary columns.
 }
 \description{
-For duration-dependent activities, selects the nearest pre-computed
-duration bucket and returns the aggregated risk.
+For duration-dependent activities, finds the nearest pre-computed
+duration bucket across all variants of an activity family and returns
+the aggregated risk.
 }
 \examples{
-risk_for_duration("flying_8h", duration_hours = 10)
+risk_for_duration("flying", duration_hours = 7)
+risk_for_duration("flying", duration_hours = 3)
 }
 \seealso{
 \code{\link[=risk_components]{risk_components()}}, \code{\link[=common_risks]{common_risks()}}

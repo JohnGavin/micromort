@@ -34,6 +34,26 @@ test_that("unknown reference activity raises error", {
   )
 })
 
+test_that("equivalence strings avoid scientific notation", {
+  re <- risk_equivalence("Chest X-ray (radiation)")
+  # Mt. Everest has ratio 379320 - must NOT show "e+"
+  expect_false(any(grepl("e\\+", re$equivalence)))
+})
+
+
+test_that("risk_exchange_matrix errors for zero-micromort activities", {
+  # Create a fake risks tibble with a zero-micromort activity
+  fake <- tibble::tibble(
+    activity = c("Zero risk", "Driving (230 miles)"),
+    micromorts = c(0, 1)
+  )
+  expect_error(
+    risk_exchange_matrix(activities = c("Zero risk", "Driving (230 miles)"),
+                         risks = fake),
+    "zero-micromort"
+  )
+})
+
 
 # ── risk_exchange_matrix() tests ─────────────────────────────────────────────
 
