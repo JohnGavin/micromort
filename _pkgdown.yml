@@ -59,6 +59,12 @@ reference:
   - risk_equivalence
   - risk_exchange_matrix
 
+- title: "Radiation Profiles"
+  desc: "Occupational, passenger, and environmental radiation comparison"
+  contents:
+  - radiation_profiles
+  - patient_radiation_comparison
+
 - title: "Legacy Data Functions"
   desc: "Original data functions (retained for compatibility)"
   contents:
