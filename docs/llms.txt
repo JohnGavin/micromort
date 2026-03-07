@@ -674,12 +674,16 @@ Risk visualization
 
 ## Interactive Tools
 
-API and dashboard
+API, dashboard, and quiz
 
 - [`launch_api()`](https://johngavin.github.io/micromort/reference/launch_api.md)
   : Launch Micromort REST API
 - [`launch_dashboard()`](https://johngavin.github.io/micromort/reference/launch_dashboard.md)
   : Launch Risk Explorer Dashboard
+- [`launch_quiz()`](https://johngavin.github.io/micromort/reference/launch_quiz.md)
+  : Launch Interactive "Which Is Riskier?" Quiz
+- [`quiz_pairs()`](https://johngavin.github.io/micromort/reference/quiz_pairs.md)
+  : Generate Quiz Pairs for "Which Is Riskier?" Game
 
 # Articles
 
