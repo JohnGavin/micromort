@@ -7,8 +7,26 @@ references.
 ## Usage
 
 ``` r
-common_risks()
+common_risks(profile = list(), duration_hours = NULL)
 ```
+
+## Arguments
+
+- profile:
+
+  A named list of condition variables for filtering conditional risks,
+  e.g. `list(health_profile = "dvt_risk_factors")`. Default
+  [`list()`](https://rdrr.io/r/base/list.html) returns
+  unconditional/healthy defaults.
+
+- duration_hours:
+
+  Optional numeric. For duration-dependent activities, selects the
+  nearest pre-computed duration bucket *within each activity*. All
+  flying variants (2h, 5h, 8h, 12h) are retained. `NULL` (default)
+  returns all duration buckets. Use
+  [`risk_for_duration()`](https://johngavin.github.io/micromort/reference/risk_for_duration.md)
+  to select a single activity family result.
 
 ## Value
 
@@ -24,7 +42,7 @@ A tibble with columns:
 
 - microlives:
 
-  Equivalent microlives (micromorts × 0.7)
+  Equivalent microlives (micromorts x 0.7)
 
 - category:
 
@@ -42,11 +60,27 @@ A tibble with columns:
 
   Typical duration in days (for cross-activity comparison)
 
+- micromorts_per_day:
+
+  Micromorts normalized per day
+
 - source_url:
 
   Data source URL
 
+- n_components:
+
+  Number of atomic components summed
+
+- hedgeable_pct:
+
+  Percent of total micromorts that are hedgeable
+
 ## Details
+
+Aggregates from
+[`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md),
+summing component-level micromorts per activity.
 
 Micromort: one-in-a-million chance of death (acute risk). Microlife: 30
 minutes of life expectancy lost.
@@ -62,11 +96,16 @@ Albers (eds), Societal Risk Assessment: How Safe Is Safe Enough?
 
 <https://micromorts.rip/>
 
+## See also
+
+[`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
+for the component-level data.
+
 ## Examples
 
 ``` r
 common_risks()
-#> # A tibble: 62 × 9
+#> # A tibble: 91 × 11
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event                60
@@ -79,10 +118,11 @@ common_risks()
 #>  8 Base jumping (…        430       301  Sport    per e… event                 1
 #>  9 First day of l…        430       301  Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period               77
-#> # ℹ 52 more rows
-#> # ℹ 2 more variables: micromorts_per_day <dbl>, source_url <chr>
+#> # ℹ 81 more rows
+#> # ℹ 4 more variables: micromorts_per_day <dbl>, source_url <chr>,
+#> #   n_components <int>, hedgeable_pct <dbl>
 common_risks() |> dplyr::filter(category == "COVID-19")
-#> # A tibble: 19 × 9
+#> # A tibble: 19 × 11
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 COVID-19 infec…   10000        7000   COVID-19 per i… event                14
@@ -104,9 +144,10 @@ common_risks() |> dplyr::filter(category == "COVID-19")
 #> 17 COVID-19 bival…       1           0.7 COVID-19 11 we… period               77
 #> 18 COVID-19 monov…       0.2         0.1 COVID-19 11 we… period               77
 #> 19 COVID-19 bival…       0.05        0   COVID-19 11 we… period               77
-#> # ℹ 2 more variables: micromorts_per_day <dbl>, source_url <chr>
+#> # ℹ 4 more variables: micromorts_per_day <dbl>, source_url <chr>,
+#> #   n_components <int>, hedgeable_pct <dbl>
 common_risks() |> dplyr::filter(micromorts > 100)
-#> # A tibble: 14 × 9
+#> # A tibble: 14 × 11
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932    26552.  Mountai… per a… event                60
@@ -123,5 +164,6 @@ common_risks() |> dplyr::filter(micromorts > 100)
 #> 12 Scuba diving (…        164      115.  Sport    per y… year                365
 #> 13 Vaginal birth …        120       84   Medical  per e… event                 1
 #> 14 Living (one da…        105       73.5 Daily L… per d… day                   1
-#> # ℹ 2 more variables: micromorts_per_day <dbl>, source_url <chr>
+#> # ℹ 4 more variables: micromorts_per_day <dbl>, source_url <chr>,
+#> #   n_components <int>, hedgeable_pct <dbl>
 ```

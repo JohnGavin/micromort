@@ -6,6 +6,7 @@
 <url><loc>https://johngavin.github.io/micromort/articles/introduction.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/palatable_units.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/regional_variation.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/articles/risk_equivalence.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/authors.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/index.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/acute_risks.html</loc></url>
@@ -13,6 +14,7 @@
 <url><loc>https://johngavin.github.io/micromort/reference/as_microlife.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/as_micromort.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/as_probability.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/atomic_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/cancer_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/chronic_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/common_risks.html</loc></url>
@@ -31,12 +33,19 @@
 <url><loc>https://johngavin.github.io/micromort/reference/load_acute_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/load_chronic_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/load_sources.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/patient_radiation_comparison.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/plot_risk_components.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/plot_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/plot_risks_interactive.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/prepare_risks_plot.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/radiation_profiles.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/regional_life_expectancy.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/regional_mortality_multiplier.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/risk_components.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/risk_data_sources.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/risk_equivalence.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/risk_exchange_matrix.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/risk_for_duration.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/risk_sources.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/vaccination_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/value_of_micromort.html</loc></url>

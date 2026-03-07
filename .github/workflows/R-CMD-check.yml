@@ -102,6 +102,43 @@ jobs:
 
           echo "All vignettes pass inline computation check"
 
+      - name: Check URLs in package documentation
+        run: |
+          nix-shell default.nix -A shell --run "Rscript -e '
+            if (requireNamespace(\"urlchecker\", quietly = TRUE)) {
+              results <- urlchecker::url_check(\".\")
+              if (nrow(results) > 0) {
+                cat(\"URL issues found:\\n\")
+                print(results)
+                # Warn but do not fail - some URLs may be temporarily down
+                cat(\"::warning::Found\", nrow(results), \"URL issue(s) in package documentation\\n\")
+              } else {
+                cat(\"All URLs OK\\n\")
+              }
+            } else {
+              cat(\"urlchecker not available, skipping URL checks\\n\")
+            }
+          '"
+
+      - name: Verify pkgdown navbar articles match docs/
+        if: hashFiles('_pkgdown.yml') != ''
+        run: |
+          ERRORS=0
+          for article in $(grep -o 'articles/[a-z_]*\.html' _pkgdown.yml | sed 's|articles/||'); do
+            if [ ! -f "docs/articles/$article" ]; then
+              echo "MISSING: docs/articles/$article (listed in _pkgdown.yml but not built)"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "OK: docs/articles/$article"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::$ERRORS article(s) listed in _pkgdown.yml navbar but missing from docs/"
+            echo "Run pkgdown::build_site() locally and commit docs/"
+            exit 1
+          fi
+          echo "All navbar articles present in docs/"
+
       - name: Upload check results on failure
         if: failure()
         uses: actions/upload-artifact@v4

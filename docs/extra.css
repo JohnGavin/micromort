@@ -1,22 +1,37 @@
-/* pkgdown extra CSS - TOC and content width customization */
+/* pkgdown extra CSS - Full-width vignettes
+   Per issue #17: Vignette content must fill ~95% of browser window */
 
-/* Expand main content to use more width */
+/* Override Bootstrap container max-width at ALL breakpoints */
+body > .container,
 .container {
-  max-width: 95%;
+  max-width: 95% !important;
+  width: 95%;
 }
 
+/* Expand content column, shrink TOC */
 .col-md-9 {
   flex: 0 0 80%;
   max-width: 80%;
 }
 
-/* Smaller TOC to avoid overlap with tables */
 .col-md-3 {
   flex: 0 0 20%;
   max-width: 20%;
 }
 
-/* Smaller TOC font */
+/* Ensure .contents area uses full available width */
+.contents {
+  max-width: none;
+  width: 100%;
+}
+
+/* pkgdown article body */
+.page-content,
+main .contents {
+  max-width: none;
+}
+
+/* Smaller TOC font to save space */
 #toc {
   font-size: 0.85rem;
 }
@@ -26,14 +41,19 @@
   font-size: 0.8rem;
 }
 
-/* Make TOC collapsible on mobile */
+/* Hide TOC on mobile for clean layout */
 @media (max-width: 991.98px) {
   #toc {
     display: none;
   }
+
+  .col-md-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
-/* Tables should not overflow */
+/* Tables fill available width */
 .table-responsive {
   overflow-x: auto;
 }
@@ -43,8 +63,17 @@ table {
   max-width: 100%;
 }
 
-/* DT datatable styling */
+/* DT datatable: full width with horizontal scroll for overflow */
 .dataTables_wrapper {
   width: 100%;
   overflow-x: auto;
+}
+
+/* Plotly charts: full width */
+.plotly {
+  width: 100% !important;
+}
+
+.js-plotly-plot {
+  width: 100% !important;
 }

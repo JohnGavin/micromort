@@ -41,6 +41,7 @@ Suggests:
     shiny,
     targets,
     testthat (>= 3.0.0),
+    urlchecker,
     usethis
 Config/testthat/edition: 3
 VignetteBuilder: knitr

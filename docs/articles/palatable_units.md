@@ -1,5 +1,22 @@
 # Palatable Units: The Spiegelhalter Philosophy
 
+``` r
+library(micromort)
+library(targets)
+library(DT)
+
+# Safe tar_read with graceful fallback
+safe_tar_read <- function(name) {
+  tryCatch(
+    targets::tar_read_raw(name),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+```
+
 **“Statistics are not just numbers; they are the way we make sense of
 the world.”** — Sir David Spiegelhalter
 
@@ -47,20 +64,7 @@ The following table uses
 the package’s curated dataset of 62 acute risks with full provenance
 tracking:
 
-``` r
-# Use the package's curated dataset
-risks <- common_risks() |>
-  dplyr::filter(category %in% c("Travel", "Medical", "Sport", "Daily Life")) |>
-  dplyr::select(activity, micromorts, microlives, category, period)
-
-DT::datatable(
-  risks,
-  caption = "Acute risks from common_risks() dataset (click column headers to sort)",
-  filter = "top",
-  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
-  rownames = FALSE
-)
-```
+    #> Target 'vig_palatable_risks_filtered' not found. Run tar_make() first.
 
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same
 > acute death risk (~10 micromorts) as undergoing general anesthesia.
@@ -87,19 +91,7 @@ Using
 [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md),
 the package’s curated dataset of 22 chronic lifestyle factors:
 
-``` r
-# Use the package's curated chronic risks dataset
-chronic_table <- chronic_risks() |>
-  dplyr::select(factor, microlives_per_day, category, direction, annual_effect_days)
-
-DT::datatable(
-  chronic_table,
-  caption = "Chronic lifestyle factors from chronic_risks() dataset (click to sort)",
-  filter = "top",
-  options = list(pageLength = 15, dom = "Bfrtip", scrollX = TRUE),
-  rownames = FALSE
-)
-```
+    #> Target 'vig_palatable_chronic_risks' not found. Run tar_make() first.
 
 > **Clarification:** A value of **-1 Microlife** is a **loss**
 > (attrition). It effectively means you are aging 30 minutes faster than
@@ -120,13 +112,10 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-``` r
-# Risk ladder visualization - faceted by COVID-19 vs Other risks
-# This helps compare like-with-like while maintaining the logarithmic scale
-plot_risks()
-```
+&nbsp;
 
-![](palatable_units_files/figure-html/unnamed-chunk-4-1.png)
+    #> Target 'vig_palatable_risk_plot' not found. Run tar_make() first.
+    #> NULL
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -136,13 +125,10 @@ which provides:
 - Click legend to show/hide categories
 - Dropdown filter for COVID-19 vs Other risks
 
-``` r
-plot_risks_interactive()
-#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-#> Returning the palette you asked for with that many colors
-#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-#> Returning the palette you asked for with that many colors
-```
+&nbsp;
+
+    #> Target 'vig_palatable_risk_plot_interactive' not found. Run tar_make() first.
+    #> NULL
 
 ## 5. Media Perception vs. Actual Risk
 

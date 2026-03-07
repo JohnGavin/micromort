@@ -5,7 +5,8 @@ articles:
   introduction: introduction.html
   palatable_units: palatable_units.html
   regional_variation: regional_variation.html
-last_built: 2026-03-01T19:53Z
+  risk_equivalence: risk_equivalence.html
+last_built: 2026-03-07T20:37Z
 urls:
   reference: https://johngavin.github.io/micromort/reference
   article: https://johngavin.github.io/micromort/articles

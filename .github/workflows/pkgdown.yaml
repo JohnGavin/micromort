@@ -43,6 +43,23 @@ jobs:
           echo "Pre-built docs/ found:"
           ls -la docs/*.html | head -10
 
+      - name: Verify all navbar articles exist in docs/
+        run: |
+          ERRORS=0
+          for article in $(grep -o 'articles/[a-z_]*\.html' _pkgdown.yml | sed 's|articles/||'); do
+            if [ ! -f "docs/articles/$article" ]; then
+              echo "MISSING: docs/articles/$article (listed in _pkgdown.yml)"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "OK: docs/articles/$article"
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::$ERRORS article(s) in _pkgdown.yml navbar missing from docs/"
+            exit 1
+          fi
+          echo "All navbar articles verified"
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -54,3 +71,37 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify deployed URLs return 200
+        if: success()
+        run: |
+          SITE_URL="${{ steps.deployment.outputs.page_url }}"
+          # Strip trailing slash
+          SITE_URL="${SITE_URL%/}"
+          ERRORS=0
+
+          # Check index
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SITE_URL}/index.html")
+          if [ "$STATUS" != "200" ]; then
+            echo "FAIL: ${SITE_URL}/index.html returned $STATUS"
+            ERRORS=$((ERRORS + 1))
+          else
+            echo "OK: index.html ($STATUS)"
+          fi
+
+          # Check each navbar article
+          for article in $(grep -o 'articles/[a-z_]*\.html' _pkgdown.yml); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SITE_URL}/${article}" --retry 2 --retry-delay 5)
+            if [ "$STATUS" != "200" ]; then
+              echo "FAIL: ${SITE_URL}/${article} returned $STATUS"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "OK: ${article} ($STATUS)"
+            fi
+          done
+
+          if [ $ERRORS -gt 0 ]; then
+            echo "::warning::$ERRORS deployed URL(s) returned non-200 status"
+          else
+            echo "All deployed URLs verified"
+          fi
