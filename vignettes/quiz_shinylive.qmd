@@ -1,0 +1,466 @@
+---
+title: "Which Is Riskier? (Play in Browser)"
+format: html
+filters:
+  - shinylive
+---
+
+Play the micromort risk quiz directly in your browser --- no R installation required!
+
+Compare pairs of everyday activities and guess which carries more micromort risk.
+A **micromort** is a one-in-a-million chance of death.
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 700
+
+# Set up repos for WebR: R-Universe for micromort, r-wasm for CRAN packages
+options(repos = c(
+  johngavin = "https://johngavin.r-universe.dev",
+  CRAN = "https://repo.r-wasm.org"
+))
+
+library(shiny)
+library(bslib)
+library(micromort)
+
+# ---- CSS ----
+quiz_css <- "
+  .card { transition: border-color 0.3s; }
+  .border-success { border: 3px solid #198754 !important; }
+  .border-danger { border: 3px solid #dc3545 !important; }
+  .badge { font-size: 0.8em; }
+  .gap-3 { gap: 1rem; }
+"
+
+# ---- Instructions page ----
+instructions_ui <- function() {
+  tagList(
+    h2("Which Is Riskier?", class = "text-center mb-4"),
+    card(
+      card_body(
+        tags$ul(
+          tags$li(
+            "A ", strong("micromort"), " is a one-in-a-million ",
+            "chance of death."
+          ),
+          tags$li(
+            "You face some of these risks every day \u2014 ",
+            "do you know which ones are bigger?"
+          ),
+          tags$li(
+            "Each question shows two activities \u2014 ",
+            "guess which carries more risk."
+          ),
+          tags$li(
+            "You can ", strong("skip"), " questions or go ",
+            strong("back"), " and change answers."
+          ),
+          tags$li(
+            "Skipped (unanswered) questions score zero."
+          )
+        ),
+        radioButtons(
+          "n_questions", "Number of questions:",
+          choices = c("5" = 5, "10" = 10),
+          selected = 10, inline = TRUE
+        ),
+        div(
+          class = "text-center mt-3",
+          actionButton(
+            "start_quiz", "Start Quiz",
+            class = "btn-primary btn-lg"
+          )
+        )
+      )
+    )
+  )
+}
+
+# ---- Question page ----
+question_ui <- function(state) {
+  q <- state$current_q
+  n <- state$n_questions
+  pair <- state$pairs[q, ]
+  ord <- state$display_order[[q]]
+  revealed <- state$revealed[q]
+  answer <- state$answers[q]
+  correct_answer <- pair$answer
+
+  left_side <- ord[1]
+  right_side <- ord[2]
+
+  left_activity <- pair[[paste0("activity_", left_side)]]
+  left_category <- pair[[paste0("category_", left_side)]]
+  left_mm <- pair[[paste0("micromorts_", left_side)]]
+
+  right_activity <- pair[[paste0("activity_", right_side)]]
+  right_category <- pair[[paste0("category_", right_side)]]
+  right_mm <- pair[[paste0("micromorts_", right_side)]]
+
+  # Card styling based on reveal state
+  left_border <- ""
+  right_border <- ""
+  if (revealed) {
+    is_left_riskier <- left_mm >= right_mm
+    left_border <- if (is_left_riskier) "border-success" else "border-danger"
+    right_border <- if (!is_left_riskier) "border-success" else "border-danger"
+  }
+
+  # Result text
+  result_text <- NULL
+  if (revealed) {
+    user_correct <- !is.na(answer) && answer == correct_answer
+    result_text <- if (user_correct) {
+      div(
+        class = "alert alert-success text-center mt-3",
+        strong("Correct!"),
+        sprintf(
+          " %s (%.2f mm) vs %s (%.2f mm)",
+          pair[[paste0("activity_", correct_answer)]],
+          pair[[paste0("micromorts_", correct_answer)]],
+          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
+          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
+        )
+      )
+    } else {
+      div(
+        class = "alert alert-danger text-center mt-3",
+        if (is.na(answer)) "Skipped! " else tagList(strong("Incorrect! ")),
+        sprintf(
+          "%s (%.2f mm) is riskier than %s (%.2f mm)",
+          pair[[paste0("activity_", correct_answer)]],
+          pair[[paste0("micromorts_", correct_answer)]],
+          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
+          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
+        )
+      )
+    }
+  }
+
+  tagList(
+    h4(
+      sprintf("Question %d of %d", q, n),
+      class = "text-center text-muted mb-3"
+    ),
+    div(
+      class = "row",
+      div(
+        class = "col-5",
+        card(
+          class = left_border,
+          card_header(
+            class = "text-center",
+            h5(left_activity),
+            span(class = "badge bg-secondary", left_category)
+          ),
+          if (revealed) {
+            card_body(
+              class = "text-center",
+              h4(sprintf("%.2f mm", left_mm))
+            )
+          }
+        )
+      ),
+      div(
+        class = "col-2 d-flex align-items-center justify-content-center",
+        h3("VS", class = "text-muted")
+      ),
+      div(
+        class = "col-5",
+        card(
+          class = right_border,
+          card_header(
+            class = "text-center",
+            h5(right_activity),
+            span(class = "badge bg-secondary", right_category)
+          ),
+          if (revealed) {
+            card_body(
+              class = "text-center",
+              h4(sprintf("%.2f mm", right_mm))
+            )
+          }
+        )
+      )
+    ),
+    if (!revealed) {
+      div(
+        class = "row mt-3",
+        div(
+          class = "col-5 text-center",
+          actionButton(
+            "choose_left",
+            paste0("\u2190 ", left_activity, " is riskier"),
+            class = "btn-outline-primary btn-sm",
+            style = "white-space: normal; width: 100%;"
+          )
+        ),
+        div(class = "col-2"),
+        div(
+          class = "col-5 text-center",
+          actionButton(
+            "choose_right",
+            paste0(right_activity, " is riskier \u2192"),
+            class = "btn-outline-primary btn-sm",
+            style = "white-space: normal; width: 100%;"
+          )
+        )
+      )
+    },
+    result_text,
+    div(
+      class = "d-flex justify-content-between mt-4",
+      actionButton(
+        "prev_q", "\u2190 Back",
+        class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
+      ),
+      actionButton(
+        "next_q",
+        if (q == n) "Finish" else "Next \u2192",
+        class = "btn-primary"
+      )
+    )
+  )
+}
+
+# ---- Results summary page ----
+results_summary_ui <- function(state) {
+  pairs <- state$pairs
+  answers <- state$answers
+  n <- state$n_questions
+
+  correct <- vapply(seq_len(n), function(i) {
+    !is.na(answers[i]) && answers[i] == pairs$answer[i]
+  }, logical(1))
+  score <- sum(correct)
+  pct <- score / n * 100
+
+  baseline <- n / 2
+
+  rating <- if (pct >= 90) {
+    "Risk Expert!"
+  } else if (pct >= 70) {
+    "Sharp Intuition!"
+  } else if (pct >= 50) {
+    "Getting There!"
+  } else {
+    "Surprising, isn't it?"
+  }
+
+  tagList(
+    h2("Results", class = "text-center mb-4"),
+    div(
+      class = "row mb-4",
+      div(
+        class = "col-6",
+        value_box(
+          title = "Your Score",
+          value = sprintf("%d / %d", score, n),
+          theme = "primary"
+        )
+      ),
+      div(
+        class = "col-6",
+        value_box(
+          title = "Random Guessing",
+          value = sprintf("~%.1f / %d", baseline, n),
+          theme = "secondary"
+        )
+      )
+    ),
+    div(
+      class = "text-center mb-4",
+      h3(rating)
+    ),
+    div(
+      class = "d-flex justify-content-center gap-3",
+      actionButton(
+        "view_details", "View Details",
+        class = "btn-outline-primary btn-lg"
+      ),
+      actionButton(
+        "try_again", "Try Again",
+        class = "btn-primary btn-lg"
+      )
+    )
+  )
+}
+
+# ---- Results detail page ----
+results_detail_ui <- function(state) {
+  pairs <- state$pairs
+  answers <- state$answers
+  n <- state$n_questions
+
+  detail_rows <- lapply(seq_len(n), function(i) {
+    user_ans <- if (is.na(answers[i])) {
+      "Skipped"
+    } else if (answers[i] == "a") {
+      pairs$activity_a[i]
+    } else {
+      pairs$activity_b[i]
+    }
+    correct_ans <- if (pairs$answer[i] == "a") {
+      pairs$activity_a[i]
+    } else {
+      pairs$activity_b[i]
+    }
+    result <- if (is.na(answers[i])) {
+      "\u2014"
+    } else if (answers[i] == pairs$answer[i]) {
+      "\u2713"
+    } else {
+      "\u2717"
+    }
+
+    tags$tr(
+      tags$td(i),
+      tags$td(pairs$activity_a[i]),
+      tags$td(sprintf("%.2f", pairs$micromorts_a[i])),
+      tags$td(pairs$activity_b[i]),
+      tags$td(sprintf("%.2f", pairs$micromorts_b[i])),
+      tags$td(user_ans),
+      tags$td(correct_ans),
+      tags$td(result)
+    )
+  })
+
+  tagList(
+    h3("Question-by-Question Detail", class = "text-center mb-4"),
+    div(
+      class = "table-responsive",
+      tags$table(
+        class = "table table-striped table-hover",
+        tags$thead(
+          tags$tr(
+            tags$th("Q"),
+            tags$th("Activity A"),
+            tags$th("mm A"),
+            tags$th("Activity B"),
+            tags$th("mm B"),
+            tags$th("Your Answer"),
+            tags$th("Correct"),
+            tags$th("Result")
+          )
+        ),
+        tags$tbody(detail_rows)
+      )
+    ),
+    div(
+      class = "text-center mt-4",
+      actionButton(
+        "back_to_summary", "\u2190 Back to Summary",
+        class = "btn-secondary btn-lg"
+      )
+    )
+  )
+}
+
+# ---- App ----
+ui <- page_fluid(
+  theme = bs_theme(bootswatch = "flatly", version = 5),
+  tags$head(tags$style(HTML(quiz_css))),
+  div(
+    class = "container",
+    style = "max-width: 800px; margin: auto; padding-top: 20px;",
+    uiOutput("main_ui")
+  )
+)
+
+server <- function(input, output, session) {
+  state <- reactiveValues(
+    phase = "instructions",
+    n_questions = 10L,
+    current_q = 1L,
+    pairs = NULL,
+    answers = NULL,
+    display_order = NULL,
+    revealed = NULL
+  )
+
+  # ---- Instructions ----
+  observeEvent(input$start_quiz, {
+    n <- as.integer(input$n_questions %||% state$n_questions)
+    pool <- quiz_pairs(seed = NULL)
+    n <- min(n, nrow(pool))
+    state$n_questions <- n
+    state$pairs <- pool[sample(nrow(pool), n), ]
+    state$answers <- rep(NA_character_, n)
+    state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
+    state$revealed <- rep(FALSE, n)
+    state$current_q <- 1L
+    state$phase <- "question"
+  })
+
+  # ---- Answer buttons ----
+  observeEvent(input$choose_left, {
+    q <- state$current_q
+    state$answers[q] <- state$display_order[[q]][1]
+    state$revealed[q] <- TRUE
+  })
+
+  observeEvent(input$choose_right, {
+    q <- state$current_q
+    state$answers[q] <- state$display_order[[q]][2]
+    state$revealed[q] <- TRUE
+  })
+
+  # ---- Navigation ----
+  observeEvent(input$next_q, {
+    if (state$current_q < state$n_questions) {
+      state$current_q <- state$current_q + 1L
+    } else {
+      state$phase <- "results_summary"
+    }
+  })
+
+  observeEvent(input$prev_q, {
+    if (state$current_q > 1L) {
+      state$current_q <- state$current_q - 1L
+    }
+  })
+
+  observeEvent(input$view_details, {
+    state$phase <- "results_detail"
+  })
+
+  observeEvent(input$back_to_summary, {
+    state$phase <- "results_summary"
+  })
+
+  observeEvent(input$try_again, {
+    state$phase <- "instructions"
+  })
+
+  # ---- Render main UI ----
+  output$main_ui <- renderUI({
+    switch(state$phase,
+      instructions = instructions_ui(),
+      question = question_ui(state),
+      results_summary = results_summary_ui(state),
+      results_detail = results_detail_ui(state)
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+::: {.callout-note}
+This app runs entirely in your browser using [WebR](https://docs.r-wasm.org/webr/latest/) and [Shinylive](https://posit-dev.github.io/r-shinylive/).
+Initial load may take 30--60 seconds while packages download.
+The micromort package is loaded from [R-Universe](https://johngavin.r-universe.dev/micromort).
+:::
+
+## How it works
+
+The quiz uses `micromort::quiz_pairs()` to generate pairs of everyday activities
+with similar micromort values, making comparisons challenging. Each pair comes
+from the curated `common_risks()` dataset.
+
+To run the full-featured version locally (with DT detail tables):
+
+```r
+micromort::launch_quiz()
+```

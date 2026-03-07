@@ -29,6 +29,10 @@ navbar:
         href: articles/regional_variation.html
       - text: "Risk Equivalence"
         href: articles/risk_equivalence.html
+      - text: "---"
+      - text: "Interactive"
+      - text: "Risk Quiz (play in browser)"
+        href: articles/quiz_shinylive.html
 
 reference:
 - title: "Datasets"
