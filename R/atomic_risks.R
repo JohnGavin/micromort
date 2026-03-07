@@ -330,6 +330,77 @@ atomic_risks <- function() {
       notes = NA_character_
     )
 
+  # ── Part 5: Annual occupational/environmental/passenger radiation ────────
+  # LNT model (Brenner & Hall 2007 NEJM): 50 micromorts per Sv = 0.05 mm/mSv
+  # Annual doses from UNSCEAR 2020, ICRP 103, FAA CARI-7
+  unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
+
+  annual_rad <- tibble::tribble(
+    ~activity, ~activity_id, ~micromorts, ~category,
+    ~hedgeable, ~hedge_description, ~confidence,
+
+    # Occupational
+    "Airline pilot (annual radiation)", "airline_pilot_annual",
+    0.15, "Occupation",
+    TRUE, "Flight hour limits + route planning", "medium",
+
+    "X-ray technician (annual radiation)", "xray_tech_annual",
+    0.05, "Occupation",
+    TRUE, "Lead shielding + ALARA protocols", "medium",
+
+    "Dental radiographer (annual radiation)", "dental_radiographer_annual",
+    0.01, "Occupation",
+    TRUE, "Lead apron + distance protocols", "medium",
+
+    "Nuclear plant worker (annual radiation)", "nuclear_worker_annual",
+    0.10, "Occupation",
+    TRUE, "Shielding + dosimetry + ALARA", "medium",
+
+    "Interventional cardiologist (annual radiation)", "interventional_cardiologist_annual",
+    0.175, "Occupation",
+    TRUE, "Lead apron + ceiling shield + dosimetry", "medium",
+
+    # Passenger (cosmic)
+    "Frequent executive flyer (annual cosmic)", "executive_flyer_annual",
+    0.15, "Travel",
+    FALSE, NA_character_, "medium",
+
+    "Business traveller (annual cosmic)", "business_traveller_annual",
+    0.0375, "Travel",
+    FALSE, NA_character_, "estimated",
+
+    "Annual tourist flyer (annual cosmic)", "annual_tourist_annual",
+    0.006, "Travel",
+    FALSE, NA_character_, "estimated",
+
+    # Environmental
+    "Granite resident (annual radon)", "granite_resident_annual",
+    0.10, "Environment",
+    TRUE, "Radon mitigation + ventilation", "medium",
+
+    "High-altitude resident (annual cosmic)", "high_altitude_resident_annual",
+    0.035, "Environment",
+    FALSE, NA_character_, "medium",
+
+    "Normal background radiation", "background_radiation_annual",
+    0.12, "Environment",
+    FALSE, NA_character_, "high"
+  ) |>
+    dplyr::mutate(
+      component = "radiation",
+      risk_category = "radiation",
+      component_label = "Ionizing radiation dose",
+      period = "per year",
+      period_type = "year",
+      source_url = unscear_url,
+      component_id = paste0(activity_id, "_radiation"),
+      duration_hours = NA_real_,
+      hedge_reduction_pct = dplyr::if_else(hedgeable, 50, NA_real_),
+      condition_variable = NA_character_,
+      condition_value = NA_character_,
+      notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -342,7 +413,8 @@ atomic_risks <- function() {
     legacy[, all_cols],
     flights[, all_cols],
     med_rad[, all_cols],
-    mundane[, all_cols]
+    mundane[, all_cols],
+    annual_rad[, all_cols]
   )
 }
 
@@ -598,4 +670,20 @@ risk_for_duration <- function(activity_prefix, duration_hours, profile = list(),
       n_components = dplyr::n(),
       duration_hours = nearest_dur
     )
+}
+
+
+#' Convert millisieverts to micromorts
+#'
+#' Uses the Linear No-Threshold (LNT) model: 50 micromorts per Sv,
+#' i.e. 0.05 micromorts per mSv.
+#'
+#' @param msv Numeric vector of doses in millisieverts.
+#' @return Numeric vector of micromorts.
+#' @references
+#' Brenner DJ, Hall EJ (2007). "Computed Tomography — An Increasing Source
+#' of Radiation Exposure." NEJM 357:2277-2284.
+#' @noRd
+msv_to_micromorts <- function(msv) {
+  round(msv * 0.05, 4)
 }

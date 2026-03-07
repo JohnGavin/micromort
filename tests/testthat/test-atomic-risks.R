@@ -37,11 +37,12 @@ test_that("atomic_risks() has correct column types", {
 })
 
 test_that("atomic_risks() has expected row count", {
+
   ar <- atomic_risks()
-  # 61 legacy all_causes + 16 flight components + 8 medical radiation + 7 mundane = 92
-  expect_equal(nrow(ar), 92)
-  # 61 legacy + 4 flight activities + 8 medical + 7 mundane = 80 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 80)
+  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation = 103
+  expect_equal(nrow(ar), 103)
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation = 91 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 91)
 })
 
 test_that("component_id values are unique", {
@@ -117,12 +118,37 @@ test_that("duration_hours is set for flight components only", {
 })
 
 
+# ── Part 5: Annual radiation rows ─────────────────────────────────────────────
+
+test_that("annual radiation rows are present", {
+  ar <- atomic_risks()
+  annual <- ar[grepl("_annual$", ar$activity_id), ]
+  expect_equal(nrow(annual), 11)
+})
+
+test_that("annual radiation rows have correct schema", {
+  ar <- atomic_risks()
+  annual <- ar[grepl("_annual$", ar$activity_id), ]
+  expect_true(all(annual$component == "radiation"))
+  expect_true(all(annual$risk_category == "radiation"))
+  expect_true(all(annual$period_type == "year"))
+  expect_true(all(annual$period == "per year"))
+})
+
+test_that("annual radiation categories are correct", {
+  ar <- atomic_risks()
+  annual <- ar[grepl("_annual$", ar$activity_id), ]
+  valid_cats <- c("Occupation", "Travel", "Environment")
+  expect_true(all(annual$category %in% valid_cats))
+})
+
+
 # ── common_risks() backward compatibility ────────────────────────────────────
 
 test_that("common_risks() has correct activity count", {
   cr <- common_risks()
-  # 61 legacy (without old Flying) + 4 flight durations + 8 medical + 7 mundane
-  expect_equal(nrow(cr), 80)
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation = 91
+  expect_equal(nrow(cr), 91)
 })
 
 test_that("common_risks() has expected columns", {
@@ -181,9 +207,11 @@ test_that("n_components is 1 for undecomposed activities", {
   expect_true(all(legacy_subset$n_components == 1))
 })
 
-test_that("hedgeable_pct is 0 for undecomposed activities", {
+test_that("hedgeable_pct is 0 for all_causes undecomposed activities", {
   cr <- common_risks()
-  legacy_subset <- cr[cr$n_components == 1, ]
+  # Exclude annual radiation rows which are single-component but hedgeable
+  legacy_subset <- cr[cr$n_components == 1 &
+                      !grepl("annual", cr$activity, ignore.case = TRUE), ]
   expect_true(all(legacy_subset$hedgeable_pct == 0))
 })
 

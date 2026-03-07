@@ -349,6 +349,79 @@ plan_vignette_outputs <- list(
         dplyr::arrange(dplyr::desc(hedgeable_pct)) |>
         dplyr::select(activity, micromorts, hedgeable_pct, n_components)
     }
+  ),
+
+
+  # ==========================================================================
+  # RADIATION EXPOSURE PROFILES (#24 + #25)
+  # ==========================================================================
+
+  # Full radiation profiles table
+
+  targets::tar_target(
+    vig_radiation_profiles,
+    radiation_profiles()
+  ),
+
+  # Patient vs occupational cross-tabulation
+  targets::tar_target(
+    vig_radiation_patient_vs_occ,
+    patient_radiation_comparison()
+  ),
+
+  # Timeline data for cumulative plotly chart (yearly increments 0-40)
+  targets::tar_target(
+    vig_radiation_timeline_data,
+    {
+      rp <- radiation_profiles(milestones = integer(0))
+      years <- 0:40
+      do.call(dplyr::bind_rows, lapply(years, function(y) {
+        rp |>
+          dplyr::mutate(
+            year = y,
+            cumulative_micromorts = annual_micromorts * y
+          )
+      }))
+    }
+  ),
+
+  # Regulatory limits comparison
+  targets::tar_target(
+    vig_radiation_regulatory,
+    {
+      rp <- radiation_profiles()
+      rp |>
+        dplyr::mutate(
+          pct_of_limit = round(annual_msv / regulatory_limit_msv * 100, 1)
+        ) |>
+        dplyr::select(activity, category, annual_msv, regulatory_limit_msv,
+                      pct_of_limit) |>
+        dplyr::arrange(dplyr::desc(pct_of_limit))
+    }
+  ),
+
+  # Key insights for vignette prose
+  targets::tar_target(
+    vig_radiation_key_insights,
+    {
+      rp <- radiation_profiles()
+      prc <- patient_radiation_comparison()
+
+      pilot_40y <- rp$annual_micromorts[rp$activity_id == "airline_pilot_annual"] * 40
+      pilot_xray_equiv <- pilot_40y / 0.1
+
+      xray100_vs_tech40 <- prc[prc$occupation == "X-ray technician (annual radiation)" &
+                                prc$xray_count == 100 &
+                                prc$career_years == 40, ]
+
+      list(
+        pilot_40y_mm = pilot_40y,
+        pilot_40y_xrays = pilot_xray_equiv,
+        xray100_patient_mm = xray100_vs_tech40$patient_micromorts,
+        xray100_tech40_mm = xray100_vs_tech40$occupational_micromorts,
+        xray100_vs_tech40_ratio = xray100_vs_tech40$ratio
+      )
+    }
   )
 
 )

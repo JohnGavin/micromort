@@ -287,6 +287,95 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
 ```
 
 
+## Radiation Exposure Profiles {.tabset}
+
+How does occupational radiation exposure compare across careers, and how do patient X-ray doses stack up? This section uses annual dose data from UNSCEAR and the LNT model (0.05 micromorts per mSv) to answer these questions.
+
+### Occupational Comparison
+
+Annual and cumulative radiation exposure across 11 profiles --- occupational, passenger, and environmental:
+
+```{r radiation-profiles}
+rad_profiles <- safe_tar_read("vig_radiation_profiles")
+if (!is.null(rad_profiles)) {
+  DT::datatable(
+    rad_profiles,
+    caption = "Radiation exposure profiles: annual dose and cumulative micromorts at career milestones",
+    options = list(pageLength = 15, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound(c("annual_msv", "annual_micromorts",
+                       "mm_10y", "mm_20y", "mm_40y",
+                       "xray_equivalents_per_year"), 3)
+}
+```
+
+Key insight: A 40-year airline pilot career accumulates ~6 micromorts of radiation --- equivalent to just 60 chest X-rays.
+
+### Patient vs Occupational
+
+How many patient X-rays equal a career of occupational exposure?
+
+```{r radiation-patient-vs-occ}
+prc <- safe_tar_read("vig_radiation_patient_vs_occ")
+if (!is.null(prc)) {
+  DT::datatable(
+    prc,
+    caption = "Patient X-ray exposure vs occupational career radiation (ratio > 1 means patient exceeds worker)",
+    options = list(pageLength = 15, dom = "tip"),
+    filter = "top",
+    rownames = FALSE
+  ) |>
+    DT::formatRound(c("patient_micromorts", "occupational_micromorts", "ratio"), 3)
+}
+```
+
+Key insight: 100 lifetime chest X-rays (10 micromorts) exceeds a 40-year X-ray technician career (2 micromorts) by 5x.
+
+### Timeline
+
+Cumulative radiation exposure over a 40-year career:
+
+```{r radiation-timeline, fig.width=9, fig.height=6}
+timeline <- safe_tar_read("vig_radiation_timeline_data")
+if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
+  plotly::plot_ly(
+    timeline,
+    x = ~year,
+    y = ~cumulative_micromorts,
+    color = ~activity,
+    type = "scatter",
+    mode = "lines"
+  ) |>
+    plotly::layout(
+      title = "Cumulative Radiation Micromorts Over Career",
+      xaxis = list(title = "Years of Exposure"),
+      yaxis = list(title = "Cumulative Micromorts"),
+      legend = list(orientation = "v", x = 1.02, y = 1)
+    )
+}
+```
+
+### Regulatory Context
+
+How do actual doses compare to ICRP regulatory limits?
+
+```{r radiation-regulatory}
+regulatory <- safe_tar_read("vig_radiation_regulatory")
+if (!is.null(regulatory)) {
+  DT::datatable(
+    regulatory,
+    caption = "Actual annual doses vs ICRP limits (occupational: 20 mSv/yr, public: 1 mSv/yr)",
+    options = list(pageLength = 15, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound(c("annual_msv", "pct_of_limit"), 1)
+}
+```
+
+Key insight: Actual doses are typically 5-20x below regulatory limits.
+
+
 ## Cross-Activity Matrix
 
 Exchange rates between 10 diverse activities. Read as: "one row-activity equals X column-activities."
