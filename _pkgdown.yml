@@ -114,10 +114,12 @@ reference:
   - plot_risk_components
 
 - title: "Interactive Tools"
-  desc: "API and dashboard"
+  desc: "API, dashboard, and quiz"
   contents:
   - launch_api
   - launch_dashboard
+  - launch_quiz
+  - quiz_pairs
 
 footer:
   structure:
