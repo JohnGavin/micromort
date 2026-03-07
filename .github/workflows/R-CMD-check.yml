@@ -48,6 +48,60 @@ jobs:
             cat(\"Pipeline valid:\", length(targets::tar_manifest()\$name), \"targets\\n\")
           '"
 
+      - name: Validate vignette targets exist
+        if: hashFiles('vignettes/*.Rmd') != '' || hashFiles('vignettes/*.qmd') != ''
+        run: |
+          nix-shell default.nix -A shell --run "Rscript -e '
+            # Check for vignette targets in pipeline
+            manifest <- targets::tar_manifest()
+            vig_targets <- manifest[grepl(\"^vig_\", manifest\$name), ]
+
+            if (nrow(vig_targets) == 0) {
+              stop(\"No vignette targets (vig_*) found in pipeline!
+                   Vignettes must use pre-computed targets per quarto-files.md rule.\")
+            }
+
+            cat(\"Found\", nrow(vig_targets), \"vignette targets:\\n\")
+            print(vig_targets[, c(\"name\")])
+          '"
+
+      - name: Check vignettes for inline computation
+        if: hashFiles('vignettes/*.Rmd') != '' || hashFiles('vignettes/*.qmd') != ''
+        run: |
+          echo "Checking vignettes for forbidden patterns..."
+          echo "Note: targets introspection (tar_visnetwork, tar_meta) is allowed"
+          ERRORS=0
+
+          for file in vignettes/*.Rmd vignettes/*.qmd; do
+            [ -f "$file" ] || continue
+            filename=$(basename "$file")
+
+            # Check for ggplot() construction (should be pre-computed)
+            # EXCEPTION: Allow if file uses tar_meta/tar_visnetwork (pipeline vignette)
+            if grep -q 'ggplot(' "$file" 2>/dev/null; then
+              if grep -q 'tar_meta\|tar_visnetwork' "$file" 2>/dev/null; then
+                echo "INFO: $filename has ggplot() with targets introspection (allowed)"
+              else
+                echo "ERROR: $filename has ggplot() calls - should be pre-computed"
+                ERRORS=$((ERRORS + 1))
+              fi
+            fi
+
+            # Check for DBI queries - NO EXCEPTION
+            if grep -q 'dbGetQuery\|dbExecute' "$file" 2>/dev/null; then
+              echo "ERROR: $filename has database queries - use targets"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+
+          if [ $ERRORS -gt 0 ]; then
+            echo "Found $ERRORS vignette validation errors"
+            echo "See quarto-files.md: 'MANDATORY: Vignettes contain ZERO computation'"
+            exit 1
+          fi
+
+          echo "All vignettes pass inline computation check"
+
       - name: Upload check results on failure
         if: failure()
         uses: actions/upload-artifact@v4

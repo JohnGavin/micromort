@@ -34,6 +34,9 @@ c(
   # Documentation
   plan_documentation,
 
+  # Vignette pre-computed objects (MANDATORY per quarto-files.md)
+  plan_vignette_outputs,
+
   # Validation (existing)
   if (exists("plan_validation")) plan_validation else list()
 )

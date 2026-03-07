@@ -19,7 +19,11 @@ fi
 
 echo "Pushing built package to $CACHE_NAME..."
 
-# Build and push ONLY the package derivation (not full closure)
-cachix watch-exec $CACHE_NAME -- nix-build default.nix --no-out-link
+# Build ONLY this package, then push ONLY the output path.
+# Do NOT use watch-exec (it pushes all new store paths including deps).
+# package.nix (buildRPackage) != default.nix (mkShell)
+OUT_PATH=$(nix-build package.nix --no-out-link)
+echo "Built: $OUT_PATH"
+echo "$OUT_PATH" | cachix push $CACHE_NAME
 
 echo "Done."

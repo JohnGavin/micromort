@@ -312,5 +312,66 @@ utils::globalVariables(c(
   "unhedged_microlives_per_day", "hedged_microlives_per_day", "reduction_pct",
   "evidence_quality", "microlives_gained", "annual_days_gained", "micromorts_equivalent_per_day",
   # hedged_portfolio()
-  "n_factors", "total_unhedged_ml", "total_hedged_ml", "total_ml_gained", "max_effect"
+  "n_factors", "total_unhedged_ml", "total_hedged_ml", "total_ml_gained", "max_effect",
+  # plot_risk_components()
+  "component_label", "risk_category"
 ))
+
+
+#' Plot Risk Components as Stacked Bar
+#'
+#' Creates a stacked bar chart showing the breakdown of atomic risk components
+#' for selected activities. Hedgeable components are visually distinguished.
+#'
+#' @param activity_ids Character vector of activity IDs to plot.
+#' @param profile A named list of condition variables for filtering.
+#' @param risks Optional pre-computed [atomic_risks()] tibble.
+#' @return A ggplot2 object.
+#' @export
+#' @seealso [risk_components()], [atomic_risks()]
+#' @examples
+#' plot_risk_components(c("flying_2h", "flying_8h", "flying_12h"))
+plot_risk_components <- function(activity_ids, profile = list(), risks = NULL) {
+  if (is.null(risks)) risks <- atomic_risks()
+
+  available <- unique(risks$activity_id)
+  missing <- setdiff(activity_ids, available)
+  if (length(missing) > 0) {
+    cli::cli_abort(c(
+      "x" = "Unknown activity_ids: {.val {missing}}",
+      "i" = "Use {.code atomic_risks()$activity_id} to see available IDs."
+    ))
+  }
+
+  plot_data <- risks |>
+    dplyr::filter(activity_id %in% activity_ids) |>
+    filter_by_profile(profile) |>
+    dplyr::mutate(
+      hedge_label = dplyr::if_else(hedgeable, "Hedgeable", "Not hedgeable"),
+      activity = factor(activity, levels = unique(activity))
+    )
+
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(
+      x = stats::reorder(activity, -micromorts, FUN = sum),
+      y = micromorts,
+      fill = component_label,
+      alpha = hedge_label
+    )
+  ) +
+    ggplot2::geom_col(color = "white", linewidth = 0.3) +
+    ggplot2::scale_alpha_manual(
+      values = c("Hedgeable" = 1.0, "Not hedgeable" = 0.6),
+      name = "Mitigation"
+    ) +
+    ggplot2::scale_fill_brewer(palette = "Set2", name = "Component") +
+    ggplot2::coord_flip() +
+    ggplot2::labs(
+      title = "Risk Component Breakdown",
+      x = NULL,
+      y = "Micromorts"
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "bottom")
+}
