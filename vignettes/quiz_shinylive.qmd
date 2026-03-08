@@ -5,6 +5,14 @@ filters:
   - shinylive
 ---
 
+```{=html}
+<style>
+/* Hide the page-level title — the quiz app has its own heading */
+h1.title, .quarto-title h1, header#title-block-header,
+.page-header, article > h1:first-child { display: none !important; }
+</style>
+```
+
 ```{shinylive-r}
 #| standalone: true
 #| viewerHeight: 800
@@ -292,9 +300,9 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           actionButton(
-            "choose_left", "",
-            class = left_class,
-            tagList(make_btn_content(left_activity, left_category, left_period, left_extra))
+            "choose_left",
+            tagList(make_btn_content(left_activity, left_category, left_period, left_extra)),
+            class = left_class
           )
         } else {
           div(class = left_class,
@@ -309,9 +317,9 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           actionButton(
-            "choose_right", "",
-            class = right_class,
-            tagList(make_btn_content(right_activity, right_category, right_period, right_extra))
+            "choose_right",
+            tagList(make_btn_content(right_activity, right_category, right_period, right_extra)),
+            class = right_class
           )
         } else {
           div(class = right_class,
