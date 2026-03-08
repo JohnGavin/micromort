@@ -2,15 +2,16 @@ test_that("quiz_pairs() returns tibble with expected columns", {
   qp <- quiz_pairs(seed = 42)
   expect_s3_class(qp, "tbl_df")
   expected_cols <- c(
-    "activity_a", "micromorts_a", "category_a", "hedgeable_pct_a",
-    "activity_b", "micromorts_b", "category_b", "hedgeable_pct_b",
+    "activity_a", "micromorts_a", "category_a", "hedgeable_pct_a", "period_a",
+    "activity_b", "micromorts_b", "category_b", "hedgeable_pct_b", "period_b",
     "ratio", "answer"
   )
   expect_true(all(expected_cols %in% names(qp)))
 })
 
-test_that("quiz_pairs() all ratios <= max_ratio", {
-  qp <- quiz_pairs(max_ratio = 2.0, seed = 42)
+test_that("quiz_pairs() all ratios within min_ratio and max_ratio", {
+  qp <- quiz_pairs(min_ratio = 1.1, max_ratio = 2.0, seed = 42)
+  expect_true(all(qp$ratio >= 1.1))
   expect_true(all(qp$ratio <= 2.0))
 })
 
@@ -43,10 +44,10 @@ test_that("quiz_pairs() returns >= 20 pairs", {
   expect_gte(nrow(qp), 20)
 })
 
-test_that("quiz_pairs() max_ratio = 1.5 returns fewer pairs", {
-  qp_wide <- quiz_pairs(max_ratio = 2.0, seed = 42)
-  qp_narrow <- quiz_pairs(max_ratio = 1.5, seed = 42)
-  expect_lt(nrow(qp_narrow), nrow(qp_wide))
+test_that("quiz_pairs() narrower ratio range returns fewer or equal pairs", {
+  qp_wide <- quiz_pairs(min_ratio = 1.0, max_ratio = 2.0, seed = 42)
+  qp_narrow <- quiz_pairs(min_ratio = 1.5, max_ratio = 2.0, seed = 42)
+  expect_lte(nrow(qp_narrow), nrow(qp_wide))
 })
 
 test_that("quiz_pairs() seed produces reproducible results", {

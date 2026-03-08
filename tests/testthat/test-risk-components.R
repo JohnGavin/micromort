@@ -49,7 +49,7 @@ test_that("risk_components works for single-component activities", {
 })
 
 test_that("risk_components for medical radiation is atomic", {
-  rc <- risk_components("chest_x_ray_radiation")
+  rc <- risk_components("chest_x_ray_radiation_per_scan")
   expect_equal(nrow(rc), 1)
   expect_equal(rc$component, "radiation")
   expect_equal(rc$risk_category, "radiation")

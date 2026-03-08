@@ -219,6 +219,15 @@ Launch the Shiny dashboard:
 launch_dashboard()
 ```
 
+## Risk Quiz
+
+[Play in browser](https://johngavin.github.io/micromort/articles/quiz_shinylive.html)
+— runs via WebR/Shinylive (30-60s initial load). Or locally:
+
+```r
+micromort::launch_quiz()
+```
+
 ## Data Sources
 
 | Source | Type | Data |

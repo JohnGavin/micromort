@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Which Is Riskier? (Play in Browser)</title>
+<title>Which Is Riskier?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,41 +19,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -87,7 +52,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Which Is Riskier? (Play in Browser)</h1>
+<h1 class="title">Which Is Riskier?</h1>
 </div>
 
 
@@ -104,81 +69,139 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Play the micromort risk quiz directly in your browser — no R installation required!</p>
-<p>Compare pairs of everyday activities and guess which carries more micromort risk. A <strong>micromort</strong> is a one-in-a-million chance of death.</p>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| standalone: true
-#| viewerHeight: 700
+#| viewerHeight: 800
 
 library(shiny)
 library(bslib)
 
-# ---- Pre-computed quiz pairs from micromort::quiz_pairs(seed = 42) ----
+# ---- Pre-computed quiz pairs from micromort::quiz_pairs(seed = 42, min_ratio = 1.1) ----
 # Embedded to avoid loading micromort (arrow dep unavailable in WebR)
 quiz_pool &lt;- read.csv(textConnection(
-"activity_a,micromorts_a,category_a,hedgeable_pct_a,activity_b,micromorts_b,category_b,hedgeable_pct_b,ratio,answer
-Mammogram (radiation),0.1,Medical,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
-Living (one day age 30),1,Daily Life,0,COVID-19 bivalent booster (all ages),1,COVID-19,0,1,a
-Base jumping (per jump),430,Sport,0,First day of life (newborn),430,Daily Life,0,1,a
-Living 2 months with a smoker,1,Environment,0,Driving (230 miles),1,Travel,0,1,a
-COVID-19 unvaccinated (age 50-64),8,COVID-19,0,Hang gliding (per flight),8,Sport,0,1,a
-Living (one day age 20),1,Daily Life,0,COVID-19 bivalent booster (all ages),1,COVID-19,0,1,a
-COVID-19 bivalent booster (age 65-79),3,COVID-19,0,Barium enema (radiation),3,Medical,0,1,a
-Living 2 months with a smoker,1,Environment,0,Walking (20 miles),1,Travel,0,1,a
-Skydiving (per jump general),10,Sport,0,CT scan abdomen (radiation),10,Medical,0,1,a
-COVID-19 bivalent booster (age 18-49),0.05,COVID-19,0,X-ray technician (annual radiation),0.05,Occupation,100,1,a
-Chest X-ray (radiation),0.1,Medical,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
-Mammogram (radiation),0.1,Medical,0,Granite resident (annual radon),0.1,Environment,100,1,a
-COVID-19 monovalent vaccine (age 50-64),2,COVID-19,0,CT scan head (radiation),2,Medical,0,1,a
-Walking (20 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
-General anesthesia (emergency),10,Medical,0,Motorcycling (60 miles),10,Travel,0,1,a
-Horseback riding,0.5,Sport,0,Commuting by bicycle (30 min),0.5,Travel,0,1,a
-Driving (230 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
-1 hour in a coal mine,1,Occupation,0,Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,1,a
-Living in Maryland COVID-19 (Mar-May 2020),7,COVID-19,0,CT scan chest (radiation),7,Medical,0,1,a
-Motorcycling (60 miles),10,Travel,0,Skydiving (per jump general),10,Sport,0,1,a
-Living (one day age 30),1,Daily Life,0,COVID-19 bivalent booster (age 50-64),1,COVID-19,0,1,a
-COVID-19 unvaccinated (all ages),20,COVID-19,0,American football (per game),20,Sport,0,1,a
-Train (1000 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
-Skydiving (per jump US),8,Sport,0,COVID-19 unvaccinated (age 50-64),8,COVID-19,0,1,a
-Kangaroo encounter,0.1,Wildlife,0,Chest X-ray (radiation),0.1,Medical,0,1,a
-Chest X-ray (radiation),0.1,Medical,0,Granite resident (annual radon),0.1,Environment,100,1,a
-Flying (5h medium-haul),2,Travel,25,CT scan head (radiation),2,Medical,0,1,a
-Running a marathon,7,Sport,0,Living in Maryland COVID-19 (Mar-May 2020),7,COVID-19,0,1,a
-Living (one day age 50),4,Daily Life,0,COVID-19 monovalent vaccine (all ages),4,COVID-19,0,1,a
-Eating 100 charbroiled steaks,1,Diet,0,Living (one day age 20),1,Daily Life,0,1,a
-General anesthesia (emergency),10,Medical,0,Skydiving (per jump general),10,Sport,0,1,a
-Train (1000 miles),1,Travel,0,Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,1,a
-COVID-19 bivalent booster (age 18-49),0.05,COVID-19,0,Dental X-ray (radiation),0.05,Medical,0,1,a
-1 hour in a coal mine,1,Occupation,0,Eating 100 charbroiled steaks,1,Diet,0,1,a
-Running a marathon,7,Sport,0,CT scan chest (radiation),7,Medical,0,1,a
-Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,Living (one day age 20),1,Daily Life,0,1,a
-COVID-19 monovalent vaccine (age 50-64),2,COVID-19,0,Flying (5h medium-haul),2,Travel,25,1,a
-Train (1000 miles),1,Travel,0,1 hour in a coal mine,1,Occupation,0,1,a
-COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Living 2 months with a smoker,1,Environment,0,1,a
-Rock climbing (per climb),3,Sport,0,Barium enema (radiation),3,Medical,0,1,a
-Horseback riding,0.5,Sport,0,Drinking a glass of wine,0.5,Daily Life,0,1,a
-Rock climbing (per climb),3,Sport,0,COVID-19 bivalent booster (age 65-79),3,COVID-19,0,1,a
-Kangaroo encounter,0.1,Wildlife,0,Mammogram (radiation),0.1,Medical,0,1,a
-Eating 100 charbroiled steaks,1,Diet,0,Living (one day age 30),1,Daily Life,0,1,a
-COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Walking (20 miles),1,Travel,0,1,a
-COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Driving (230 miles),1,Travel,0,1,a
-Motorcycling (60 miles),10,Travel,0,CT scan abdomen (radiation),10,Medical,0,1,a
-Scuba diving (per dive trained),5,Sport,0,Coronary angiogram (radiation),5,Medical,0,1,a
-Kangaroo encounter,0.1,Wildlife,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
-Skydiving (per jump UK),8,Sport,0,COVID-19 unvaccinated (age 50-64),8,COVID-19,0,1,a"
+'"activity_a","micromorts_a","category_a","hedgeable_pct_a","period_a","activity_b","micromorts_b","category_b","hedgeable_pct_b","period_b","ratio","answer"
+"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
+"Living (one day, age 50)",4,"Daily Life",0,"per day","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
+"General anesthesia (emergency)",10,"Medical",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"Himalayan mountaineering",12000,"Mountaineering",0,"per expedition","COVID-19 infection (unvaccinated)",10000,"COVID-19",0,"per infection",1.2,"a"
+"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Mammogram (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"General anesthesia (emergency)",10,"Medical",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
+"Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year","Frequent executive flyer (annual cosmic)",0.15,"Travel",0,"per year",1.16666666666667,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"Scuba diving (per dive, trained)",5,"Sport",0,"per event","COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
+"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
+"Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.16279069767442,"b"
+"Heroin use (per dose)",30,"Drugs",0,"per dose","US military in Afghanistan (2010)",25,"Military",0,"per day",1.2,"a"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"US military in Afghanistan (2010)",25,"Military",0,"per day","American football (per game)",20,"Sport",0,"per game",1.25,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","General anesthesia (emergency)",10,"Medical",0,"per event",1.2,"a"
+"Living (one day, age 45)",6,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.2,"a"
+"COVID-19 bivalent booster (age 80+)",23,"COVID-19",0,"11 weeks (2022)","American football (per game)",20,"Sport",0,"per game",1.15,"a"
+"Skydiving (per jump, US)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
+"Motorcycling (60 miles)",10,"Travel",0,"per trip","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","Motorcycling (60 miles)",10,"Travel",0,"per trip",1.2,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Motorcycling (60 miles)",10,"Travel",0,"per trip","Skydiving (per jump, US)",8,"Sport",0,"per event",1.25,"a"
+"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","Business traveller (annual cosmic)",0.0375,"Travel",0,"per year",1.25,"b"
+"Living (one day, age 50)",4,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
+"Hang gliding (per flight)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"Commuting by car (30 min)",0.13,"Travel",0,"per trip","Airline pilot (annual radiation)",0.15,"Occupation",100,"per year",1.15384615384615,"b"
+"Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight","Drinking a glass of wine",0.5,"Daily Life",0,"per event",1.2,"a"
+"Vaginal birth (mother)",120,"Medical",0,"per event","Living (one day, age 75)",105,"Daily Life",0,"per day",1.14285714285714,"a"
+"Living (one day, age 45)",6,"Daily Life",0,"per day","Scuba diving (per dive, trained)",5,"Sport",0,"per event",1.2,"a"
+"Scuba diving (per dive, trained)",5,"Sport",0,"per event","Living (one day, age 50)",4,"Daily Life",0,"per day",1.25,"a"
+"Horseback riding",0.5,"Sport",0,"per ride","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.2,"b"
+"COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)","Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year",1.14285714285714,"a"
+"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.2,"a"
+"Running a marathon",7,"Sport",0,"per event","Living (one day, age 45)",6,"Daily Life",0,"per day",1.16666666666667,"a"
+"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","First day of life (newborn)",430,"Daily Life",0,"per day",1.16279069767442,"a"
+"US military in Afghanistan (2010)",25,"Military",0,"per day","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","Base jumping (per jump)",430,"Sport",0,"per event",1.16279069767442,"a"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"Skiing (per day)",0.7,"Sport",0,"per day","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.16666666666667,"a"
+"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","High-altitude resident (annual cosmic)",0.035,"Environment",0,"per year",1.16666666666667,"b"
+"Skydiving (per jump, US)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Living (one day, under age 1)",15,"Daily Life",0,"per day","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",1.15384615384615,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.25,"b"
+"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","Running a marathon",7,"Sport",0,"per event",1.14285714285714,"a"'
 ), stringsAsFactors = FALSE)
 
 # ---- CSS ----
 quiz_css &lt;- "
-  .card { transition: border-color 0.3s; }
-  .border-success { border: 3px solid #198754 !important; }
-  .border-danger { border: 3px solid #dc3545 !important; }
-  .badge { font-size: 0.8em; }
+  .quiz-btn {
+    min-height: 180px;
+    width: 100%;
+    white-space: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    font-size: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    transition: border-color 0.3s, background-color 0.1s;
+  }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
+  .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
+  .quiz-btn .badge { font-size: 0.75em; }
+  .quiz-btn-correct {
+    border: 3px solid #198754 !important;
+    background-color: #d1e7dd !important;
+  }
+  .quiz-btn-wrong {
+    border: 3px solid #dc3545 !important;
+    background-color: #f8d7da !important;
+  }
+  .quiz-btn-neutral {
+    border: 3px solid #6c757d !important;
+    background-color: #e9ecef !important;
+  }
   .gap-3 { gap: 1rem; }
 "
+
+# ---- Fun result phrases ----
+quiz_result_phrase &lt;- function(pct) {
+  phrases &lt;- list(
+    list(min = 95, phrase = "Actuarial genius!",
+         fact = "Actuaries quantify risk for a living.",
+         link = "https://en.wikipedia.org/wiki/Actuary"),
+    list(min = 90, phrase = "You think in micromorts!",
+         fact = "A micromort is a one-in-a-million chance of death.",
+         link = "https://en.wikipedia.org/wiki/Micromort"),
+    list(min = 80, phrase = "Sharp intuition!",
+         fact = "Humans tend to overestimate dramatic risks and underestimate common ones.",
+         link = "https://en.wikipedia.org/wiki/Risk_perception"),
+    list(min = 70, phrase = "Better than a coin toss!",
+         fact = "We judge risk by how easily examples come to mind.",
+         link = "https://en.wikipedia.org/wiki/Availability_heuristic"),
+    list(min = 60, phrase = "Getting there!",
+         fact = "Losses loom larger than gains in our risk calculus.",
+         link = "https://en.wikipedia.org/wiki/Prospect_theory"),
+    list(min = 50, phrase = "About average!",
+         fact = "Ignoring base rates is one of the most common reasoning errors.",
+         link = "https://en.wikipedia.org/wiki/Base_rate_fallacy"),
+    list(min = 30, phrase = "Surprises everywhere!",
+         fact = "We tend to assume things will keep going as normal.",
+         link = "https://en.wikipedia.org/wiki/Normalcy_bias"),
+    list(min = -1, phrase = "Toss a coin \u2014 less risky!",
+         fact = "Past outcomes don't change future probabilities.",
+         link = "https://en.wikipedia.org/wiki/Gambler%27s_fallacy")
+  )
+  for (p in phrases) {
+    if (pct &gt;= p$min) return(p)
+  }
+  phrases[[length(phrases)]]
+}
 
 # ---- Instructions page ----
 instructions_ui &lt;- function() {
@@ -192,19 +215,12 @@ instructions_ui &lt;- function() {
             "chance of death."
           ),
           tags$li(
-            "You face some of these risks every day \u2014 ",
-            "do you know which ones are bigger?"
-          ),
-          tags$li(
             "Each question shows two activities \u2014 ",
-            "guess which carries more risk."
+            "tap the one you think is riskier."
           ),
           tags$li(
             "You can ", strong("skip"), " questions or go ",
             strong("back"), " and change answers."
-          ),
-          tags$li(
-            "Skipped (unanswered) questions score zero."
           )
         ),
         radioButtons(
@@ -224,7 +240,7 @@ instructions_ui &lt;- function() {
   )
 }
 
-# ---- Question page ----
+# ---- Question page (merged single-row buttons) ----
 question_ui &lt;- function(state) {
   q &lt;- state$current_q
   n &lt;- state$n_questions
@@ -240,45 +256,77 @@ question_ui &lt;- function(state) {
   left_activity &lt;- pair[[paste0("activity_", left_side)]]
   left_category &lt;- pair[[paste0("category_", left_side)]]
   left_mm &lt;- pair[[paste0("micromorts_", left_side)]]
+  left_period &lt;- pair[[paste0("period_", left_side)]]
 
   right_activity &lt;- pair[[paste0("activity_", right_side)]]
   right_category &lt;- pair[[paste0("category_", right_side)]]
   right_mm &lt;- pair[[paste0("micromorts_", right_side)]]
+  right_period &lt;- pair[[paste0("period_", right_side)]]
 
-  left_border &lt;- ""
-  right_border &lt;- ""
+  # Button styling after reveal
+  left_class &lt;- "btn quiz-btn"
+  right_class &lt;- "btn quiz-btn"
+  left_extra &lt;- ""
+  right_extra &lt;- ""
+
   if (revealed) {
-    is_left_riskier &lt;- left_mm &gt;= right_mm
-    left_border &lt;- if (is_left_riskier) "border-success" else "border-danger"
-    right_border &lt;- if (!is_left_riskier) "border-success" else "border-danger"
+    is_left_riskier &lt;- left_mm &gt; right_mm
+    is_right_riskier &lt;- right_mm &gt; left_mm
+
+    if (!is.na(answer)) {
+      chose_left &lt;- answer == left_side
+      chose_right &lt;- answer == right_side
+    } else {
+      chose_left &lt;- FALSE
+      chose_right &lt;- FALSE
+    }
+
+    if (is_left_riskier) {
+      left_class &lt;- paste(left_class, "quiz-btn-correct")
+      right_class &lt;- paste(right_class, if (chose_right) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else if (is_right_riskier) {
+      right_class &lt;- paste(right_class, "quiz-btn-correct")
+      left_class &lt;- paste(left_class, if (chose_left) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else {
+      # Equal (shouldn't happen with min_ratio=1.1, but be safe)
+      left_class &lt;- paste(left_class, "quiz-btn-correct")
+      right_class &lt;- paste(right_class, "quiz-btn-correct")
+    }
+
+    left_extra &lt;- sprintf("%.2f mm", left_mm)
+    right_extra &lt;- sprintf("%.2f mm", right_mm)
   }
 
+  # Build button content
+  make_btn_content &lt;- function(activity, category, period, mm_text) {
+    parts &lt;- list(
+      span(class = "activity-name", activity),
+      div(
+        span(class = "badge bg-secondary me-1", category),
+        span(class = "badge bg-info", period)
+      )
+    )
+    if (nzchar(mm_text)) {
+      parts &lt;- c(parts, list(strong(mm_text, style = "font-size: 1.2rem; color: #333;")))
+    }
+    parts
+  }
+
+  # Result text
   result_text &lt;- NULL
   if (revealed) {
     user_correct &lt;- !is.na(answer) &amp;&amp; answer == correct_answer
     result_text &lt;- if (user_correct) {
       div(
-        class = "alert alert-success text-center mt-3",
-        strong("Correct!"),
-        sprintf(
-          " %s (%.2f mm) vs %s (%.2f mm)",
-          pair[[paste0("activity_", correct_answer)]],
-          pair[[paste0("micromorts_", correct_answer)]],
-          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
-          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
-        )
+        class = "alert alert-success text-center mt-2 py-2",
+        strong("Correct!")
       )
     } else {
+      riskier &lt;- pair[[paste0("activity_", correct_answer)]]
       div(
-        class = "alert alert-danger text-center mt-3",
+        class = "alert alert-danger text-center mt-2 py-2",
         if (is.na(answer)) "Skipped! " else tagList(strong("Incorrect! ")),
-        sprintf(
-          "%s (%.2f mm) is riskier than %s (%.2f mm)",
-          pair[[paste0("activity_", correct_answer)]],
-          pair[[paste0("micromorts_", correct_answer)]],
-          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
-          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
-        )
+        sprintf("%s is riskier.", riskier)
       )
     }
   }
@@ -289,73 +337,41 @@ question_ui &lt;- function(state) {
       class = "text-center text-muted mb-3"
     ),
     div(
-      class = "row",
+      class = "row align-items-center",
       div(
         class = "col-5",
-        card(
-          class = left_border,
-          card_header(
-            class = "text-center",
-            h5(left_activity),
-            span(class = "badge bg-secondary", left_category)
-          ),
-          if (revealed) {
-            card_body(
-              class = "text-center",
-              h4(sprintf("%.2f mm", left_mm))
-            )
-          }
-        )
+        if (!revealed) {
+          actionButton(
+            "choose_left", "",
+            class = left_class,
+            tagList(make_btn_content(left_activity, left_category, left_period, left_extra))
+          )
+        } else {
+          div(class = left_class,
+              make_btn_content(left_activity, left_category, left_period, left_extra))
+        }
       ),
       div(
-        class = "col-2 d-flex align-items-center justify-content-center",
-        h3("VS", class = "text-muted")
+        class = "col-2 text-center",
+        h3("VS", class = "text-muted mb-0")
       ),
       div(
         class = "col-5",
-        card(
-          class = right_border,
-          card_header(
-            class = "text-center",
-            h5(right_activity),
-            span(class = "badge bg-secondary", right_category)
-          ),
-          if (revealed) {
-            card_body(
-              class = "text-center",
-              h4(sprintf("%.2f mm", right_mm))
-            )
-          }
-        )
+        if (!revealed) {
+          actionButton(
+            "choose_right", "",
+            class = right_class,
+            tagList(make_btn_content(right_activity, right_category, right_period, right_extra))
+          )
+        } else {
+          div(class = right_class,
+              make_btn_content(right_activity, right_category, right_period, right_extra))
+        }
       )
     ),
-    if (!revealed) {
-      div(
-        class = "row mt-3",
-        div(
-          class = "col-5 text-center",
-          actionButton(
-            "choose_left",
-            paste0("\u2190 ", left_activity, " is riskier"),
-            class = "btn-outline-primary btn-sm",
-            style = "white-space: normal; width: 100%;"
-          )
-        ),
-        div(class = "col-2"),
-        div(
-          class = "col-5 text-center",
-          actionButton(
-            "choose_right",
-            paste0(right_activity, " is riskier \u2192"),
-            class = "btn-outline-primary btn-sm",
-            style = "white-space: normal; width: 100%;"
-          )
-        )
-      )
-    },
     result_text,
     div(
-      class = "d-flex justify-content-between mt-4",
+      class = "d-flex justify-content-between mt-3",
       actionButton(
         "prev_q", "\u2190 Back",
         class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
@@ -382,15 +398,7 @@ results_summary_ui &lt;- function(state) {
   pct &lt;- score / n * 100
   baseline &lt;- n / 2
 
-  rating &lt;- if (pct &gt;= 90) {
-    "Risk Expert!"
-  } else if (pct &gt;= 70) {
-    "Sharp Intuition!"
-  } else if (pct &gt;= 50) {
-    "Getting There!"
-  } else {
-    "Surprising, isn't it?"
-  }
+  result_info &lt;- quiz_result_phrase(pct)
 
   tagList(
     h2("Results", class = "text-center mb-4"),
@@ -415,7 +423,10 @@ results_summary_ui &lt;- function(state) {
     ),
     div(
       class = "text-center mb-4",
-      h3(rating)
+      h3(result_info$phrase),
+      tags$em(result_info$fact),
+      br(),
+      tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")
     ),
     div(
       class = "d-flex justify-content-center gap-3",
@@ -585,25 +596,6 @@ server &lt;- function(input, output, session) {
 }
 
 shinyApp(ui, server)</code></pre>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This app runs entirely in your browser using <a href="https://docs.r-wasm.org/webr/latest/">WebR</a> and <a href="https://posit-dev.github.io/r-shinylive/">Shinylive</a>. Initial load may take 30–60 seconds while packages download. Quiz data is pre-generated from <code>micromort::quiz_pairs()</code>.</p>
-</div>
-</div>
-<section id="how-it-works" class="level2">
-<h2 class="anchored" data-anchor-id="how-it-works">How it works</h2>
-<p>The quiz presents 50 pre-computed pairs of everyday activities with similar micromort values, generated by <code>micromort::quiz_pairs()</code> from the curated <code>common_risks()</code> dataset. Each session randomly samples 5 or 10 pairs.</p>
-<p>To run the full-featured version locally (with DT detail tables and fresh pairs):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>micromort<span class="sc">::</span><span class="fu">launch_quiz</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
 
 </main>
 <!-- /main column -->

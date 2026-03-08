@@ -5,6 +5,9 @@
 #' with similar micromort values, making the comparison challenging and
 #' educational.
 #'
+#' @param min_ratio Minimum ratio between micromort values in a pair.
+#'   Values above 1.0 exclude identical-risk pairs that are unanswerable.
+#'   Default 1.1.
 #' @param max_ratio Maximum ratio between micromort values in a pair.
 #'   Lower values produce harder questions. Default 2.0.
 #' @param prefer_cross_category If `TRUE` (default), pairs from different
@@ -12,8 +15,8 @@
 #' @param seed Optional random seed for reproducibility.
 #'
 #' @return A tibble with columns:
-#'   - `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`
-#'   - `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`
+#'   - `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`, `period_a`
+#'   - `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`, `period_b`
 #'   - `ratio` (max/min of the two micromort values)
 #'   - `answer` ("a" or "b" — whichever activity is riskier)
 #'
@@ -22,13 +25,15 @@
 #' head(pairs)
 #'
 #' @export
-quiz_pairs <- function(max_ratio = 2.0, prefer_cross_category = TRUE,
-                       seed = NULL) {
+quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
+                       prefer_cross_category = TRUE, seed = NULL) {
+  checkmate::assert_number(min_ratio, lower = 1.0)
   checkmate::assert_number(max_ratio, lower = 1.0)
   checkmate::assert_flag(prefer_cross_category)
   checkmate::assert_int(seed, null.ok = TRUE)
 
   if (!is.null(seed)) set.seed(seed)
+
 
   cr <- common_risks()
   cr <- cr[cr$micromorts > 0, ]
@@ -41,15 +46,17 @@ quiz_pairs <- function(max_ratio = 2.0, prefer_cross_category = TRUE,
     micromorts_a = cr$micromorts[idx[1, ]],
     category_a = cr$category[idx[1, ]],
     hedgeable_pct_a = cr$hedgeable_pct[idx[1, ]],
+    period_a = cr$period[idx[1, ]],
     activity_b = cr$activity[idx[2, ]],
     micromorts_b = cr$micromorts[idx[2, ]],
     category_b = cr$category[idx[2, ]],
-    hedgeable_pct_b = cr$hedgeable_pct[idx[2, ]]
+    hedgeable_pct_b = cr$hedgeable_pct[idx[2, ]],
+    period_b = cr$period[idx[2, ]]
   )
 
   pairs$ratio <- pmax(pairs$micromorts_a / pairs$micromorts_b,
                        pairs$micromorts_b / pairs$micromorts_a)
-  pairs <- pairs[pairs$ratio <= max_ratio, ]
+  pairs <- pairs[pairs$ratio >= min_ratio & pairs$ratio <= max_ratio, ]
 
   pairs$cross_category <- pairs$category_a != pairs$category_b
 
@@ -274,6 +281,7 @@ instructions_ui <- function(n_pairs = NULL) {
 
 
 question_ui <- function(state) {
+
   q <- state$current_q
   n <- state$n_questions
   pair <- state$pairs[q, ]
@@ -288,19 +296,57 @@ question_ui <- function(state) {
   left_activity <- pair[[paste0("activity_", left_side)]]
   left_category <- pair[[paste0("category_", left_side)]]
   left_mm <- pair[[paste0("micromorts_", left_side)]]
-
+  left_period <- pair[[paste0("period_", left_side)]]
 
   right_activity <- pair[[paste0("activity_", right_side)]]
   right_category <- pair[[paste0("category_", right_side)]]
   right_mm <- pair[[paste0("micromorts_", right_side)]]
+  right_period <- pair[[paste0("period_", right_side)]]
 
-  # Card styling based on reveal state
-  left_border <- ""
-  right_border <- ""
+  # Button styling after reveal
+  left_class <- "btn quiz-btn"
+  right_class <- "btn quiz-btn"
+  left_extra <- ""
+  right_extra <- ""
+
   if (revealed) {
-    is_left_riskier <- left_mm >= right_mm
-    left_border <- if (is_left_riskier) "border-success" else "border-danger"
-    right_border <- if (!is_left_riskier) "border-success" else "border-danger"
+    is_left_riskier <- left_mm > right_mm
+    is_right_riskier <- right_mm > left_mm
+
+    chose_left <- !is.na(answer) && answer == left_side
+    chose_right <- !is.na(answer) && answer == right_side
+
+    if (is_left_riskier) {
+      left_class <- paste(left_class, "quiz-btn-correct")
+      right_class <- paste(right_class,
+                           if (chose_right) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else if (is_right_riskier) {
+      right_class <- paste(right_class, "quiz-btn-correct")
+      left_class <- paste(left_class,
+                          if (chose_left) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else {
+      left_class <- paste(left_class, "quiz-btn-correct")
+      right_class <- paste(right_class, "quiz-btn-correct")
+    }
+
+    left_extra <- sprintf("%.2f mm", left_mm)
+    right_extra <- sprintf("%.2f mm", right_mm)
+  }
+
+  make_btn_content <- function(activity, category, period, mm_text) {
+    parts <- list(
+      shiny::span(class = "activity-name", activity),
+      shiny::div(
+        shiny::span(class = "badge bg-secondary me-1", category),
+        shiny::span(class = "badge bg-info", period)
+      )
+    )
+    if (nzchar(mm_text)) {
+      parts <- c(parts, list(
+        shiny::strong(mm_text, style = "font-size: 1.2rem; color: #333;")
+      ))
+    }
+    parts
   }
 
   # Result text
@@ -309,27 +355,15 @@ question_ui <- function(state) {
     user_correct <- !is.na(answer) && answer == correct_answer
     result_text <- if (user_correct) {
       shiny::div(
-        class = "alert alert-success text-center mt-3",
-        shiny::strong("Correct!"),
-        sprintf(
-          " %s (%.2f mm) vs %s (%.2f mm)",
-          pair[[paste0("activity_", correct_answer)]],
-          pair[[paste0("micromorts_", correct_answer)]],
-          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
-          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
-        )
+        class = "alert alert-success text-center mt-2 py-2",
+        shiny::strong("Correct!")
       )
     } else {
+      riskier <- pair[[paste0("activity_", correct_answer)]]
       shiny::div(
-        class = "alert alert-danger text-center mt-3",
+        class = "alert alert-danger text-center mt-2 py-2",
         if (is.na(answer)) "Skipped! " else shiny::tagList(shiny::strong("Incorrect! ")),
-        sprintf(
-          "%s (%.2f mm) is riskier than %s (%.2f mm)",
-          pair[[paste0("activity_", correct_answer)]],
-          pair[[paste0("micromorts_", correct_answer)]],
-          pair[[paste0("activity_", if (correct_answer == "a") "b" else "a")]],
-          pair[[paste0("micromorts_", if (correct_answer == "a") "b" else "a")]]
-        )
+        sprintf("%s is riskier.", riskier)
       )
     }
   }
@@ -340,73 +374,53 @@ question_ui <- function(state) {
       class = "text-center text-muted mb-3"
     ),
     shiny::div(
-      class = "row",
+      class = "row align-items-center",
       shiny::div(
         class = "col-5",
-        bslib::card(
-          class = left_border,
-          bslib::card_header(
-            class = "text-center",
-            shiny::h5(left_activity),
-            shiny::span(class = "badge bg-secondary", left_category)
-          ),
-          if (revealed) {
-            bslib::card_body(
-              class = "text-center",
-              shiny::h4(sprintf("%.2f mm", left_mm))
+        if (!revealed) {
+          shiny::actionButton(
+            "choose_left", "",
+            class = left_class,
+            shiny::tagList(make_btn_content(
+              left_activity, left_category, left_period, left_extra
+            ))
+          )
+        } else {
+          shiny::div(
+            class = left_class,
+            make_btn_content(
+              left_activity, left_category, left_period, left_extra
             )
-          }
-        )
+          )
+        }
       ),
       shiny::div(
-        class = "col-2 d-flex align-items-center justify-content-center",
-        shiny::h3("VS", class = "text-muted")
+        class = "col-2 text-center",
+        shiny::h3("VS", class = "text-muted mb-0")
       ),
       shiny::div(
         class = "col-5",
-        bslib::card(
-          class = right_border,
-          bslib::card_header(
-            class = "text-center",
-            shiny::h5(right_activity),
-            shiny::span(class = "badge bg-secondary", right_category)
-          ),
-          if (revealed) {
-            bslib::card_body(
-              class = "text-center",
-              shiny::h4(sprintf("%.2f mm", right_mm))
+        if (!revealed) {
+          shiny::actionButton(
+            "choose_right", "",
+            class = right_class,
+            shiny::tagList(make_btn_content(
+              right_activity, right_category, right_period, right_extra
+            ))
+          )
+        } else {
+          shiny::div(
+            class = right_class,
+            make_btn_content(
+              right_activity, right_category, right_period, right_extra
             )
-          }
-        )
+          )
+        }
       )
     ),
-    if (!revealed) {
-      shiny::div(
-        class = "row mt-3",
-        shiny::div(
-          class = "col-5 text-center",
-          shiny::actionButton(
-            "choose_left",
-            paste0("\u2190 ", left_activity, " is riskier"),
-            class = "btn-outline-primary btn-sm",
-            style = "white-space: normal; width: 100%;"
-          )
-        ),
-        shiny::div(class = "col-2"),
-        shiny::div(
-          class = "col-5 text-center",
-          shiny::actionButton(
-            "choose_right",
-            paste0(right_activity, " is riskier \u2192"),
-            class = "btn-outline-primary btn-sm",
-            style = "white-space: normal; width: 100%;"
-          )
-        )
-      )
-    },
     result_text,
     shiny::div(
-      class = "d-flex justify-content-between mt-4",
+      class = "d-flex justify-content-between mt-3",
       shiny::actionButton(
         "prev_q", "\u2190 Back",
         class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
@@ -435,15 +449,7 @@ results_summary_ui <- function(state) {
   # Random baseline (not always 50% since ratios vary)
   baseline <- n / 2
 
-  rating <- if (pct >= 90) {
-    "Risk Expert!"
-  } else if (pct >= 70) {
-    "Sharp Intuition!"
-  } else if (pct >= 50) {
-    "Getting There!"
-  } else {
-    "Surprising, isn't it?"
-  }
+  result_info <- quiz_result_phrase(pct)
 
   shiny::tagList(
     shiny::h2("Results", class = "text-center mb-4"),
@@ -468,7 +474,13 @@ results_summary_ui <- function(state) {
     ),
     shiny::div(
       class = "text-center mb-4",
-      shiny::h3(rating)
+      shiny::h3(result_info$phrase),
+      shiny::tags$em(result_info$fact),
+      shiny::br(),
+      shiny::tags$a(
+        href = result_info$link, target = "_blank",
+        "Learn more \u2192"
+      )
     ),
     shiny::div(
       class = "d-flex justify-content-center gap-3",
@@ -544,12 +556,72 @@ results_detail_ui <- function(state) {
 }
 
 
+quiz_result_phrase <- function(pct) {
+  phrases <- list(
+    list(min = 95, phrase = "Actuarial genius!",
+         fact = "Actuaries quantify risk for a living.",
+         link = "https://en.wikipedia.org/wiki/Actuary"),
+    list(min = 90, phrase = "You think in micromorts!",
+         fact = "A micromort is a one-in-a-million chance of death.",
+         link = "https://en.wikipedia.org/wiki/Micromort"),
+    list(min = 80, phrase = "Sharp intuition!",
+         fact = "Humans tend to overestimate dramatic risks and underestimate common ones.",
+         link = "https://en.wikipedia.org/wiki/Risk_perception"),
+    list(min = 70, phrase = "Better than a coin toss!",
+         fact = "We judge risk by how easily examples come to mind.",
+         link = "https://en.wikipedia.org/wiki/Availability_heuristic"),
+    list(min = 60, phrase = "Getting there!",
+         fact = "Losses loom larger than gains in our risk calculus.",
+         link = "https://en.wikipedia.org/wiki/Prospect_theory"),
+    list(min = 50, phrase = "About average!",
+         fact = "Ignoring base rates is one of the most common reasoning errors.",
+         link = "https://en.wikipedia.org/wiki/Base_rate_fallacy"),
+    list(min = 30, phrase = "Surprises everywhere!",
+         fact = "We tend to assume things will keep going as normal.",
+         link = "https://en.wikipedia.org/wiki/Normalcy_bias"),
+    list(min = -1, phrase = "Toss a coin \u2014 less risky!",
+         fact = "Past outcomes don't change future probabilities.",
+         link = "https://en.wikipedia.org/wiki/Gambler%27s_fallacy")
+  )
+  for (p in phrases) {
+    if (pct >= p$min) return(p)
+  }
+  phrases[[length(phrases)]]
+}
+
+
 quiz_css <- function() {
   "
-  .card { transition: border-color 0.3s; }
-  .border-success { border: 3px solid #198754 !important; }
-  .border-danger { border: 3px solid #dc3545 !important; }
-  .badge { font-size: 0.8em; }
+  .quiz-btn {
+    min-height: 180px;
+    width: 100%;
+    white-space: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    font-size: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    transition: border-color 0.3s, background-color 0.1s;
+  }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
+  .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
+  .quiz-btn .badge { font-size: 0.75em; }
+  .quiz-btn-correct {
+    border: 3px solid #198754 !important;
+    background-color: #d1e7dd !important;
+  }
+  .quiz-btn-wrong {
+    border: 3px solid #dc3545 !important;
+    background-color: #f8d7da !important;
+  }
+  .quiz-btn-neutral {
+    border: 3px solid #6c757d !important;
+    background-color: #e9ecef !important;
+  }
   .gap-3 { gap: 1rem; }
   "
 }

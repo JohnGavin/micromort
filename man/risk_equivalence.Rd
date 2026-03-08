@@ -26,7 +26,7 @@ Compares a reference activity to all other activities by computing the
 ratio of micromorts. "How many X-rays equal one skydive?"
 }
 \examples{
-risk_equivalence("Chest X-ray (radiation)")
+risk_equivalence("Chest X-ray (radiation per scan)")
 risk_equivalence("Skydiving (per jump, US)")
 }
 \seealso{

@@ -229,9 +229,9 @@ test_that("micromorts_per_day = micromorts / period_days rounded to 2", {
 
 test_that("new medical radiation activities present", {
   cr <- common_risks()
-  expect_true("Chest X-ray (radiation)" %in% cr$activity)
-  expect_true("CT scan chest (radiation)" %in% cr$activity)
-  xray <- cr[cr$activity == "Chest X-ray (radiation)", ]
+  expect_true("Chest X-ray (radiation per scan)" %in% cr$activity)
+  expect_true("CT scan chest (radiation per scan)" %in% cr$activity)
+  xray <- cr[cr$activity == "Chest X-ray (radiation per scan)", ]
   expect_equal(xray$micromorts, 0.1)
   expect_equal(xray$category, "Medical")
 })
