@@ -145,7 +145,7 @@ instructions_ui <- function() {
       card_body(
         tags$ul(
           tags$li(
-            "A ", strong("micromort"), " is a one-in-a-million ",
+            "A ", strong("micromort (mm)"), " is a one-in-a-million ",
             "chance of death."
           ),
           tags$li(
@@ -265,11 +265,27 @@ question_ui <- function(state) {
     }
   }
 
+  # Running tally (shown from question 2 onwards)
+  answered_so_far <- sum(!is.na(state$answers[seq_len(q - 1L)]) &
+    state$revealed[seq_len(q - 1L)])
+  correct_so_far <- sum(vapply(seq_len(q - 1L), function(i) {
+    !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
+  }, logical(1)))
+
+  tally_ui <- if (q > 1L) {
+    div(class = "text-center mb-1",
+      tags$small(class = "text-muted",
+        sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
+      )
+    )
+  }
+
   tagList(
     h4(
       sprintf("Question %d of %d", q, n),
-      class = "text-center text-muted mb-3"
+      class = "text-center text-muted mb-1"
     ),
+    tally_ui,
     div(
       class = "row align-items-center",
       div(
@@ -340,18 +356,20 @@ results_summary_ui <- function(state) {
       class = "row mb-4",
       div(
         class = "col-6",
-        value_box(
-          title = "Your Score",
-          value = sprintf("%d / %d", score, n),
-          theme = "primary"
+        div(class = "card text-white bg-primary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Your Score"),
+            h2(sprintf("%d / %d", score, n), class = "mb-0")
+          )
         )
       ),
       div(
         class = "col-6",
-        value_box(
-          title = "Random Guessing",
-          value = sprintf("~%.1f / %d", baseline, n),
-          theme = "secondary"
+        div(class = "card text-white bg-secondary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Random Guessing"),
+            h2(sprintf("~%.1f / %d", baseline, n), class = "mb-0")
+          )
         )
       )
     ),

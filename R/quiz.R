@@ -241,7 +241,7 @@ instructions_ui <- function(n_pairs = NULL) {
       bslib::card_body(
         shiny::tags$ul(
           shiny::tags$li(
-            "A ", shiny::strong("micromort"), " is a one-in-a-million ",
+            "A ", shiny::strong("micromort (mm)"), " is a one-in-a-million ",
             "chance of death."
           ),
           shiny::tags$li(
@@ -368,11 +368,27 @@ question_ui <- function(state) {
     }
   }
 
+  # Running tally (shown from question 2 onwards)
+  answered_so_far <- sum(!is.na(state$answers[seq_len(q - 1L)]) &
+    state$revealed[seq_len(q - 1L)])
+  correct_so_far <- sum(vapply(seq_len(q - 1L), function(i) {
+    !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
+  }, logical(1)))
+
+  tally_ui <- if (q > 1L) {
+    shiny::div(class = "text-center mb-1",
+      shiny::tags$small(class = "text-muted",
+        sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
+      )
+    )
+  }
+
   shiny::tagList(
     shiny::h4(
       sprintf("Question %d of %d", q, n),
-      class = "text-center text-muted mb-3"
+      class = "text-center text-muted mb-1"
     ),
+    tally_ui,
     shiny::div(
       class = "row align-items-center",
       shiny::div(
@@ -460,6 +476,7 @@ results_summary_ui <- function(state) {
         bslib::value_box(
           title = "Your Score",
           value = sprintf("%d / %d", score, n),
+          showcase = NULL,
           theme = "primary"
         )
       ),
@@ -468,6 +485,7 @@ results_summary_ui <- function(state) {
         bslib::value_box(
           title = "Random Guessing",
           value = sprintf("~%.1f / %d", baseline, n),
+          showcase = NULL,
           theme = "secondary"
         )
       )
