@@ -54,7 +54,7 @@ if (FALSE) {
   stopifnot(nrow(rc) == 3, sum(rc$micromorts) == 4.9)
 
   # Phase 2: risk equivalence
-  re <- risk_equivalence("Chest X-ray (radiation)")
+  re <- risk_equivalence("Chest X-ray (radiation per scan)")
   stopifnot(re$ratio[re$activity == "Skydiving (per jump, US)"] == 80)
 
   # Phase 2: duration lookup

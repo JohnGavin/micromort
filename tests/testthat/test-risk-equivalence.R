@@ -1,28 +1,28 @@
 # ── risk_equivalence() tests ──────────────────────────────────────────────────
 
 test_that("risk_equivalence returns correct structure", {
-  re <- risk_equivalence("Chest X-ray (radiation)")
+  re <- risk_equivalence("Chest X-ray (radiation per scan)")
   expect_true(all(c("activity", "micromorts", "reference",
                      "reference_micromorts", "ratio", "equivalence") %in% names(re)))
   expect_true(nrow(re) > 0)
-  expect_equal(unique(re$reference), "Chest X-ray (radiation)")
+  expect_equal(unique(re$reference), "Chest X-ray (radiation per scan)")
   expect_equal(unique(re$reference_micromorts), 0.1)
 })
 
 test_that("risk_equivalence ratios are correct", {
-  re <- risk_equivalence("Chest X-ray (radiation)")
+  re <- risk_equivalence("Chest X-ray (radiation per scan)")
   # Skydiving US = 8 mm, X-ray = 0.1 mm → ratio = 80
   sky <- re[re$activity == "Skydiving (per jump, US)", ]
   expect_equal(sky$ratio, 80)
 })
 
 test_that("self-comparison is excluded", {
-  re <- risk_equivalence("Chest X-ray (radiation)")
-  expect_false("Chest X-ray (radiation)" %in% re$activity)
+  re <- risk_equivalence("Chest X-ray (radiation per scan)")
+  expect_false("Chest X-ray (radiation per scan)" %in% re$activity)
 })
 
 test_that("min_ratio and max_ratio filter correctly", {
-  re <- risk_equivalence("Chest X-ray (radiation)", min_ratio = 10, max_ratio = 100)
+  re <- risk_equivalence("Chest X-ray (radiation per scan)", min_ratio = 10, max_ratio = 100)
   expect_true(all(re$ratio >= 10))
   expect_true(all(re$ratio <= 100))
 })
@@ -35,7 +35,7 @@ test_that("unknown reference activity raises error", {
 })
 
 test_that("equivalence strings avoid scientific notation", {
-  re <- risk_equivalence("Chest X-ray (radiation)")
+  re <- risk_equivalence("Chest X-ray (radiation per scan)")
   # Mt. Everest has ratio 379320 - must NOT show "e+"
   expect_false(any(grepl("e\\+", re$equivalence)))
 })

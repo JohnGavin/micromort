@@ -269,14 +269,14 @@ atomic_risks <- function() {
   # ── Part 3: Medical radiation activities (already atomic) ────────────────
   med_rad <- tibble::tribble(
     ~activity, ~micromorts, ~component, ~component_label,
-    "Chest X-ray (radiation)", 0.1, "radiation", "Ionizing radiation dose",
-    "CT scan chest (radiation)", 7, "radiation", "Ionizing radiation dose",
-    "CT scan abdomen (radiation)", 10, "radiation", "Ionizing radiation dose",
-    "Mammogram (radiation)", 0.1, "radiation", "Ionizing radiation dose",
-    "Dental X-ray (radiation)", 0.05, "radiation", "Ionizing radiation dose",
-    "Coronary angiogram (radiation)", 5, "radiation", "Ionizing radiation dose",
-    "Barium enema (radiation)", 3, "radiation", "Ionizing radiation dose",
-    "CT scan head (radiation)", 2, "radiation", "Ionizing radiation dose"
+    "Chest X-ray (radiation per scan)", 0.1, "radiation", "Ionizing radiation dose",
+    "CT scan chest (radiation per scan)", 7, "radiation", "Ionizing radiation dose",
+    "CT scan abdomen (radiation per scan)", 10, "radiation", "Ionizing radiation dose",
+    "Mammogram (radiation per scan)", 0.1, "radiation", "Ionizing radiation dose",
+    "Dental X-ray (radiation per scan)", 0.05, "radiation", "Ionizing radiation dose",
+    "Coronary angiogram (radiation per scan)", 5, "radiation", "Ionizing radiation dose",
+    "Barium enema (radiation per scan)", 3, "radiation", "Ionizing radiation dose",
+    "CT scan head (radiation per scan)", 2, "radiation", "Ionizing radiation dose"
   ) |>
     dplyr::mutate(
       activity_id = make_activity_id(activity),

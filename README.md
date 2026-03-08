@@ -271,6 +271,16 @@ Launch the Shiny dashboard:
 launch_dashboard()
 ```
 
+## Risk Quiz
+
+[Play in
+browser](https://johngavin.github.io/micromort/articles/quiz_shinylive.html)
+— runs via WebR/Shinylive (30-60s initial load). Or locally:
+
+``` r
+micromort::launch_quiz()
+```
+
 ## Data Sources
 
 | Source                   | Type         | Data                         |
@@ -298,12 +308,18 @@ Click to expand project tree
     #> ├── NAMESPACE
     #> ├── R
     #> │   ├── api.R
+    #> │   ├── atomic_risks.R
     #> │   ├── dashboard.R
     #> │   ├── data.R
     #> │   ├── dev
+    #> │   │   ├── issues
     #> │   │   └── verify_pkgdown_urls.R
     #> │   ├── micromort.R
     #> │   ├── models.R
+    #> │   ├── quiz.R
+    #> │   ├── radiation_profiles.R
+    #> │   ├── regional.R
+    #> │   ├── risk_equivalence.R
     #> │   ├── risks.R
     #> │   ├── tar_plans
     #> │   │   ├── plan_data_acquisition.R
@@ -311,7 +327,8 @@ Click to expand project tree
     #> │   │   ├── plan_export.R
     #> │   │   ├── plan_logging.R
     #> │   │   ├── plan_normalization.R
-    #> │   │   └── plan_validation.R
+    #> │   │   ├── plan_validation.R
+    #> │   │   └── plan_vignette_outputs.R
     #> │   └── visualization.R
     #> ├── README.md
     #> ├── README.qmd
@@ -340,6 +357,9 @@ Click to expand project tree
     #> │       └── hazard.R
     #> ├── data-raw
     #> │   ├── 01_extract_current_data.R
+    #> │   ├── 02_regional_life_expectancy.R
+    #> │   ├── 02_regional_life_expectancy_sample.R
+    #> │   ├── README_regional_data.md
     #> │   └── sources
     #> │       ├── acute_risks_base.csv
     #> │       ├── chronic_risks_base.csv
@@ -364,7 +384,15 @@ Click to expand project tree
     #> │   │   ├── introduction_files
     #> │   │   ├── palatable_units.html
     #> │   │   ├── palatable_units.md
-    #> │   │   └── palatable_units_files
+    #> │   │   ├── palatable_units_files
+    #> │   │   ├── quiz_shinylive.html
+    #> │   │   ├── quiz_shinylive_files
+    #> │   │   ├── regional_variation.html
+    #> │   │   ├── regional_variation.md
+    #> │   │   ├── regional_variation_files
+    #> │   │   ├── risk_equivalence.html
+    #> │   │   ├── risk_equivalence.md
+    #> │   │   └── shinylive-sw.js
     #> │   ├── authors.html
     #> │   ├── authors.md
     #> │   ├── deps
@@ -376,6 +404,7 @@ Click to expand project tree
     #> │   │   ├── headroom-0.11.0
     #> │   │   ├── jquery-3.6.0
     #> │   │   └── search-1.0.0
+    #> │   ├── extra.css
     #> │   ├── index.html
     #> │   ├── index.md
     #> │   ├── katex-auto.js
@@ -396,6 +425,8 @@ Click to expand project tree
     #> │   │   ├── as_micromort.md
     #> │   │   ├── as_probability.html
     #> │   │   ├── as_probability.md
+    #> │   │   ├── atomic_risks.html
+    #> │   │   ├── atomic_risks.md
     #> │   │   ├── cancer_risks.html
     #> │   │   ├── cancer_risks.md
     #> │   │   ├── chronic_risks.html
@@ -417,10 +448,14 @@ Click to expand project tree
     #> │   │   ├── hedged_portfolio.md
     #> │   │   ├── index.html
     #> │   │   ├── index.md
+    #> │   │   ├── laggard_regions.html
+    #> │   │   ├── laggard_regions.md
     #> │   │   ├── launch_api.html
     #> │   │   ├── launch_api.md
     #> │   │   ├── launch_dashboard.html
     #> │   │   ├── launch_dashboard.md
+    #> │   │   ├── launch_quiz.html
+    #> │   │   ├── launch_quiz.md
     #> │   │   ├── libs
     #> │   │   ├── lifestyle_tradeoff.html
     #> │   │   ├── lifestyle_tradeoff.md
@@ -432,20 +467,49 @@ Click to expand project tree
     #> │   │   ├── load_chronic_risks.md
     #> │   │   ├── load_sources.html
     #> │   │   ├── load_sources.md
+    #> │   │   ├── patient_radiation_comparison.html
+    #> │   │   ├── patient_radiation_comparison.md
+    #> │   │   ├── plot_risk_components-1.png
+    #> │   │   ├── plot_risk_components.html
+    #> │   │   ├── plot_risk_components.md
     #> │   │   ├── plot_risks-1.png
     #> │   │   ├── plot_risks-2.png
+    #> │   │   ├── plot_risks-3.png
+    #> │   │   ├── plot_risks-4.png
+    #> │   │   ├── plot_risks-5.png
     #> │   │   ├── plot_risks.html
     #> │   │   ├── plot_risks.md
     #> │   │   ├── plot_risks_interactive.html
     #> │   │   ├── plot_risks_interactive.md
+    #> │   │   ├── prepare_risks_plot-1.png
+    #> │   │   ├── prepare_risks_plot.html
+    #> │   │   ├── prepare_risks_plot.md
+    #> │   │   ├── quiz_pairs.html
+    #> │   │   ├── quiz_pairs.md
+    #> │   │   ├── radiation_profiles.html
+    #> │   │   ├── radiation_profiles.md
+    #> │   │   ├── regional_life_expectancy.html
+    #> │   │   ├── regional_life_expectancy.md
+    #> │   │   ├── regional_mortality_multiplier.html
+    #> │   │   ├── regional_mortality_multiplier.md
+    #> │   │   ├── risk_components.html
+    #> │   │   ├── risk_components.md
     #> │   │   ├── risk_data_sources.html
     #> │   │   ├── risk_data_sources.md
+    #> │   │   ├── risk_equivalence.html
+    #> │   │   ├── risk_equivalence.md
+    #> │   │   ├── risk_exchange_matrix.html
+    #> │   │   ├── risk_exchange_matrix.md
+    #> │   │   ├── risk_for_duration.html
+    #> │   │   ├── risk_for_duration.md
     #> │   │   ├── risk_sources.html
     #> │   │   ├── risk_sources.md
     #> │   │   ├── vaccination_risks.html
     #> │   │   ├── vaccination_risks.md
     #> │   │   ├── value_of_micromort.html
-    #> │   │   └── value_of_micromort.md
+    #> │   │   ├── value_of_micromort.md
+    #> │   │   ├── vanguard_regions.html
+    #> │   │   └── vanguard_regions.md
     #> │   ├── search.json
     #> │   ├── sitemap.xml
     #> │   └── tutorials
@@ -456,6 +520,7 @@ Click to expand project tree
     #> │   │   ├── acute_risks.parquet
     #> │   │   ├── chronic_risks.parquet
     #> │   │   ├── logs
+    #> │   │   ├── regional_life_expectancy.parquet
     #> │   │   └── risk_sources.parquet
     #> │   └── plumber
     #> │       └── api.R
@@ -465,6 +530,7 @@ Click to expand project tree
     #> │   ├── as_microlife.Rd
     #> │   ├── as_micromort.Rd
     #> │   ├── as_probability.Rd
+    #> │   ├── atomic_risks.Rd
     #> │   ├── cancer_risks.Rd
     #> │   ├── chronic_risks.Rd
     #> │   ├── common_risks.Rd
@@ -476,29 +542,63 @@ Click to expand project tree
     #> │   ├── figures
     #> │   │   └── README-plot-1.png
     #> │   ├── hedged_portfolio.Rd
+    #> │   ├── laggard_regions.Rd
     #> │   ├── launch_api.Rd
     #> │   ├── launch_dashboard.Rd
+    #> │   ├── launch_quiz.Rd
     #> │   ├── lifestyle_tradeoff.Rd
     #> │   ├── lle.Rd
     #> │   ├── load_acute_risks.Rd
     #> │   ├── load_chronic_risks.Rd
     #> │   ├── load_sources.Rd
+    #> │   ├── patient_radiation_comparison.Rd
+    #> │   ├── plot_risk_components.Rd
     #> │   ├── plot_risks.Rd
     #> │   ├── plot_risks_interactive.Rd
+    #> │   ├── prepare_risks_plot.Rd
+    #> │   ├── quiz_pairs.Rd
+    #> │   ├── radiation_profiles.Rd
+    #> │   ├── regional_life_expectancy.Rd
+    #> │   ├── regional_mortality_multiplier.Rd
+    #> │   ├── risk_components.Rd
     #> │   ├── risk_data_sources.Rd
+    #> │   ├── risk_equivalence.Rd
+    #> │   ├── risk_exchange_matrix.Rd
+    #> │   ├── risk_for_duration.Rd
     #> │   ├── risk_sources.Rd
     #> │   ├── vaccination_risks.Rd
-    #> │   └── value_of_micromort.Rd
+    #> │   ├── value_of_micromort.Rd
+    #> │   └── vanguard_regions.Rd
     #> ├── nix-shell-root
+    #> ├── package.nix
     #> ├── pkgdown
     #> │   └── extra.css
+    #> ├── plans
+    #> │   ├── PLAN_consistency_refactor.md
+    #> │   ├── PLAN_regional_longevity.md
+    #> │   ├── PLAN_risk_equivalence_dashboard.md
+    #> │   └── PLAN_vignette_targets_refactor.md
     #> ├── push_to_cachix.sh
     #> ├── tests
     #> │   └── testthat
-    #> │       └── test-adversarial.R
+    #> │       ├── test-adversarial.R
+    #> │       ├── test-atomic-risks.R
+    #> │       ├── test-quiz.R
+    #> │       ├── test-radiation-profiles.R
+    #> │       ├── test-risk-components.R
+    #> │       └── test-risk-equivalence.R
     #> └── vignettes
+    #>     ├── _extensions
+    #>     │   └── quarto-ext
     #>     ├── introduction.Rmd
-    #>     └── palatable_units.Rmd
+    #>     ├── palatable_units.Rmd
+    #>     ├── quiz_shinylive.html
+    #>     ├── quiz_shinylive.qmd
+    #>     ├── quiz_shinylive_files
+    #>     │   └── libs
+    #>     ├── regional_variation.Rmd
+    #>     ├── risk_equivalence.Rmd
+    #>     └── shinylive-sw.js
 
 </details>
 

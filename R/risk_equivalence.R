@@ -14,7 +14,7 @@
 #' @export
 #' @seealso [risk_exchange_matrix()]
 #' @examples
-#' risk_equivalence("Chest X-ray (radiation)")
+#' risk_equivalence("Chest X-ray (radiation per scan)")
 #' risk_equivalence("Skydiving (per jump, US)")
 risk_equivalence <- function(reference, risks = NULL, min_ratio = 0.01,
                              max_ratio = Inf) {
@@ -74,7 +74,7 @@ risk_exchange_matrix <- function(activities = NULL, risks = NULL) {
   if (is.null(activities)) {
     # Default curated set covering a range of risk levels
     activities <- c(
-      "Chest X-ray (radiation)",
+      "Chest X-ray (radiation per scan)",
       "Cup of coffee",
       "Crossing a road",
       "Driving (230 miles)",

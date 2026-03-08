@@ -6,3 +6,8 @@ nix-shell-root
 _targets/
 README_files/
 inst/extdata/logs/
+# Shinylive build artifacts (rendered output lives in docs/articles/)
+vignettes/quiz_shinylive.html
+vignettes/quiz_shinylive_files/
+vignettes/shinylive-sw.js
+/_extensions/

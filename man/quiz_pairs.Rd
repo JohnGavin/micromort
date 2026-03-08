@@ -4,9 +4,18 @@
 \alias{quiz_pairs}
 \title{Generate Quiz Pairs for "Which Is Riskier?" Game}
 \usage{
-quiz_pairs(max_ratio = 2, prefer_cross_category = TRUE, seed = NULL)
+quiz_pairs(
+  min_ratio = 1.1,
+  max_ratio = 2,
+  prefer_cross_category = TRUE,
+  seed = NULL
+)
 }
 \arguments{
+\item{min_ratio}{Minimum ratio between micromort values in a pair.
+Values above 1.0 exclude identical-risk pairs that are unanswerable.
+Default 1.1.}
+
 \item{max_ratio}{Maximum ratio between micromort values in a pair.
 Lower values produce harder questions. Default 2.0.}
 
@@ -18,8 +27,8 @@ risk categories are prioritised over same-category pairs.}
 \value{
 A tibble with columns:
 \itemize{
-\item \code{activity_a}, \code{micromorts_a}, \code{category_a}, \code{hedgeable_pct_a}
-\item \code{activity_b}, \code{micromorts_b}, \code{category_b}, \code{hedgeable_pct_b}
+\item \code{activity_a}, \code{micromorts_a}, \code{category_a}, \code{hedgeable_pct_a}, \code{period_a}
+\item \code{activity_b}, \code{micromorts_b}, \code{category_b}, \code{hedgeable_pct_b}, \code{period_b}
 \item \code{ratio} (max/min of the two micromort values)
 \item \code{answer} ("a" or "b" — whichever activity is riskier)
 }

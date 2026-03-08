@@ -229,12 +229,12 @@ plan_vignette_outputs <- list(
     {
       cr <- common_risks()
       landmarks <- c(
-        "Cup of coffee", "Crossing a road", "Chest X-ray (radiation)",
+        "Cup of coffee", "Crossing a road", "Chest X-ray (radiation per scan)",
         "Commuting by car (30 min)", "Drinking a glass of wine",
         "Skiing (per day)", "Driving (230 miles)", "Flying (8h long-haul)",
-        "CT scan head (radiation)", "Scuba diving (per dive, trained)",
+        "CT scan head (radiation per scan)", "Scuba diving (per dive, trained)",
         "Running a marathon", "Skydiving (per jump, US)",
-        "CT scan abdomen (radiation)", "General anesthesia (emergency)",
+        "CT scan abdomen (radiation per scan)", "General anesthesia (emergency)",
         "Night in hospital", "Vaginal birth (mother)",
         "Base jumping (per jump)", "Mt. Everest ascent"
       )
@@ -284,14 +284,14 @@ plan_vignette_outputs <- list(
   # Risk equivalence table: everything in X-ray units
   targets::tar_target(
     vig_equiv_explorer,
-    risk_equivalence("Chest X-ray (radiation)")
+    risk_equivalence("Chest X-ray (radiation per scan)")
   ),
 
   # Exchange chart: "How many X-rays = ..."
   targets::tar_target(
     vig_equiv_exchange_chart,
     {
-      re <- risk_equivalence("Chest X-ray (radiation)", min_ratio = 1)
+      re <- risk_equivalence("Chest X-ray (radiation per scan)", min_ratio = 1)
       re |>
         dplyr::slice_head(n = 20) |>
         dplyr::select(activity, ratio, equivalence)
