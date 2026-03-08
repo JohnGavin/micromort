@@ -395,11 +395,11 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           shiny::actionButton(
-            "choose_left", "",
-            class = left_class,
+            "choose_left",
             shiny::tagList(make_btn_content(
               left_activity, left_category, left_period, left_extra
-            ))
+            )),
+            class = left_class
           )
         } else {
           shiny::div(
@@ -418,11 +418,11 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           shiny::actionButton(
-            "choose_right", "",
-            class = right_class,
+            "choose_right",
             shiny::tagList(make_btn_content(
               right_activity, right_category, right_period, right_extra
-            ))
+            )),
+            class = right_class
           )
         } else {
           shiny::div(

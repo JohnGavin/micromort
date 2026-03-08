@@ -1,5 +1,5 @@
 ---
-title: "Which Is Riskier?"
+title: "Risk Quiz"
 format: html
 filters:
   - shinylive
@@ -292,9 +292,9 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           actionButton(
-            "choose_left", "",
-            class = left_class,
-            tagList(make_btn_content(left_activity, left_category, left_period, left_extra))
+            "choose_left",
+            tagList(make_btn_content(left_activity, left_category, left_period, left_extra)),
+            class = left_class
           )
         } else {
           div(class = left_class,
@@ -309,9 +309,9 @@ question_ui <- function(state) {
         class = "col-5",
         if (!revealed) {
           actionButton(
-            "choose_right", "",
-            class = right_class,
-            tagList(make_btn_content(right_activity, right_category, right_period, right_extra))
+            "choose_right",
+            tagList(make_btn_content(right_activity, right_category, right_period, right_extra)),
+            class = right_class
           )
         } else {
           div(class = right_class,
