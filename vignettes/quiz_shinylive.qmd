@@ -14,15 +14,64 @@ A **micromort** is a one-in-a-million chance of death.
 #| standalone: true
 #| viewerHeight: 700
 
-# Set up repos for WebR: R-Universe for micromort, r-wasm for CRAN packages
-options(repos = c(
-  johngavin = "https://johngavin.r-universe.dev",
-  CRAN = "https://repo.r-wasm.org"
-))
-
 library(shiny)
 library(bslib)
-library(micromort)
+
+# ---- Pre-computed quiz pairs from micromort::quiz_pairs(seed = 42) ----
+# Embedded to avoid loading micromort (arrow dep unavailable in WebR)
+quiz_pool <- read.csv(textConnection(
+"activity_a,micromorts_a,category_a,hedgeable_pct_a,activity_b,micromorts_b,category_b,hedgeable_pct_b,ratio,answer
+Mammogram (radiation),0.1,Medical,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
+Living (one day age 30),1,Daily Life,0,COVID-19 bivalent booster (all ages),1,COVID-19,0,1,a
+Base jumping (per jump),430,Sport,0,First day of life (newborn),430,Daily Life,0,1,a
+Living 2 months with a smoker,1,Environment,0,Driving (230 miles),1,Travel,0,1,a
+COVID-19 unvaccinated (age 50-64),8,COVID-19,0,Hang gliding (per flight),8,Sport,0,1,a
+Living (one day age 20),1,Daily Life,0,COVID-19 bivalent booster (all ages),1,COVID-19,0,1,a
+COVID-19 bivalent booster (age 65-79),3,COVID-19,0,Barium enema (radiation),3,Medical,0,1,a
+Living 2 months with a smoker,1,Environment,0,Walking (20 miles),1,Travel,0,1,a
+Skydiving (per jump general),10,Sport,0,CT scan abdomen (radiation),10,Medical,0,1,a
+COVID-19 bivalent booster (age 18-49),0.05,COVID-19,0,X-ray technician (annual radiation),0.05,Occupation,100,1,a
+Chest X-ray (radiation),0.1,Medical,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
+Mammogram (radiation),0.1,Medical,0,Granite resident (annual radon),0.1,Environment,100,1,a
+COVID-19 monovalent vaccine (age 50-64),2,COVID-19,0,CT scan head (radiation),2,Medical,0,1,a
+Walking (20 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
+General anesthesia (emergency),10,Medical,0,Motorcycling (60 miles),10,Travel,0,1,a
+Horseback riding,0.5,Sport,0,Commuting by bicycle (30 min),0.5,Travel,0,1,a
+Driving (230 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
+1 hour in a coal mine,1,Occupation,0,Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,1,a
+Living in Maryland COVID-19 (Mar-May 2020),7,COVID-19,0,CT scan chest (radiation),7,Medical,0,1,a
+Motorcycling (60 miles),10,Travel,0,Skydiving (per jump general),10,Sport,0,1,a
+Living (one day age 30),1,Daily Life,0,COVID-19 bivalent booster (age 50-64),1,COVID-19,0,1,a
+COVID-19 unvaccinated (all ages),20,COVID-19,0,American football (per game),20,Sport,0,1,a
+Train (1000 miles),1,Travel,0,Eating 1000 bananas (radiation),1,Diet,0,1,a
+Skydiving (per jump US),8,Sport,0,COVID-19 unvaccinated (age 50-64),8,COVID-19,0,1,a
+Kangaroo encounter,0.1,Wildlife,0,Chest X-ray (radiation),0.1,Medical,0,1,a
+Chest X-ray (radiation),0.1,Medical,0,Granite resident (annual radon),0.1,Environment,100,1,a
+Flying (5h medium-haul),2,Travel,25,CT scan head (radiation),2,Medical,0,1,a
+Running a marathon,7,Sport,0,Living in Maryland COVID-19 (Mar-May 2020),7,COVID-19,0,1,a
+Living (one day age 50),4,Daily Life,0,COVID-19 monovalent vaccine (all ages),4,COVID-19,0,1,a
+Eating 100 charbroiled steaks,1,Diet,0,Living (one day age 20),1,Daily Life,0,1,a
+General anesthesia (emergency),10,Medical,0,Skydiving (per jump general),10,Sport,0,1,a
+Train (1000 miles),1,Travel,0,Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,1,a
+COVID-19 bivalent booster (age 18-49),0.05,COVID-19,0,Dental X-ray (radiation),0.05,Medical,0,1,a
+1 hour in a coal mine,1,Occupation,0,Eating 100 charbroiled steaks,1,Diet,0,1,a
+Running a marathon,7,Sport,0,CT scan chest (radiation),7,Medical,0,1,a
+Eating 40 tbsp peanut butter (aflatoxin),1,Diet,0,Living (one day age 20),1,Daily Life,0,1,a
+COVID-19 monovalent vaccine (age 50-64),2,COVID-19,0,Flying (5h medium-haul),2,Travel,25,1,a
+Train (1000 miles),1,Travel,0,1 hour in a coal mine,1,Occupation,0,1,a
+COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Living 2 months with a smoker,1,Environment,0,1,a
+Rock climbing (per climb),3,Sport,0,Barium enema (radiation),3,Medical,0,1,a
+Horseback riding,0.5,Sport,0,Drinking a glass of wine,0.5,Daily Life,0,1,a
+Rock climbing (per climb),3,Sport,0,COVID-19 bivalent booster (age 65-79),3,COVID-19,0,1,a
+Kangaroo encounter,0.1,Wildlife,0,Mammogram (radiation),0.1,Medical,0,1,a
+Eating 100 charbroiled steaks,1,Diet,0,Living (one day age 30),1,Daily Life,0,1,a
+COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Walking (20 miles),1,Travel,0,1,a
+COVID-19 unvaccinated (age 18-49),1,COVID-19,0,Driving (230 miles),1,Travel,0,1,a
+Motorcycling (60 miles),10,Travel,0,CT scan abdomen (radiation),10,Medical,0,1,a
+Scuba diving (per dive trained),5,Sport,0,Coronary angiogram (radiation),5,Medical,0,1,a
+Kangaroo encounter,0.1,Wildlife,0,Nuclear plant worker (annual radiation),0.1,Occupation,100,1,a
+Skydiving (per jump UK),8,Sport,0,COVID-19 unvaccinated (age 50-64),8,COVID-19,0,1,a"
+), stringsAsFactors = FALSE)
 
 # ---- CSS ----
 quiz_css <- "
@@ -98,7 +147,6 @@ question_ui <- function(state) {
   right_category <- pair[[paste0("category_", right_side)]]
   right_mm <- pair[[paste0("micromorts_", right_side)]]
 
-  # Card styling based on reveal state
   left_border <- ""
   right_border <- ""
   if (revealed) {
@@ -107,7 +155,6 @@ question_ui <- function(state) {
     right_border <- if (!is_left_riskier) "border-success" else "border-danger"
   }
 
-  # Result text
   result_text <- NULL
   if (revealed) {
     user_correct <- !is.na(answer) && answer == correct_answer
@@ -235,7 +282,6 @@ results_summary_ui <- function(state) {
   }, logical(1))
   score <- sum(correct)
   pct <- score / n * 100
-
   baseline <- n / 2
 
   rating <- if (pct >= 90) {
@@ -379,10 +425,9 @@ server <- function(input, output, session) {
     revealed = NULL
   )
 
-  # ---- Instructions ----
   observeEvent(input$start_quiz, {
     n <- as.integer(input$n_questions %||% state$n_questions)
-    pool <- quiz_pairs(seed = NULL)
+    pool <- quiz_pool
     n <- min(n, nrow(pool))
     state$n_questions <- n
     state$pairs <- pool[sample(nrow(pool), n), ]
@@ -393,7 +438,6 @@ server <- function(input, output, session) {
     state$phase <- "question"
   })
 
-  # ---- Answer buttons ----
   observeEvent(input$choose_left, {
     q <- state$current_q
     state$answers[q] <- state$display_order[[q]][1]
@@ -406,7 +450,6 @@ server <- function(input, output, session) {
     state$revealed[q] <- TRUE
   })
 
-  # ---- Navigation ----
   observeEvent(input$next_q, {
     if (state$current_q < state$n_questions) {
       state$current_q <- state$current_q + 1L
@@ -433,7 +476,6 @@ server <- function(input, output, session) {
     state$phase <- "instructions"
   })
 
-  # ---- Render main UI ----
   output$main_ui <- renderUI({
     switch(state$phase,
       instructions = instructions_ui(),
@@ -450,16 +492,16 @@ shinyApp(ui, server)
 ::: {.callout-note}
 This app runs entirely in your browser using [WebR](https://docs.r-wasm.org/webr/latest/) and [Shinylive](https://posit-dev.github.io/r-shinylive/).
 Initial load may take 30--60 seconds while packages download.
-The micromort package is loaded from [R-Universe](https://johngavin.r-universe.dev/micromort).
+Quiz data is pre-generated from `micromort::quiz_pairs()`.
 :::
 
 ## How it works
 
-The quiz uses `micromort::quiz_pairs()` to generate pairs of everyday activities
-with similar micromort values, making comparisons challenging. Each pair comes
-from the curated `common_risks()` dataset.
+The quiz presents 50 pre-computed pairs of everyday activities with similar
+micromort values, generated by `micromort::quiz_pairs()` from the curated
+`common_risks()` dataset. Each session randomly samples 5 or 10 pairs.
 
-To run the full-featured version locally (with DT detail tables):
+To run the full-featured version locally (with DT detail tables and fresh pairs):
 
 ```r
 micromort::launch_quiz()
