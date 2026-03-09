@@ -39,6 +39,7 @@ Suggests:
     readr,
     rlang,
     rmarkdown,
+    rprojroot,
     shiny,
     targets,
     testthat (>= 3.0.0),

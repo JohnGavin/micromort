@@ -17,28 +17,89 @@ launch_api(host = "127.0.0.1", port = 8080, docs = TRUE)
 Invisible NULL. Runs the API server until interrupted.
 }
 \description{
-Starts a Plumber API server for accessing micromort datasets.
+Starts a Plumber API server exposing 27 endpoints for accessing micromort
+and microlife risk datasets. Every response uses a standard JSON envelope
+with \code{data} and \code{meta} fields including source provenance.
 }
-\details{
-The API provides endpoints for:
+\section{Core Risks (8 GET)}{
+
 \itemize{
-\item GET /v1/acute - Acute risks dataset
-\item GET /v1/chronic - Chronic risks dataset
-\item GET /v1/sources - Risk sources registry
-\item GET /v1/hazard - Daily hazard rate by age
-\item GET /v1/categories - Unique categories
-\item GET /v1/meta - API metadata
-\item GET /health - Health check
+\item \code{GET /v1/risks/acute} — Enriched acute risks (common_risks)
+\item \code{GET /v1/risks/acute/atomic} — Atomic risk components
+\item \code{GET /v1/risks/chronic} — Chronic microlife gains/losses
+\item \code{GET /v1/risks/cancer} — Cancer risk by type/sex/age
+\item \code{GET /v1/risks/vaccination} — Vaccination risk reduction
+\item \code{GET /v1/risks/covid-vaccine} — COVID vaccine relative risks
+\item \code{GET /v1/risks/conditional} — Conditional risk given disease
+\item \code{GET /v1/risks/demographic} — Demographic risk factors
 }
 }
+
+\section{Regional (4 GET)}{
+
+\itemize{
+\item \code{GET /v1/regional/life-expectancy} — Regional life expectancy
+\item \code{GET /v1/regional/vanguard} — Best-performing regions
+\item \code{GET /v1/regional/laggard} — Worst-performing regions
+\item \code{GET /v1/regional/mortality-multiplier} — Mortality multiplier
+}
+}
+
+\section{Radiation (2 GET)}{
+
+\itemize{
+\item \code{GET /v1/radiation/profiles} — Exposure by career milestones
+\item \code{GET /v1/radiation/patient-comparison} — Patient vs occupational
+}
+}
+
+\section{Analysis (2 GET + 4 POST)}{
+
+\itemize{
+\item \code{GET /v1/analysis/equivalence} — Risk equivalence lookup
+\item \code{GET /v1/analysis/tradeoff} — Lifestyle tradeoff calculator
+\item \code{POST /v1/analysis/exchange-matrix} — Risk exchange matrix
+\item \code{POST /v1/analysis/interventions} — Compare interventions
+\item \code{POST /v1/analysis/budget} — Annual risk budget
+\item \code{POST /v1/analysis/hedged-portfolio} — Hedged risk portfolio
+}
+}
+
+\section{Conversion (6 GET)}{
+
+\itemize{
+\item \code{GET /v1/convert/to-micromort} — Probability to micromorts
+\item \code{GET /v1/convert/to-probability} — Micromorts to probability
+\item \code{GET /v1/convert/to-microlife} — Minutes to microlives
+\item \code{GET /v1/convert/value} — Monetary value of one micromort
+\item \code{GET /v1/convert/lle} — Loss of life expectancy
+\item \code{GET /v1/convert/hazard-rate} — Daily hazard rate by age
+}
+}
+
+\section{Quiz (1 GET)}{
+
+\itemize{
+\item \code{GET /v1/quiz/pairs} — Quiz pairs for comparison game
+}
+}
+
+\section{Metadata (3 endpoints)}{
+
+\itemize{
+\item \code{GET /v1/sources} — Risk data sources registry
+\item \code{GET /v1/meta} — API metadata and endpoint listing
+\item \code{GET /health} — Health check
+}
+}
+
 \examples{
 \dontrun{
-# Start the API server
 launch_api()
 
-# Then in another session or browser:
-# curl http://localhost:8080/v1/acute
-# curl http://localhost:8080/v1/chronic?direction=gain
-# curl http://localhost:8080/v1/hazard?age=35
+# Example requests (from another terminal):
+# curl http://localhost:8080/v1/risks/acute?category=Sport
+# curl http://localhost:8080/v1/risks/chronic?direction=gain
+# curl http://localhost:8080/v1/convert/hazard-rate?age=35
 }
 }

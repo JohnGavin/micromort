@@ -20,10 +20,17 @@ library(micromort)
 library(targets)
 library(DT)
 
-# Safe tar_read with graceful fallback
+# Safe tar_read with graceful fallback (finds project root for pkgdown builds)
 safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
   tryCatch(
-    targets::tar_read_raw(name),
+    targets::tar_read_raw(name, store = store),
     error = function(e) {
       message("Target '", name, "' not found. Run tar_make() first.")
       NULL

@@ -1,0 +1,290 @@
+---
+title: "REST API"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{REST API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{css, echo=FALSE}
+.main-container { max-width: 95vw !important; }
+body .container-fluid { max-width: 95vw; }
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  class.source = "fold-hide"
+)
+```
+
+```{r setup}
+library(micromort)
+library(targets)
+library(DT)
+
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+```
+
+The micromort package includes a full REST API with 30 endpoints for accessing
+risk data programmatically. The API is built with [plumber](https://www.rplumber.io/)
+and returns JSON with a standard response envelope.
+
+## Getting Started
+
+Launch the API from R:
+
+```r
+library(micromort)
+launch_api()
+#> ── Micromort Data API ──
+#> ℹ Starting server at http://127.0.0.1:8080
+#> ℹ Swagger docs: http://127.0.0.1:8080/__docs__/
+```
+
+The interactive Swagger UI at `/__docs__/` lets you explore all endpoints,
+view parameter descriptions, and try requests directly in the browser.
+
+## Response Envelope
+
+Every endpoint returns a standard JSON envelope:
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "source": "micromort v0.4.0",
+    "endpoint": "/v1/risks/acute",
+    "n_rows": 10,
+    "timestamp": "2026-03-09T12:00:00Z",
+    "params": { "category": "Medical" }
+  }
+}
+```
+
+The `data` field contains the result (array or object). The `meta` field includes
+package version, endpoint path, row count, ISO 8601 timestamp, and the query
+parameters used.
+
+## Core Risk Data
+
+### Acute risks
+
+Retrieve enriched acute risk data with optional filtering by category,
+minimum micromort threshold, and result limit.
+
+```bash
+curl "http://localhost:8080/v1/risks/acute?category=Medical&limit=10"
+```
+
+```{r acute-sample}
+acute <- safe_tar_read("vig_api_acute_sample")
+if (!is.null(acute)) {
+  DT::datatable(
+    acute,
+    caption = "GET /v1/risks/acute?category=Medical — Medical activities ranked by risk",
+    options = list(pageLength = 10, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound(c("micromorts", "microlives"), 2)
+}
+```
+
+### Chronic risks
+
+Query chronic lifestyle factors that gain or lose microlives per day.
+
+```bash
+curl "http://localhost:8080/v1/risks/chronic?direction=gain"
+```
+
+```{r chronic-gains}
+chronic <- safe_tar_read("vig_api_chronic_gains")
+if (!is.null(chronic)) {
+  DT::datatable(
+    chronic,
+    caption = "GET /v1/risks/chronic?direction=gain — Factors that extend life",
+    options = list(pageLength = 15, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound("microlives_per_day", 1)
+}
+```
+
+### Cancer risks
+
+Cancer mortality by type, sex, and age group with family history multipliers.
+
+```bash
+curl "http://localhost:8080/v1/risks/cancer?age_group=All%20ages"
+```
+
+```{r cancer-top3}
+cancer <- safe_tar_read("vig_api_cancer_top3")
+if (!is.null(cancer)) {
+  DT::datatable(
+    cancer,
+    caption = "GET /v1/risks/cancer — Top 3 cancers per sex (All ages)",
+    options = list(pageLength = 10, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound(c("deaths_per_100k", "micromorts_per_year"), 1)
+}
+```
+
+## Risk Analysis
+
+### Risk equivalence
+
+Find activities with equivalent risk to a reference activity. The response
+includes the ratio (how many of the reference activity equals one of each
+comparison activity).
+
+```bash
+curl "http://localhost:8080/v1/analysis/equivalence?reference=Chest+X-ray+(radiation+per+scan)"
+```
+
+```{r equivalence-sample}
+equiv <- safe_tar_read("vig_api_equivalence_sample")
+if (!is.null(equiv)) {
+  DT::datatable(
+    equiv,
+    caption = "GET /v1/analysis/equivalence — Activities expressed in chest X-ray equivalents",
+    options = list(pageLength = 15, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound("ratio", 1)
+}
+```
+
+### Exchange matrix
+
+Build a cross-comparison matrix for multiple activities. This is a POST
+endpoint that accepts a JSON body with an optional `activities` array:
+
+```bash
+curl -X POST "http://localhost:8080/v1/analysis/exchange-matrix" \
+  -H "Content-Type: application/json" \
+  -d '{"activities": ["Skiing (per day)", "Scuba diving (per dive, trained)", "Skydiving (per jump, US)"]}'
+```
+
+## Unit Conversion
+
+Convert between probability, micromorts, microlives, and loss of life expectancy.
+
+```bash
+# Probability to micromorts
+curl "http://localhost:8080/v1/convert/to-micromort?prob=0.000001"
+
+# Micromorts to probability
+curl "http://localhost:8080/v1/convert/to-probability?micromorts=1"
+
+# Loss of life expectancy (minutes)
+curl "http://localhost:8080/v1/convert/lle?prob=0.00001&life_expectancy=40"
+
+# Monetary value of a micromort (default VSL = $10M)
+curl "http://localhost:8080/v1/convert/value?vsl=10000000"
+```
+
+```{r conversion-table}
+conversions <- safe_tar_read("vig_api_conversion_table")
+if (!is.null(conversions)) {
+  DT::datatable(
+    conversions,
+    caption = "Unit conversions across the probability-to-microlife spectrum",
+    options = list(pageLength = 10, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatSignif(c("probability", "micromorts", "lle_minutes", "microlife"), 3)
+}
+```
+
+## Age-Based Hazard Rates
+
+Calculate daily micromort exposure from background mortality at any age,
+using Gompertz-Makeham mortality models.
+
+```bash
+curl "http://localhost:8080/v1/convert/hazard-rate?age=50&sex=female"
+```
+
+```{r hazard-ages}
+hazard <- safe_tar_read("vig_api_hazard_ages")
+if (!is.null(hazard)) {
+  DT::datatable(
+    hazard,
+    caption = "GET /v1/convert/hazard-rate — Daily background mortality by age and sex",
+    options = list(pageLength = 12, dom = "tip"),
+    rownames = FALSE
+  ) |>
+    DT::formatRound("micromorts", 1) |>
+    DT::formatSignif("daily_prob", 3)
+}
+```
+
+## Full Endpoint Reference
+
+All 30 API endpoints with their HTTP method, path, description, and parameters:
+
+```{r endpoint-summary}
+endpoints <- safe_tar_read("vig_api_endpoint_summary")
+if (!is.null(endpoints)) {
+  DT::datatable(
+    endpoints,
+    caption = "Complete API endpoint reference",
+    options = list(
+      pageLength = 30,
+      dom = "ftip",
+      columnDefs = list(list(width = "250px", targets = 1))
+    ),
+    rownames = FALSE,
+    filter = "top"
+  )
+}
+```
+
+## Using from R
+
+You can call the API from R using [httr2](https://httr2.r-lib.org/):
+
+```{r httr2-example, eval=FALSE}
+library(httr2)
+
+base_url <- "http://localhost:8080"
+
+# GET request with query parameters
+resp <- request(base_url) |>
+  req_url_path("/v1/risks/acute") |>
+  req_url_query(category = "Sport", limit = 5) |>
+  req_perform() |>
+  resp_body_json()
+
+# The data lives in resp$data
+tibble::as_tibble(do.call(rbind, lapply(resp$data, as.data.frame)))
+
+# POST request with JSON body
+resp <- request(base_url) |>
+  req_url_path("/v1/analysis/exchange-matrix") |>
+  req_body_json(list(
+    activities = c("Skiing (per day)", "Scuba diving (per dive, trained)")
+  )) |>
+  req_perform() |>
+  resp_body_json()
+```

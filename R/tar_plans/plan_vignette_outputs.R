@@ -422,6 +422,116 @@ plan_vignette_outputs <- list(
         xray100_vs_tech40_ratio = xray100_vs_tech40$ratio
       )
     }
+  ),
+
+
+  # ==========================================================================
+  # REST API VIGNETTE
+  # ==========================================================================
+
+  # Acute risks sample (Medical category)
+  targets::tar_target(
+    vig_api_acute_sample,
+    common_risks() |>
+      dplyr::filter(category == "Medical") |>
+      dplyr::select(activity, micromorts, microlives, category, period) |>
+      utils::head(10)
+  ),
+
+  # Chronic risks: gains only
+  targets::tar_target(
+    vig_api_chronic_gains,
+    chronic_risks() |>
+      dplyr::filter(direction == "gain") |>
+      dplyr::select(factor, microlives_per_day, category, direction,
+                    annual_effect_days)
+  ),
+
+
+  # Cancer risks: top 3 per sex (All ages)
+  targets::tar_target(
+    vig_api_cancer_top3,
+    cancer_risks() |>
+      dplyr::filter(age_group == "All ages", sex != "Both") |>
+      dplyr::group_by(sex) |>
+      dplyr::slice_min(rank_by_sex, n = 3) |>
+      dplyr::select(cancer_type, sex, deaths_per_100k, micromorts_per_year) |>
+      dplyr::ungroup()
+  ),
+
+  # Risk equivalence sample (Chest X-ray reference)
+  targets::tar_target(
+    vig_api_equivalence_sample,
+    risk_equivalence("Chest X-ray (radiation per scan)") |>
+      utils::head(15)
+  ),
+
+  # Unit conversion examples table
+  targets::tar_target(
+    vig_api_conversion_table,
+    {
+      probs <- c(1e-7, 1e-6, 1e-5, 1e-4, 1e-3)
+      tibble::tibble(
+        probability = probs,
+        micromorts = as.numeric(vapply(probs, as_micromort, numeric(1))),
+        lle_minutes = as.numeric(vapply(probs, lle, numeric(1))),
+        microlife = as.numeric(vapply(
+          vapply(probs, lle, numeric(1)), as_microlife, numeric(1)
+        ))
+      )
+    }
+  ),
+
+  # Daily hazard rates for selected ages (both sexes)
+  targets::tar_target(
+    vig_api_hazard_ages,
+    {
+      ages <- c(20, 35, 50, 65, 80)
+      do.call(dplyr::bind_rows, lapply(ages, function(a) {
+        dplyr::bind_rows(
+          daily_hazard_rate(a, "male"),
+          daily_hazard_rate(a, "female")
+        )
+      }))
+    }
+  ),
+
+  # Full endpoint reference table
+  targets::tar_target(
+    vig_api_endpoint_summary,
+    tibble::tribble(
+      ~method, ~path, ~description, ~params,
+      "GET", "/v1/risks/acute", "Enriched acute risks (common_risks)", "category, min_micromorts, limit",
+      "GET", "/v1/risks/acute/atomic", "Atomic risk components", "category, component, hedgeable",
+      "GET", "/v1/risks/chronic", "Chronic microlife gains/losses", "direction, category",
+      "GET", "/v1/risks/cancer", "Cancer risk by type/sex/age", "sex, age_group, cancer_type",
+      "GET", "/v1/risks/vaccination", "Vaccination risk reduction", "country, age_group",
+      "GET", "/v1/risks/covid-vaccine", "COVID vaccine relative risks", "age_group, vaccination_status",
+      "GET", "/v1/risks/conditional", "Conditional risk given disease", "disease",
+      "GET", "/v1/risks/demographic", "Demographic risk factors", "",
+      "GET", "/v1/regional/life-expectancy", "Regional life expectancy", "country, year, sex, classification",
+      "GET", "/v1/regional/vanguard", "Best-performing regions", "country, year, sex",
+      "GET", "/v1/regional/laggard", "Worst-performing regions", "country, year, sex",
+      "GET", "/v1/regional/mortality-multiplier", "Mortality multiplier by region", "region_code, reference, year",
+      "GET", "/v1/radiation/profiles", "Exposure by career milestones", "milestones",
+      "GET", "/v1/radiation/patient-comparison", "Patient vs occupational exposure", "xray_counts, career_years",
+      "GET", "/v1/analysis/equivalence", "Risk equivalence lookup", "reference, min_ratio, max_ratio",
+      "GET", "/v1/analysis/tradeoff", "Lifestyle tradeoff calculator", "bad_habit, good_habit",
+      "POST", "/v1/analysis/exchange-matrix", "Risk exchange matrix", "activities (JSON body)",
+      "POST", "/v1/analysis/interventions", "Compare interventions", "interventions (JSON body)",
+      "POST", "/v1/analysis/budget", "Annual risk budget", "activities, age (JSON body)",
+      "POST", "/v1/analysis/hedged-portfolio", "Hedged risk portfolio", "include_diseases (JSON body)",
+      "GET", "/v1/convert/to-micromort", "Probability to micromorts", "prob",
+      "GET", "/v1/convert/to-probability", "Micromorts to probability", "micromorts",
+      "GET", "/v1/convert/to-microlife", "Minutes to microlives", "minutes",
+      "GET", "/v1/convert/value", "Monetary value of one micromort", "vsl",
+      "GET", "/v1/convert/lle", "Loss of life expectancy", "prob, life_expectancy",
+      "GET", "/v1/convert/hazard-rate", "Daily hazard rate by age", "age, sex",
+      "GET", "/v1/quiz/pairs", "Quiz pairs for comparison game", "min_ratio, max_ratio, seed",
+      "GET", "/v1/sources", "Risk data sources registry", "type",
+      "GET", "/v1/meta", "API metadata and endpoint listing", "",
+      "GET", "/health", "Health check", ""
+    )
   )
 
 )

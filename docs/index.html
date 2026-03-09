@@ -41,6 +41,10 @@
     <li><a class="dropdown-item" href="articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="articles/risk_equivalence.html">Risk Equivalence</a></li>
+    <li><a class="dropdown-item" href="articles/rest_api.html">REST API</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
+    <li><a class="dropdown-item" href="articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
   </ul>
 </li>
       </ul>
@@ -166,8 +170,32 @@
 <div class="section level3">
 <h3 id="conversion">Conversion<a class="anchor" aria-label="anchor" href="#conversion"></a>
 </h3>
-<p><strong>1 micromort ≈ 0.7 microlives</strong> (assuming 40 years remaining life expectancy)</p>
-<p>This allows comparing acute events to chronic habits on a common scale.</p>
+<p><strong>1 micromort ≈ 0.7 microlives</strong> (assuming 40 years remaining life expectancy). The conversion scales linearly with remaining life expectancy:</p>
+<table class="table">
+<thead><tr>
+<th>Remaining life expectancy</th>
+<th>1 micromort ≈</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>10 years</td>
+<td>0.18 microlives</td>
+</tr>
+<tr>
+<td>20 years</td>
+<td>0.35 microlives</td>
+</tr>
+<tr>
+<td>40 years (default)</td>
+<td>0.70 microlives</td>
+</tr>
+<tr>
+<td>60 years</td>
+<td>1.05 microlives</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>lle(prob, life_expectancy = ...)</code> and <code><a href="reference/as_microlife.html">as_microlife()</a></code> to convert at any age. See the <a href="#calculate-baseline-risk-by-age">Age-Based Hazard Rates</a> section for daily micromort exposure by age.</p>
 </div>
 <div class="section level3">
 <h3 id="morbidity-metrics">Morbidity Metrics<a class="anchor" aria-label="anchor" href="#morbidity-metrics"></a>
@@ -177,11 +205,18 @@
 <li>
 <strong>QALY (Quality-Adjusted Life Year):</strong> 1 year of perfect health. Used in healthcare economics.</li>
 <li>
-<strong>DALY (Disability-Adjusted Life Years):</strong> Disease burden = YLL + YLD.</li>
+<strong>DALY (Disability-Adjusted Life Years):</strong> Disease burden combining:
+<ul>
+<li>
+<strong>YLL (Years of Life Lost):</strong> Premature mortality component</li>
+<li>
+<strong>YLD (Years Lived with Disability):</strong> Morbidity component</li>
+</ul>
+</li>
 <li>
 <strong>QALD (Quality-Adjusted Life Days):</strong> 1 day of perfect health. For common illnesses.</li>
 </ul>
-<p>See the <a href="https://johngavin.github.io/micromort/articles/introduction.html">Introduction vignette</a> for detailed examples.</p>
+<p>See the <a href="https://johngavin.github.io/micromort/articles/introduction.html">Introduction vignette</a> for detailed examples and the <a href="#glossary">Glossary</a> for all acronym definitions.</p>
 </div>
 </div>
 <div class="section level2">
@@ -320,7 +355,23 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/launch_api.html">launch_api</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># API available at http://localhost:8080</span></span>
 <span><span class="co"># Swagger docs at http://localhost:8080/__docs__/</span></span></code></pre></div>
-<p>Endpoints: - <code>GET /v1/acute</code> - Acute risks dataset (micromorts per event) - <code>GET /v1/chronic</code> - Chronic risks dataset (microlives per day) - <code>GET /v1/sources</code> - Source registry - <code>GET /v1/hazard?age=35</code> - Daily hazard rate (micromorts per day)</p>
+<p><strong>Core endpoints</strong> (30 total — see <a href="https://johngavin.github.io/micromort/articles/rest_api.html">REST API vignette</a> for full reference):</p>
+<ul>
+<li>
+<code>GET /v1/risks/acute</code> — Acute risks (micromorts per event)</li>
+<li>
+<code>GET /v1/risks/chronic</code> — Chronic risks (microlives per day)</li>
+<li>
+<code>GET /v1/risks/cancer</code> — Cancer mortality by type/sex/age</li>
+<li>
+<code>GET /v1/analysis/equivalence</code> — Risk equivalence lookup</li>
+<li>
+<code>GET /v1/convert/hazard-rate?age=35</code> — Daily hazard rate</li>
+<li>
+<code>GET /v1/sources</code> — Source registry</li>
+<li>
+<code>GET /health</code> — Health check</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="interactive-dashboard">Interactive Dashboard<a class="anchor" aria-label="anchor" href="#interactive-dashboard"></a>
@@ -328,6 +379,13 @@
 <p>Launch the Shiny dashboard:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/launch_dashboard.html">launch_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="risk-quiz">Risk Quiz<a class="anchor" aria-label="anchor" href="#risk-quiz"></a>
+</h2>
+<p><a href="https://johngavin.github.io/micromort/articles/quiz_shinylive.html">Play in browser</a> — runs via WebR/Shinylive (30-60s initial load). Or locally:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">micromort</span><span class="fu">::</span><span class="fu"><a href="reference/launch_quiz.html">launch_quiz</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
@@ -382,214 +440,310 @@
 </h2>
 <details><summary>
 Click to expand project tree
-</summary><div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt; .</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; ├── DESCRIPTION</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE.md</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; ├── NAMESPACE</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; ├── R</span></span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; │   ├── api.R</span></span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard.R</span></span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; │   ├── data.R</span></span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; │   ├── dev</span></span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; │   ├── micromort.R</span></span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; │   ├── models.R</span></span>
-<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; │   ├── risks.R</span></span>
-<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; │   ├── tar_plans</span></span>
-<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
-<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
-<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
-<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
-<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; │   │   └── plan_validation.R</span></span>
-<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; │   └── visualization.R</span></span>
-<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; ├── README.md</span></span>
-<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; ├── README.qmd</span></span>
-<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; ├── README.rmarkdown</span></span>
-<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; ├── README_files</span></span>
-<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; │   └── libs</span></span>
-<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; │       ├── bootstrap</span></span>
-<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt; │       ├── clipboard</span></span>
-<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; │       └── quarto-html</span></span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; ├── box</span></span>
-<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; │   ├── api</span></span>
-<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; │   │   └── endpoints.R</span></span>
-<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
-<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; │   │   ├── server.R</span></span>
-<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; │   │   └── ui.R</span></span>
-<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; │   ├── data</span></span>
-<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt; │   │   ├── loaders.R</span></span>
-<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt; │   │   ├── parsers.R</span></span>
-<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt; │   │   └── schemas.R</span></span>
-<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt; │   └── models</span></span>
-<span id="cb14-45"><a href="#cb14-45" tabindex="-1"></a><span class="co">#&gt; │       ├── __init__.R</span></span>
-<span id="cb14-46"><a href="#cb14-46" tabindex="-1"></a><span class="co">#&gt; │       ├── compare.R</span></span>
-<span id="cb14-47"><a href="#cb14-47" tabindex="-1"></a><span class="co">#&gt; │       └── hazard.R</span></span>
-<span id="cb14-48"><a href="#cb14-48" tabindex="-1"></a><span class="co">#&gt; ├── data-raw</span></span>
-<span id="cb14-49"><a href="#cb14-49" tabindex="-1"></a><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
-<span id="cb14-50"><a href="#cb14-50" tabindex="-1"></a><span class="co">#&gt; │   └── sources</span></span>
-<span id="cb14-51"><a href="#cb14-51" tabindex="-1"></a><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
-<span id="cb14-52"><a href="#cb14-52" tabindex="-1"></a><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
-<span id="cb14-53"><a href="#cb14-53" tabindex="-1"></a><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
-<span id="cb14-54"><a href="#cb14-54" tabindex="-1"></a><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
-<span id="cb14-55"><a href="#cb14-55" tabindex="-1"></a><span class="co">#&gt; │       └── risk_sources.csv</span></span>
-<span id="cb14-56"><a href="#cb14-56" tabindex="-1"></a><span class="co">#&gt; ├── default.R</span></span>
-<span id="cb14-57"><a href="#cb14-57" tabindex="-1"></a><span class="co">#&gt; ├── default.nix</span></span>
-<span id="cb14-58"><a href="#cb14-58" tabindex="-1"></a><span class="co">#&gt; ├── default.sh</span></span>
-<span id="cb14-59"><a href="#cb14-59" tabindex="-1"></a><span class="co">#&gt; ├── docs</span></span>
-<span id="cb14-60"><a href="#cb14-60" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.html</span></span>
-<span id="cb14-61"><a href="#cb14-61" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.md</span></span>
-<span id="cb14-62"><a href="#cb14-62" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
-<span id="cb14-63"><a href="#cb14-63" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
-<span id="cb14-64"><a href="#cb14-64" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.html</span></span>
-<span id="cb14-65"><a href="#cb14-65" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.md</span></span>
-<span id="cb14-66"><a href="#cb14-66" tabindex="-1"></a><span class="co">#&gt; │   ├── articles</span></span>
-<span id="cb14-67"><a href="#cb14-67" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span id="cb14-68"><a href="#cb14-68" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span id="cb14-69"><a href="#cb14-69" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.html</span></span>
-<span id="cb14-70"><a href="#cb14-70" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.md</span></span>
-<span id="cb14-71"><a href="#cb14-71" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction_files</span></span>
-<span id="cb14-72"><a href="#cb14-72" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
-<span id="cb14-73"><a href="#cb14-73" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
-<span id="cb14-74"><a href="#cb14-74" tabindex="-1"></a><span class="co">#&gt; │   │   └── palatable_units_files</span></span>
-<span id="cb14-75"><a href="#cb14-75" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.html</span></span>
-<span id="cb14-76"><a href="#cb14-76" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.md</span></span>
-<span id="cb14-77"><a href="#cb14-77" tabindex="-1"></a><span class="co">#&gt; │   ├── deps</span></span>
-<span id="cb14-78"><a href="#cb14-78" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-5.3.1</span></span>
-<span id="cb14-79"><a href="#cb14-79" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-toc-1.0.1</span></span>
-<span id="cb14-80"><a href="#cb14-80" tabindex="-1"></a><span class="co">#&gt; │   │   ├── clipboard.js-2.0.11</span></span>
-<span id="cb14-81"><a href="#cb14-81" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
-<span id="cb14-82"><a href="#cb14-82" tabindex="-1"></a><span class="co">#&gt; │   │   ├── font-awesome-6.5.2</span></span>
-<span id="cb14-83"><a href="#cb14-83" tabindex="-1"></a><span class="co">#&gt; │   │   ├── headroom-0.11.0</span></span>
-<span id="cb14-84"><a href="#cb14-84" tabindex="-1"></a><span class="co">#&gt; │   │   ├── jquery-3.6.0</span></span>
-<span id="cb14-85"><a href="#cb14-85" tabindex="-1"></a><span class="co">#&gt; │   │   └── search-1.0.0</span></span>
-<span id="cb14-86"><a href="#cb14-86" tabindex="-1"></a><span class="co">#&gt; │   ├── index.html</span></span>
-<span id="cb14-87"><a href="#cb14-87" tabindex="-1"></a><span class="co">#&gt; │   ├── index.md</span></span>
-<span id="cb14-88"><a href="#cb14-88" tabindex="-1"></a><span class="co">#&gt; │   ├── katex-auto.js</span></span>
-<span id="cb14-89"><a href="#cb14-89" tabindex="-1"></a><span class="co">#&gt; │   ├── lightswitch.js</span></span>
-<span id="cb14-90"><a href="#cb14-90" tabindex="-1"></a><span class="co">#&gt; │   ├── link.svg</span></span>
-<span id="cb14-91"><a href="#cb14-91" tabindex="-1"></a><span class="co">#&gt; │   ├── llms.txt</span></span>
-<span id="cb14-92"><a href="#cb14-92" tabindex="-1"></a><span class="co">#&gt; │   ├── news</span></span>
-<span id="cb14-93"><a href="#cb14-93" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.js</span></span>
-<span id="cb14-94"><a href="#cb14-94" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
-<span id="cb14-95"><a href="#cb14-95" tabindex="-1"></a><span class="co">#&gt; │   ├── reference</span></span>
-<span id="cb14-96"><a href="#cb14-96" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
-<span id="cb14-97"><a href="#cb14-97" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
-<span id="cb14-98"><a href="#cb14-98" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
-<span id="cb14-99"><a href="#cb14-99" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
-<span id="cb14-100"><a href="#cb14-100" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
-<span id="cb14-101"><a href="#cb14-101" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
-<span id="cb14-102"><a href="#cb14-102" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
-<span id="cb14-103"><a href="#cb14-103" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
-<span id="cb14-104"><a href="#cb14-104" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
-<span id="cb14-105"><a href="#cb14-105" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
-<span id="cb14-106"><a href="#cb14-106" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
-<span id="cb14-107"><a href="#cb14-107" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
-<span id="cb14-108"><a href="#cb14-108" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
-<span id="cb14-109"><a href="#cb14-109" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
-<span id="cb14-110"><a href="#cb14-110" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
-<span id="cb14-111"><a href="#cb14-111" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
-<span id="cb14-112"><a href="#cb14-112" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
-<span id="cb14-113"><a href="#cb14-113" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
-<span id="cb14-114"><a href="#cb14-114" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
-<span id="cb14-115"><a href="#cb14-115" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
-<span id="cb14-116"><a href="#cb14-116" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
-<span id="cb14-117"><a href="#cb14-117" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
-<span id="cb14-118"><a href="#cb14-118" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
-<span id="cb14-119"><a href="#cb14-119" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
-<span id="cb14-120"><a href="#cb14-120" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
-<span id="cb14-121"><a href="#cb14-121" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
-<span id="cb14-122"><a href="#cb14-122" tabindex="-1"></a><span class="co">#&gt; │   │   ├── figures</span></span>
-<span id="cb14-123"><a href="#cb14-123" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
-<span id="cb14-124"><a href="#cb14-124" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
-<span id="cb14-125"><a href="#cb14-125" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span id="cb14-126"><a href="#cb14-126" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span id="cb14-127"><a href="#cb14-127" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
-<span id="cb14-128"><a href="#cb14-128" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
-<span id="cb14-129"><a href="#cb14-129" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
-<span id="cb14-130"><a href="#cb14-130" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
-<span id="cb14-131"><a href="#cb14-131" tabindex="-1"></a><span class="co">#&gt; │   │   ├── libs</span></span>
-<span id="cb14-132"><a href="#cb14-132" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
-<span id="cb14-133"><a href="#cb14-133" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
-<span id="cb14-134"><a href="#cb14-134" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.html</span></span>
-<span id="cb14-135"><a href="#cb14-135" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.md</span></span>
-<span id="cb14-136"><a href="#cb14-136" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
-<span id="cb14-137"><a href="#cb14-137" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
-<span id="cb14-138"><a href="#cb14-138" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
-<span id="cb14-139"><a href="#cb14-139" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
-<span id="cb14-140"><a href="#cb14-140" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
-<span id="cb14-141"><a href="#cb14-141" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
-<span id="cb14-142"><a href="#cb14-142" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
-<span id="cb14-143"><a href="#cb14-143" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
-<span id="cb14-144"><a href="#cb14-144" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
-<span id="cb14-145"><a href="#cb14-145" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
-<span id="cb14-146"><a href="#cb14-146" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
-<span id="cb14-147"><a href="#cb14-147" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
-<span id="cb14-148"><a href="#cb14-148" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
-<span id="cb14-149"><a href="#cb14-149" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
-<span id="cb14-150"><a href="#cb14-150" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
-<span id="cb14-151"><a href="#cb14-151" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
-<span id="cb14-152"><a href="#cb14-152" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
-<span id="cb14-153"><a href="#cb14-153" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
-<span id="cb14-154"><a href="#cb14-154" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
-<span id="cb14-155"><a href="#cb14-155" tabindex="-1"></a><span class="co">#&gt; │   │   └── value_of_micromort.md</span></span>
-<span id="cb14-156"><a href="#cb14-156" tabindex="-1"></a><span class="co">#&gt; │   ├── search.json</span></span>
-<span id="cb14-157"><a href="#cb14-157" tabindex="-1"></a><span class="co">#&gt; │   ├── sitemap.xml</span></span>
-<span id="cb14-158"><a href="#cb14-158" tabindex="-1"></a><span class="co">#&gt; │   └── tutorials</span></span>
-<span id="cb14-159"><a href="#cb14-159" tabindex="-1"></a><span class="co">#&gt; ├── inst</span></span>
-<span id="cb14-160"><a href="#cb14-160" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
-<span id="cb14-161"><a href="#cb14-161" tabindex="-1"></a><span class="co">#&gt; │   │   └── about.md</span></span>
-<span id="cb14-162"><a href="#cb14-162" tabindex="-1"></a><span class="co">#&gt; │   ├── extdata</span></span>
-<span id="cb14-163"><a href="#cb14-163" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
-<span id="cb14-164"><a href="#cb14-164" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
-<span id="cb14-165"><a href="#cb14-165" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logs</span></span>
-<span id="cb14-166"><a href="#cb14-166" tabindex="-1"></a><span class="co">#&gt; │   │   └── risk_sources.parquet</span></span>
-<span id="cb14-167"><a href="#cb14-167" tabindex="-1"></a><span class="co">#&gt; │   └── plumber</span></span>
-<span id="cb14-168"><a href="#cb14-168" tabindex="-1"></a><span class="co">#&gt; │       └── api.R</span></span>
-<span id="cb14-169"><a href="#cb14-169" tabindex="-1"></a><span class="co">#&gt; ├── man</span></span>
-<span id="cb14-170"><a href="#cb14-170" tabindex="-1"></a><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
-<span id="cb14-171"><a href="#cb14-171" tabindex="-1"></a><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
-<span id="cb14-172"><a href="#cb14-172" tabindex="-1"></a><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
-<span id="cb14-173"><a href="#cb14-173" tabindex="-1"></a><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
-<span id="cb14-174"><a href="#cb14-174" tabindex="-1"></a><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
-<span id="cb14-175"><a href="#cb14-175" tabindex="-1"></a><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
-<span id="cb14-176"><a href="#cb14-176" tabindex="-1"></a><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
-<span id="cb14-177"><a href="#cb14-177" tabindex="-1"></a><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
-<span id="cb14-178"><a href="#cb14-178" tabindex="-1"></a><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
-<span id="cb14-179"><a href="#cb14-179" tabindex="-1"></a><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
-<span id="cb14-180"><a href="#cb14-180" tabindex="-1"></a><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
-<span id="cb14-181"><a href="#cb14-181" tabindex="-1"></a><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
-<span id="cb14-182"><a href="#cb14-182" tabindex="-1"></a><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
-<span id="cb14-183"><a href="#cb14-183" tabindex="-1"></a><span class="co">#&gt; │   ├── figures</span></span>
-<span id="cb14-184"><a href="#cb14-184" tabindex="-1"></a><span class="co">#&gt; │   │   └── README-plot-1.png</span></span>
-<span id="cb14-185"><a href="#cb14-185" tabindex="-1"></a><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
-<span id="cb14-186"><a href="#cb14-186" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
-<span id="cb14-187"><a href="#cb14-187" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
-<span id="cb14-188"><a href="#cb14-188" tabindex="-1"></a><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
-<span id="cb14-189"><a href="#cb14-189" tabindex="-1"></a><span class="co">#&gt; │   ├── lle.Rd</span></span>
-<span id="cb14-190"><a href="#cb14-190" tabindex="-1"></a><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
-<span id="cb14-191"><a href="#cb14-191" tabindex="-1"></a><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
-<span id="cb14-192"><a href="#cb14-192" tabindex="-1"></a><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
-<span id="cb14-193"><a href="#cb14-193" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
-<span id="cb14-194"><a href="#cb14-194" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
-<span id="cb14-195"><a href="#cb14-195" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
-<span id="cb14-196"><a href="#cb14-196" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
-<span id="cb14-197"><a href="#cb14-197" tabindex="-1"></a><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
-<span id="cb14-198"><a href="#cb14-198" tabindex="-1"></a><span class="co">#&gt; │   └── value_of_micromort.Rd</span></span>
-<span id="cb14-199"><a href="#cb14-199" tabindex="-1"></a><span class="co">#&gt; ├── nix-shell-root</span></span>
-<span id="cb14-200"><a href="#cb14-200" tabindex="-1"></a><span class="co">#&gt; ├── pkgdown</span></span>
-<span id="cb14-201"><a href="#cb14-201" tabindex="-1"></a><span class="co">#&gt; │   └── extra.css</span></span>
-<span id="cb14-202"><a href="#cb14-202" tabindex="-1"></a><span class="co">#&gt; ├── push_to_cachix.sh</span></span>
-<span id="cb14-203"><a href="#cb14-203" tabindex="-1"></a><span class="co">#&gt; ├── tests</span></span>
-<span id="cb14-204"><a href="#cb14-204" tabindex="-1"></a><span class="co">#&gt; │   └── testthat</span></span>
-<span id="cb14-205"><a href="#cb14-205" tabindex="-1"></a><span class="co">#&gt; │       └── test-adversarial.R</span></span>
-<span id="cb14-206"><a href="#cb14-206" tabindex="-1"></a><span class="co">#&gt; └── vignettes</span></span>
-<span id="cb14-207"><a href="#cb14-207" tabindex="-1"></a><span class="co">#&gt;     ├── introduction.Rmd</span></span>
-<span id="cb14-208"><a href="#cb14-208" tabindex="-1"></a><span class="co">#&gt;     └── palatable_units.Rmd</span></span></code></pre></div>
+</summary><div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">#&gt; .</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt; ├── DESCRIPTION</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE.md</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt; ├── NAMESPACE</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; ├── R</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt; │   ├── api.R</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; │   ├── atomic_risks.R</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard.R</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt; │   ├── data.R</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt; │   ├── dev</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt; │   │   ├── issues</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; │   ├── micromort.R</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; │   ├── models.R</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; │   ├── quiz.R</span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; │   ├── radiation_profiles.R</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; │   ├── regional.R</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_equivalence.R</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; │   ├── risks.R</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; │   ├── tar_plans</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_validation.R</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; │   │   └── plan_vignette_outputs.R</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; │   └── visualization.R</span></span>
+<span id="cb15-30"><a href="#cb15-30" tabindex="-1"></a><span class="co">#&gt; ├── README.md</span></span>
+<span id="cb15-31"><a href="#cb15-31" tabindex="-1"></a><span class="co">#&gt; ├── README.qmd</span></span>
+<span id="cb15-32"><a href="#cb15-32" tabindex="-1"></a><span class="co">#&gt; ├── README.rmarkdown</span></span>
+<span id="cb15-33"><a href="#cb15-33" tabindex="-1"></a><span class="co">#&gt; ├── README_files</span></span>
+<span id="cb15-34"><a href="#cb15-34" tabindex="-1"></a><span class="co">#&gt; │   └── libs</span></span>
+<span id="cb15-35"><a href="#cb15-35" tabindex="-1"></a><span class="co">#&gt; │       ├── bootstrap</span></span>
+<span id="cb15-36"><a href="#cb15-36" tabindex="-1"></a><span class="co">#&gt; │       ├── clipboard</span></span>
+<span id="cb15-37"><a href="#cb15-37" tabindex="-1"></a><span class="co">#&gt; │       └── quarto-html</span></span>
+<span id="cb15-38"><a href="#cb15-38" tabindex="-1"></a><span class="co">#&gt; ├── box</span></span>
+<span id="cb15-39"><a href="#cb15-39" tabindex="-1"></a><span class="co">#&gt; │   ├── api</span></span>
+<span id="cb15-40"><a href="#cb15-40" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb15-41"><a href="#cb15-41" tabindex="-1"></a><span class="co">#&gt; │   │   └── endpoints.R</span></span>
+<span id="cb15-42"><a href="#cb15-42" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb15-43"><a href="#cb15-43" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb15-44"><a href="#cb15-44" tabindex="-1"></a><span class="co">#&gt; │   │   ├── server.R</span></span>
+<span id="cb15-45"><a href="#cb15-45" tabindex="-1"></a><span class="co">#&gt; │   │   └── ui.R</span></span>
+<span id="cb15-46"><a href="#cb15-46" tabindex="-1"></a><span class="co">#&gt; │   ├── data</span></span>
+<span id="cb15-47"><a href="#cb15-47" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb15-48"><a href="#cb15-48" tabindex="-1"></a><span class="co">#&gt; │   │   ├── loaders.R</span></span>
+<span id="cb15-49"><a href="#cb15-49" tabindex="-1"></a><span class="co">#&gt; │   │   ├── parsers.R</span></span>
+<span id="cb15-50"><a href="#cb15-50" tabindex="-1"></a><span class="co">#&gt; │   │   └── schemas.R</span></span>
+<span id="cb15-51"><a href="#cb15-51" tabindex="-1"></a><span class="co">#&gt; │   └── models</span></span>
+<span id="cb15-52"><a href="#cb15-52" tabindex="-1"></a><span class="co">#&gt; │       ├── __init__.R</span></span>
+<span id="cb15-53"><a href="#cb15-53" tabindex="-1"></a><span class="co">#&gt; │       ├── compare.R</span></span>
+<span id="cb15-54"><a href="#cb15-54" tabindex="-1"></a><span class="co">#&gt; │       └── hazard.R</span></span>
+<span id="cb15-55"><a href="#cb15-55" tabindex="-1"></a><span class="co">#&gt; ├── data-raw</span></span>
+<span id="cb15-56"><a href="#cb15-56" tabindex="-1"></a><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
+<span id="cb15-57"><a href="#cb15-57" tabindex="-1"></a><span class="co">#&gt; │   ├── 02_regional_life_expectancy.R</span></span>
+<span id="cb15-58"><a href="#cb15-58" tabindex="-1"></a><span class="co">#&gt; │   ├── 02_regional_life_expectancy_sample.R</span></span>
+<span id="cb15-59"><a href="#cb15-59" tabindex="-1"></a><span class="co">#&gt; │   ├── README_regional_data.md</span></span>
+<span id="cb15-60"><a href="#cb15-60" tabindex="-1"></a><span class="co">#&gt; │   └── sources</span></span>
+<span id="cb15-61"><a href="#cb15-61" tabindex="-1"></a><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
+<span id="cb15-62"><a href="#cb15-62" tabindex="-1"></a><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
+<span id="cb15-63"><a href="#cb15-63" tabindex="-1"></a><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
+<span id="cb15-64"><a href="#cb15-64" tabindex="-1"></a><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
+<span id="cb15-65"><a href="#cb15-65" tabindex="-1"></a><span class="co">#&gt; │       └── risk_sources.csv</span></span>
+<span id="cb15-66"><a href="#cb15-66" tabindex="-1"></a><span class="co">#&gt; ├── default.R</span></span>
+<span id="cb15-67"><a href="#cb15-67" tabindex="-1"></a><span class="co">#&gt; ├── default.nix</span></span>
+<span id="cb15-68"><a href="#cb15-68" tabindex="-1"></a><span class="co">#&gt; ├── default.sh</span></span>
+<span id="cb15-69"><a href="#cb15-69" tabindex="-1"></a><span class="co">#&gt; ├── docs</span></span>
+<span id="cb15-70"><a href="#cb15-70" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.html</span></span>
+<span id="cb15-71"><a href="#cb15-71" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.md</span></span>
+<span id="cb15-72"><a href="#cb15-72" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
+<span id="cb15-73"><a href="#cb15-73" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
+<span id="cb15-74"><a href="#cb15-74" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.html</span></span>
+<span id="cb15-75"><a href="#cb15-75" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.md</span></span>
+<span id="cb15-76"><a href="#cb15-76" tabindex="-1"></a><span class="co">#&gt; │   ├── articles</span></span>
+<span id="cb15-77"><a href="#cb15-77" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb15-78"><a href="#cb15-78" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb15-79"><a href="#cb15-79" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.html</span></span>
+<span id="cb15-80"><a href="#cb15-80" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.md</span></span>
+<span id="cb15-81"><a href="#cb15-81" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction_files</span></span>
+<span id="cb15-82"><a href="#cb15-82" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
+<span id="cb15-83"><a href="#cb15-83" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
+<span id="cb15-84"><a href="#cb15-84" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units_files</span></span>
+<span id="cb15-85"><a href="#cb15-85" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_shinylive.html</span></span>
+<span id="cb15-86"><a href="#cb15-86" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_shinylive_files</span></span>
+<span id="cb15-87"><a href="#cb15-87" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation.html</span></span>
+<span id="cb15-88"><a href="#cb15-88" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation.md</span></span>
+<span id="cb15-89"><a href="#cb15-89" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation_files</span></span>
+<span id="cb15-90"><a href="#cb15-90" tabindex="-1"></a><span class="co">#&gt; │   │   ├── rest_api.html</span></span>
+<span id="cb15-91"><a href="#cb15-91" tabindex="-1"></a><span class="co">#&gt; │   │   ├── rest_api_files</span></span>
+<span id="cb15-92"><a href="#cb15-92" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
+<span id="cb15-93"><a href="#cb15-93" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
+<span id="cb15-94"><a href="#cb15-94" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence_files</span></span>
+<span id="cb15-95"><a href="#cb15-95" tabindex="-1"></a><span class="co">#&gt; │   │   └── shinylive-sw.js</span></span>
+<span id="cb15-96"><a href="#cb15-96" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.html</span></span>
+<span id="cb15-97"><a href="#cb15-97" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.md</span></span>
+<span id="cb15-98"><a href="#cb15-98" tabindex="-1"></a><span class="co">#&gt; │   ├── deps</span></span>
+<span id="cb15-99"><a href="#cb15-99" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-5.3.1</span></span>
+<span id="cb15-100"><a href="#cb15-100" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-toc-1.0.1</span></span>
+<span id="cb15-101"><a href="#cb15-101" tabindex="-1"></a><span class="co">#&gt; │   │   ├── clipboard.js-2.0.11</span></span>
+<span id="cb15-102"><a href="#cb15-102" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
+<span id="cb15-103"><a href="#cb15-103" tabindex="-1"></a><span class="co">#&gt; │   │   ├── font-awesome-6.5.2</span></span>
+<span id="cb15-104"><a href="#cb15-104" tabindex="-1"></a><span class="co">#&gt; │   │   ├── headroom-0.11.0</span></span>
+<span id="cb15-105"><a href="#cb15-105" tabindex="-1"></a><span class="co">#&gt; │   │   ├── jquery-3.6.0</span></span>
+<span id="cb15-106"><a href="#cb15-106" tabindex="-1"></a><span class="co">#&gt; │   │   └── search-1.0.0</span></span>
+<span id="cb15-107"><a href="#cb15-107" tabindex="-1"></a><span class="co">#&gt; │   ├── extra.css</span></span>
+<span id="cb15-108"><a href="#cb15-108" tabindex="-1"></a><span class="co">#&gt; │   ├── index.html</span></span>
+<span id="cb15-109"><a href="#cb15-109" tabindex="-1"></a><span class="co">#&gt; │   ├── index.md</span></span>
+<span id="cb15-110"><a href="#cb15-110" tabindex="-1"></a><span class="co">#&gt; │   ├── katex-auto.js</span></span>
+<span id="cb15-111"><a href="#cb15-111" tabindex="-1"></a><span class="co">#&gt; │   ├── lightswitch.js</span></span>
+<span id="cb15-112"><a href="#cb15-112" tabindex="-1"></a><span class="co">#&gt; │   ├── link.svg</span></span>
+<span id="cb15-113"><a href="#cb15-113" tabindex="-1"></a><span class="co">#&gt; │   ├── llms.txt</span></span>
+<span id="cb15-114"><a href="#cb15-114" tabindex="-1"></a><span class="co">#&gt; │   ├── news</span></span>
+<span id="cb15-115"><a href="#cb15-115" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.js</span></span>
+<span id="cb15-116"><a href="#cb15-116" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
+<span id="cb15-117"><a href="#cb15-117" tabindex="-1"></a><span class="co">#&gt; │   ├── reference</span></span>
+<span id="cb15-118"><a href="#cb15-118" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
+<span id="cb15-119"><a href="#cb15-119" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
+<span id="cb15-120"><a href="#cb15-120" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
+<span id="cb15-121"><a href="#cb15-121" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
+<span id="cb15-122"><a href="#cb15-122" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
+<span id="cb15-123"><a href="#cb15-123" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
+<span id="cb15-124"><a href="#cb15-124" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
+<span id="cb15-125"><a href="#cb15-125" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
+<span id="cb15-126"><a href="#cb15-126" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
+<span id="cb15-127"><a href="#cb15-127" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
+<span id="cb15-128"><a href="#cb15-128" tabindex="-1"></a><span class="co">#&gt; │   │   ├── atomic_risks.html</span></span>
+<span id="cb15-129"><a href="#cb15-129" tabindex="-1"></a><span class="co">#&gt; │   │   ├── atomic_risks.md</span></span>
+<span id="cb15-130"><a href="#cb15-130" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
+<span id="cb15-131"><a href="#cb15-131" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
+<span id="cb15-132"><a href="#cb15-132" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
+<span id="cb15-133"><a href="#cb15-133" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
+<span id="cb15-134"><a href="#cb15-134" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
+<span id="cb15-135"><a href="#cb15-135" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
+<span id="cb15-136"><a href="#cb15-136" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
+<span id="cb15-137"><a href="#cb15-137" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
+<span id="cb15-138"><a href="#cb15-138" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
+<span id="cb15-139"><a href="#cb15-139" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
+<span id="cb15-140"><a href="#cb15-140" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
+<span id="cb15-141"><a href="#cb15-141" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
+<span id="cb15-142"><a href="#cb15-142" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
+<span id="cb15-143"><a href="#cb15-143" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
+<span id="cb15-144"><a href="#cb15-144" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
+<span id="cb15-145"><a href="#cb15-145" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
+<span id="cb15-146"><a href="#cb15-146" tabindex="-1"></a><span class="co">#&gt; │   │   ├── figures</span></span>
+<span id="cb15-147"><a href="#cb15-147" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
+<span id="cb15-148"><a href="#cb15-148" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
+<span id="cb15-149"><a href="#cb15-149" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb15-150"><a href="#cb15-150" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb15-151"><a href="#cb15-151" tabindex="-1"></a><span class="co">#&gt; │   │   ├── laggard_regions.html</span></span>
+<span id="cb15-152"><a href="#cb15-152" tabindex="-1"></a><span class="co">#&gt; │   │   ├── laggard_regions.md</span></span>
+<span id="cb15-153"><a href="#cb15-153" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
+<span id="cb15-154"><a href="#cb15-154" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
+<span id="cb15-155"><a href="#cb15-155" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
+<span id="cb15-156"><a href="#cb15-156" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
+<span id="cb15-157"><a href="#cb15-157" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_quiz.html</span></span>
+<span id="cb15-158"><a href="#cb15-158" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_quiz.md</span></span>
+<span id="cb15-159"><a href="#cb15-159" tabindex="-1"></a><span class="co">#&gt; │   │   ├── libs</span></span>
+<span id="cb15-160"><a href="#cb15-160" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
+<span id="cb15-161"><a href="#cb15-161" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
+<span id="cb15-162"><a href="#cb15-162" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.html</span></span>
+<span id="cb15-163"><a href="#cb15-163" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.md</span></span>
+<span id="cb15-164"><a href="#cb15-164" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
+<span id="cb15-165"><a href="#cb15-165" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
+<span id="cb15-166"><a href="#cb15-166" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
+<span id="cb15-167"><a href="#cb15-167" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
+<span id="cb15-168"><a href="#cb15-168" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
+<span id="cb15-169"><a href="#cb15-169" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
+<span id="cb15-170"><a href="#cb15-170" tabindex="-1"></a><span class="co">#&gt; │   │   ├── patient_radiation_comparison.html</span></span>
+<span id="cb15-171"><a href="#cb15-171" tabindex="-1"></a><span class="co">#&gt; │   │   ├── patient_radiation_comparison.md</span></span>
+<span id="cb15-172"><a href="#cb15-172" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components-1.png</span></span>
+<span id="cb15-173"><a href="#cb15-173" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components.html</span></span>
+<span id="cb15-174"><a href="#cb15-174" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components.md</span></span>
+<span id="cb15-175"><a href="#cb15-175" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
+<span id="cb15-176"><a href="#cb15-176" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
+<span id="cb15-177"><a href="#cb15-177" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-3.png</span></span>
+<span id="cb15-178"><a href="#cb15-178" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-4.png</span></span>
+<span id="cb15-179"><a href="#cb15-179" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-5.png</span></span>
+<span id="cb15-180"><a href="#cb15-180" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
+<span id="cb15-181"><a href="#cb15-181" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
+<span id="cb15-182"><a href="#cb15-182" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
+<span id="cb15-183"><a href="#cb15-183" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
+<span id="cb15-184"><a href="#cb15-184" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot-1.png</span></span>
+<span id="cb15-185"><a href="#cb15-185" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot.html</span></span>
+<span id="cb15-186"><a href="#cb15-186" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot.md</span></span>
+<span id="cb15-187"><a href="#cb15-187" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_pairs.html</span></span>
+<span id="cb15-188"><a href="#cb15-188" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_pairs.md</span></span>
+<span id="cb15-189"><a href="#cb15-189" tabindex="-1"></a><span class="co">#&gt; │   │   ├── radiation_profiles.html</span></span>
+<span id="cb15-190"><a href="#cb15-190" tabindex="-1"></a><span class="co">#&gt; │   │   ├── radiation_profiles.md</span></span>
+<span id="cb15-191"><a href="#cb15-191" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.html</span></span>
+<span id="cb15-192"><a href="#cb15-192" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.md</span></span>
+<span id="cb15-193"><a href="#cb15-193" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.html</span></span>
+<span id="cb15-194"><a href="#cb15-194" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.md</span></span>
+<span id="cb15-195"><a href="#cb15-195" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_components.html</span></span>
+<span id="cb15-196"><a href="#cb15-196" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_components.md</span></span>
+<span id="cb15-197"><a href="#cb15-197" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
+<span id="cb15-198"><a href="#cb15-198" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
+<span id="cb15-199"><a href="#cb15-199" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
+<span id="cb15-200"><a href="#cb15-200" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
+<span id="cb15-201"><a href="#cb15-201" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_exchange_matrix.html</span></span>
+<span id="cb15-202"><a href="#cb15-202" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_exchange_matrix.md</span></span>
+<span id="cb15-203"><a href="#cb15-203" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_for_duration.html</span></span>
+<span id="cb15-204"><a href="#cb15-204" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_for_duration.md</span></span>
+<span id="cb15-205"><a href="#cb15-205" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
+<span id="cb15-206"><a href="#cb15-206" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
+<span id="cb15-207"><a href="#cb15-207" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
+<span id="cb15-208"><a href="#cb15-208" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
+<span id="cb15-209"><a href="#cb15-209" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
+<span id="cb15-210"><a href="#cb15-210" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.md</span></span>
+<span id="cb15-211"><a href="#cb15-211" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vanguard_regions.html</span></span>
+<span id="cb15-212"><a href="#cb15-212" tabindex="-1"></a><span class="co">#&gt; │   │   └── vanguard_regions.md</span></span>
+<span id="cb15-213"><a href="#cb15-213" tabindex="-1"></a><span class="co">#&gt; │   ├── search.json</span></span>
+<span id="cb15-214"><a href="#cb15-214" tabindex="-1"></a><span class="co">#&gt; │   ├── sitemap.xml</span></span>
+<span id="cb15-215"><a href="#cb15-215" tabindex="-1"></a><span class="co">#&gt; │   └── tutorials</span></span>
+<span id="cb15-216"><a href="#cb15-216" tabindex="-1"></a><span class="co">#&gt; ├── inst</span></span>
+<span id="cb15-217"><a href="#cb15-217" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb15-218"><a href="#cb15-218" tabindex="-1"></a><span class="co">#&gt; │   │   └── about.md</span></span>
+<span id="cb15-219"><a href="#cb15-219" tabindex="-1"></a><span class="co">#&gt; │   ├── extdata</span></span>
+<span id="cb15-220"><a href="#cb15-220" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
+<span id="cb15-221"><a href="#cb15-221" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
+<span id="cb15-222"><a href="#cb15-222" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logs</span></span>
+<span id="cb15-223"><a href="#cb15-223" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.parquet</span></span>
+<span id="cb15-224"><a href="#cb15-224" tabindex="-1"></a><span class="co">#&gt; │   │   └── risk_sources.parquet</span></span>
+<span id="cb15-225"><a href="#cb15-225" tabindex="-1"></a><span class="co">#&gt; │   └── plumber</span></span>
+<span id="cb15-226"><a href="#cb15-226" tabindex="-1"></a><span class="co">#&gt; │       └── api.R</span></span>
+<span id="cb15-227"><a href="#cb15-227" tabindex="-1"></a><span class="co">#&gt; ├── man</span></span>
+<span id="cb15-228"><a href="#cb15-228" tabindex="-1"></a><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
+<span id="cb15-229"><a href="#cb15-229" tabindex="-1"></a><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
+<span id="cb15-230"><a href="#cb15-230" tabindex="-1"></a><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
+<span id="cb15-231"><a href="#cb15-231" tabindex="-1"></a><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
+<span id="cb15-232"><a href="#cb15-232" tabindex="-1"></a><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
+<span id="cb15-233"><a href="#cb15-233" tabindex="-1"></a><span class="co">#&gt; │   ├── atomic_risks.Rd</span></span>
+<span id="cb15-234"><a href="#cb15-234" tabindex="-1"></a><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
+<span id="cb15-235"><a href="#cb15-235" tabindex="-1"></a><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
+<span id="cb15-236"><a href="#cb15-236" tabindex="-1"></a><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
+<span id="cb15-237"><a href="#cb15-237" tabindex="-1"></a><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
+<span id="cb15-238"><a href="#cb15-238" tabindex="-1"></a><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
+<span id="cb15-239"><a href="#cb15-239" tabindex="-1"></a><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
+<span id="cb15-240"><a href="#cb15-240" tabindex="-1"></a><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
+<span id="cb15-241"><a href="#cb15-241" tabindex="-1"></a><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
+<span id="cb15-242"><a href="#cb15-242" tabindex="-1"></a><span class="co">#&gt; │   ├── figures</span></span>
+<span id="cb15-243"><a href="#cb15-243" tabindex="-1"></a><span class="co">#&gt; │   │   └── README-plot-1.png</span></span>
+<span id="cb15-244"><a href="#cb15-244" tabindex="-1"></a><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
+<span id="cb15-245"><a href="#cb15-245" tabindex="-1"></a><span class="co">#&gt; │   ├── laggard_regions.Rd</span></span>
+<span id="cb15-246"><a href="#cb15-246" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
+<span id="cb15-247"><a href="#cb15-247" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
+<span id="cb15-248"><a href="#cb15-248" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_quiz.Rd</span></span>
+<span id="cb15-249"><a href="#cb15-249" tabindex="-1"></a><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
+<span id="cb15-250"><a href="#cb15-250" tabindex="-1"></a><span class="co">#&gt; │   ├── lle.Rd</span></span>
+<span id="cb15-251"><a href="#cb15-251" tabindex="-1"></a><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
+<span id="cb15-252"><a href="#cb15-252" tabindex="-1"></a><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
+<span id="cb15-253"><a href="#cb15-253" tabindex="-1"></a><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
+<span id="cb15-254"><a href="#cb15-254" tabindex="-1"></a><span class="co">#&gt; │   ├── patient_radiation_comparison.Rd</span></span>
+<span id="cb15-255"><a href="#cb15-255" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risk_components.Rd</span></span>
+<span id="cb15-256"><a href="#cb15-256" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
+<span id="cb15-257"><a href="#cb15-257" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
+<span id="cb15-258"><a href="#cb15-258" tabindex="-1"></a><span class="co">#&gt; │   ├── prepare_risks_plot.Rd</span></span>
+<span id="cb15-259"><a href="#cb15-259" tabindex="-1"></a><span class="co">#&gt; │   ├── quiz_pairs.Rd</span></span>
+<span id="cb15-260"><a href="#cb15-260" tabindex="-1"></a><span class="co">#&gt; │   ├── radiation_profiles.Rd</span></span>
+<span id="cb15-261"><a href="#cb15-261" tabindex="-1"></a><span class="co">#&gt; │   ├── regional_life_expectancy.Rd</span></span>
+<span id="cb15-262"><a href="#cb15-262" tabindex="-1"></a><span class="co">#&gt; │   ├── regional_mortality_multiplier.Rd</span></span>
+<span id="cb15-263"><a href="#cb15-263" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_components.Rd</span></span>
+<span id="cb15-264"><a href="#cb15-264" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
+<span id="cb15-265"><a href="#cb15-265" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_equivalence.Rd</span></span>
+<span id="cb15-266"><a href="#cb15-266" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_exchange_matrix.Rd</span></span>
+<span id="cb15-267"><a href="#cb15-267" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_for_duration.Rd</span></span>
+<span id="cb15-268"><a href="#cb15-268" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
+<span id="cb15-269"><a href="#cb15-269" tabindex="-1"></a><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
+<span id="cb15-270"><a href="#cb15-270" tabindex="-1"></a><span class="co">#&gt; │   ├── value_of_micromort.Rd</span></span>
+<span id="cb15-271"><a href="#cb15-271" tabindex="-1"></a><span class="co">#&gt; │   └── vanguard_regions.Rd</span></span>
+<span id="cb15-272"><a href="#cb15-272" tabindex="-1"></a><span class="co">#&gt; ├── nix-shell-root</span></span>
+<span id="cb15-273"><a href="#cb15-273" tabindex="-1"></a><span class="co">#&gt; ├── package.nix</span></span>
+<span id="cb15-274"><a href="#cb15-274" tabindex="-1"></a><span class="co">#&gt; ├── pkgdown</span></span>
+<span id="cb15-275"><a href="#cb15-275" tabindex="-1"></a><span class="co">#&gt; │   └── extra.css</span></span>
+<span id="cb15-276"><a href="#cb15-276" tabindex="-1"></a><span class="co">#&gt; ├── plans</span></span>
+<span id="cb15-277"><a href="#cb15-277" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_consistency_refactor.md</span></span>
+<span id="cb15-278"><a href="#cb15-278" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_regional_longevity.md</span></span>
+<span id="cb15-279"><a href="#cb15-279" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_risk_equivalence_dashboard.md</span></span>
+<span id="cb15-280"><a href="#cb15-280" tabindex="-1"></a><span class="co">#&gt; │   └── PLAN_vignette_targets_refactor.md</span></span>
+<span id="cb15-281"><a href="#cb15-281" tabindex="-1"></a><span class="co">#&gt; ├── push_to_cachix.sh</span></span>
+<span id="cb15-282"><a href="#cb15-282" tabindex="-1"></a><span class="co">#&gt; ├── tests</span></span>
+<span id="cb15-283"><a href="#cb15-283" tabindex="-1"></a><span class="co">#&gt; │   └── testthat</span></span>
+<span id="cb15-284"><a href="#cb15-284" tabindex="-1"></a><span class="co">#&gt; │       ├── _snaps</span></span>
+<span id="cb15-285"><a href="#cb15-285" tabindex="-1"></a><span class="co">#&gt; │       ├── test-adversarial.R</span></span>
+<span id="cb15-286"><a href="#cb15-286" tabindex="-1"></a><span class="co">#&gt; │       ├── test-api.R</span></span>
+<span id="cb15-287"><a href="#cb15-287" tabindex="-1"></a><span class="co">#&gt; │       ├── test-atomic-risks.R</span></span>
+<span id="cb15-288"><a href="#cb15-288" tabindex="-1"></a><span class="co">#&gt; │       ├── test-quiz.R</span></span>
+<span id="cb15-289"><a href="#cb15-289" tabindex="-1"></a><span class="co">#&gt; │       ├── test-radiation-profiles.R</span></span>
+<span id="cb15-290"><a href="#cb15-290" tabindex="-1"></a><span class="co">#&gt; │       ├── test-risk-components.R</span></span>
+<span id="cb15-291"><a href="#cb15-291" tabindex="-1"></a><span class="co">#&gt; │       └── test-risk-equivalence.R</span></span>
+<span id="cb15-292"><a href="#cb15-292" tabindex="-1"></a><span class="co">#&gt; └── vignettes</span></span>
+<span id="cb15-293"><a href="#cb15-293" tabindex="-1"></a><span class="co">#&gt;     ├── _extensions</span></span>
+<span id="cb15-294"><a href="#cb15-294" tabindex="-1"></a><span class="co">#&gt;     │   └── quarto-ext</span></span>
+<span id="cb15-295"><a href="#cb15-295" tabindex="-1"></a><span class="co">#&gt;     ├── introduction.Rmd</span></span>
+<span id="cb15-296"><a href="#cb15-296" tabindex="-1"></a><span class="co">#&gt;     ├── palatable_units.Rmd</span></span>
+<span id="cb15-297"><a href="#cb15-297" tabindex="-1"></a><span class="co">#&gt;     ├── quiz_shinylive.html</span></span>
+<span id="cb15-298"><a href="#cb15-298" tabindex="-1"></a><span class="co">#&gt;     ├── quiz_shinylive.qmd</span></span>
+<span id="cb15-299"><a href="#cb15-299" tabindex="-1"></a><span class="co">#&gt;     ├── quiz_shinylive_files</span></span>
+<span id="cb15-300"><a href="#cb15-300" tabindex="-1"></a><span class="co">#&gt;     │   └── libs</span></span>
+<span id="cb15-301"><a href="#cb15-301" tabindex="-1"></a><span class="co">#&gt;     ├── regional_variation.Rmd</span></span>
+<span id="cb15-302"><a href="#cb15-302" tabindex="-1"></a><span class="co">#&gt;     ├── rest_api.Rmd</span></span>
+<span id="cb15-303"><a href="#cb15-303" tabindex="-1"></a><span class="co">#&gt;     ├── risk_equivalence.Rmd</span></span>
+<span id="cb15-304"><a href="#cb15-304" tabindex="-1"></a><span class="co">#&gt;     └── shinylive-sw.js</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level2">
@@ -615,17 +769,71 @@ Click to expand project tree
 <div class="section level3">
 <h3 id="development-setup">Development Setup<a class="anchor" aria-label="anchor" href="#development-setup"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Clone and enter Nix environment</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/JohnGavin/micromort.git</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="bu">cd</span> micromort</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="ex">./default.sh</span></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co"># Run tests</span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co"># Check package</span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
+<p>Requires <a href="https://nixos.org/" class="external-link">Nix</a> (the <code>./default.sh</code> script builds a reproducible R environment via Nix):</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Clone and enter Nix environment</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/JohnGavin/micromort.git</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="bu">cd</span> micromort</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="ex">./default.sh</span>   <span class="co"># Requires Nix — builds reproducible R env with all dependencies</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co"># Run tests</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co"># Check package</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
 </div>
+</div>
+<div class="section level2">
+<h2 id="glossary">Glossary<a class="anchor" aria-label="anchor" href="#glossary"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Acronym</th>
+<th>Full Name</th>
+<th>Definition</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>DALY</td>
+<td>Disability-Adjusted Life Year</td>
+<td>Disease burden = <a href="#glossary">YLL</a> + <a href="#glossary">YLD</a>. 1 DALY = 1 year of healthy life lost.</td>
+</tr>
+<tr>
+<td>LLE</td>
+<td>Loss of Life Expectancy</td>
+<td>Expected lifespan reduction from a risk, in minutes. See <code><a href="reference/lle.html">lle()</a></code>.</td>
+</tr>
+<tr>
+<td>QALD</td>
+<td>Quality-Adjusted Life Day</td>
+<td>1 day of perfect health. Useful for short-duration conditions.</td>
+</tr>
+<tr>
+<td>QALY</td>
+<td>Quality-Adjusted Life Year</td>
+<td>1 year of perfect health. Used in healthcare cost-effectiveness.</td>
+</tr>
+<tr>
+<td>VSL</td>
+<td>Value of Statistical Life</td>
+<td>Monetary value society places on preventing one death (~$10M USD). See <code><a href="reference/value_of_micromort.html">value_of_micromort()</a></code>.</td>
+</tr>
+<tr>
+<td>YLD</td>
+<td>Years Lived with Disability</td>
+<td>Morbidity component of <a href="#glossary">DALY</a>. Time spent in impaired health.</td>
+</tr>
+<tr>
+<td>YLL</td>
+<td>Years of Life Lost</td>
+<td>Mortality component of <a href="#glossary">DALY</a>. Premature death relative to standard life expectancy.</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
