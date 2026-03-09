@@ -188,17 +188,17 @@ test_that("common_risks() ordering is deterministic across calls", {
 test_that("flight activities are aggregated correctly", {
   cr <- common_risks()
   fly8 <- cr[cr$activity == "Flying (8h long-haul)", ]
-  # crash(2.0) + dvt_healthy(2.5) + radiation(0.4) = 4.9
-  expect_equal(fly8$micromorts, 4.9)
+  # crash(1.0) + dvt_healthy(2.5) + radiation(0.4) = 3.9
+  expect_equal(fly8$micromorts, 3.9)
   expect_equal(fly8$n_components, 3L)
-  expect_equal(fly8$hedgeable_pct, 51, tolerance = 0.1)
+  expect_equal(fly8$hedgeable_pct, 64.1, tolerance = 0.1)
 })
 
 test_that("common_risks() with DVT risk profile changes flight totals", {
   cr_dvt <- common_risks(profile = list(health_profile = "dvt_risk_factors"))
   fly8 <- cr_dvt[cr_dvt$activity == "Flying (8h long-haul)", ]
-  # crash(2.0) + dvt_risk(8.0) + radiation(0.4) = 10.4
-  expect_equal(fly8$micromorts, 10.4)
+  # crash(1.0) + dvt_risk(8.0) + radiation(0.4) = 9.4
+  expect_equal(fly8$micromorts, 9.4)
 })
 
 test_that("n_components is 1 for undecomposed activities", {

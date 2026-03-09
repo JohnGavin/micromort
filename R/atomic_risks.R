@@ -152,10 +152,13 @@ atomic_risks <- function() {
     )
 
   # ── Part 2: Decomposed flight components ─────────────────────────────────
-  # Crash: ~0.25 mm/hour (linear), physical, NOT hedgeable
+  # Crash: ~1 mm per flight (dominated by takeoff/landing phases, roughly
+  #   constant regardless of flight duration). Boeing Statistical Summary:
+  #   ~80% of fatal accidents occur during takeoff, initial climb, approach,
+  #   and landing — phases whose duration is independent of flight length.
   # DVT: zero below 4h, then nonlinear, medical, IS hedgeable (~65% reduction)
   # Cosmic radiation: ~0.05 mm/hour (linear), radiation, NOT hedgeable
-  # Sources: Aviation Safety Network, Lancet Haematology, NCRP Report 160
+  # Sources: Aviation Safety Network, Boeing Statistical Summary, Lancet Haematology, NCRP Report 160
   flight_source <- wiki_mm
 
   flights <- tibble::tribble(
@@ -166,7 +169,7 @@ atomic_risks <- function() {
 
     # ─ 2h short-haul ─
     "Flying (2h short-haul)", "flying_2h", "crash", "physical", "Aircraft crash",
-    0.5, 2, "per 2h flight",
+    1.0, 2, "per 2h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -188,7 +191,7 @@ atomic_risks <- function() {
 
     # ─ 5h medium-haul ─
     "Flying (5h medium-haul)", "flying_5h", "crash", "physical", "Aircraft crash",
-    1.25, 5, "per 5h flight",
+    1.0, 5, "per 5h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -209,7 +212,7 @@ atomic_risks <- function() {
 
     # ─ 8h long-haul ─
     "Flying (8h long-haul)", "flying_8h", "crash", "physical", "Aircraft crash",
-    2.0, 8, "per 8h flight",
+    1.0, 8, "per 8h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -230,7 +233,7 @@ atomic_risks <- function() {
 
     # ─ 12h ultra-long-haul ─
     "Flying (12h ultra-long-haul)", "flying_12h", "crash", "physical", "Aircraft crash",
-    3.0, 12, "per 12h flight",
+    1.0, 12, "per 12h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -260,7 +263,7 @@ atomic_risks <- function() {
         dplyr::coalesce(condition_value, "uncon")
       ),
       notes = dplyr::case_when(
-        component == "crash" ~ "Linear ~0.25 mm/hour based on fatal accident rate",
+        component == "crash" ~ "~1 mm per flight; dominated by takeoff/landing phases (Boeing Statistical Summary)",
         component == "dvt" ~ "Zero below 4h threshold; nonlinear growth above",
         component == "radiation" ~ "Linear ~0.05 mm/hour; NCRP Report 160"
       )
