@@ -26,8 +26,15 @@ library(targets)
 library(DT)
 
 safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
   tryCatch(
-    targets::tar_read_raw(name),
+    targets::tar_read_raw(name, store = store),
     error = function(e) {
       message("Target '", name, "' not found. Run tar_make() first.")
       NULL
@@ -227,8 +234,8 @@ if (!is.null(hazard)) {
     options = list(pageLength = 12, dom = "tip"),
     rownames = FALSE
   ) |>
-    DT::formatRound("daily_micromorts", 1) |>
-    DT::formatSignif("daily_probability", 3)
+    DT::formatRound("micromorts", 1) |>
+    DT::formatSignif("daily_prob", 3)
 }
 ```
 

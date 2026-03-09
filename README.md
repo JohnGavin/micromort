@@ -99,9 +99,20 @@ minutes of expected lifespan, measured per day** of exposure.
 ### Conversion
 
 **1 micromort ≈ 0.7 microlives** (assuming 40 years remaining life
-expectancy)
+expectancy). The conversion scales linearly with remaining life
+expectancy:
 
-This allows comparing acute events to chronic habits on a common scale.
+| Remaining life expectancy | 1 micromort ≈   |
+|---------------------------|-----------------|
+| 10 years                  | 0.18 microlives |
+| 20 years                  | 0.35 microlives |
+| 40 years (default)        | 0.70 microlives |
+| 60 years                  | 1.05 microlives |
+
+Use `lle(prob, life_expectancy = ...)` and `as_microlife()` to convert
+at any age. See the [Age-Based Hazard
+Rates](#calculate-baseline-risk-by-age) section for daily micromort
+exposure by age.
 
 ### Morbidity Metrics
 
@@ -110,13 +121,16 @@ impacts:
 
 - **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. Used
   in healthcare economics.
-- **DALY (Disability-Adjusted Life Years):** Disease burden = YLL + YLD.
+- **DALY (Disability-Adjusted Life Years):** Disease burden combining:
+  - **YLL (Years of Life Lost):** Premature mortality component
+  - **YLD (Years Lived with Disability):** Morbidity component
 - **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. For
   common illnesses.
 
 See the [Introduction
 vignette](https://johngavin.github.io/micromort/articles/introduction.html)
-for detailed examples.
+for detailed examples and the [Glossary](#glossary) for all acronym
+definitions.
 
 ## Quick Start
 
@@ -258,10 +272,17 @@ launch_api()
 # Swagger docs at http://localhost:8080/__docs__/
 ```
 
-Endpoints: - `GET /v1/acute` - Acute risks dataset (micromorts per
-event) - `GET /v1/chronic` - Chronic risks dataset (microlives per
-day) - `GET /v1/sources` - Source registry - `GET /v1/hazard?age=35` -
-Daily hazard rate (micromorts per day)
+**Core endpoints** (30 total — see [REST API
+vignette](https://johngavin.github.io/micromort/articles/rest_api.html)
+for full reference):
+
+- `GET /v1/risks/acute` — Acute risks (micromorts per event)
+- `GET /v1/risks/chronic` — Chronic risks (microlives per day)
+- `GET /v1/risks/cancer` — Cancer mortality by type/sex/age
+- `GET /v1/analysis/equivalence` — Risk equivalence lookup
+- `GET /v1/convert/hazard-rate?age=35` — Daily hazard rate
+- `GET /v1/sources` — Source registry
+- `GET /health` — Health check
 
 ## Interactive Dashboard
 
@@ -390,8 +411,11 @@ Click to expand project tree
     #> │   │   ├── regional_variation.html
     #> │   │   ├── regional_variation.md
     #> │   │   ├── regional_variation_files
+    #> │   │   ├── rest_api.html
+    #> │   │   ├── rest_api_files
     #> │   │   ├── risk_equivalence.html
     #> │   │   ├── risk_equivalence.md
+    #> │   │   ├── risk_equivalence_files
     #> │   │   └── shinylive-sw.js
     #> │   ├── authors.html
     #> │   ├── authors.md
@@ -581,7 +605,9 @@ Click to expand project tree
     #> ├── push_to_cachix.sh
     #> ├── tests
     #> │   └── testthat
+    #> │       ├── _snaps
     #> │       ├── test-adversarial.R
+    #> │       ├── test-api.R
     #> │       ├── test-atomic-risks.R
     #> │       ├── test-quiz.R
     #> │       ├── test-radiation-profiles.R
@@ -597,6 +623,7 @@ Click to expand project tree
     #>     ├── quiz_shinylive_files
     #>     │   └── libs
     #>     ├── regional_variation.Rmd
+    #>     ├── rest_api.Rmd
     #>     ├── risk_equivalence.Rmd
     #>     └── shinylive-sw.js
 
@@ -617,11 +644,14 @@ Contributions are welcome! Please:
 
 ### Development Setup
 
+Requires [Nix](https://nixos.org/) (the `./default.sh` script builds a
+reproducible R environment via Nix):
+
 ``` bash
 # Clone and enter Nix environment
 git clone https://github.com/JohnGavin/micromort.git
 cd micromort
-./default.sh
+./default.sh   # Requires Nix — builds reproducible R env with all dependencies
 
 # Run tests
 Rscript -e "devtools::test()"
@@ -629,6 +659,18 @@ Rscript -e "devtools::test()"
 # Check package
 Rscript -e "devtools::check()"
 ```
+
+## Glossary
+
+| Acronym | Full Name | Definition |
+|----|----|----|
+| DALY | Disability-Adjusted Life Year | Disease burden = [YLL](#glossary) + [YLD](#glossary). 1 DALY = 1 year of healthy life lost. |
+| LLE | Loss of Life Expectancy | Expected lifespan reduction from a risk, in minutes. See `lle()`. |
+| QALD | Quality-Adjusted Life Day | 1 day of perfect health. Useful for short-duration conditions. |
+| QALY | Quality-Adjusted Life Year | 1 year of perfect health. Used in healthcare cost-effectiveness. |
+| VSL | Value of Statistical Life | Monetary value society places on preventing one death (~\$10M USD). See `value_of_micromort()`. |
+| YLD | Years Lived with Disability | Morbidity component of [DALY](#glossary). Time spent in impaired health. |
+| YLL | Years of Life Lost | Mortality component of [DALY](#glossary). Premature death relative to standard life expectancy. |
 
 ## References
 
