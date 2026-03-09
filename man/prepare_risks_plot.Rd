@@ -57,6 +57,7 @@ prepare_risks_plot(categories = "Sport") |> plot_risks()
 
 Other visualization: 
 \code{\link{plot_risks}()},
-\code{\link{plot_risks_interactive}()}
+\code{\link{plot_risks_interactive}()},
+\code{\link{theme_micromort_dark}()}
 }
 \concept{visualization}

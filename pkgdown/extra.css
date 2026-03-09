@@ -116,6 +116,13 @@ table {
   padding: 4px 8px !important;
 }
 
+/* Dark plot container for risk comparison plots */
+.dark-plot-container {
+  background-color: #1a1a1a;
+  padding: 10px;
+  border-radius: 4px;
+}
+
 /* Allow wrapping only on columns explicitly marked, with generous min-width */
 .dataTables_wrapper td.dt-wrap,
 .dataTables_wrapper th.dt-wrap {

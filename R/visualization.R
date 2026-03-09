@@ -1,3 +1,84 @@
+#' Dark Theme for Micromort Risk Plots
+#'
+#' A dark-background ggplot2 theme designed for risk comparison plots.
+#' White text on `#1a1a1a` background with subtle grid lines.
+#'
+#' @param label_size Numeric. Y-axis label font size. Default is 9.
+#' @return A ggplot2 theme object.
+#' @export
+#' @family visualization
+#' @examples
+#' library(ggplot2)
+#' ggplot(mtcars, aes(mpg, wt)) + geom_point(color = "white") + theme_micromort_dark()
+theme_micromort_dark <- function(label_size = 9) {
+  ggplot2::theme(
+    plot.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
+    panel.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
+    panel.grid.major.x = ggplot2::element_line(
+      color = "#333333", linetype = "dashed", linewidth = 0.3
+    ),
+    panel.grid.minor = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_blank(),
+    text = ggplot2::element_text(color = "white"),
+    axis.text = ggplot2::element_text(color = "white"),
+    axis.text.y = ggplot2::element_text(
+      size = label_size, face = "bold", color = "white"
+    ),
+    axis.title = ggplot2::element_text(size = 11, color = "white"),
+    plot.title = ggplot2::element_text(size = 14, face = "bold", color = "white"),
+    plot.subtitle = ggplot2::element_text(size = 10, color = "#cccccc"),
+    plot.caption = ggplot2::element_text(color = "#999999", hjust = 0),
+    plot.caption.position = "plot",
+    strip.text = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+    legend.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
+    legend.text = ggplot2::element_text(color = "white"),
+    legend.title = ggplot2::element_text(color = "white"),
+    legend.position = "bottom",
+    legend.box = "horizontal",
+    panel.spacing = ggplot2::unit(1, "lines")
+  )
+}
+
+# Jitter unit micromorts for log-scale visibility
+#
+# Risks with exactly 1 micromort produce log10(1) = 0, making bars invisible
+# on a log scale. This applies a small deterministic offset (1.0 -> 1.07)
+# so bars are visible. Only affects display, not underlying data.
+#
+# @param micromorts Numeric vector of micromort values.
+# @return Numeric vector with 1.0 values shifted to 1.07.
+# @noRd
+jitter_unit_micromorts <- function(micromorts) {
+  ifelse(micromorts == 1, 1.07, micromorts)
+}
+
+# Compute risk clusters
+#
+# Groups risks with similar micromort values (within log10 tolerance).
+# Returns data with cluster_id column for background band annotations.
+#
+# @param data Tibble with a `micromorts` column.
+# @param tolerance Numeric. Log10 distance for clustering. Default 0.05.
+# @return Tibble with added `cluster_id` column.
+# @noRd
+compute_risk_clusters <- function(data, tolerance = 0.05) {
+  log_vals <- log10(data$micromorts)
+  sorted_idx <- order(log_vals)
+  cluster_id <- integer(length(log_vals))
+  current_cluster <- 1L
+  cluster_id[sorted_idx[1]] <- current_cluster
+
+  for (i in seq_along(sorted_idx)[-1]) {
+    if (abs(log_vals[sorted_idx[i]] - log_vals[sorted_idx[i - 1]]) > tolerance) {
+      current_cluster <- current_cluster + 1L
+    }
+    cluster_id[sorted_idx[i]] <- current_cluster
+  }
+
+  data$cluster_id <- cluster_id
+  data
+}
+
 #' Prepare Risk Data for Plotting
 #'
 #' Filters and prepares risk data for visualization. Use this to filter
@@ -84,9 +165,16 @@ prepare_risks_plot <- function(risks = common_risks(),
 #'   [common_risks()]. If not pre-filtered, applies default filtering.
 #' @param facet Logical. If TRUE, splits plot into COVID-19 and Other panels.
 #'   Default is TRUE.
-#' @param height Numeric. Plot height in inches. Default is 12 (doubled from
-#'   previous default of 6) to prevent label overlap.
+#' @param height Numeric. Plot height in inches. Default is 12.
 #' @param label_size Numeric. Y-axis label font size. Default is 9.
+#' @param dark Logical. If TRUE (default), use [theme_micromort_dark()].
+#'   If FALSE, use `theme_minimal()`.
+#' @param guide_lines Logical. If TRUE (default), add dashed guide lines
+#'   from y-axis labels to bar starts.
+#' @param jitter_ones Logical. If TRUE (default), shift 1-micromort values
+#'   slightly so bars are visible on log scale.
+#' @param cluster_bands Logical. If TRUE (default), add subtle background
+#'   bands grouping risks with similar micromort values.
 #'
 #' @return A ggplot2 object.
 #' @importFrom stats reorder
@@ -94,11 +182,11 @@ prepare_risks_plot <- function(risks = common_risks(),
 #' @seealso [prepare_risks_plot()], [plot_risks_interactive()], [common_risks()]
 #' @export
 #' @examples
-#' # Default plot (all risks)
+#' # Default dark plot
 #' plot_risks()
 #'
-#' # Without faceting
-#' plot_risks(facet = FALSE)
+#' # Light theme
+#' plot_risks(dark = FALSE)
 #'
 #' # Filter then plot
 #' prepare_risks_plot(categories = "Sport") |> plot_risks()
@@ -106,15 +194,16 @@ prepare_risks_plot <- function(risks = common_risks(),
 #' # Exclude COVID-19 and show top 20
 #' prepare_risks_plot(exclude_categories = "COVID-19", top_n = 20) |>
 #'   plot_risks(facet = FALSE)
-#'
-#' # Custom height for many categories
-#' prepare_risks_plot(top_n = 50) |> plot_risks(height = 16)
 plot_risks <- function(risks = common_risks(),
                        facet = TRUE,
                        height = 12,
-                       label_size = 9) {
+                       label_size = 9,
+                       dark = TRUE,
+                       guide_lines = TRUE,
+                       jitter_ones = TRUE,
+                       cluster_bands = TRUE) {
 
- # Apply default filtering if not already prepared
+  # Apply default filtering if not already prepared
   if (!"facet_group" %in% names(risks)) {
     risks <- prepare_risks_plot(risks)
   }
@@ -128,11 +217,58 @@ plot_risks <- function(risks = common_risks(),
     label_size <- 7
   }
 
+  # Jitter 1-micromort values for log-scale visibility
+  if (jitter_ones) {
+    risks$micromorts_display <- jitter_unit_micromorts(risks$micromorts)
+  } else {
+    risks$micromorts_display <- risks$micromorts
+  }
+
+  # Compute clusters for background bands
+  if (cluster_bands) {
+    risks <- compute_risk_clusters(risks)
+  }
+
   p <- ggplot2::ggplot(risks, ggplot2::aes(
     x = reorder(activity, micromorts),
-    y = micromorts,
+    y = micromorts_display,
     fill = category
-  )) +
+  ))
+
+  # Add cluster background bands (even clusters get a subtle highlight)
+  if (cluster_bands && "cluster_id" %in% names(risks)) {
+    band_color <- if (dark) "#252525" else "#f0f0f0"
+    even_clusters <- unique(risks$cluster_id[risks$cluster_id %% 2 == 0])
+    for (cid in even_clusters) {
+      cluster_activities <- risks$activity[risks$cluster_id == cid]
+      activity_levels <- levels(reorder(risks$activity, risks$micromorts))
+      positions <- match(cluster_activities, activity_levels)
+      if (length(positions) > 0) {
+        p <- p + ggplot2::annotate(
+          "rect",
+          xmin = min(positions) - 0.5, xmax = max(positions) + 0.5,
+          ymin = 0, ymax = Inf,
+          fill = band_color, alpha = 0.5
+        )
+      }
+    }
+  }
+
+  # Add guide lines from y-axis to bar start
+  if (guide_lines) {
+    guide_color <- if (dark) "#444444" else "#cccccc"
+    p <- p + ggplot2::geom_segment(
+      ggplot2::aes(
+        x = reorder(activity, micromorts),
+        xend = reorder(activity, micromorts),
+        y = 0.01,
+        yend = micromorts_display
+      ),
+      color = guide_color, linetype = "dotted", linewidth = 0.2
+    )
+  }
+
+  p <- p +
     ggplot2::geom_col() +
     ggplot2::coord_flip() +
     ggplot2::scale_y_log10(
@@ -146,18 +282,26 @@ plot_risks <- function(risks = common_risks(),
       y = "Micromorts (Log Scale)",
       fill = "Category",
       caption = "Sources: Wikipedia, CDC MMWR (https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm)"
-    ) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      strip.text = ggplot2::element_text(size = 12, face = "bold"),
-      axis.text.y = ggplot2::element_text(size = label_size),
-      axis.title = ggplot2::element_text(size = 11),
-      plot.title = ggplot2::element_text(size = 14, face = "bold"),
-      plot.subtitle = ggplot2::element_text(size = 10),
-      legend.position = "bottom",
-      legend.box = "horizontal",
-      panel.spacing = ggplot2::unit(1, "lines")
     )
+
+  # Apply theme
+
+  if (dark) {
+    p <- p + theme_micromort_dark(label_size = label_size)
+  } else {
+    p <- p +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
+        strip.text = ggplot2::element_text(size = 12, face = "bold"),
+        axis.text.y = ggplot2::element_text(size = label_size),
+        axis.title = ggplot2::element_text(size = 11),
+        plot.title = ggplot2::element_text(size = 14, face = "bold"),
+        plot.subtitle = ggplot2::element_text(size = 10),
+        legend.position = "bottom",
+        legend.box = "horizontal",
+        panel.spacing = ggplot2::unit(1, "lines")
+      )
+  }
 
   if (facet) {
     p <- p +
@@ -168,9 +312,6 @@ plot_risks <- function(risks = common_risks(),
       )
   }
 
-  # Set plot height via theme aspect ratio
-  # Note: actual height is controlled when saving/displaying
-  # This adds a suggestion for knitr/ggsave
   attr(p, "height") <- height
 
   p
@@ -197,7 +338,10 @@ plot_risks_interactive <- function(risks = common_risks()) {
     ))
   }
 
-  # Prepare data with hover text
+  # Jitter 1-micromort values for log-scale visibility
+  risks$micromorts_display <- jitter_unit_micromorts(risks$micromorts)
+
+  # Prepare data with hover text (show original micromorts, not jittered)
   risks <- risks |>
     dplyr::arrange(dplyr::desc(micromorts)) |>
     dplyr::mutate(
@@ -210,10 +354,10 @@ plot_risks_interactive <- function(risks = common_risks()) {
       )
     )
 
-  # Create plotly figure with dropdown filter
+  # Create plotly figure with dark theme
   fig <- plotly::plot_ly(
     data = risks,
-    x = ~micromorts,
+    x = ~micromorts_display,
     y = ~reorder(activity, micromorts),
     type = "bar",
     orientation = "h",
@@ -221,31 +365,48 @@ plot_risks_interactive <- function(risks = common_risks()) {
     text = ~hover_text,
     hoverinfo = "text",
     hoverlabel = list(
-      bgcolor = "white",
-      font = list(color = "black", size = 12),
-      bordercolor = "black"
+      bgcolor = "#333333",
+      font = list(color = "white", size = 12),
+      bordercolor = "#555555"
     )
   ) |>
     plotly::layout(
       title = list(
         text = "Risk of Activities in Micromorts<br><sup>Click legend to filter categories</sup>",
-        font = list(size = 16)
+        font = list(size = 16, color = "white")
       ),
       xaxis = list(
-        title = "Micromorts (Log Scale)",
+        title = list(text = "Micromorts (Log Scale)", font = list(color = "white")),
         type = "log",
-        tickformat = ",d"
+        tickformat = ",d",
+        tickfont = list(color = "white"),
+        gridcolor = "#333333"
       ),
       yaxis = list(
         title = "",
-        tickfont = list(size = 9)
+        tickfont = list(size = 9, color = "white")
       ),
       legend = list(
-        title = list(text = "Category"),
+        title = list(text = "Category", font = list(color = "white")),
+        font = list(color = "white"),
+        bgcolor = "rgba(26,26,26,0.8)",
         orientation = "h",
         y = -0.15
       ),
-      margin = list(l = 200, r = 50, t = 80, b = 100),
+      paper_bgcolor = "#1a1a1a",
+      plot_bgcolor = "#1a1a1a",
+      font = list(color = "white"),
+      margin = list(l = 200, r = 50, t = 80, b = 120),
+      annotations = list(
+        list(
+          text = "Sources: Wikipedia, CDC MMWR",
+          xref = "paper", yref = "paper",
+          x = 0, y = -0.22,
+          showarrow = FALSE,
+          font = list(color = "#999999", size = 10),
+          xanchor = "left"
+        )
+      ),
       # Add dropdown menu for category filter
       updatemenus = list(
         list(
@@ -253,6 +414,8 @@ plot_risks_interactive <- function(risks = common_risks()) {
           active = 0,
           x = 1.0,
           y = 1.15,
+          bgcolor = "#333333",
+          font = list(color = "white"),
           buttons = list(
             list(
               label = "All Categories",
@@ -300,7 +463,7 @@ utils::globalVariables(c(
   # demographic_factors()
   "comparison", "source",
   # plot_risks()
-  "facet_group", "hover_text",
+  "facet_group", "hover_text", "micromorts_display", "cluster_id",
   # cancer_risks()
   "cancer_type", "sex", "family_history_rr", "micromorts_per_year",
   "micromorts_with_family_history", "rank_by_sex",

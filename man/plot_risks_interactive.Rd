@@ -25,6 +25,7 @@ if (requireNamespace("plotly", quietly = TRUE)) {
 
 Other visualization: 
 \code{\link{plot_risks}()},
-\code{\link{prepare_risks_plot}()}
+\code{\link{prepare_risks_plot}()},
+\code{\link{theme_micromort_dark}()}
 }
 \concept{visualization}
