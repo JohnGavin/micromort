@@ -29,6 +29,8 @@ navbar:
         href: articles/regional_variation.html
       - text: "Risk Equivalence"
         href: articles/risk_equivalence.html
+      - text: "REST API"
+        href: articles/rest_api.html
       - text: "---"
       - text: "Interactive"
       - text: "Risk Quiz (play in browser)"
