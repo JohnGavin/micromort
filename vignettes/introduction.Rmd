@@ -97,7 +97,7 @@ safe_tar_read("vig_intro_common_risks") |>
 
 Using [`plot_risks()`](../reference/plot_risks.html), we can see the relative magnitude of different activities on a logarithmic scale. The plot is split into COVID-19 and Other risks to make comparisons easier:
 
-```{r, fig.width=8, fig.height=14}
+```{r, fig.width=10, fig.height=14, out.extra='style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"'}
 #| echo: false
 print(safe_tar_read("vig_intro_risk_plot"))
 ```

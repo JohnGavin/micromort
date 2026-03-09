@@ -4,7 +4,16 @@
 \alias{plot_risks}
 \title{Plot Risk Comparison}
 \usage{
-plot_risks(risks = common_risks(), facet = TRUE, height = 12, label_size = 9)
+plot_risks(
+  risks = common_risks(),
+  facet = TRUE,
+  height = 12,
+  label_size = 9,
+  dark = TRUE,
+  guide_lines = TRUE,
+  jitter_ones = TRUE,
+  cluster_bands = TRUE
+)
 }
 \arguments{
 \item{risks}{Tibble. Dataframe of risks from \code{\link[=prepare_risks_plot]{prepare_risks_plot()}} or
@@ -13,10 +22,21 @@ plot_risks(risks = common_risks(), facet = TRUE, height = 12, label_size = 9)
 \item{facet}{Logical. If TRUE, splits plot into COVID-19 and Other panels.
 Default is TRUE.}
 
-\item{height}{Numeric. Plot height in inches. Default is 12 (doubled from
-previous default of 6) to prevent label overlap.}
+\item{height}{Numeric. Plot height in inches. Default is 12.}
 
 \item{label_size}{Numeric. Y-axis label font size. Default is 9.}
+
+\item{dark}{Logical. If TRUE (default), use \code{\link[=theme_micromort_dark]{theme_micromort_dark()}}.
+If FALSE, use \code{theme_minimal()}.}
+
+\item{guide_lines}{Logical. If TRUE (default), add dashed guide lines
+from y-axis labels to bar starts.}
+
+\item{jitter_ones}{Logical. If TRUE (default), shift 1-micromort values
+slightly so bars are visible on log scale.}
+
+\item{cluster_bands}{Logical. If TRUE (default), add subtle background
+bands grouping risks with similar micromort values.}
 }
 \value{
 A ggplot2 object.
@@ -26,11 +46,11 @@ Visualizes the risk of different activities in micromorts.
 For filtering by category, use \code{\link[=prepare_risks_plot]{prepare_risks_plot()}} first.
 }
 \examples{
-# Default plot (all risks)
+# Default dark plot
 plot_risks()
 
-# Without faceting
-plot_risks(facet = FALSE)
+# Light theme
+plot_risks(dark = FALSE)
 
 # Filter then plot
 prepare_risks_plot(categories = "Sport") |> plot_risks()
@@ -38,15 +58,13 @@ prepare_risks_plot(categories = "Sport") |> plot_risks()
 # Exclude COVID-19 and show top 20
 prepare_risks_plot(exclude_categories = "COVID-19", top_n = 20) |>
   plot_risks(facet = FALSE)
-
-# Custom height for many categories
-prepare_risks_plot(top_n = 50) |> plot_risks(height = 16)
 }
 \seealso{
 \code{\link[=prepare_risks_plot]{prepare_risks_plot()}}, \code{\link[=plot_risks_interactive]{plot_risks_interactive()}}, \code{\link[=common_risks]{common_risks()}}
 
 Other visualization: 
 \code{\link{plot_risks_interactive}()},
-\code{\link{prepare_risks_plot}()}
+\code{\link{prepare_risks_plot}()},
+\code{\link{theme_micromort_dark}()}
 }
 \concept{visualization}
