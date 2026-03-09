@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(micromort)
 library(targets)
 library(DT)
@@ -50,7 +50,7 @@ The goal of palatable units is to create a common currency for risk. This allows
 ### The Standard Units
 
 *   **Micromort:** 1-in-a-million chance of **acute** death (sudden event).
-*   **Microlife:** 30 minutes of life expectancy lost/gained (chronic **attrition**).
+*   **Microlife:** 30 minutes of life expectancy lost/gained **per day** (chronic **attrition**).
 
 ## 2. Micromorts: Measuring "Stopping Living" (Hazard)
 
@@ -83,7 +83,7 @@ safe_tar_read("vig_palatable_risks_filtered") |>
 
 While micromorts measure sudden death (Hazard), **Microlives** measure **chronic attrition**: the rate at which you are "using up" your life expectancy.
 
-*   **Definition:** 1 Microlife = 30 minutes of life expectancy.
+*   **Definition:** 1 Microlife = 30 minutes of life expectancy per day.
 *   **Normalization:** Risk is normalized **per day** of maintaining a habit.
 *   **Unit of Attrition:** The "unit" is the expected lifespan. -1 Microlife means your expected lifespan has shrunk by 30 minutes.
 *   **Time Horizon:** Continuous. If you smoke 20 cigarettes a day, you are losing 10 microlives (5 hours) *every single day*.

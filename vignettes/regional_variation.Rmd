@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(targets)
 library(DT)
 
@@ -121,7 +121,7 @@ safe_tar_read("vig_regional_explorer_data") |>
       "<b>Regional Life Expectancy at Birth (2019)</b><br>
       <small>Source: Eurostat demo_r_mlifexp. 229 NUTS2 regions across 16 Western European countries.<br>
       Period: 2019 (pre-COVID baseline). Sex: Total (both sexes combined).<br>
-      Microlives: Daily life expectancy difference vs EU average (1 microlife = 30 min LE change).<br>
+      Microlives: Daily life expectancy difference vs EU average (1 microlife = 30 min LE change per day).<br>
       Classification: Based on 2019 LE percentile and 5-year trend (Bonnet et al. 2026 methodology).</small>"
     ),
     filter = "top",

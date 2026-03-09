@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(micromort)
 library(targets)
 library(DT)
@@ -61,7 +61,7 @@ if (!is.null(everyday)) {
   DT::datatable(
     everyday,
     caption = "Everyday activities ranked by micromort risk, with chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("micromorts", "microlives", "micromorts_per_day"), 2)
@@ -87,8 +87,12 @@ if (!is.null(everyday) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Everyday Activities in Chest X-ray Equivalents",
       xaxis = list(title = "Chest X-ray equivalents"),
       yaxis = list(title = ""),
-      margin = list(l = 200)
-    )
+      margin = list(l = 200),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -114,17 +118,22 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Flight Risk by Duration and Component (Healthy Profile)",
       xaxis = list(title = ""),
       yaxis = list(title = "Micromorts"),
-      legend = list(orientation = "h", y = -0.2)
-    )
+      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
 Key observations:
 
-- **Crash risk** scales linearly (~0.25 mm/hour) and is NOT hedgeable
+- **Crash risk** is roughly constant per flight (~1 mm) regardless of duration --- dominated by takeoff and landing phases (~80% of fatal accidents per Boeing Statistical Summary) --- and is NOT hedgeable
 - **DVT risk** is zero below 4 hours, then grows nonlinearly --- and IS hedgeable (compression socks reduce risk ~65%)
 - **Cosmic radiation** is linear (~0.05 mm/hour) and NOT hedgeable
-- For an 8-hour flight, **51% of total risk is hedgeable** (the DVT component)
+- For an 8-hour flight, DVT is the dominant hedgeable component
 
 ### By Health Status
 
@@ -136,7 +145,7 @@ if (!is.null(components)) {
   DT::datatable(
     components,
     caption = "Flying (8h long-haul): Healthy vs DVT risk factors",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 1)
@@ -152,7 +161,7 @@ if (!is.null(flight_data)) {
   DT::datatable(
     flight_data,
     caption = "All flight risk components by duration (healthy profile)",
-    options = list(pageLength = 20, dom = "tip"),
+    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 2)
@@ -171,7 +180,7 @@ if (!is.null(landmarks)) {
     landmarks |>
       dplyr::select(activity, micromorts, category, xray_equivalents),
     caption = "Landmark activities from coffee to Everest, in chest X-ray equivalents",
-    options = list(pageLength = 20, dom = "tip"),
+    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 2)
@@ -188,7 +197,7 @@ if (!is.null(explorer)) {
   DT::datatable(
     explorer,
     caption = "All activities as multiples of one chest X-ray (0.1 micromorts)",
-    options = list(pageLength = 15, dom = "ftip"),
+    options = list(pageLength = 15, dom = "ftip", scrollX = TRUE),
     filter = "top",
     rownames = FALSE
   ) |>
@@ -209,7 +218,7 @@ if (!is.null(med)) {
   DT::datatable(
     med |> dplyr::select(activity, micromorts, microlives, period),
     caption = "Medical radiation procedures ranked by micromort risk",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("micromorts", "microlives"), 2)
@@ -238,8 +247,12 @@ if (!is.null(med) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Medical Procedures in Chest X-ray Equivalents",
       xaxis = list(title = "Number of chest X-rays"),
       yaxis = list(title = ""),
-      margin = list(l = 200)
-    )
+      margin = list(l = 200),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -256,7 +269,7 @@ if (!is.null(hedgeable)) {
   DT::datatable(
     hedgeable,
     caption = "Activities with hedgeable risk components (sorted by hedgeable %)",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("hedgeable_pct", 1)
@@ -288,8 +301,13 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
       xaxis = list(title = ""),
       yaxis = list(title = "Micromorts"),
-      legend = list(orientation = "h", y = -0.2)
-    )
+      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -308,7 +326,7 @@ if (!is.null(rad_profiles)) {
   DT::datatable(
     rad_profiles,
     caption = "Radiation exposure profiles: annual dose and cumulative micromorts at career milestones",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("annual_msv", "annual_micromorts",
@@ -329,7 +347,7 @@ if (!is.null(prc)) {
   DT::datatable(
     prc,
     caption = "Patient X-ray exposure vs occupational career radiation (ratio > 1 means patient exceeds worker)",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     filter = "top",
     rownames = FALSE
   ) |>
@@ -358,8 +376,13 @@ if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Cumulative Radiation Micromorts Over Career",
       xaxis = list(title = "Years of Exposure"),
       yaxis = list(title = "Cumulative Micromorts"),
-      legend = list(orientation = "v", x = 1.02, y = 1)
-    )
+      legend = list(orientation = "v", x = 1.02, y = 1, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -373,7 +396,7 @@ if (!is.null(regulatory)) {
   DT::datatable(
     regulatory,
     caption = "Actual annual doses vs ICRP limits (occupational: 20 mSv/yr, public: 1 mSv/yr)",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("annual_msv", "pct_of_limit"), 1)

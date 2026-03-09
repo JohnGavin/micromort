@@ -10,7 +10,7 @@
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Introduction to Micromorts and Risk Visualization">
+<script src="../extra.js"></script><meta property="og:title" content="Introduction to Micromorts and Risk Visualization">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -78,28 +78,6 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://johngavin.github.io/micromort/">micromort</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/targets/" class="external-link">targets</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/DT" class="external-link">DT</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Safe tar_read with graceful fallback (finds project root for pkgdown builds)</span></span>
-<span><span class="va">safe_tar_read</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">name</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">store</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"TARGETS_STORE"</span>, unset <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">store</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">store</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu">rprojroot</span><span class="fu">::</span><span class="fu"><a href="https://rprojroot.r-lib.org/reference/find_root.html" class="external-link">find_root</a></span><span class="op">(</span><span class="fu">rprojroot</span><span class="fu">::</span><span class="va"><a href="https://rprojroot.r-lib.org/reference/criteria.html" class="external-link">is_r_package</a></span><span class="op">)</span>, <span class="st">"_targets"</span><span class="op">)</span>,</span>
-<span>      error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="st">"_targets"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
-<span>    <span class="fu">targets</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/targets/reference/tar_read.html" class="external-link">tar_read_raw</a></span><span class="op">(</span><span class="va">name</span>, store <span class="op">=</span> <span class="va">store</span><span class="op">)</span>,</span>
-<span>    error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Target '"</span>, <span class="va">name</span>, <span class="st">"' not found. Run tar_make() first."</span><span class="op">)</span></span>
-<span>      <span class="cn">NULL</span></span>
-<span>    <span class="op">}</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
 <p>This vignette introduces the <strong>micromort</strong> package,
 which provides tools for understanding and visualizing risks.</p>
 <div class="section level2">
@@ -197,7 +175,7 @@ attempted this?”</p>
 <div class="section level3">
 <h3 id="converting-probabilities-to-micromorts">Converting Probabilities to Micromorts<a class="anchor" aria-label="anchor" href="#converting-probabilities-to-micromorts"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1 in 10,000 chance of death = 100 micromorts</span></span>
 <span><span class="fu"><a href="../reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 100</span></span></code></pre></div>
@@ -235,7 +213,8 @@ filtering, use <a href="../reference/plot_risks_interactive.html"><code>plot_ris
 </h2>
 <p>While micromorts measure sudden death, <strong>microlives</strong>
 measure the impact of chronic habits on your life expectancy. A
-microlife represents a 30-minute change in life expectancy.</p>
+microlife represents a 30-minute change in life expectancy <strong>per
+day of exposure</strong>.</p>
 <div class="section level3">
 <h3 id="living-at-different-speeds">Living at Different Speeds<a class="anchor" aria-label="anchor" href="#living-at-different-speeds"></a>
 </h3>
@@ -294,7 +273,7 @@ age.</p>
 <div class="section level3">
 <h3 id="converting-life-expectancy-to-microlives">Converting Life Expectancy to Microlives<a class="anchor" aria-label="anchor" href="#converting-life-expectancy-to-microlives"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># as_microlife() converts minutes of life expectancy change to microlives</span></span>
 <span><span class="co"># Unit: 1 microlife = 30 minutes of life expectancy change PER DAY</span></span>
 <span><span class="co"># Sign: negative = loss, positive = gain</span></span>
@@ -378,7 +357,7 @@ disabilities are not captured)</li>
 </tr>
 <tr class="even">
 <td><strong>Microlife</strong></td>
-<td>30 minutes of life expectancy change</td>
+<td>30 minutes of life expectancy change per day</td>
 <td>Per day of exposure/habit</td>
 <td>+ = gain, − = loss</td>
 </tr>
@@ -416,7 +395,7 @@ reductions.</p>
 people (10 micromorts), is it worth it? Cost per micromort saved = $50 /
 10 = $5. If VSL = $10M, then 1 micromort = $10. Since $5 &lt; $10, it is
 cost-effective.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Standard US VSL of $10M implies $10 per micromort</span></span>
 <span><span class="fu"><a href="../reference/value_of_micromort.html">value_of_micromort</a></span><span class="op">(</span>vsl <span class="op">=</span> <span class="fl">10000000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
@@ -458,7 +437,7 @@ valuations for micromorts and microlives:</p>
 <p>This near-equivalence (£1.60 ≈ £1.70) provides empirical support for
 the theoretical conversion: <strong>1 micromort ≈ 1 microlife</strong>
 in policy terms.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># UK Department of Transport VSL: £1.6M → £1.60 per micromort</span></span>
 <span><span class="fu"><a href="../reference/value_of_micromort.html">value_of_micromort</a></span><span class="op">(</span>vsl <span class="op">=</span> <span class="fl">1600000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1.6</span></span></code></pre></div>
@@ -473,7 +452,7 @@ compared on a common scale.</p>
 <p><strong>LLE</strong> estimates the average time lost from a lifespan
 due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE
 is approximately 21 minutes (assuming 40 years remaining life).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Loss of life expectancy from 1 micromort (assuming 40 years remaining)</span></span>
 <span><span class="fu"><a href="../reference/lle.html">lle</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1e6</span>, life_expectancy <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 21.0384</span></span>
@@ -548,7 +527,7 @@ conditions like the common cold, YLD dominates.</p>
 </tr>
 <tr class="even">
 <td><strong>Microlife</strong></td>
-<td>30 min life expectancy change</td>
+<td>30 min life expectancy change per day</td>
 <td>Per day of chronic exposure</td>
 <td>+ gain / − loss</td>
 <td>Daily lifestyle interventions</td>

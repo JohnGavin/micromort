@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(micromort)
 library(targets)
 library(DT)
@@ -100,7 +100,7 @@ if (!is.null(acute)) {
   DT::datatable(
     acute,
     caption = "GET /v1/risks/acute?category=Medical — Medical activities ranked by risk",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("micromorts", "microlives"), 2)
@@ -121,7 +121,7 @@ if (!is.null(chronic)) {
   DT::datatable(
     chronic,
     caption = "GET /v1/risks/chronic?direction=gain — Factors that extend life",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("microlives_per_day", 1)
@@ -142,7 +142,7 @@ if (!is.null(cancer)) {
   DT::datatable(
     cancer,
     caption = "GET /v1/risks/cancer — Top 3 cancers per sex (All ages)",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("deaths_per_100k", "micromorts_per_year"), 1)
@@ -167,7 +167,7 @@ if (!is.null(equiv)) {
   DT::datatable(
     equiv,
     caption = "GET /v1/analysis/equivalence — Activities expressed in chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("ratio", 1)
@@ -209,7 +209,7 @@ if (!is.null(conversions)) {
   DT::datatable(
     conversions,
     caption = "Unit conversions across the probability-to-microlife spectrum",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatSignif(c("probability", "micromorts", "lle_minutes", "microlife"), 3)
@@ -231,7 +231,7 @@ if (!is.null(hazard)) {
   DT::datatable(
     hazard,
     caption = "GET /v1/convert/hazard-rate — Daily background mortality by age and sex",
-    options = list(pageLength = 12, dom = "tip"),
+    options = list(pageLength = 12, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 1) |>

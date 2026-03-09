@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include=FALSE}
 library(micromort)
 library(targets)
 library(DT)
@@ -113,7 +113,7 @@ safe_tar_read("vig_intro_risk_plot_interactive")
 
 ## 2. Microlives (Chronic Risk)
 
-While micromorts measure sudden death, **microlives** measure the impact of chronic habits on your life expectancy. A microlife represents a 30-minute change in life expectancy.
+While micromorts measure sudden death, **microlives** measure the impact of chronic habits on your life expectancy. A microlife represents a 30-minute change in life expectancy **per day of exposure**.
 
 ### Living at Different Speeds
 
@@ -184,7 +184,7 @@ The conversion allows comparing a single risky event (like one skydive at 8 micr
 | Metric | Unit Definition | Scope | Sign |
 |--------|-----------------|-------|------|
 | **Micromort** | 1-in-a-million probability of death | Per discrete event (1 surgery, 1 flight) | Always ≥ 0 |
-| **Microlife** | 30 minutes of life expectancy change | Per day of exposure/habit | + = gain, − = loss |
+| **Microlife** | 30 minutes of life expectancy change per day | Per day of exposure/habit | + = gain, − = loss |
 
 ### When to Use Each
 
@@ -261,7 +261,7 @@ For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like t
 | Metric | Unit Definition | Scope | Sign | Best For |
 |--------|-----------------|-------|------|----------|
 | **Micromort** | 1/1,000,000 death probability | Per discrete event (surgery, flight, climb) | ≥ 0 (probability) | Comparing single risky activities |
-| **Microlife** | 30 min life expectancy change | Per day of chronic exposure | + gain / − loss | Daily lifestyle interventions |
+| **Microlife** | 30 min life expectancy change per day | Per day of chronic exposure | + gain / − loss | Daily lifestyle interventions |
 | **QALY** | 1 year at perfect health (quality=1.0) | Per treatment/intervention | ≥ 0 | Cost-effectiveness in healthcare |
 | **DALY** | 1 year lost to disease (YLL + YLD) | Per condition/population | ≥ 0 (burden) | Global health prioritization |
 | **QALD** | 1 day at perfect health | Per illness episode | ≥ 0 | Short-term morbidity (colds, flu) |
