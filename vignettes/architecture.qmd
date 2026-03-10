@@ -10,7 +10,11 @@ knitr::opts_chunk$set(
   echo = FALSE
 )
 
-library(micromort)
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
 
 safe_tar_read <- function(name) {
   store <- Sys.getenv("TARGETS_STORE", unset = NA)
