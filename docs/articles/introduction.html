@@ -637,9 +637,269 @@ lifestyle choices:</p>
 expect to gain significant additional life expectancy compared to an
 “unhedged” baseline.</p>
 </div>
+<div class="section level3">
+<h3 id="conditional-acute-risks-age-changes-everything">Conditional Acute Risks: Age Changes Everything<a class="anchor" aria-label="anchor" href="#conditional-acute-risks-age-changes-everything"></a>
+</h3>
+<p>Conditional risk analysis isn’t limited to chronic lifestyle factors.
+Some acute risks show extreme <strong>age-conditioning</strong> that
+makes population averages misleading.</p>
+<p><strong>Example: Falling out of bed</strong> kills ~450 Americans per
+year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>).
+The population average is 1.36 micromorts/year — but the <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">CDC
+age-stratified data</a> reveals a <strong>2,500-fold</strong> difference
+across age groups:</p>
+<table class="table">
+<colgroup>
+<col width="14%">
+<col width="6%">
+<col width="39%">
+<col width="39%">
+</colgroup>
+<thead><tr class="header">
+<th>Age group</th>
+<th>Sex</th>
+<th>Fall deaths per 100,000/year</th>
+<th>Micromorts per night of sleep</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Under 65</td>
+<td>Both</td>
+<td>~0.4</td>
+<td><strong>0.004</strong></td>
+</tr>
+<tr class="even">
+<td>65-74</td>
+<td>Male</td>
+<td>24.7</td>
+<td><strong>0.68</strong></td>
+</tr>
+<tr class="odd">
+<td>65-74</td>
+<td>Female</td>
+<td>14.2</td>
+<td><strong>0.39</strong></td>
+</tr>
+<tr class="even">
+<td>85+</td>
+<td>Male</td>
+<td>373.3</td>
+<td><strong>10.2</strong></td>
+</tr>
+<tr class="odd">
+<td>85+</td>
+<td>Female</td>
+<td>319.7</td>
+<td><strong>8.8</strong></td>
+</tr>
+</tbody>
+</table>
+<p>An 85-year-old man going to bed faces ~10 micromorts per night —
+comparable to riding a motorcycle 60 miles (10 micromorts/trip) or a
+single dose of ecstasy (13 micromorts/dose). For someone under 65, the
+same activity carries 0.004 micromorts per night — essentially zero.</p>
+<p>This pattern recurs across many “exotic” risks:</p>
+<ul>
+<li>
+<strong>Bee/wasp stings</strong> (72 deaths/year, US): Nearly all
+fatalities are among the ~1% of the population with venom allergy.
+Conditional on allergy: high risk per sting. Conditional on no allergy:
+near-zero.</li>
+<li>
+<strong>Cow trampling</strong> (22 deaths/year, US): Population rate
+is 0.07 micromorts/year. For cattle farmers handling animals daily: ~7.5
+micromorts/year — a 100-fold increase.</li>
+<li>
+<strong>Lightning strike</strong> (28 deaths/year, US): Population
+rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2
+micromorts/year — a 15-fold increase.</li>
+</ul>
+<p>The lesson: <strong>always ask “conditional on what?”</strong> before
+comparing micromort values across populations or activities.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="conclusion">8. Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+<h2 id="data-quality-the-denominator-problem">8. Data Quality: The Denominator Problem<a class="anchor" aria-label="anchor" href="#data-quality-the-denominator-problem"></a>
+</h2>
+<p>Not every widely-cited risk statistic belongs in a curated dataset.
+Many “exotic” risk figures circulate in media and popular science
+without the rigorous <strong>exposure denominator</strong> needed for
+meaningful micromort calculations. This section explains why certain
+risks were excluded and what to watch for when interpreting risk
+data.</p>
+<div class="section level3">
+<h3 id="the-three-denominator-failures">8.1 The Three Denominator Failures<a class="anchor" aria-label="anchor" href="#the-three-denominator-failures"></a>
+</h3>
+<p>A micromort value is only meaningful when paired with a clear
+<strong>period</strong> — the unit of exposure. We require: <em>Deaths ÷
+Exposures = Probability</em>. Three common failures make this
+impossible:</p>
+<p><strong>1. Unknown denominator (no exposure count)</strong></p>
+<table class="table">
+<colgroup>
+<col width="13%">
+<col width="42%">
+<col width="44%">
+</colgroup>
+<thead><tr class="header">
+<th>Risk</th>
+<th>Annual deaths (US)</th>
+<th>What we don’t know</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Bee/wasp stings</td>
+<td>72</td>
+<td>How many sting <em>exposures</em> per year? Is this per sting, per
+outdoor hour, per year of beekeeping?</td>
+</tr>
+<tr class="even">
+<td>Dog mauling</td>
+<td>43-127</td>
+<td>Per dog interaction? Per year of dog ownership? Per year of existing
+near dogs?</td>
+</tr>
+<tr class="odd">
+<td>Fire ant stings</td>
+<td>~30</td>
+<td>Per sting event? Per year in fire ant territory?</td>
+</tr>
+</tbody>
+</table>
+<p>The 72 bee sting deaths per year (<a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">CDC MMWR</a>)
+is a solid numerator from the National Vital Statistics System. But
+without knowing the total number of sting exposures, we cannot calculate
+a per-sting micromort value. The best we can do is a per-year population
+rate (0.22 micromorts/year for any US resident), which conflates people
+who never encounter bees with beekeepers stung weekly.</p>
+<p><strong>2. Misleading population average (hides conditional
+risk)</strong></p>
+<table class="table">
+<colgroup>
+<col width="13%">
+<col width="41%">
+<col width="45%">
+</colgroup>
+<thead><tr class="header">
+<th>Risk</th>
+<th>Population average</th>
+<th>Conditional reality</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Falling out of bed</td>
+<td>1.36 micromorts/year (US)</td>
+<td>Under-65: ~0.004/night; Age 85+ male:
+<strong>10.2/night</strong>
+</td>
+</tr>
+<tr class="even">
+<td>Cow trampling</td>
+<td>0.07 micromorts/year (US)</td>
+<td>General public: ~0; Cattle farmer: ~7.5/year</td>
+</tr>
+<tr class="odd">
+<td>Lightning strike</td>
+<td>0.08 micromorts/year (US)</td>
+<td>Indoor worker: ~0; Outdoor agricultural worker: ~1.2/year</td>
+</tr>
+</tbody>
+</table>
+<p>Falling out of bed kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>),
+but the CDC age-stratified data (<a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">Data Brief
+532</a>) reveals a <strong>2,500-fold</strong> difference: an
+85-year-old man faces ~10 micromorts per night of sleep (comparable to
+riding a motorcycle 60 miles), while someone under 65 faces ~0.004. The
+population average of 1.36/year is technically correct but practically
+useless.</p>
+<p><strong>3. Fabricated or untraceable numerator</strong></p>
+<table class="table">
+<colgroup>
+<col width="18%">
+<col width="35%">
+<col width="45%">
+</colgroup>
+<thead><tr class="header">
+<th>Claim</th>
+<th>Cited figure</th>
+<th>Actual evidence</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Coconut deaths</td>
+<td>“150 per year worldwide”</td>
+<td>Originated from a <strong>travel insurance press release</strong>
+(Club Direct, late 1990s), not from Barss (1984). The original <a href="https://pubmed.ncbi.nlm.nih.gov/6502774/" class="external-link">Barss paper</a>
+documented only 2 deaths over 4 years at one Papua New Guinea hospital.
+(<a href="https://www.snopes.com/fact-check/coconuts-kill-more-sharks/" class="external-link">Snopes:
+Unproven</a>)</td>
+</tr>
+<tr class="even">
+<td>Champagne cork deaths</td>
+<td>“24 per year”</td>
+<td>Traced to a 2008 <em>Daily Mail</em> article citing a tabloid book.
+No government vital statistics, hospital registry, or peer-reviewed
+study supports this figure.</td>
+</tr>
+<tr class="odd">
+<td>Left-handed equipment deaths</td>
+<td>“9 years shorter lifespan”</td>
+<td>A statistical artefact from <a href="https://pubmed.ncbi.nlm.nih.gov/2006231/" class="external-link">Halpern &amp; Coren
+(1991)</a>, debunked by multiple papers. The apparent age gap reflects
+historical suppression of left-handedness reporting, not excess
+mortality (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10369838/" class="external-link">van der Hoeven
+et al., 2023</a>).</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="inclusion-criteria-for-this-package">8.2 Inclusion Criteria for This Package<a class="anchor" aria-label="anchor" href="#inclusion-criteria-for-this-package"></a>
+</h3>
+<p>Risks in <code><a href="../reference/common_risks.html">common_risks()</a></code> and <code><a href="../reference/acute_risks.html">acute_risks()</a></code>
+meet these minimum standards:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Traceable numerator</strong>: Death count from a government
+agency (CDC, CPSC, WHO, NOAA) or peer-reviewed epidemiological
+study</li>
+<li>
+<strong>Defined denominator</strong>: A meaningful exposure unit
+(per ride, per climb, per day, per trip) — not just “per year of being
+alive”</li>
+<li>
+<strong>Reproducible calculation</strong>: The micromort derivation
+can be independently verified from the cited source</li>
+<li>
+<strong>Not a myth</strong>: The figure has not been debunked by
+subsequent peer-reviewed work</li>
+</ol>
+<p>Risks that fail criterion 2 but pass the others may still appear with
+<code>period = "per year"</code> as a background population rate,
+clearly labelled as such. See <code><a href="../reference/risk_data_sources.html">risk_data_sources()</a></code> for full
+provenance of each entry.</p>
+</div>
+<div class="section level3">
+<h3 id="when-per-year-is-legitimate">8.3 When “Per Year” Is Legitimate<a class="anchor" aria-label="anchor" href="#when-per-year-is-legitimate"></a>
+</h3>
+<p>Some risks are genuinely <strong>background hazards</strong> where
+the exposure is simply <em>being alive in a given geography</em>:</p>
+<ul>
+<li>Lightning strike: 0.08 micromorts/year (US) — everyone is exposed to
+thunderstorms</li>
+<li>Asteroid impact: 0.01 micromorts/year (global) — a theoretical
+actuarial average (<a href="https://ntrs.nasa.gov/api/citations/20160013841/downloads/20160013841.pdf" class="external-link">NASA</a>)</li>
+<li>Living one day at age 75: 120 micromorts/day — the baseline hazard
+rate from all causes</li>
+</ul>
+<p>These are valid “per year” figures because the denominator is the
+entire population and the exposure is unavoidable. The problem arises
+when a per-year population rate is presented for an activity that only a
+fraction of the population engages in.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="conclusion">9. Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
 <p>The <code>micromort</code> package helps translate abstract
 probabilities into concrete units for better decision-making. By
