@@ -370,6 +370,30 @@ if (!is.null(portfolio)) {
 
 **Interpretation:** A fully "hedged" individual (non-smoker, regular exercise, healthy diet, vaccinated, etc.) can expect to gain significant additional life expectancy compared to an "unhedged" baseline.
 
+### Conditional Acute Risks: Age Changes Everything
+
+Conditional risk analysis isn't limited to chronic lifestyle factors. Some acute risks show extreme **age-conditioning** that makes population averages misleading.
+
+**Example: Falling out of bed** kills ~450 Americans per year ([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)). The population average is 1.36 micromorts/year — but the [CDC age-stratified data](https://www.cdc.gov/nchs/products/databriefs/db532.htm) reveals a **2,500-fold** difference across age groups:
+
+| Age group | Sex | Fall deaths per 100,000/year | Micromorts per night of sleep |
+|-----------|-----|------------------------------|------------------------------|
+| Under 65 | Both | ~0.4 | **0.004** |
+| 65-74 | Male | 24.7 | **0.68** |
+| 65-74 | Female | 14.2 | **0.39** |
+| 85+ | Male | 373.3 | **10.2** |
+| 85+ | Female | 319.7 | **8.8** |
+
+An 85-year-old man going to bed faces ~10 micromorts per night — comparable to riding a motorcycle 60 miles (10 micromorts/trip) or a single dose of ecstasy (13 micromorts/dose). For someone under 65, the same activity carries 0.004 micromorts per night — essentially zero.
+
+This pattern recurs across many "exotic" risks:
+
+*   **Bee/wasp stings** (72 deaths/year, US): Nearly all fatalities are among the ~1% of the population with venom allergy. Conditional on allergy: high risk per sting. Conditional on no allergy: near-zero.
+*   **Cow trampling** (22 deaths/year, US): Population rate is 0.07 micromorts/year. For cattle farmers handling animals daily: ~7.5 micromorts/year — a 100-fold increase.
+*   **Lightning strike** (28 deaths/year, US): Population rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2 micromorts/year — a 15-fold increase.
+
+The lesson: **always ask "conditional on what?"** before comparing micromort values across populations or activities.
+
 ## 8. Data Quality: The Denominator Problem
 
 Not every widely-cited risk statistic belongs in a curated dataset. Many "exotic" risk figures circulate in media and popular science without the rigorous **exposure denominator** needed for meaningful micromort calculations. This section explains why certain risks were excluded and what to watch for when interpreting risk data.
