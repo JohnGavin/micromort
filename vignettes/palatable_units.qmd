@@ -1,22 +1,21 @@
 ---
 title: "Palatable Units: The Spiegelhalter Philosophy"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Palatable Units: The Spiegelhalter Philosophy}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+format: html
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  class.source = "fold-hide"
+  echo = FALSE
 )
-```
 
-```{r setup, include=FALSE}
-library(micromort)
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+
 library(targets)
 library(DT)
 

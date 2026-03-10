@@ -1,21 +1,15 @@
 ---
 title: "Regional Variation in Life Expectancy"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Regional Variation in Life Expectancy}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+format: html
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  class.source = "fold-hide"
+  echo = FALSE
 )
-```
 
-```{r setup, include=FALSE}
 library(targets)
 library(DT)
 

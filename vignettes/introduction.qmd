@@ -1,22 +1,21 @@
 ---
 title: "Introduction to Micromorts and Risk Visualization"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Introduction to Micromorts and Risk Visualization}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+format: html
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  class.source = "fold-hide"
+  echo = FALSE
 )
-```
 
-```{r setup, include=FALSE}
-library(micromort)
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+
 library(targets)
 library(DT)
 
@@ -418,7 +417,7 @@ The 72 bee sting deaths per year ([CDC MMWR](https://www.cdc.gov/mmwr/volumes/68
 |------|-------------------|---------------------|
 | Falling out of bed | 1.36 micromorts/year (US) | Under-65: ~0.004/night; Age 85+ male: **10.2/night** |
 | Cow trampling | 0.07 micromorts/year (US) | General public: ~0; Cattle farmer: ~7.5/year |
-| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0; Outdoor agricultural worker: ~1.2/year |
+| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0.02; Outdoor agricultural worker: ~1.2/year |
 
 Falling out of bed kills ~450 Americans per year ([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)), but the CDC age-stratified data ([Data Brief 532](https://www.cdc.gov/nchs/products/databriefs/db532.htm)) reveals a **2,500-fold** difference: an 85-year-old man faces ~10 micromorts per night of sleep (comparable to riding a motorcycle 60 miles), while someone under 65 faces ~0.004. The population average of 1.36/year is technically correct but practically useless.
 
