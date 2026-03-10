@@ -1,0 +1,551 @@
+# Risk Quiz
+
+# Risk Quiz
+
+``` shinylive-r
+#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 800
+
+library(shiny)
+library(bslib)
+
+# ---- Pre-computed quiz pairs from micromort::quiz_pairs(seed = 42, min_ratio = 1.1) ----
+# Embedded to avoid loading micromort (arrow dep unavailable in WebR)
+quiz_pool <- read.csv(textConnection(
+'"activity_a","micromorts_a","category_a","hedgeable_pct_a","period_a","activity_b","micromorts_b","category_b","hedgeable_pct_b","period_b","ratio","answer"
+"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
+"Living (one day, age 50)",4,"Daily Life",0,"per day","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
+"General anesthesia (emergency)",10,"Medical",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"Himalayan mountaineering",12000,"Mountaineering",0,"per expedition","COVID-19 infection (unvaccinated)",10000,"COVID-19",0,"per infection",1.2,"a"
+"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Mammogram (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"General anesthesia (emergency)",10,"Medical",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
+"Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year","Frequent executive flyer (annual cosmic)",0.15,"Travel",0,"per year",1.16666666666667,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"Scuba diving (per dive, trained)",5,"Sport",0,"per event","COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
+"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
+"Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.16279069767442,"b"
+"Heroin use (per dose)",30,"Drugs",0,"per dose","US military in Afghanistan (2010)",25,"Military",0,"per day",1.2,"a"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"US military in Afghanistan (2010)",25,"Military",0,"per day","American football (per game)",20,"Sport",0,"per game",1.25,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","General anesthesia (emergency)",10,"Medical",0,"per event",1.2,"a"
+"Living (one day, age 45)",6,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.2,"a"
+"COVID-19 bivalent booster (age 80+)",23,"COVID-19",0,"11 weeks (2022)","American football (per game)",20,"Sport",0,"per game",1.15,"a"
+"Skydiving (per jump, US)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
+"Motorcycling (60 miles)",10,"Travel",0,"per trip","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","Motorcycling (60 miles)",10,"Travel",0,"per trip",1.2,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Motorcycling (60 miles)",10,"Travel",0,"per trip","Skydiving (per jump, US)",8,"Sport",0,"per event",1.25,"a"
+"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","Business traveller (annual cosmic)",0.0375,"Travel",0,"per year",1.25,"b"
+"Living (one day, age 50)",4,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
+"Hang gliding (per flight)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
+"Commuting by car (30 min)",0.13,"Travel",0,"per trip","Airline pilot (annual radiation)",0.15,"Occupation",100,"per year",1.15384615384615,"b"
+"Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight","Drinking a glass of wine",0.5,"Daily Life",0,"per event",1.2,"a"
+"Vaginal birth (mother)",120,"Medical",0,"per event","Living (one day, age 75)",105,"Daily Life",0,"per day",1.14285714285714,"a"
+"Living (one day, age 45)",6,"Daily Life",0,"per day","Scuba diving (per dive, trained)",5,"Sport",0,"per event",1.2,"a"
+"Scuba diving (per dive, trained)",5,"Sport",0,"per event","Living (one day, age 50)",4,"Daily Life",0,"per day",1.25,"a"
+"Horseback riding",0.5,"Sport",0,"per ride","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.2,"b"
+"COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)","Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year",1.14285714285714,"a"
+"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
+"Swimming (drowning risk)",12,"Sport",0,"per swim","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.2,"a"
+"Running a marathon",7,"Sport",0,"per event","Living (one day, age 45)",6,"Daily Life",0,"per day",1.16666666666667,"a"
+"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","First day of life (newborn)",430,"Daily Life",0,"per day",1.16279069767442,"a"
+"US military in Afghanistan (2010)",25,"Military",0,"per day","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","Base jumping (per jump)",430,"Sport",0,"per event",1.16279069767442,"a"
+"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",1.25,"a"
+"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
+"Skiing (per day)",0.7,"Sport",0,"per day","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.16666666666667,"a"
+"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","High-altitude resident (annual cosmic)",0.035,"Environment",0,"per year",1.16666666666667,"b"
+"Skydiving (per jump, US)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
+"Living (one day, under age 1)",15,"Daily Life",0,"per day","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",1.15384615384615,"a"
+"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.25,"b"
+"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","Running a marathon",7,"Sport",0,"per event",1.14285714285714,"a"'
+), stringsAsFactors = FALSE)
+
+# ---- CSS ----
+quiz_css <- "
+  .quiz-btn {
+    min-height: 180px;
+    width: 100%;
+    white-space: normal;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 12px;
+    font-size: 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    transition: border-color 0.3s, background-color 0.1s;
+  }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
+  .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
+  .quiz-btn .badge { font-size: 0.75em; }
+  .quiz-btn-correct {
+    border: 3px solid #198754 !important;
+    background-color: #d1e7dd !important;
+  }
+  .quiz-btn-wrong {
+    border: 3px solid #dc3545 !important;
+    background-color: #f8d7da !important;
+  }
+  .quiz-btn-neutral {
+    border: 3px solid #6c757d !important;
+    background-color: #e9ecef !important;
+  }
+  .gap-3 { gap: 1rem; }
+"
+
+# ---- Fun result phrases ----
+quiz_result_phrase <- function(pct) {
+  phrases <- list(
+    list(min = 95, phrase = "Actuarial genius!",
+         fact = "Actuaries quantify risk for a living.",
+         link = "https://en.wikipedia.org/wiki/Actuary"),
+    list(min = 90, phrase = "You think in micromorts!",
+         fact = "A micromort is a one-in-a-million chance of death.",
+         link = "https://en.wikipedia.org/wiki/Micromort"),
+    list(min = 80, phrase = "Sharp intuition!",
+         fact = "Humans tend to overestimate dramatic risks and underestimate common ones.",
+         link = "https://en.wikipedia.org/wiki/Risk_perception"),
+    list(min = 70, phrase = "Better than a coin toss!",
+         fact = "We judge risk by how easily examples come to mind.",
+         link = "https://en.wikipedia.org/wiki/Availability_heuristic"),
+    list(min = 60, phrase = "Getting there!",
+         fact = "Losses loom larger than gains in our risk calculus.",
+         link = "https://en.wikipedia.org/wiki/Prospect_theory"),
+    list(min = 50, phrase = "About average!",
+         fact = "Ignoring base rates is one of the most common reasoning errors.",
+         link = "https://en.wikipedia.org/wiki/Base_rate_fallacy"),
+    list(min = 30, phrase = "Surprises everywhere!",
+         fact = "We tend to assume things will keep going as normal.",
+         link = "https://en.wikipedia.org/wiki/Normalcy_bias"),
+    list(min = -1, phrase = "Toss a coin \u2014 less risky!",
+         fact = "Past outcomes don't change future probabilities.",
+         link = "https://en.wikipedia.org/wiki/Gambler%27s_fallacy")
+  )
+  for (p in phrases) {
+    if (pct >= p$min) return(p)
+  }
+  phrases[[length(phrases)]]
+}
+
+# ---- Instructions page ----
+instructions_ui <- function() {
+  tagList(
+    h2("Which Is Riskier?", class = "text-center mb-4"),
+    card(
+      card_body(
+        tags$ul(
+          tags$li(
+            "A ", strong("micromort (mm)"), " is a one-in-a-million ",
+            "chance of death."
+          ),
+          tags$li(
+            "Each question shows two activities \u2014 ",
+            "tap the one you think is riskier."
+          ),
+          tags$li(
+            "You can ", strong("skip"), " questions or go ",
+            strong("back"), " and change answers."
+          )
+        ),
+        radioButtons(
+          "n_questions", "Number of questions:",
+          choices = c("5" = 5, "10" = 10),
+          selected = 10, inline = TRUE
+        ),
+        div(
+          class = "text-center mt-3",
+          actionButton(
+            "start_quiz", "Start Quiz",
+            class = "btn-primary btn-lg"
+          )
+        )
+      )
+    )
+  )
+}
+
+# ---- Question page (merged single-row buttons) ----
+question_ui <- function(state) {
+  q <- state$current_q
+  n <- state$n_questions
+  pair <- state$pairs[q, ]
+  ord <- state$display_order[[q]]
+  revealed <- state$revealed[q]
+  answer <- state$answers[q]
+  correct_answer <- pair$answer
+
+  left_side <- ord[1]
+  right_side <- ord[2]
+
+  left_activity <- pair[[paste0("activity_", left_side)]]
+  left_category <- pair[[paste0("category_", left_side)]]
+  left_mm <- pair[[paste0("micromorts_", left_side)]]
+  left_period <- pair[[paste0("period_", left_side)]]
+
+  right_activity <- pair[[paste0("activity_", right_side)]]
+  right_category <- pair[[paste0("category_", right_side)]]
+  right_mm <- pair[[paste0("micromorts_", right_side)]]
+  right_period <- pair[[paste0("period_", right_side)]]
+
+  # Button styling after reveal
+  left_class <- "btn quiz-btn"
+  right_class <- "btn quiz-btn"
+  left_extra <- ""
+  right_extra <- ""
+
+  if (revealed) {
+    is_left_riskier <- left_mm > right_mm
+    is_right_riskier <- right_mm > left_mm
+
+    if (!is.na(answer)) {
+      chose_left <- answer == left_side
+      chose_right <- answer == right_side
+    } else {
+      chose_left <- FALSE
+      chose_right <- FALSE
+    }
+
+    if (is_left_riskier) {
+      left_class <- paste(left_class, "quiz-btn-correct")
+      right_class <- paste(right_class, if (chose_right) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else if (is_right_riskier) {
+      right_class <- paste(right_class, "quiz-btn-correct")
+      left_class <- paste(left_class, if (chose_left) "quiz-btn-wrong" else "quiz-btn-neutral")
+    } else {
+      # Equal (shouldn't happen with min_ratio=1.1, but be safe)
+      left_class <- paste(left_class, "quiz-btn-correct")
+      right_class <- paste(right_class, "quiz-btn-correct")
+    }
+
+    left_extra <- sprintf("%.2f mm", left_mm)
+    right_extra <- sprintf("%.2f mm", right_mm)
+  }
+
+  # Build button content
+  make_btn_content <- function(activity, category, period, mm_text) {
+    parts <- list(
+      span(class = "activity-name", activity),
+      div(
+        span(class = "badge bg-secondary me-1", category),
+        span(class = "badge bg-info", period)
+      )
+    )
+    if (nzchar(mm_text)) {
+      parts <- c(parts, list(strong(mm_text, style = "font-size: 1.2rem; color: #333;")))
+    }
+    parts
+  }
+
+  # Result text
+  result_text <- NULL
+  if (revealed) {
+    user_correct <- !is.na(answer) && answer == correct_answer
+    result_text <- if (user_correct) {
+      div(
+        class = "alert alert-success text-center mt-2 py-2",
+        strong("Correct!")
+      )
+    } else {
+      riskier <- pair[[paste0("activity_", correct_answer)]]
+      div(
+        class = "alert alert-danger text-center mt-2 py-2",
+        if (is.na(answer)) "Skipped! " else tagList(strong("Incorrect! ")),
+        sprintf("%s is riskier.", riskier)
+      )
+    }
+  }
+
+  # Running tally (shown from question 2 onwards)
+  answered_so_far <- sum(!is.na(state$answers[seq_len(q - 1L)]) &
+    state$revealed[seq_len(q - 1L)])
+  correct_so_far <- sum(vapply(seq_len(q - 1L), function(i) {
+    !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
+  }, logical(1)))
+
+  tally_ui <- if (q > 1L) {
+    div(class = "text-center mb-1",
+      tags$small(class = "text-muted",
+        sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
+      )
+    )
+  }
+
+  tagList(
+    h4(
+      sprintf("Question %d of %d", q, n),
+      class = "text-center text-muted mb-1"
+    ),
+    tally_ui,
+    div(
+      class = "row align-items-center",
+      div(
+        class = "col-5",
+        if (!revealed) {
+          actionButton(
+            "choose_left",
+            tagList(make_btn_content(left_activity, left_category, left_period, left_extra)),
+            class = left_class
+          )
+        } else {
+          div(class = left_class,
+              make_btn_content(left_activity, left_category, left_period, left_extra))
+        }
+      ),
+      div(
+        class = "col-2 text-center",
+        h3("VS", class = "text-muted mb-0")
+      ),
+      div(
+        class = "col-5",
+        if (!revealed) {
+          actionButton(
+            "choose_right",
+            tagList(make_btn_content(right_activity, right_category, right_period, right_extra)),
+            class = right_class
+          )
+        } else {
+          div(class = right_class,
+              make_btn_content(right_activity, right_category, right_period, right_extra))
+        }
+      )
+    ),
+    result_text,
+    div(
+      class = "d-flex justify-content-between mt-3",
+      actionButton(
+        "prev_q", "\u2190 Back",
+        class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
+      ),
+      actionButton(
+        "next_q",
+        if (q == n) "Finish" else "Next \u2192",
+        class = "btn-primary"
+      )
+    )
+  )
+}
+
+# ---- Results summary page ----
+results_summary_ui <- function(state) {
+  pairs <- state$pairs
+  answers <- state$answers
+  n <- state$n_questions
+
+  correct <- vapply(seq_len(n), function(i) {
+    !is.na(answers[i]) && answers[i] == pairs$answer[i]
+  }, logical(1))
+  score <- sum(correct)
+  pct <- score / n * 100
+  baseline <- n / 2
+
+  result_info <- quiz_result_phrase(pct)
+
+  tagList(
+    h2("Results", class = "text-center mb-4"),
+    div(
+      class = "row mb-4",
+      div(
+        class = "col-6",
+        div(class = "card text-white bg-primary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Your Score"),
+            h2(sprintf("%d / %d", score, n), class = "mb-0")
+          )
+        )
+      ),
+      div(
+        class = "col-6",
+        div(class = "card text-white bg-secondary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Random Guessing"),
+            h2(sprintf("~%.1f / %d", baseline, n), class = "mb-0")
+          )
+        )
+      )
+    ),
+    div(
+      class = "text-center mb-4",
+      h3(result_info$phrase),
+      tags$em(result_info$fact),
+      br(),
+      tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")
+    ),
+    div(
+      class = "d-flex justify-content-center gap-3",
+      actionButton(
+        "view_details", "View Details",
+        class = "btn-outline-primary btn-lg"
+      ),
+      actionButton(
+        "try_again", "Try Again",
+        class = "btn-primary btn-lg"
+      )
+    )
+  )
+}
+
+# ---- Results detail page ----
+results_detail_ui <- function(state) {
+  pairs <- state$pairs
+  answers <- state$answers
+  n <- state$n_questions
+
+  detail_rows <- lapply(seq_len(n), function(i) {
+    user_ans <- if (is.na(answers[i])) {
+      "Skipped"
+    } else if (answers[i] == "a") {
+      pairs$activity_a[i]
+    } else {
+      pairs$activity_b[i]
+    }
+    correct_ans <- if (pairs$answer[i] == "a") {
+      pairs$activity_a[i]
+    } else {
+      pairs$activity_b[i]
+    }
+    result <- if (is.na(answers[i])) {
+      "\u2014"
+    } else if (answers[i] == pairs$answer[i]) {
+      "\u2713"
+    } else {
+      "\u2717"
+    }
+
+    tags$tr(
+      tags$td(i),
+      tags$td(pairs$activity_a[i]),
+      tags$td(sprintf("%.2f", pairs$micromorts_a[i])),
+      tags$td(pairs$activity_b[i]),
+      tags$td(sprintf("%.2f", pairs$micromorts_b[i])),
+      tags$td(user_ans),
+      tags$td(correct_ans),
+      tags$td(result)
+    )
+  })
+
+  tagList(
+    h3("Question-by-Question Detail", class = "text-center mb-4"),
+    div(
+      class = "table-responsive",
+      tags$table(
+        class = "table table-striped table-hover",
+        tags$thead(
+          tags$tr(
+            tags$th("Q"),
+            tags$th("Activity A"),
+            tags$th("mm A"),
+            tags$th("Activity B"),
+            tags$th("mm B"),
+            tags$th("Your Answer"),
+            tags$th("Correct"),
+            tags$th("Result")
+          )
+        ),
+        tags$tbody(detail_rows)
+      )
+    ),
+    div(
+      class = "text-center mt-4",
+      actionButton(
+        "back_to_summary", "\u2190 Back to Summary",
+        class = "btn-secondary btn-lg"
+      )
+    )
+  )
+}
+
+# ---- App ----
+ui <- page_fluid(
+  theme = bs_theme(bootswatch = "flatly", version = 5),
+  tags$head(tags$style(HTML(quiz_css))),
+  div(
+    class = "container",
+    style = "max-width: 800px; margin: auto; padding-top: 20px;",
+    uiOutput("main_ui")
+  )
+)
+
+server <- function(input, output, session) {
+  state <- reactiveValues(
+    phase = "instructions",
+    n_questions = 10L,
+    current_q = 1L,
+    pairs = NULL,
+    answers = NULL,
+    display_order = NULL,
+    revealed = NULL
+  )
+
+  observeEvent(input$start_quiz, {
+    n <- as.integer(input$n_questions %||% state$n_questions)
+    pool <- quiz_pool
+    n <- min(n, nrow(pool))
+    state$n_questions <- n
+    state$pairs <- pool[sample(nrow(pool), n), ]
+    state$answers <- rep(NA_character_, n)
+    state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
+    state$revealed <- rep(FALSE, n)
+    state$current_q <- 1L
+    state$phase <- "question"
+  })
+
+  observeEvent(input$choose_left, {
+    q <- state$current_q
+    state$answers[q] <- state$display_order[[q]][1]
+    state$revealed[q] <- TRUE
+  })
+
+  observeEvent(input$choose_right, {
+    q <- state$current_q
+    state$answers[q] <- state$display_order[[q]][2]
+    state$revealed[q] <- TRUE
+  })
+
+  observeEvent(input$next_q, {
+    if (state$current_q < state$n_questions) {
+      state$current_q <- state$current_q + 1L
+    } else {
+      state$phase <- "results_summary"
+    }
+  })
+
+  observeEvent(input$prev_q, {
+    if (state$current_q > 1L) {
+      state$current_q <- state$current_q - 1L
+    }
+  })
+
+  observeEvent(input$view_details, {
+    state$phase <- "results_detail"
+  })
+
+  observeEvent(input$back_to_summary, {
+    state$phase <- "results_summary"
+  })
+
+  observeEvent(input$try_again, {
+    state$phase <- "instructions"
+  })
+
+  output$main_ui <- renderUI({
+    switch(state$phase,
+      instructions = instructions_ui(),
+      question = question_ui(state),
+      results_summary = results_summary_ui(state),
+      results_detail = results_detail_ui(state)
+    )
+  })
+}
+
+shinyApp(ui, server)
+```

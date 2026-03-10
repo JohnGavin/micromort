@@ -1,0 +1,127 @@
+---
+title: "Architecture Overview"
+format: html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+
+# Helper: emit mermaid diagram as a script/div pair so pandoc cannot
+# HTML-encode the arrows (-->) or wrap lines in <p> tags.
+emit_mermaid <- function(target_name, fallback_msg) {
+  diagram <- safe_tar_read(target_name)
+  if (!is.null(diagram)) {
+    id <- gsub("[^a-z0-9]", "", target_name)
+    cat(sprintf('<pre class="mermaid" id="%s"></pre>\n', id))
+    cat(sprintf('<script type="text/plain" data-mermaid="%s">\n', id))
+    cat(diagram)
+    cat("\n</script>\n")
+  } else {
+    cat(paste0("*", fallback_msg, "*\n"))
+  }
+}
+```
+
+This page shows how the micromort package is organized: the data pipeline,
+function hierarchy, user entry points, and development workflow.
+All diagrams are auto-generated from package metadata via the
+[targets pipeline](https://docs.ropensci.org/targets/).
+
+```{=html}
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+  startOnLoad: false,
+  securityLevel: 'loose',
+  theme: 'dark',
+  themeVariables: {
+    background: '#1a1a1a',
+    primaryColor: '#2d5f8a'
+  }
+});
+// Inject diagram text from <script> tags into their paired <pre> elements,
+// then ask mermaid to render them. This avoids pandoc HTML-encoding arrows.
+document.querySelectorAll('script[data-mermaid]').forEach(function(s) {
+  var target = document.getElementById(s.getAttribute('data-mermaid'));
+  if (target) {
+    target.textContent = s.textContent;
+  }
+});
+await mermaid.run({ querySelector: '.mermaid' });
+</script>
+```
+
+## 1. Data Pipeline
+
+The targets pipeline processes risk data through five stages.
+Target counts update automatically when plan files change.
+
+```{r pipeline, results='asis'}
+emit_mermaid("vig_arch_pipeline_diagram",
+             "Pipeline diagram not available. Run `targets::tar_make()` first.")
+```
+
+## 2. Function Hierarchy
+
+All exported functions grouped by category.
+Click any function to view its documentation.
+
+```{r concept, results='asis'}
+emit_mermaid("vig_arch_concept_diagram",
+             "Concept diagram not available. Run `targets::tar_make()` first.")
+```
+
+## 3. User Journey
+
+Which function should you start with? Follow the decision tree below.
+
+```{r journey, results='asis'}
+emit_mermaid("vig_arch_user_journey_diagram",
+             "User journey diagram not available. Run `targets::tar_make()` first.")
+```
+
+## 4. Developer Workflow
+
+The 9-step workflow for contributing to this package.
+Steps 4--5 follow the RED-GREEN TDD cycle.
+
+```{r developer, results='asis'}
+emit_mermaid("vig_arch_developer_diagram",
+             "Developer diagram not available. Run `targets::tar_make()` first.")
+```
+
+## 5. Targets DAG
+
+Auto-generated dependency graph of the full targets pipeline.
+
+```{r visnetwork}
+vis <- safe_tar_read("vig_arch_tar_visnetwork")
+if (!is.null(vis)) vis
+```

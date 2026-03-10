@@ -1,21 +1,5 @@
 # Regional Variation in Life Expectancy
 
-``` r
-library(targets)
-library(DT)
-
-# Safe tar_read with graceful fallback
-safe_tar_read <- function(name) {
-  tryCatch(
-    targets::tar_read_raw(name),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
-```
-
 This vignette explores **regional variation in life expectancy** across
 Western Europe, based on research by Bonnet et al. (2026) published in
 *Nature Communications*.
@@ -48,17 +32,17 @@ regions**: Continued progress (~2.5 months/year gain for men) -
 
 This divergence reversed decades of convergence observed in the 1990s.
 
-    #> Target 'vig_regional_classification_summary' not found. Run tar_make() first.
-
 ## The Microlives Gap
 
 The ~7 year gap between vanguard and laggard regions translates to a
 substantial lifetime difference in microlives:
 
-    #> Target 'vig_regional_le_gap' not found. Run tar_make() first.
+    #> Life expectancy gap: 2.6 years
+    #> Lifetime microlives difference: 45,496 
+    #> Daily microlives difference: 3.1 per day
 
 **Interpretation:** Living in a vanguard region vs a laggard region
-corresponds to ~8.4 microlives per day—roughly equivalent to the benefit
+corresponds to ~3.1 microlives per day—roughly equivalent to the benefit
 of 30 minutes of daily exercise.
 
 ## Regional Data Explorer
@@ -87,24 +71,17 @@ pandemic distortions)
 - **Microlives interpretation:** +1.0 microlives/day ≈ +30 min life
   expectancy/day ≈ +7.6 days/year
 
-&nbsp;
-
-    #> Target 'vig_regional_explorer_data' not found. Run tar_make() first.
-
 ## Trends Over Time
 
 The divergence became pronounced after 2005:
 
-    #> Target 'vig_regional_trends_plot' not found. Run tar_make() first.
-    #> NULL
+![](regional_variation_files/figure-html/unnamed-chunk-5-1.png)
 
 ## Mortality Risk Multiplier
 
 Use
 [`regional_mortality_multiplier()`](https://johngavin.github.io/micromort/reference/regional_mortality_multiplier.md)
 to adjust baseline micromort estimates by location:
-
-    #> Target 'vig_regional_paris_multiplier' not found. Run tar_make() first.
 
 **Application:** If the baseline risk for an activity is 10 micromorts,
 the location-adjusted risk in Paris would be approximately

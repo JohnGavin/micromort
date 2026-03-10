@@ -2,11 +2,15 @@ pandoc: 3.7.0.2
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
+  architecture: architecture.html
+  confounding: confounding.html
   introduction: introduction.html
   palatable_units: palatable_units.html
+  quiz_shinylive: quiz_shinylive.html
   regional_variation: regional_variation.html
+  rest_api: rest_api.html
   risk_equivalence: risk_equivalence.html
-last_built: 2026-03-07T22:04Z
+last_built: 2026-03-10T16:05Z
 urls:
   reference: https://johngavin.github.io/micromort/reference
   article: https://johngavin.github.io/micromort/articles

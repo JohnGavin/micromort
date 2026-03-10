@@ -9,10 +9,20 @@ challenging and educational.
 ## Usage
 
 ``` r
-quiz_pairs(max_ratio = 2, prefer_cross_category = TRUE, seed = NULL)
+quiz_pairs(
+  min_ratio = 1.1,
+  max_ratio = 2,
+  prefer_cross_category = TRUE,
+  seed = NULL
+)
 ```
 
 ## Arguments
+
+- min_ratio:
+
+  Minimum ratio between micromort values in a pair. Values above 1.0
+  exclude identical-risk pairs that are unanswerable. Default 1.1.
 
 - max_ratio:
 
@@ -32,9 +42,11 @@ quiz_pairs(max_ratio = 2, prefer_cross_category = TRUE, seed = NULL)
 
 A tibble with columns:
 
-- `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`
+- `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`,
+  `period_a`
 
-- `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`
+- `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`,
+  `period_b`
 
 - `ratio` (max/min of the two micromort values)
 
@@ -45,15 +57,15 @@ A tibble with columns:
 ``` r
 pairs <- quiz_pairs(seed = 42)
 head(pairs)
-#> # A tibble: 6 × 10
-#>   activity_a     micromorts_a category_a hedgeable_pct_a activity_b micromorts_b
-#>   <chr>                 <dbl> <chr>                <dbl> <chr>             <dbl>
-#> 1 Mammogram (ra…          0.1 Medical                  0 Nuclear p…          0.1
-#> 2 Living (one d…          1   Daily Life               0 COVID-19 …          1  
-#> 3 Base jumping …        430   Sport                    0 First day…        430  
-#> 4 Living 2 mont…          1   Environme…               0 Driving (…          1  
-#> 5 COVID-19 unva…          8   COVID-19                 0 Hang glid…          8  
-#> 6 Living (one d…          1   Daily Life               0 COVID-19 …          1  
-#> # ℹ 4 more variables: category_b <chr>, hedgeable_pct_b <dbl>, ratio <dbl>,
-#> #   answer <chr>
+#> # A tibble: 6 × 12
+#>   activity_a         micromorts_a category_a hedgeable_pct_a period_a activity_b
+#>   <chr>                     <dbl> <chr>                <dbl> <chr>    <chr>     
+#> 1 Ecstasy/MDMA (per…       13     Drugs                    0 per dose CT scan a…
+#> 2 Skydiving (UK)            8     Sport                    0 per eve… Flying (1…
+#> 3 COVID-19 unvaccin…        1     COVID-19                 0 11 week… Flying (2…
+#> 4 Interventional ca…        0.175 Occupation             100 per year Frequent …
+#> 5 Skydiving (UK)            8     Sport                    0 per eve… Living in…
+#> 6 Skydiving (US)            8     Sport                    0 per eve… Flying (1…
+#> # ℹ 6 more variables: micromorts_b <dbl>, category_b <chr>,
+#> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>
 ```

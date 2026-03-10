@@ -36,22 +36,21 @@ A tibble where rows are activities and columns are exchange rates. Cell
 ``` r
 risk_exchange_matrix()
 #> # A tibble: 10 × 11
-#>    activity   General anesthesia (…¹ Skydiving (per jump,…² `Running a marathon`
-#>    <chr>                       <dbl>                  <dbl>                <dbl>
-#>  1 General a…                    1                      1.2                  1.4
-#>  2 Skydiving…                    0.8                    1                    1.1
-#>  3 Running a…                    0.7                    0.9                  1  
-#>  4 Scuba div…                    0.5                    0.6                  0.7
-#>  5 Driving (…                    0.1                    0.1                  0.1
-#>  6 Skiing (p…                    0.1                    0.1                  0.1
-#>  7 Flying (8…                    0.5                    0.6                  0.7
-#>  8 Chest X-r…                    0                      0                    0  
-#>  9 Cup of co…                    0                      0                    0  
-#> 10 Crossing …                    0                      0                    0  
-#> # ℹ abbreviated names: ¹​`General anesthesia (emergency)`,
-#> #   ²​`Skydiving (per jump, US)`
-#> # ℹ 7 more variables: `Scuba diving (per dive, trained)` <dbl>,
-#> #   `Driving (230 miles)` <dbl>, `Skiing (per day)` <dbl>,
-#> #   `Flying (8h long-haul)` <dbl>, `Chest X-ray (radiation)` <dbl>,
-#> #   `Cup of coffee` <dbl>, `Crossing a road` <dbl>
+#>    activity         General anesthesia (…¹ `Skydiving (US)` `Running a marathon`
+#>    <chr>                             <dbl>            <dbl>                <dbl>
+#>  1 General anesthe…                    1                1.2                  1.4
+#>  2 Skydiving (US)                      0.8              1                    1.1
+#>  3 Running a marat…                    0.7              0.9                  1  
+#>  4 Scuba diving, t…                    0.5              0.6                  0.7
+#>  5 Driving (230 mi…                    0.1              0.1                  0.1
+#>  6 Skiing                              0.1              0.1                  0.1
+#>  7 Flying (8h long…                    0.4              0.5                  0.6
+#>  8 Chest X-ray (ra…                    0                0                    0  
+#>  9 Cup of coffee                       0                0                    0  
+#> 10 Crossing a road                     0                0                    0  
+#> # ℹ abbreviated name: ¹​`General anesthesia (emergency)`
+#> # ℹ 7 more variables: `Scuba diving, trained` <dbl>,
+#> #   `Driving (230 miles)` <dbl>, Skiing <dbl>, `Flying (8h long-haul)` <dbl>,
+#> #   `Chest X-ray (radiation per scan)` <dbl>, `Cup of coffee` <dbl>,
+#> #   `Crossing a road` <dbl>
 ```
