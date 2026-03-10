@@ -1,0 +1,115 @@
+---
+title: "Architecture Overview"
+format: html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+
+library(micromort)
+
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+```
+
+This page shows how the micromort package is organized: the data pipeline,
+function hierarchy, user entry points, and development workflow.
+All diagrams are auto-generated from package metadata via the
+[targets pipeline](https://docs.ropensci.org/targets/).
+
+```{=html}
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  theme: 'dark',
+  themeVariables: {
+    background: '#1a1a1a',
+    primaryColor: '#2d5f8a'
+  }
+});
+</script>
+```
+
+## 1. Data Pipeline
+
+The targets pipeline processes risk data through five stages.
+Target counts update automatically when plan files change.
+
+```{r pipeline, results='asis'}
+diagram <- safe_tar_read("vig_arch_pipeline_diagram")
+if (!is.null(diagram)) {
+  cat('<div class="mermaid">\n', diagram, '\n</div>\n', sep = "")
+} else {
+  cat("*Pipeline diagram not available. Run `targets::tar_make()` first.*\n")
+}
+```
+
+## 2. Function Hierarchy
+
+All exported functions grouped by category.
+Click any function to view its documentation.
+
+```{r concept, results='asis'}
+diagram <- safe_tar_read("vig_arch_concept_diagram")
+if (!is.null(diagram)) {
+  cat('<div class="mermaid">\n', diagram, '\n</div>\n', sep = "")
+} else {
+  cat("*Concept diagram not available. Run `targets::tar_make()` first.*\n")
+}
+```
+
+## 3. User Journey
+
+Which function should you start with? Follow the decision tree below.
+
+```{r journey, results='asis'}
+diagram <- safe_tar_read("vig_arch_user_journey_diagram")
+if (!is.null(diagram)) {
+  cat('<div class="mermaid">\n', diagram, '\n</div>\n', sep = "")
+} else {
+  cat("*User journey diagram not available. Run `targets::tar_make()` first.*\n")
+}
+```
+
+## 4. Developer Workflow
+
+The 9-step workflow for contributing to this package.
+Steps 4--5 follow the RED-GREEN TDD cycle.
+
+```{r developer, results='asis'}
+diagram <- safe_tar_read("vig_arch_developer_diagram")
+if (!is.null(diagram)) {
+  cat('<div class="mermaid">\n', diagram, '\n</div>\n', sep = "")
+} else {
+  cat("*Developer diagram not available. Run `targets::tar_make()` first.*\n")
+}
+```
+
+## 5. Targets DAG
+
+Auto-generated dependency graph of the full targets pipeline.
+
+```{r visnetwork}
+vis <- safe_tar_read("vig_arch_tar_visnetwork")
+if (!is.null(vis)) vis
+```

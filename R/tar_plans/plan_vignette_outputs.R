@@ -231,12 +231,12 @@ plan_vignette_outputs <- list(
       landmarks <- c(
         "Cup of coffee", "Crossing a road", "Chest X-ray (radiation per scan)",
         "Commuting by car (30 min)", "Drinking a glass of wine",
-        "Skiing (per day)", "Driving (230 miles)", "Flying (8h long-haul)",
-        "CT scan head (radiation per scan)", "Scuba diving (per dive, trained)",
-        "Running a marathon", "Skydiving (per jump, US)",
+        "Skiing", "Driving (230 miles)", "Flying (8h long-haul)",
+        "CT scan head (radiation per scan)", "Scuba diving, trained",
+        "Running a marathon", "Skydiving (US)",
         "CT scan abdomen (radiation per scan)", "General anesthesia (emergency)",
         "Night in hospital", "Vaginal birth (mother)",
-        "Base jumping (per jump)", "Mt. Everest ascent"
+        "Base jumping", "Mt. Everest ascent"
       )
       cr |>
         dplyr::filter(activity %in% landmarks) |>
@@ -328,7 +328,7 @@ plan_vignette_outputs <- list(
         "Cup of coffee", "Crossing a road", "Working in an office (8 hours)",
         "Taking a bath", "Commuting by car (30 min)",
         "Commuting by bicycle (30 min)", "Drinking a glass of wine",
-        "Skiing (per day)", "Horseback riding"
+        "Skiing", "Horse riding"
       )
       cr |>
         dplyr::filter(activity %in% everyday) |>
@@ -532,6 +532,61 @@ plan_vignette_outputs <- list(
       "GET", "/v1/meta", "API metadata and endpoint listing", "",
       "GET", "/health", "Health check", ""
     )
+  ),
+
+
+  # ==========================================================================
+  # ARCHITECTURE DIAGRAMS (Issue #41)
+  # ==========================================================================
+
+  # Pipeline overview — regenerates when plan files change
+  targets::tar_target(
+    vig_arch_pipeline_diagram,
+    {
+      plan_files <- list.files("R/tar_plans", pattern = "^plan_.*\\.R$",
+                               full.names = TRUE)
+      plan_hash <- digest::digest(lapply(plan_files, readLines, warn = FALSE))
+      generate_pipeline_diagram()
+    }
+  ),
+
+  # Concept hierarchy — regenerates when NAMESPACE changes
+  targets::tar_target(
+    vig_arch_concept_diagram,
+    {
+      ns_hash <- digest::digest(file = "NAMESPACE")
+      generate_concept_diagram()
+    }
+  ),
+
+  # User journey decision tree
+  targets::tar_target(
+    vig_arch_user_journey_diagram,
+    generate_user_journey_diagram()
+  ),
+
+  # Developer workflow
+  targets::tar_target(
+    vig_arch_developer_diagram,
+    generate_developer_diagram()
+  ),
+
+  # Targets DAG (auto-generated)
+  targets::tar_target(
+    vig_arch_tar_visnetwork,
+    tryCatch(
+      targets::tar_visnetwork(targets_only = TRUE, label = "name"),
+      error = function(e) NULL
+    )
+  ),
+
+  # README concept diagram (simplified, no click for GitHub)
+  targets::tar_target(
+    readme_concept_diagram,
+    {
+      ns_hash <- digest::digest(file = "NAMESPACE")
+      generate_concept_diagram(simplified = TRUE, clickable = FALSE)
+    }
   )
 
 )

@@ -21,6 +21,9 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: "Architecture Overview"
+        href: articles/architecture.html
+      - text: "---"
       - text: "Introduction"
         href: articles/introduction.html
       - text: "Palatable Units"
@@ -29,6 +32,8 @@ navbar:
         href: articles/regional_variation.html
       - text: "Risk Equivalence"
         href: articles/risk_equivalence.html
+      - text: "Confounding Variables"
+        href: articles/confounding.html
       - text: "REST API"
         href: articles/rest_api.html
       - text: "---"

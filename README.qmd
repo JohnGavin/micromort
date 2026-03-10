@@ -30,6 +30,27 @@ A **data package** providing curated datasets of micromort (acute risk) and micr
 - **Interactive dashboard** for data exploration
 - **targets pipeline** for reproducible data updates
 
+## Architecture
+
+```{r architecture-diagram, echo=FALSE, results='asis'}
+diagram <- tryCatch({
+  store <- tryCatch(
+    file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+    error = function(e) "_targets"
+  )
+  targets::tar_read_raw("readme_concept_diagram", store = store)
+}, error = function(e) NULL)
+
+if (!is.null(diagram)) {
+  cat("```mermaid\n", diagram, "\n```\n", sep = "")
+} else {
+  cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed package diagrams.\n")
+}
+```
+
+See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html)
+for detailed diagrams of the data pipeline, function hierarchy, and user journey.
+
 ## Installation
 
 ### R-Universe (Recommended)
