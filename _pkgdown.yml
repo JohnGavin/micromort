@@ -118,6 +118,7 @@ reference:
   - plot_risks
   - plot_risks_interactive
   - plot_risk_components
+  - theme_micromort_dark
 
 - title: "Interactive Tools"
   desc: "API, dashboard, and quiz"
