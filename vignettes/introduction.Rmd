@@ -392,7 +392,7 @@ This pattern recurs across many "exotic" risks:
 *   **Cow trampling** (22 deaths/year, US): Population rate is 0.07 micromorts/year. For cattle farmers handling animals daily: ~7.5 micromorts/year — a 100-fold increase.
 *   **Lightning strike** (28 deaths/year, US): Population rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2 micromorts/year — a 15-fold increase.
 
-The lesson: **always ask "conditional on what?"** before comparing micromort values across populations or activities.
+The lesson: **always ask "conditional on what?"** before comparing micromort values across populations or activities. For a deeper treatment of how confounding variables distort risk data, including Simpson's paradox and stratification strategies, see the [Confounding Variables](confounding.html) vignette.
 
 ## 8. Data Quality: The Denominator Problem
 
@@ -439,7 +439,7 @@ Risks in `common_risks()` and `acute_risks()` meet these minimum standards:
 3. **Reproducible calculation**: The micromort derivation can be independently verified from the cited source
 4. **Not a myth**: The figure has not been debunked by subsequent peer-reviewed work
 
-Risks that fail criterion 2 but pass the others may still appear with `period = "per year"` as a background population rate, clearly labelled as such. See `risk_data_sources()` for full provenance of each entry.
+Risks that fail criterion 2 but pass the others may still appear with `period = "per year"` as a background population rate, clearly labelled as such. See `risk_data_sources()` for full provenance of each entry. For examples of how confounding variables (age, occupation, allergy status) can change risk estimates by orders of magnitude, see the [Confounding Variables](confounding.html) vignette.
 
 ### 8.3 When "Per Year" Is Legitimate
 
