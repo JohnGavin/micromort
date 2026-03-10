@@ -15,7 +15,7 @@
 #' @seealso [risk_exchange_matrix()]
 #' @examples
 #' risk_equivalence("Chest X-ray (radiation per scan)")
-#' risk_equivalence("Skydiving (per jump, US)")
+#' risk_equivalence("Skydiving (US)")
 risk_equivalence <- function(reference, risks = NULL, min_ratio = 0.01,
                              max_ratio = Inf) {
   if (is.null(risks)) risks <- common_risks()
@@ -79,10 +79,10 @@ risk_exchange_matrix <- function(activities = NULL, risks = NULL) {
       "Crossing a road",
       "Driving (230 miles)",
       "Flying (8h long-haul)",
-      "Skiing (per day)",
-      "Scuba diving (per dive, trained)",
+      "Skiing",
+      "Scuba diving, trained",
       "Running a marathon",
-      "Skydiving (per jump, US)",
+      "Skydiving (US)",
       "General anesthesia (emergency)"
     )
   }

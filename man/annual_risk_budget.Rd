@@ -28,8 +28,8 @@ Calculate total annual micromort exposure from a list of activities.
 \examples{
 # Calculate annual risk from recreational activities
 annual_risk_budget(c(
-  "Skydiving (per jump, US)" = 10,
-  "Scuba diving (per dive, trained)" = 20,
+  "Skydiving (US)" = 10,
+  "Scuba diving, trained" = 20,
   "Running a marathon" = 2
 ), age = 35)
 }

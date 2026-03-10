@@ -12,7 +12,7 @@ test_that("risk_equivalence returns correct structure", {
 test_that("risk_equivalence ratios are correct", {
   re <- risk_equivalence("Chest X-ray (radiation per scan)")
   # Skydiving US = 8 mm, X-ray = 0.1 mm → ratio = 80
-  sky <- re[re$activity == "Skydiving (per jump, US)", ]
+  sky <- re[re$activity == "Skydiving (US)", ]
   expect_equal(sky$ratio, 80)
 })
 

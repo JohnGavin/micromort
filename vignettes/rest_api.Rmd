@@ -182,7 +182,7 @@ endpoint that accepts a JSON body with an optional `activities` array:
 ```bash
 curl -X POST "http://localhost:8080/v1/analysis/exchange-matrix" \
   -H "Content-Type: application/json" \
-  -d '{"activities": ["Skiing (per day)", "Scuba diving (per dive, trained)", "Skydiving (per jump, US)"]}'
+  -d '{"activities": ["Skiing", "Scuba diving, trained", "Skydiving (US)"]}'
 ```
 
 ## Unit Conversion
@@ -283,7 +283,7 @@ tibble::as_tibble(do.call(rbind, lapply(resp$data, as.data.frame)))
 resp <- request(base_url) |>
   req_url_path("/v1/analysis/exchange-matrix") |>
   req_body_json(list(
-    activities = c("Skiing (per day)", "Scuba diving (per dive, trained)")
+    activities = c("Skiing", "Scuba diving, trained")
   )) |>
   req_perform() |>
   resp_body_json()

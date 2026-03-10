@@ -27,7 +27,7 @@ ratio of micromorts. "How many X-rays equal one skydive?"
 }
 \examples{
 risk_equivalence("Chest X-ray (radiation per scan)")
-risk_equivalence("Skydiving (per jump, US)")
+risk_equivalence("Skydiving (US)")
 }
 \seealso{
 \code{\link[=risk_exchange_matrix]{risk_exchange_matrix()}}
