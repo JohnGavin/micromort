@@ -20,10 +20,13 @@ categories before passing to plot_risks()."></head><body>
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="../articles/risk_equivalence.html">Risk Equivalence</a></li>
+    <li><a class="dropdown-item" href="../articles/confounding.html">Confounding Variables</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
@@ -115,7 +118,7 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… event                60</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…        500       350  COVID-19 per m… month                30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…        463       324. Daily L… per d… day                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430       301  Sport    per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping           430       301  Sport    per e… event                 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430       301  Daily L… per d… day                   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234       164. COVID-19 11 we… period               77</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 70 more rows</span></span>
@@ -158,10 +161,10 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Spanish flu in…       <span style="text-decoration: underline;">3</span>000      <span style="text-decoration: underline;">2</span>100  Disease  per i… event                14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… event                60</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Living (one da…        463       324. Daily L… per d… day                   1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Base jumping (…        430       301  Sport    per e… event                 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Base jumping           430       301  Sport    per e… event                 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> First day of l…        430       301  Daily L… per d… day                   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Caesarean birt…        170       119  Medical  per e… event                 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Scuba diving (…        164       115. Sport    per y… year                365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Scuba diving, …        164       115. Sport    per y… year                365</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Vaginal birth …        120        84  Medical  per e… event                 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 52 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;,</span></span>
@@ -172,15 +175,15 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Base jumping (…        430      301   Sport    per e… event              1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Scuba diving (…        164      115.  Sport    per y… year             365   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Base jumping           430      301   Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Scuba diving, …        164      115.  Sport    per y… year             365   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> American footb…         20       14   Sport    per g… event              0.13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Swimming (drow…         12        8.4 Sport    per s… event              0.04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Swimming                12        8.4 Sport    per s… event              0.04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Motorcycling (…         10        7   Travel   per t… event              0.17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Skydiving (per…         10        7   Sport    per e… event              1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Skydiving (per…          8        5.6 Sport    per e… event              1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Skydiving (per…          8        5.6 Sport    per e… event              1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Hang gliding (…          8        5.6 Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Skydiving               10        7   Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Skydiving (US)           8        5.6 Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Skydiving (UK)           8        5.6 Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Hang gliding             8        5.6 Sport    per e… event              1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Running a mara…          7        4.9 Sport    per e… event              1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;,</span></span>
@@ -198,11 +201,11 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840     <span style="text-decoration: underline;">1</span>988   Mountai… per a… event             60   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…        500      350   COVID-19 per m… month             30   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…        463      324.  Daily L… per d… day                1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430      301   Sport    per e… event              1   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping           430      301   Sport    per e… event              1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430      301   Daily L… per d… day                1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234      164.  COVID-19 11 we… period            77   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> Caesarean birt…        170      119   Medical  per e… event              1   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Scuba diving (…        164      115.  Sport    per y… year             365   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Scuba diving, …        164      115.  Sport    per y… year             365   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> Vaginal birth …        120       84   Medical  per e… event              1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Living (one da…        105       73.5 Daily L… per d… day                1   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> COVID-19 unvac…         76       53.2 COVID-19 11 we… period            77   </span>

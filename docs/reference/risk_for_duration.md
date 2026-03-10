@@ -54,10 +54,10 @@ risk_for_duration("flying", duration_hours = 7)
 #> # A tibble: 1 × 6
 #>   activity      activity_id hedgeable_pct micromorts n_components duration_hours
 #>   <chr>         <chr>               <dbl>      <dbl>        <int>          <dbl>
-#> 1 Flying (8h l… flying_8h              51        4.9            3              8
+#> 1 Flying (8h l… flying_8h            64.1        3.9            3              8
 risk_for_duration("flying", duration_hours = 3)
 #> # A tibble: 1 × 6
 #>   activity      activity_id hedgeable_pct micromorts n_components duration_hours
 #>   <chr>         <chr>               <dbl>      <dbl>        <int>          <dbl>
-#> 1 Flying (2h s… flying_2h               0        0.6            3              2
+#> 1 Flying (2h s… flying_2h               0        1.1            3              2
 ```

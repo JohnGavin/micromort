@@ -96,9 +96,21 @@ minutes of expected lifespan, measured per day** of exposure.
 ### Conversion
 
 **1 micromort ≈ 0.7 microlives** (assuming 40 years remaining life
-expectancy)
+expectancy). The conversion scales linearly with remaining life
+expectancy:
 
-This allows comparing acute events to chronic habits on a common scale.
+| Remaining life expectancy | 1 micromort ≈   |
+|---------------------------|-----------------|
+| 10 years                  | 0.18 microlives |
+| 20 years                  | 0.35 microlives |
+| 40 years (default)        | 0.70 microlives |
+| 60 years                  | 1.05 microlives |
+
+Use `lle(prob, life_expectancy = ...)` and
+[`as_microlife()`](https://johngavin.github.io/micromort/reference/as_microlife.md)
+to convert at any age. See the [Age-Based Hazard
+Rates](#calculate-baseline-risk-by-age) section for daily micromort
+exposure by age.
 
 ### Morbidity Metrics
 
@@ -107,13 +119,16 @@ impacts:
 
 - **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. Used
   in healthcare economics.
-- **DALY (Disability-Adjusted Life Years):** Disease burden = YLL + YLD.
+- **DALY (Disability-Adjusted Life Years):** Disease burden combining:
+  - **YLL (Years of Life Lost):** Premature mortality component
+  - **YLD (Years Lived with Disability):** Morbidity component
 - **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. For
   common illnesses.
 
 See the [Introduction
 vignette](https://johngavin.github.io/micromort/articles/introduction.html)
-for detailed examples.
+for detailed examples and the [Glossary](#glossary) for all acronym
+definitions.
 
 ## Quick Start
 
@@ -256,10 +271,17 @@ launch_api()
 # Swagger docs at http://localhost:8080/__docs__/
 ```
 
-Endpoints: - `GET /v1/acute` - Acute risks dataset (micromorts per
-event) - `GET /v1/chronic` - Chronic risks dataset (microlives per
-day) - `GET /v1/sources` - Source registry - `GET /v1/hazard?age=35` -
-Daily hazard rate (micromorts per day)
+**Core endpoints** (30 total — see [REST API
+vignette](https://johngavin.github.io/micromort/articles/rest_api.html)
+for full reference):
+
+- `GET /v1/risks/acute` — Acute risks (micromorts per event)
+- `GET /v1/risks/chronic` — Chronic risks (microlives per day)
+- `GET /v1/risks/cancer` — Cancer mortality by type/sex/age
+- `GET /v1/analysis/equivalence` — Risk equivalence lookup
+- `GET /v1/convert/hazard-rate?age=35` — Daily hazard rate
+- `GET /v1/sources` — Source registry
+- `GET /health` — Health check
 
 ## Interactive Dashboard
 
@@ -267,6 +289,16 @@ Launch the Shiny dashboard:
 
 ``` r
 launch_dashboard()
+```
+
+## Risk Quiz
+
+[Play in
+browser](https://johngavin.github.io/micromort/articles/quiz_shinylive.html)
+— runs via WebR/Shinylive (30-60s initial load). Or locally:
+
+``` r
+micromort::launch_quiz()
 ```
 
 ## Data Sources
@@ -292,12 +324,18 @@ Click to expand project tree
 #> ├── NAMESPACE
 #> ├── R
 #> │   ├── api.R
+#> │   ├── atomic_risks.R
 #> │   ├── dashboard.R
 #> │   ├── data.R
 #> │   ├── dev
+#> │   │   ├── issues
 #> │   │   └── verify_pkgdown_urls.R
 #> │   ├── micromort.R
 #> │   ├── models.R
+#> │   ├── quiz.R
+#> │   ├── radiation_profiles.R
+#> │   ├── regional.R
+#> │   ├── risk_equivalence.R
 #> │   ├── risks.R
 #> │   ├── tar_plans
 #> │   │   ├── plan_data_acquisition.R
@@ -305,7 +343,8 @@ Click to expand project tree
 #> │   │   ├── plan_export.R
 #> │   │   ├── plan_logging.R
 #> │   │   ├── plan_normalization.R
-#> │   │   └── plan_validation.R
+#> │   │   ├── plan_validation.R
+#> │   │   └── plan_vignette_outputs.R
 #> │   └── visualization.R
 #> ├── README.md
 #> ├── README.qmd
@@ -334,6 +373,9 @@ Click to expand project tree
 #> │       └── hazard.R
 #> ├── data-raw
 #> │   ├── 01_extract_current_data.R
+#> │   ├── 02_regional_life_expectancy.R
+#> │   ├── 02_regional_life_expectancy_sample.R
+#> │   ├── README_regional_data.md
 #> │   └── sources
 #> │       ├── acute_risks_base.csv
 #> │       ├── chronic_risks_base.csv
@@ -358,7 +400,18 @@ Click to expand project tree
 #> │   │   ├── introduction_files
 #> │   │   ├── palatable_units.html
 #> │   │   ├── palatable_units.md
-#> │   │   └── palatable_units_files
+#> │   │   ├── palatable_units_files
+#> │   │   ├── quiz_shinylive.html
+#> │   │   ├── quiz_shinylive_files
+#> │   │   ├── regional_variation.html
+#> │   │   ├── regional_variation.md
+#> │   │   ├── regional_variation_files
+#> │   │   ├── rest_api.html
+#> │   │   ├── rest_api_files
+#> │   │   ├── risk_equivalence.html
+#> │   │   ├── risk_equivalence.md
+#> │   │   ├── risk_equivalence_files
+#> │   │   └── shinylive-sw.js
 #> │   ├── authors.html
 #> │   ├── authors.md
 #> │   ├── deps
@@ -370,6 +423,7 @@ Click to expand project tree
 #> │   │   ├── headroom-0.11.0
 #> │   │   ├── jquery-3.6.0
 #> │   │   └── search-1.0.0
+#> │   ├── extra.css
 #> │   ├── index.html
 #> │   ├── index.md
 #> │   ├── katex-auto.js
@@ -390,6 +444,8 @@ Click to expand project tree
 #> │   │   ├── as_micromort.md
 #> │   │   ├── as_probability.html
 #> │   │   ├── as_probability.md
+#> │   │   ├── atomic_risks.html
+#> │   │   ├── atomic_risks.md
 #> │   │   ├── cancer_risks.html
 #> │   │   ├── cancer_risks.md
 #> │   │   ├── chronic_risks.html
@@ -411,10 +467,14 @@ Click to expand project tree
 #> │   │   ├── hedged_portfolio.md
 #> │   │   ├── index.html
 #> │   │   ├── index.md
+#> │   │   ├── laggard_regions.html
+#> │   │   ├── laggard_regions.md
 #> │   │   ├── launch_api.html
 #> │   │   ├── launch_api.md
 #> │   │   ├── launch_dashboard.html
 #> │   │   ├── launch_dashboard.md
+#> │   │   ├── launch_quiz.html
+#> │   │   ├── launch_quiz.md
 #> │   │   ├── libs
 #> │   │   ├── lifestyle_tradeoff.html
 #> │   │   ├── lifestyle_tradeoff.md
@@ -426,20 +486,49 @@ Click to expand project tree
 #> │   │   ├── load_chronic_risks.md
 #> │   │   ├── load_sources.html
 #> │   │   ├── load_sources.md
+#> │   │   ├── patient_radiation_comparison.html
+#> │   │   ├── patient_radiation_comparison.md
+#> │   │   ├── plot_risk_components-1.png
+#> │   │   ├── plot_risk_components.html
+#> │   │   ├── plot_risk_components.md
 #> │   │   ├── plot_risks-1.png
 #> │   │   ├── plot_risks-2.png
+#> │   │   ├── plot_risks-3.png
+#> │   │   ├── plot_risks-4.png
+#> │   │   ├── plot_risks-5.png
 #> │   │   ├── plot_risks.html
 #> │   │   ├── plot_risks.md
 #> │   │   ├── plot_risks_interactive.html
 #> │   │   ├── plot_risks_interactive.md
+#> │   │   ├── prepare_risks_plot-1.png
+#> │   │   ├── prepare_risks_plot.html
+#> │   │   ├── prepare_risks_plot.md
+#> │   │   ├── quiz_pairs.html
+#> │   │   ├── quiz_pairs.md
+#> │   │   ├── radiation_profiles.html
+#> │   │   ├── radiation_profiles.md
+#> │   │   ├── regional_life_expectancy.html
+#> │   │   ├── regional_life_expectancy.md
+#> │   │   ├── regional_mortality_multiplier.html
+#> │   │   ├── regional_mortality_multiplier.md
+#> │   │   ├── risk_components.html
+#> │   │   ├── risk_components.md
 #> │   │   ├── risk_data_sources.html
 #> │   │   ├── risk_data_sources.md
+#> │   │   ├── risk_equivalence.html
+#> │   │   ├── risk_equivalence.md
+#> │   │   ├── risk_exchange_matrix.html
+#> │   │   ├── risk_exchange_matrix.md
+#> │   │   ├── risk_for_duration.html
+#> │   │   ├── risk_for_duration.md
 #> │   │   ├── risk_sources.html
 #> │   │   ├── risk_sources.md
 #> │   │   ├── vaccination_risks.html
 #> │   │   ├── vaccination_risks.md
 #> │   │   ├── value_of_micromort.html
-#> │   │   └── value_of_micromort.md
+#> │   │   ├── value_of_micromort.md
+#> │   │   ├── vanguard_regions.html
+#> │   │   └── vanguard_regions.md
 #> │   ├── search.json
 #> │   ├── sitemap.xml
 #> │   └── tutorials
@@ -450,6 +539,7 @@ Click to expand project tree
 #> │   │   ├── acute_risks.parquet
 #> │   │   ├── chronic_risks.parquet
 #> │   │   ├── logs
+#> │   │   ├── regional_life_expectancy.parquet
 #> │   │   └── risk_sources.parquet
 #> │   └── plumber
 #> │       └── api.R
@@ -459,6 +549,7 @@ Click to expand project tree
 #> │   ├── as_microlife.Rd
 #> │   ├── as_micromort.Rd
 #> │   ├── as_probability.Rd
+#> │   ├── atomic_risks.Rd
 #> │   ├── cancer_risks.Rd
 #> │   ├── chronic_risks.Rd
 #> │   ├── common_risks.Rd
@@ -470,29 +561,66 @@ Click to expand project tree
 #> │   ├── figures
 #> │   │   └── README-plot-1.png
 #> │   ├── hedged_portfolio.Rd
+#> │   ├── laggard_regions.Rd
 #> │   ├── launch_api.Rd
 #> │   ├── launch_dashboard.Rd
+#> │   ├── launch_quiz.Rd
 #> │   ├── lifestyle_tradeoff.Rd
 #> │   ├── lle.Rd
 #> │   ├── load_acute_risks.Rd
 #> │   ├── load_chronic_risks.Rd
 #> │   ├── load_sources.Rd
+#> │   ├── patient_radiation_comparison.Rd
+#> │   ├── plot_risk_components.Rd
 #> │   ├── plot_risks.Rd
 #> │   ├── plot_risks_interactive.Rd
+#> │   ├── prepare_risks_plot.Rd
+#> │   ├── quiz_pairs.Rd
+#> │   ├── radiation_profiles.Rd
+#> │   ├── regional_life_expectancy.Rd
+#> │   ├── regional_mortality_multiplier.Rd
+#> │   ├── risk_components.Rd
 #> │   ├── risk_data_sources.Rd
+#> │   ├── risk_equivalence.Rd
+#> │   ├── risk_exchange_matrix.Rd
+#> │   ├── risk_for_duration.Rd
 #> │   ├── risk_sources.Rd
 #> │   ├── vaccination_risks.Rd
-#> │   └── value_of_micromort.Rd
+#> │   ├── value_of_micromort.Rd
+#> │   └── vanguard_regions.Rd
 #> ├── nix-shell-root
+#> ├── package.nix
 #> ├── pkgdown
 #> │   └── extra.css
+#> ├── plans
+#> │   ├── PLAN_consistency_refactor.md
+#> │   ├── PLAN_regional_longevity.md
+#> │   ├── PLAN_risk_equivalence_dashboard.md
+#> │   └── PLAN_vignette_targets_refactor.md
 #> ├── push_to_cachix.sh
 #> ├── tests
 #> │   └── testthat
-#> │       └── test-adversarial.R
+#> │       ├── _snaps
+#> │       ├── test-adversarial.R
+#> │       ├── test-api.R
+#> │       ├── test-atomic-risks.R
+#> │       ├── test-quiz.R
+#> │       ├── test-radiation-profiles.R
+#> │       ├── test-risk-components.R
+#> │       └── test-risk-equivalence.R
 #> └── vignettes
+#>     ├── _extensions
+#>     │   └── quarto-ext
 #>     ├── introduction.Rmd
-#>     └── palatable_units.Rmd
+#>     ├── palatable_units.Rmd
+#>     ├── quiz_shinylive.html
+#>     ├── quiz_shinylive.qmd
+#>     ├── quiz_shinylive_files
+#>     │   └── libs
+#>     ├── regional_variation.Rmd
+#>     ├── rest_api.Rmd
+#>     ├── risk_equivalence.Rmd
+#>     └── shinylive-sw.js
 ```
 
 ## Contributing
@@ -510,11 +638,14 @@ Contributions are welcome! Please:
 
 ### Development Setup
 
+Requires [Nix](https://nixos.org/) (the `./default.sh` script builds a
+reproducible R environment via Nix):
+
 ``` bash
 # Clone and enter Nix environment
 git clone https://github.com/JohnGavin/micromort.git
 cd micromort
-./default.sh
+./default.sh   # Requires Nix — builds reproducible R env with all dependencies
 
 # Run tests
 Rscript -e "devtools::test()"
@@ -522,6 +653,18 @@ Rscript -e "devtools::test()"
 # Check package
 Rscript -e "devtools::check()"
 ```
+
+## Glossary
+
+| Acronym | Full Name | Definition |
+|----|----|----|
+| DALY | Disability-Adjusted Life Year | Disease burden = [YLL](#glossary) + [YLD](#glossary). 1 DALY = 1 year of healthy life lost. |
+| LLE | Loss of Life Expectancy | Expected lifespan reduction from a risk, in minutes. See [`lle()`](https://johngavin.github.io/micromort/reference/lle.md). |
+| QALD | Quality-Adjusted Life Day | 1 day of perfect health. Useful for short-duration conditions. |
+| QALY | Quality-Adjusted Life Year | 1 year of perfect health. Used in healthcare cost-effectiveness. |
+| VSL | Value of Statistical Life | Monetary value society places on preventing one death (~\$10M USD). See [`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md). |
+| YLD | Years Lived with Disability | Morbidity component of [DALY](#glossary). Time spent in impaired health. |
+| YLL | Years of Life Lost | Mortality component of [DALY](#glossary). Premature death relative to standard life expectancy. |
 
 ## References
 
@@ -671,6 +814,8 @@ Risk visualization
   : Interactive Risk Plot
 - [`plot_risk_components()`](https://johngavin.github.io/micromort/reference/plot_risk_components.md)
   : Plot Risk Components as Stacked Bar
+- [`theme_micromort_dark()`](https://johngavin.github.io/micromort/reference/theme_micromort_dark.md)
+  : Dark Theme for Micromort Risk Plots
 
 ## Interactive Tools
 
@@ -689,11 +834,19 @@ API, dashboard, and quiz
 
 ### All vignettes
 
+- [Architecture
+  Overview](https://johngavin.github.io/micromort/articles/architecture.md):
+- [Confounding Variables in Risk
+  Data](https://johngavin.github.io/micromort/articles/confounding.md):
 - [Introduction to Micromorts and Risk
   Visualization](https://johngavin.github.io/micromort/articles/introduction.md):
 - [Palatable Units: The Spiegelhalter
   Philosophy](https://johngavin.github.io/micromort/articles/palatable_units.md):
+- [Risk
+  Quiz](https://johngavin.github.io/micromort/articles/quiz_shinylive.md):
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):
+- [REST
+  API](https://johngavin.github.io/micromort/articles/rest_api.md):
 - [Risk Equivalence
   Dashboard](https://johngavin.github.io/micromort/articles/risk_equivalence.md):

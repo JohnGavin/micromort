@@ -59,16 +59,18 @@ Other analysis:
 ``` r
 # Calculate annual risk from recreational activities
 annual_risk_budget(c(
-  "Skydiving (per jump, US)" = 10,
-  "Scuba diving (per dive, trained)" = 20,
+  "Skydiving (US)" = 10,
+  "Scuba diving, trained" = 20,
   "Running a marathon" = 2
 ), age = 35)
+#> Warning: Activity not found: Skydiving (US)
+#> Warning: Activity not found: Scuba diving, trained
 #> # A tibble: 5 × 5
-#>   activity               frequency micromorts_per annual_micromorts pct_of_total
-#>   <chr>                      <dbl>          <dbl>             <dbl>        <dbl>
-#> 1 Baseline (age 35)            365              3              1095         84.9
-#> 2 Skydiving (per jump, …        10              8                80          6.2
-#> 3 Scuba diving (per div…        20              5               100          7.8
-#> 4 Running a marathon             2              7                14          1.1
-#> 5 TOTAL                         NA             NA              1289        100  
+#>   activity              frequency micromorts_per annual_micromorts pct_of_total
+#>   <chr>                     <dbl>          <dbl>             <dbl>        <dbl>
+#> 1 Baseline (age 35)           365              3              1095         98.7
+#> 2 Skydiving (US)               10             NA                NA         NA  
+#> 3 Scuba diving, trained        20             NA                NA         NA  
+#> 4 Running a marathon            2              7                14          1.3
+#> 5 TOTAL                        NA             NA              1109        100  
 ```

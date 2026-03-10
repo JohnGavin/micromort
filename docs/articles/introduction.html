@@ -33,10 +33,13 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
+<li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="../articles/risk_equivalence.html">Risk Equivalence</a></li>
+    <li><a class="dropdown-item" href="../articles/confounding.html">Confounding Variables</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
@@ -715,7 +718,9 @@ rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2
 micromorts/year — a 15-fold increase.</li>
 </ul>
 <p>The lesson: <strong>always ask “conditional on what?”</strong> before
-comparing micromort values across populations or activities.</p>
+comparing micromort values across populations or activities. For a
+deeper treatment of how confounding variables distort risk data,
+including Simpson’s paradox and stratification strategies, see the <a href="confounding.html">Confounding Variables</a> vignette.</p>
 </div>
 </div>
 <div class="section level2">
@@ -877,7 +882,10 @@ subsequent peer-reviewed work</li>
 <p>Risks that fail criterion 2 but pass the others may still appear with
 <code>period = "per year"</code> as a background population rate,
 clearly labelled as such. See <code><a href="../reference/risk_data_sources.html">risk_data_sources()</a></code> for full
-provenance of each entry.</p>
+provenance of each entry. For examples of how confounding variables
+(age, occupation, allergy status) can change risk estimates by orders of
+magnitude, see the <a href="confounding.html">Confounding Variables</a>
+vignette.</p>
 </div>
 <div class="section level3">
 <h3 id="when-per-year-is-legitimate">8.3 When “Per Year” Is Legitimate<a class="anchor" aria-label="anchor" href="#when-per-year-is-legitimate"></a>

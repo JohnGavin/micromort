@@ -115,7 +115,7 @@ common_risks()
 #>  5 Matterhorn asc…       2840      1988  Mountai… per a… event                60
 #>  6 Living in US d…        500       350  COVID-19 per m… month                30
 #>  7 Living (one da…        463       324. Daily L… per d… day                   1
-#>  8 Base jumping (…        430       301  Sport    per e… event                 1
+#>  8 Base jumping           430       301  Sport    per e… event                 1
 #>  9 First day of l…        430       301  Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period               77
 #> # ℹ 81 more rows
@@ -157,11 +157,11 @@ common_risks() |> dplyr::filter(micromorts > 100)
 #>  5 Matterhorn asc…       2840     1988   Mountai… per a… event                60
 #>  6 Living in US d…        500      350   COVID-19 per m… month                30
 #>  7 Living (one da…        463      324.  Daily L… per d… day                   1
-#>  8 Base jumping (…        430      301   Sport    per e… event                 1
+#>  8 Base jumping           430      301   Sport    per e… event                 1
 #>  9 First day of l…        430      301   Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234      164.  COVID-19 11 we… period               77
 #> 11 Caesarean birt…        170      119   Medical  per e… event                 1
-#> 12 Scuba diving (…        164      115.  Sport    per y… year                365
+#> 12 Scuba diving, …        164      115.  Sport    per y… year                365
 #> 13 Vaginal birth …        120       84   Medical  per e… event                 1
 #> 14 Living (one da…        105       73.5 Daily L… per d… day                   1
 #> # ℹ 4 more variables: micromorts_per_day <dbl>, source_url <chr>,

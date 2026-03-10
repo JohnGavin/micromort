@@ -130,6 +130,8 @@ Risk visualization
   : Interactive Risk Plot
 - [`plot_risk_components()`](https://johngavin.github.io/micromort/reference/plot_risk_components.md)
   : Plot Risk Components as Stacked Bar
+- [`theme_micromort_dark()`](https://johngavin.github.io/micromort/reference/theme_micromort_dark.md)
+  : Dark Theme for Micromort Risk Plots
 
 ## Interactive Tools
 

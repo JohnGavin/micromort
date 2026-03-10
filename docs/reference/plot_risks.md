@@ -8,7 +8,16 @@ first.
 ## Usage
 
 ``` r
-plot_risks(risks = common_risks(), facet = TRUE, height = 12, label_size = 9)
+plot_risks(
+  risks = common_risks(),
+  facet = TRUE,
+  height = 12,
+  label_size = 9,
+  dark = TRUE,
+  guide_lines = TRUE,
+  jitter_ones = TRUE,
+  cluster_bands = TRUE
+)
 ```
 
 ## Arguments
@@ -28,12 +37,32 @@ plot_risks(risks = common_risks(), facet = TRUE, height = 12, label_size = 9)
 
 - height:
 
-  Numeric. Plot height in inches. Default is 12 (doubled from previous
-  default of 6) to prevent label overlap.
+  Numeric. Plot height in inches. Default is 12.
 
 - label_size:
 
   Numeric. Y-axis label font size. Default is 9.
+
+- dark:
+
+  Logical. If TRUE (default), use
+  [`theme_micromort_dark()`](https://johngavin.github.io/micromort/reference/theme_micromort_dark.md).
+  If FALSE, use `theme_minimal()`.
+
+- guide_lines:
+
+  Logical. If TRUE (default), add dashed guide lines from y-axis labels
+  to bar starts.
+
+- jitter_ones:
+
+  Logical. If TRUE (default), shift 1-micromort values slightly so bars
+  are visible on log scale.
+
+- cluster_bands:
+
+  Logical. If TRUE (default), add subtle background bands grouping risks
+  with similar micromort values.
 
 ## Value
 
@@ -47,28 +76,69 @@ A ggplot2 object.
 
 Other visualization:
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md),
-[`prepare_risks_plot()`](https://johngavin.github.io/micromort/reference/prepare_risks_plot.md)
+[`prepare_risks_plot()`](https://johngavin.github.io/micromort/reference/prepare_risks_plot.md),
+[`theme_micromort_dark()`](https://johngavin.github.io/micromort/reference/theme_micromort_dark.md)
 
 ## Examples
 
 ``` r
-# Default plot (all risks)
+# Default dark plot
 plot_risks()
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 
 
-# Without faceting
-plot_risks(facet = FALSE)
+# Light theme
+plot_risks(dark = FALSE)
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 
 
 # Filter then plot
 prepare_risks_plot(categories = "Sport") |> plot_risks()
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 
 
 # Exclude COVID-19 and show top 20
 prepare_risks_plot(exclude_categories = "COVID-19", top_n = 20) |>
   plot_risks(facet = FALSE)
-
-
-# Custom height for many categories
-prepare_risks_plot(top_n = 50) |> plot_risks(height = 16)
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 ```

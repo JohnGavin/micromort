@@ -1,22 +1,5 @@
 # Risk Equivalence Dashboard
 
-``` r
-library(micromort)
-library(targets)
-library(DT)
-
-# Safe tar_read with graceful fallback
-safe_tar_read <- function(name) {
-  tryCatch(
-    targets::tar_read_raw(name),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
-```
-
 Micromorts provide a **common currency** for comparing risks that
 otherwise seem incommensurable. How dangerous is a CT scan compared to a
 skydive? How many chest X-rays equal a long-haul flight?
@@ -35,12 +18,11 @@ How risky are the mundane things we do every day?
 
 ``` r
 everyday <- safe_tar_read("vig_equiv_everyday")
-#> Target 'vig_equiv_everyday' not found. Run tar_make() first.
 if (!is.null(everyday)) {
   DT::datatable(
     everyday,
     caption = "Everyday activities ranked by micromort risk, with chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("micromorts", "microlives", "micromorts_per_day"), 2)
@@ -51,7 +33,6 @@ Everyday activities expressed in chest X-ray equivalents:
 
 ``` r
 everyday <- safe_tar_read("vig_equiv_everyday")
-#> Target 'vig_equiv_everyday' not found. Run tar_make() first.
 if (!is.null(everyday) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(
     everyday,
@@ -65,8 +46,12 @@ if (!is.null(everyday) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Everyday Activities in Chest X-ray Equivalents",
       xaxis = list(title = "Chest X-ray equivalents"),
       yaxis = list(title = ""),
-      margin = list(l = 200)
-    )
+      margin = list(l = 200),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -82,7 +67,6 @@ dominate at each duration, and which you can mitigate.
 
 ``` r
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
-#> Target 'vig_equiv_flight_duration' not found. Run tar_make() first.
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(
     flight_data,
@@ -96,30 +80,35 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Flight Risk by Duration and Component (Healthy Profile)",
       xaxis = list(title = ""),
       yaxis = list(title = "Micromorts"),
-      legend = list(orientation = "h", y = -0.2)
-    )
+      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
 Key observations:
 
-- **Crash risk** scales linearly (~0.25 mm/hour) and is NOT hedgeable
+- **Crash risk** is roughly constant per flight (~1 mm) regardless of
+  duration — dominated by takeoff and landing phases (~80% of fatal
+  accidents per Boeing Statistical Summary) — and is NOT hedgeable
 - **DVT risk** is zero below 4 hours, then grows nonlinearly — and IS
   hedgeable (compression socks reduce risk ~65%)
 - **Cosmic radiation** is linear (~0.05 mm/hour) and NOT hedgeable
-- For an 8-hour flight, **51% of total risk is hedgeable** (the DVT
-  component)
+- For an 8-hour flight, DVT is the dominant hedgeable component
 
 How does DVT risk status change the total?
 
 ``` r
 components <- safe_tar_read("vig_equiv_flight_components")
-#> Target 'vig_equiv_flight_components' not found. Run tar_make() first.
 if (!is.null(components)) {
   DT::datatable(
     components,
     caption = "Flying (8h long-haul): Healthy vs DVT risk factors",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 1)
@@ -129,12 +118,11 @@ if (!is.null(components)) {
 ``` r
 # Show all flight components across durations
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
-#> Target 'vig_equiv_flight_duration' not found. Run tar_make() first.
 if (!is.null(flight_data)) {
   DT::datatable(
     flight_data,
     caption = "All flight risk components by duration (healthy profile)",
-    options = list(pageLength = 20, dom = "tip"),
+    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 2)
@@ -148,13 +136,12 @@ if (!is.null(flight_data)) {
 
 ``` r
 landmarks <- safe_tar_read("vig_equiv_landmarks")
-#> Target 'vig_equiv_landmarks' not found. Run tar_make() first.
 if (!is.null(landmarks)) {
   DT::datatable(
     landmarks |>
       dplyr::select(activity, micromorts, category, xray_equivalents),
     caption = "Landmark activities from coffee to Everest, in chest X-ray equivalents",
-    options = list(pageLength = 20, dom = "tip"),
+    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("micromorts", 2)
@@ -166,12 +153,11 @@ chest X-ray:
 
 ``` r
 explorer <- safe_tar_read("vig_equiv_explorer")
-#> Target 'vig_equiv_explorer' not found. Run tar_make() first.
 if (!is.null(explorer)) {
   DT::datatable(
     explorer,
     caption = "All activities as multiples of one chest X-ray (0.1 micromorts)",
-    options = list(pageLength = 15, dom = "ftip"),
+    options = list(pageLength = 15, dom = "ftip", scrollX = TRUE),
     filter = "top",
     rownames = FALSE
   ) |>
@@ -188,12 +174,11 @@ Medical imaging procedures vary enormously in radiation dose:
 
 ``` r
 med <- safe_tar_read("vig_equiv_medical_focus")
-#> Target 'vig_equiv_medical_focus' not found. Run tar_make() first.
 if (!is.null(med)) {
   DT::datatable(
     med |> dplyr::select(activity, micromorts, microlives, period),
     caption = "Medical radiation procedures ranked by micromort risk",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("micromorts", "microlives"), 2)
@@ -204,7 +189,6 @@ How many chest X-rays equal one CT scan?
 
 ``` r
 med <- safe_tar_read("vig_equiv_medical_focus")
-#> Target 'vig_equiv_medical_focus' not found. Run tar_make() first.
 if (!is.null(med) && requireNamespace("plotly", quietly = TRUE)) {
   med <- med |>
     dplyr::mutate(xray_equiv = round(micromorts / 0.1, 0))
@@ -221,8 +205,12 @@ if (!is.null(med) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Medical Procedures in Chest X-ray Equivalents",
       xaxis = list(title = "Number of chest X-rays"),
       yaxis = list(title = ""),
-      margin = list(l = 200)
-    )
+      margin = list(l = 200),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -235,12 +223,11 @@ Which activities have hedgeable risk components?
 
 ``` r
 hedgeable <- safe_tar_read("vig_equiv_hedgeable_summary")
-#> Target 'vig_equiv_hedgeable_summary' not found. Run tar_make() first.
 if (!is.null(hedgeable)) {
   DT::datatable(
     hedgeable,
     caption = "Activities with hedgeable risk components (sorted by hedgeable %)",
-    options = list(pageLength = 10, dom = "tip"),
+    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound("hedgeable_pct", 1)
@@ -251,7 +238,6 @@ Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 
 ``` r
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
-#> Target 'vig_equiv_flight_duration' not found. Run tar_make() first.
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
   flight_data <- flight_data |>
     dplyr::mutate(
@@ -271,8 +257,13 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
       xaxis = list(title = ""),
       yaxis = list(title = "Micromorts"),
-      legend = list(orientation = "h", y = -0.2)
-    )
+      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
 ```
 
@@ -293,12 +284,11 @@ occupational, passenger, and environmental:
 
 ``` r
 rad_profiles <- safe_tar_read("vig_radiation_profiles")
-#> Target 'vig_radiation_profiles' not found. Run tar_make() first.
 if (!is.null(rad_profiles)) {
   DT::datatable(
     rad_profiles,
     caption = "Radiation exposure profiles: annual dose and cumulative micromorts at career milestones",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("annual_msv", "annual_micromorts",
@@ -314,12 +304,11 @@ How many patient X-rays equal a career of occupational exposure?
 
 ``` r
 prc <- safe_tar_read("vig_radiation_patient_vs_occ")
-#> Target 'vig_radiation_patient_vs_occ' not found. Run tar_make() first.
 if (!is.null(prc)) {
   DT::datatable(
     prc,
     caption = "Patient X-ray exposure vs occupational career radiation (ratio > 1 means patient exceeds worker)",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     filter = "top",
     rownames = FALSE
   ) |>
@@ -334,7 +323,6 @@ Cumulative radiation exposure over a 40-year career:
 
 ``` r
 timeline <- safe_tar_read("vig_radiation_timeline_data")
-#> Target 'vig_radiation_timeline_data' not found. Run tar_make() first.
 if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(
     timeline,
@@ -348,21 +336,29 @@ if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
       title = "Cumulative Radiation Micromorts Over Career",
       xaxis = list(title = "Years of Exposure"),
       yaxis = list(title = "Cumulative Micromorts"),
-      legend = list(orientation = "v", x = 1.02, y = 1)
-    )
+      legend = list(orientation = "v", x = 1.02, y = 1, font = list(color = "#1a1a1a"),
+                    bgcolor = "rgba(255,255,255,0.9)"),
+      paper_bgcolor = "white",
+      plot_bgcolor = "white",
+      font = list(color = "#1a1a1a")
+    ) |>
+    plotly::config(scrollZoom = TRUE)
 }
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
+#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+#> Returning the palette you asked for with that many colors
 ```
 
 How do actual doses compare to ICRP regulatory limits?
 
 ``` r
 regulatory <- safe_tar_read("vig_radiation_regulatory")
-#> Target 'vig_radiation_regulatory' not found. Run tar_make() first.
 if (!is.null(regulatory)) {
   DT::datatable(
     regulatory,
     caption = "Actual annual doses vs ICRP limits (occupational: 20 mSv/yr, public: 1 mSv/yr)",
-    options = list(pageLength = 15, dom = "tip"),
+    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
     rownames = FALSE
   ) |>
     DT::formatRound(c("annual_msv", "pct_of_limit"), 1)
@@ -378,7 +374,6 @@ equals X column-activities.”
 
 ``` r
 mat <- safe_tar_read("vig_equiv_matrix")
-#> Target 'vig_equiv_matrix' not found. Run tar_make() first.
 if (!is.null(mat)) {
   DT::datatable(
     mat,

@@ -1,22 +1,5 @@
 # Palatable Units: The Spiegelhalter Philosophy
 
-``` r
-library(micromort)
-library(targets)
-library(DT)
-
-# Safe tar_read with graceful fallback
-safe_tar_read <- function(name) {
-  tryCatch(
-    targets::tar_read_raw(name),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
-```
-
 **“Statistics are not just numbers; they are the way we make sense of
 the world.”** — Sir David Spiegelhalter
 
@@ -38,8 +21,8 @@ activities.
 
 - **Micromort:** 1-in-a-million chance of **acute** death (sudden
   event).
-- **Microlife:** 30 minutes of life expectancy lost/gained (chronic
-  **attrition**).
+- **Microlife:** 30 minutes of life expectancy lost/gained **per day**
+  (chronic **attrition**).
 
 ## 2. Micromorts: Measuring “Stopping Living” (Hazard)
 
@@ -64,8 +47,6 @@ The following table uses
 the package’s curated dataset of 62 acute risks with full provenance
 tracking:
 
-    #> Target 'vig_palatable_risks_filtered' not found. Run tar_make() first.
-
 > **Comparison:** Riding a motorcycle for just 60 miles carries the same
 > acute death risk (~10 micromorts) as undergoing general anesthesia.
 > Using a standardized dataset enables apples-to-apples comparisons
@@ -77,7 +58,7 @@ While micromorts measure sudden death (Hazard), **Microlives** measure
 **chronic attrition**: the rate at which you are “using up” your life
 expectancy.
 
-- **Definition:** 1 Microlife = 30 minutes of life expectancy.
+- **Definition:** 1 Microlife = 30 minutes of life expectancy per day.
 - **Normalization:** Risk is normalized **per day** of maintaining a
   habit.
 - **Unit of Attrition:** The “unit” is the expected lifespan. -1
@@ -90,8 +71,6 @@ expectancy.
 Using
 [`chronic_risks()`](https://johngavin.github.io/micromort/reference/chronic_risks.md),
 the package’s curated dataset of 22 chronic lifestyle factors:
-
-    #> Target 'vig_palatable_chronic_risks' not found. Run tar_make() first.
 
 > **Clarification:** A value of **-1 Microlife** is a **loss**
 > (attrition). It effectively means you are aging 30 minutes faster than
@@ -112,10 +91,7 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-&nbsp;
-
-    #> Target 'vig_palatable_risk_plot' not found. Run tar_make() first.
-    #> NULL
+![](palatable_units_files/figure-html/unnamed-chunk-4-1.png)
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -127,8 +103,10 @@ which provides:
 
 &nbsp;
 
-    #> Target 'vig_palatable_risk_plot_interactive' not found. Run tar_make() first.
-    #> NULL
+    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+    #> Returning the palette you asked for with that many colors
+    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+    #> Returning the palette you asked for with that many colors
 
 ## 5. Media Perception vs. Actual Risk
 

@@ -1,22 +1,5 @@
 # Introduction to Micromorts and Risk Visualization
 
-``` r
-library(micromort)
-library(targets)
-library(DT)
-
-# Safe tar_read with graceful fallback
-safe_tar_read <- function(name) {
-  tryCatch(
-    targets::tar_read_raw(name),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
-```
-
 This vignette introduces the **micromort** package, which provides tools
 for understanding and visualizing risks.
 
@@ -72,8 +55,6 @@ as_micromort(1/10000)
 
 ### Common Risks Table
 
-    #> Target 'vig_intro_common_risks' not found. Run tar_make() first.
-
 ### Visualizing Risks
 
 Using
@@ -82,8 +63,24 @@ we can see the relative magnitude of different activities on a
 logarithmic scale. The plot is split into COVID-19 and Other risks to
 make comparisons easier:
 
-    #> Target 'vig_intro_risk_plot' not found. Run tar_make() first.
-    #> NULL
+    #> Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+
+![](introduction_files/figure-html/unnamed-chunk-4-1.png)
 
 #### Interactive Version
 
@@ -91,14 +88,16 @@ For interactive exploration with hover details and category filtering,
 use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md):
 
-    #> Target 'vig_intro_risk_plot_interactive' not found. Run tar_make() first.
-    #> NULL
+    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+    #> Returning the palette you asked for with that many colors
+    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
+    #> Returning the palette you asked for with that many colors
 
 ## 2. Microlives (Chronic Risk)
 
 While micromorts measure sudden death, **microlives** measure the impact
 of chronic habits on your life expectancy. A microlife represents a
-30-minute change in life expectancy.
+30-minute change in life expectancy **per day of exposure**.
 
 ### Living at Different Speeds
 
@@ -156,8 +155,12 @@ converted using expected value theory.
 **Key relationship:** 1 micromort ≈ 0.7 microlives
 
 **Assumptions for this conversion:** 1. Remaining life expectancy = 40
-years (adjust for actual age) 2. Death occurs immediately upon the event
-(worst case) 3. Linear approximation (valid for small probabilities)
+years (use `lle(prob, life_expectancy = ...)` to [adjust for any
+age](https://johngavin.github.io/micromort/articles/rest_api.html#age-based-hazard-rates);
+see also
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md))
+2. Death occurs immediately upon the event (worst case) 3. Linear
+approximation (valid for small probabilities)
 
 **Mathematical derivation:**
 
@@ -186,7 +189,7 @@ microlives/day). However, **the approximation breaks down when:**
 | Metric | Unit Definition | Scope | Sign |
 |----|----|----|----|
 | **Micromort** | 1-in-a-million probability of death | Per discrete event (1 surgery, 1 flight) | Always ≥ 0 |
-| **Microlife** | 30 minutes of life expectancy change | Per day of exposure/habit | \+ = gain, − = loss |
+| **Microlife** | 30 minutes of life expectancy change per day | Per day of exposure/habit | \+ = gain, − = loss |
 
 ### When to Use Each
 
@@ -273,13 +276,12 @@ perfect health.**
 
 ### DALY (Disability-Adjusted Life Years)
 
-Measures disease burden as the sum of:
+Measures disease burden as the sum of two components:
 
-- **YLL (Years of Life Lost):** From premature mortality
-- **YLD (Years Lived with Disability):** From morbidity, weighted by
-  disability severity
-
-**Formula:** `DALY = YLL + YLD`
+- **DALY = YLL + YLD**, where:
+  - **YLL (Years of Life Lost):** From premature mortality
+  - **YLD (Years Lived with Disability):** From morbidity, weighted by
+    disability severity
 
 For fatal diseases like COVID-19, YLL dominates. For non-fatal
 conditions like the common cold, YLD dominates.
@@ -289,7 +291,7 @@ conditions like the common cold, YLD dominates.
 | Metric | Unit Definition | Scope | Sign | Best For |
 |----|----|----|----|----|
 | **Micromort** | 1/1,000,000 death probability | Per discrete event (surgery, flight, climb) | ≥ 0 (probability) | Comparing single risky activities |
-| **Microlife** | 30 min life expectancy change | Per day of chronic exposure | \+ gain / − loss | Daily lifestyle interventions |
+| **Microlife** | 30 min life expectancy change per day | Per day of chronic exposure | \+ gain / − loss | Daily lifestyle interventions |
 | **QALY** | 1 year at perfect health (quality=1.0) | Per treatment/intervention | ≥ 0 | Cost-effectiveness in healthcare |
 | **DALY** | 1 year lost to disease (YLL + YLD) | Per condition/population | ≥ 0 (burden) | Global health prioritization |
 | **QALD** | 1 day at perfect health | Per illness episode | ≥ 0 | Short-term morbidity (colds, flu) |
@@ -316,23 +318,15 @@ The
 function provides mortality data stratified by cancer type, sex, and age
 group:
 
-    #> Target 'vig_intro_cancer_top3' not found. Run tar_make() first.
-
 **Family history impact:** The `family_history_rr` column shows relative
 risk increase with a first-degree relative’s diagnosis. For example,
 prostate cancer risk increases 2.5× with family history.
-
-    #> Target 'vig_intro_cancer_family_history' not found. Run tar_make() first.
 
 ### Vaccination Risk Reduction
 
 The
 [`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)
 function quantifies micromorts avoided through vaccination:
-
-    #> Target 'vig_intro_vaccination_childhood' not found. Run tar_make() first.
-
-    #> Target 'vig_intro_vaccination_adult' not found. Run tar_make() first.
 
 ### Hedged vs Unhedged: Optimal Lifestyle Comparison
 
@@ -341,8 +335,6 @@ The
 function compares risk factors between optimal (“hedged”) and suboptimal
 (“unhedged”) states:
 
-    #> Target 'vig_intro_cardiovascular_risk' not found. Run tar_make() first.
-
 ### Total Portfolio Effect
 
 The
@@ -350,13 +342,156 @@ The
 function calculates total life expectancy gain from adopting all optimal
 lifestyle choices:
 
-    #> Target 'vig_intro_hedged_portfolio' not found. Run tar_make() first.
-
 **Interpretation:** A fully “hedged” individual (non-smoker, regular
 exercise, healthy diet, vaccinated, etc.) can expect to gain significant
 additional life expectancy compared to an “unhedged” baseline.
 
-## 8. Conclusion
+### Conditional Acute Risks: Age Changes Everything
+
+Conditional risk analysis isn’t limited to chronic lifestyle factors.
+Some acute risks show extreme **age-conditioning** that makes population
+averages misleading.
+
+**Example: Falling out of bed** kills ~450 Americans per year
+([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)).
+The population average is 1.36 micromorts/year — but the [CDC
+age-stratified
+data](https://www.cdc.gov/nchs/products/databriefs/db532.htm) reveals a
+**2,500-fold** difference across age groups:
+
+| Age group | Sex    | Fall deaths per 100,000/year | Micromorts per night of sleep |
+|-----------|--------|------------------------------|-------------------------------|
+| Under 65  | Both   | ~0.4                         | **0.004**                     |
+| 65-74     | Male   | 24.7                         | **0.68**                      |
+| 65-74     | Female | 14.2                         | **0.39**                      |
+| 85+       | Male   | 373.3                        | **10.2**                      |
+| 85+       | Female | 319.7                        | **8.8**                       |
+
+An 85-year-old man going to bed faces ~10 micromorts per night —
+comparable to riding a motorcycle 60 miles (10 micromorts/trip) or a
+single dose of ecstasy (13 micromorts/dose). For someone under 65, the
+same activity carries 0.004 micromorts per night — essentially zero.
+
+This pattern recurs across many “exotic” risks:
+
+- **Bee/wasp stings** (72 deaths/year, US): Nearly all fatalities are
+  among the ~1% of the population with venom allergy. Conditional on
+  allergy: high risk per sting. Conditional on no allergy: near-zero.
+- **Cow trampling** (22 deaths/year, US): Population rate is 0.07
+  micromorts/year. For cattle farmers handling animals daily: ~7.5
+  micromorts/year — a 100-fold increase.
+- **Lightning strike** (28 deaths/year, US): Population rate is 0.08
+  micromorts/year. For outdoor agricultural workers: ~1.2
+  micromorts/year — a 15-fold increase.
+
+The lesson: **always ask “conditional on what?”** before comparing
+micromort values across populations or activities. For a deeper
+treatment of how confounding variables distort risk data, including
+Simpson’s paradox and stratification strategies, see the [Confounding
+Variables](https://johngavin.github.io/micromort/articles/confounding.md)
+vignette.
+
+## 8. Data Quality: The Denominator Problem
+
+Not every widely-cited risk statistic belongs in a curated dataset. Many
+“exotic” risk figures circulate in media and popular science without the
+rigorous **exposure denominator** needed for meaningful micromort
+calculations. This section explains why certain risks were excluded and
+what to watch for when interpreting risk data.
+
+### 8.1 The Three Denominator Failures
+
+A micromort value is only meaningful when paired with a clear **period**
+— the unit of exposure. We require: *Deaths ÷ Exposures = Probability*.
+Three common failures make this impossible:
+
+**1. Unknown denominator (no exposure count)**
+
+| Risk | Annual deaths (US) | What we don’t know |
+|----|----|----|
+| Bee/wasp stings | 72 | How many sting *exposures* per year? Is this per sting, per outdoor hour, per year of beekeeping? |
+| Dog mauling | 43-127 | Per dog interaction? Per year of dog ownership? Per year of existing near dogs? |
+| Fire ant stings | ~30 | Per sting event? Per year in fire ant territory? |
+
+The 72 bee sting deaths per year ([CDC
+MMWR](https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm)) is a solid
+numerator from the National Vital Statistics System. But without knowing
+the total number of sting exposures, we cannot calculate a per-sting
+micromort value. The best we can do is a per-year population rate (0.22
+micromorts/year for any US resident), which conflates people who never
+encounter bees with beekeepers stung weekly.
+
+**2. Misleading population average (hides conditional risk)**
+
+| Risk | Population average | Conditional reality |
+|----|----|----|
+| Falling out of bed | 1.36 micromorts/year (US) | Under-65: ~0.004/night; Age 85+ male: **10.2/night** |
+| Cow trampling | 0.07 micromorts/year (US) | General public: ~0; Cattle farmer: ~7.5/year |
+| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0; Outdoor agricultural worker: ~1.2/year |
+
+Falling out of bed kills ~450 Americans per year
+([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)),
+but the CDC age-stratified data ([Data Brief
+532](https://www.cdc.gov/nchs/products/databriefs/db532.htm)) reveals a
+**2,500-fold** difference: an 85-year-old man faces ~10 micromorts per
+night of sleep (comparable to riding a motorcycle 60 miles), while
+someone under 65 faces ~0.004. The population average of 1.36/year is
+technically correct but practically useless.
+
+**3. Fabricated or untraceable numerator**
+
+| Claim | Cited figure | Actual evidence |
+|----|----|----|
+| Coconut deaths | “150 per year worldwide” | Originated from a **travel insurance press release** (Club Direct, late 1990s), not from Barss (1984). The original [Barss paper](https://pubmed.ncbi.nlm.nih.gov/6502774/) documented only 2 deaths over 4 years at one Papua New Guinea hospital. ([Snopes: Unproven](https://www.snopes.com/fact-check/coconuts-kill-more-sharks/)) |
+| Champagne cork deaths | “24 per year” | Traced to a 2008 *Daily Mail* article citing a tabloid book. No government vital statistics, hospital registry, or peer-reviewed study supports this figure. |
+| Left-handed equipment deaths | “9 years shorter lifespan” | A statistical artefact from [Halpern & Coren (1991)](https://pubmed.ncbi.nlm.nih.gov/2006231/), debunked by multiple papers. The apparent age gap reflects historical suppression of left-handedness reporting, not excess mortality ([van der Hoeven et al., 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10369838/)). |
+
+### 8.2 Inclusion Criteria for This Package
+
+Risks in
+[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
+and
+[`acute_risks()`](https://johngavin.github.io/micromort/reference/acute_risks.md)
+meet these minimum standards:
+
+1.  **Traceable numerator**: Death count from a government agency (CDC,
+    CPSC, WHO, NOAA) or peer-reviewed epidemiological study
+2.  **Defined denominator**: A meaningful exposure unit (per ride, per
+    climb, per day, per trip) — not just “per year of being alive”
+3.  **Reproducible calculation**: The micromort derivation can be
+    independently verified from the cited source
+4.  **Not a myth**: The figure has not been debunked by subsequent
+    peer-reviewed work
+
+Risks that fail criterion 2 but pass the others may still appear with
+`period = "per year"` as a background population rate, clearly labelled
+as such. See
+[`risk_data_sources()`](https://johngavin.github.io/micromort/reference/risk_data_sources.md)
+for full provenance of each entry. For examples of how confounding
+variables (age, occupation, allergy status) can change risk estimates by
+orders of magnitude, see the [Confounding
+Variables](https://johngavin.github.io/micromort/articles/confounding.md)
+vignette.
+
+### 8.3 When “Per Year” Is Legitimate
+
+Some risks are genuinely **background hazards** where the exposure is
+simply *being alive in a given geography*:
+
+- Lightning strike: 0.08 micromorts/year (US) — everyone is exposed to
+  thunderstorms
+- Asteroid impact: 0.01 micromorts/year (global) — a theoretical
+  actuarial average
+  ([NASA](https://ntrs.nasa.gov/api/citations/20160013841/downloads/20160013841.pdf))
+- Living one day at age 75: 120 micromorts/day — the baseline hazard
+  rate from all causes
+
+These are valid “per year” figures because the denominator is the entire
+population and the exposure is unavoidable. The problem arises when a
+per-year population rate is presented for an activity that only a
+fraction of the population engages in.
+
+## 9. Conclusion
 
 The `micromort` package helps translate abstract probabilities into
 concrete units for better decision-making. By comparing acute risks

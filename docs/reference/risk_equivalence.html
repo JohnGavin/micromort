@@ -20,10 +20,13 @@ ratio of micromorts. &quot;How many X-rays equal one skydive?&quot;"></head><bod
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="../articles/risk_equivalence.html">Risk Equivalence</a></li>
+    <li><a class="dropdown-item" href="../articles/confounding.html">Confounding Variables</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
@@ -100,11 +103,11 @@ Defaults to <code><a href="common_risks.html">common_risks()</a></code>.</p></dd
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asce…       <span style="text-decoration: underline;">2</span>840 Chest X-…                  0.1  <span style="text-decoration: underline;">28</span>400 1 Matterho…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US du…        500 Chest X-…                  0.1   <span style="text-decoration: underline;">5</span>000 1 Living i…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one day…        463 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>630 1 Living (…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (p…        430 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>300 1 Base jum…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping            430 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>300 1 Base jum…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of li…        430 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>300 1 First da…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvacc…        234 Chest X-…                  0.1   <span style="text-decoration: underline;">2</span>340 1 COVID-19…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 80 more rows</span></span>
-<span class="r-in"><span><span class="fu">risk_equivalence</span><span class="op">(</span><span class="st">"Skydiving (per jump, US)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">risk_equivalence</span><span class="op">(</span><span class="st">"Skydiving (US)"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 83 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity         micromorts reference reference_micromorts  ratio equivalence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
@@ -115,7 +118,7 @@ Defaults to <code><a href="common_risks.html">common_risks()</a></code>.</p></dd
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asce…       <span style="text-decoration: underline;">2</span>840 Skydivin…                    8  355   1 Matterho…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US du…        500 Skydivin…                    8   62.5 1 Living i…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one day…        463 Skydivin…                    8   57.9 1 Living (…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (p…        430 Skydivin…                    8   53.8 1 Base jum…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping            430 Skydivin…                    8   53.8 1 Base jum…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of li…        430 Skydivin…                    8   53.8 1 First da…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvacc…        234 Skydivin…                    8   29.2 1 COVID-19…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 73 more rows</span></span>

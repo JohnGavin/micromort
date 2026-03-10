@@ -56,7 +56,8 @@ A tibble ready for plotting with
 
 Other visualization:
 [`plot_risks()`](https://johngavin.github.io/micromort/reference/plot_risks.md),
-[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
+[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md),
+[`theme_micromort_dark()`](https://johngavin.github.io/micromort/reference/theme_micromort_dark.md)
 
 ## Examples
 
@@ -73,7 +74,7 @@ prepare_risks_plot()
 #>  5 Matterhorn asc…       2840      1988  Mountai… per a… event                60
 #>  6 Living in US d…        500       350  COVID-19 per m… month                30
 #>  7 Living (one da…        463       324. Daily L… per d… day                   1
-#>  8 Base jumping (…        430       301  Sport    per e… event                 1
+#>  8 Base jumping           430       301  Sport    per e… event                 1
 #>  9 First day of l…        430       301  Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period               77
 #> # ℹ 70 more rows
@@ -116,10 +117,10 @@ prepare_risks_plot(exclude_categories = "COVID-19")
 #>  3 Spanish flu in…       3000      2100  Disease  per i… event                14
 #>  4 Matterhorn asc…       2840      1988  Mountai… per a… event                60
 #>  5 Living (one da…        463       324. Daily L… per d… day                   1
-#>  6 Base jumping (…        430       301  Sport    per e… event                 1
+#>  6 Base jumping           430       301  Sport    per e… event                 1
 #>  7 First day of l…        430       301  Daily L… per d… day                   1
 #>  8 Caesarean birt…        170       119  Medical  per e… event                 1
-#>  9 Scuba diving (…        164       115. Sport    per y… year                365
+#>  9 Scuba diving, …        164       115. Sport    per y… year                365
 #> 10 Vaginal birth …        120        84  Medical  per e… event                 1
 #> # ℹ 52 more rows
 #> # ℹ 5 more variables: micromorts_per_day <dbl>, source_url <chr>,
@@ -130,15 +131,15 @@ prepare_risks_plot(categories = c("Sport", "Travel"))
 #> # A tibble: 24 × 12
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
-#>  1 Base jumping (…        430      301   Sport    per e… event              1   
-#>  2 Scuba diving (…        164      115.  Sport    per y… year             365   
+#>  1 Base jumping           430      301   Sport    per e… event              1   
+#>  2 Scuba diving, …        164      115.  Sport    per y… year             365   
 #>  3 American footb…         20       14   Sport    per g… event              0.13
-#>  4 Swimming (drow…         12        8.4 Sport    per s… event              0.04
+#>  4 Swimming                12        8.4 Sport    per s… event              0.04
 #>  5 Motorcycling (…         10        7   Travel   per t… event              0.17
-#>  6 Skydiving (per…         10        7   Sport    per e… event              1   
-#>  7 Skydiving (per…          8        5.6 Sport    per e… event              1   
-#>  8 Skydiving (per…          8        5.6 Sport    per e… event              1   
-#>  9 Hang gliding (…          8        5.6 Sport    per e… event              1   
+#>  6 Skydiving               10        7   Sport    per e… event              1   
+#>  7 Skydiving (US)           8        5.6 Sport    per e… event              1   
+#>  8 Skydiving (UK)           8        5.6 Sport    per e… event              1   
+#>  9 Hang gliding             8        5.6 Sport    per e… event              1   
 #> 10 Running a mara…          7        4.9 Sport    per e… event              1   
 #> # ℹ 14 more rows
 #> # ℹ 5 more variables: micromorts_per_day <dbl>, source_url <chr>,
@@ -156,11 +157,11 @@ prepare_risks_plot(top_n = 20)
 #>  5 Matterhorn asc…       2840     1988   Mountai… per a… event             60   
 #>  6 Living in US d…        500      350   COVID-19 per m… month             30   
 #>  7 Living (one da…        463      324.  Daily L… per d… day                1   
-#>  8 Base jumping (…        430      301   Sport    per e… event              1   
+#>  8 Base jumping           430      301   Sport    per e… event              1   
 #>  9 First day of l…        430      301   Daily L… per d… day                1   
 #> 10 COVID-19 unvac…        234      164.  COVID-19 11 we… period            77   
 #> 11 Caesarean birt…        170      119   Medical  per e… event              1   
-#> 12 Scuba diving (…        164      115.  Sport    per y… year             365   
+#> 12 Scuba diving, …        164      115.  Sport    per y… year             365   
 #> 13 Vaginal birth …        120       84   Medical  per e… event              1   
 #> 14 Living (one da…        105       73.5 Daily L… per d… day                1   
 #> 15 COVID-19 unvac…         76       53.2 COVID-19 11 we… period            77   
@@ -174,4 +175,9 @@ prepare_risks_plot(top_n = 20)
 
 # Chain with plotting
 prepare_risks_plot(categories = "Sport") |> plot_risks()
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 ```
