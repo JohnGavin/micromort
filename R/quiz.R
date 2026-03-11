@@ -17,6 +17,7 @@
 #' @return A tibble with columns:
 #'   - `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`, `period_a`
 #'   - `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`, `period_b`
+#'   - `description_a`, `help_url_a`, `description_b`, `help_url_b`
 #'   - `ratio` (max/min of the two micromort values)
 #'   - `answer` ("a" or "b" — whichever activity is riskier)
 #'
@@ -96,7 +97,37 @@ quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
   pairs <- pairs[sample(nrow(pairs)), ]
 
   pairs$cross_category <- NULL
+
+  # Join activity descriptions for tooltips and explanations
+  desc <- activity_descriptions()
+  desc_a <- desc
+  names(desc_a) <- c("activity_a", "description_a", "help_url_a")
+  desc_b <- desc
+  names(desc_b) <- c("activity_b", "description_b", "help_url_b")
+  pairs <- merge(pairs, desc_a, by = "activity_a", all.x = TRUE)
+  pairs <- merge(pairs, desc_b, by = "activity_b", all.x = TRUE)
+
   tibble::as_tibble(pairs)
+}
+
+
+#' Format Activity Name with Line Break Before Parenthetical
+#'
+#' Inserts an HTML `<br>` before the first opening parenthesis in an activity
+#' name, making quiz buttons more readable by separating the qualifier.
+#'
+#' @param name Character string. The activity name to format.
+#' @return A [shiny::HTML()] object with `<br>` inserted before `(`, or the
+#'   original string wrapped in `HTML()` if no parenthesis is present.
+#'
+#' @examples
+#' format_activity_name("airline pilot (annual radiation)")
+#' format_activity_name("Skydiving")
+#'
+#' @export
+format_activity_name <- function(name) {
+  formatted <- sub("\\s*\\(", "<br>(", name)
+  shiny::HTML(formatted)
 }
 
 
@@ -140,13 +171,24 @@ launch_quiz <- function(n_pairs = NULL, ...) {
 
 # ---- Internal UI ----
 
+quiz_title_ui <- function() {
+  shiny::h3(
+    "Which lifestyle event is more likely to kill you?",
+    class = "text-center mb-3 quiz-title"
+  )
+}
+
 quiz_ui <- function() {
   bslib::page_fluid(
     theme = bslib::bs_theme(bootswatch = "flatly", version = 5),
-    shiny::tags$head(shiny::tags$style(shiny::HTML(quiz_css()))),
+    shiny::tags$head(
+      shiny::tags$style(shiny::HTML(quiz_css())),
+      shiny::tags$script(shiny::HTML(leaderboard_js()))
+    ),
     shiny::div(
       class = "container",
-      style = "max-width: 800px; margin: auto; padding-top: 20px;",
+      style = "width: 95%; max-width: 100%; margin: auto; padding-top: 20px;",
+      quiz_title_ui(),
       shiny::uiOutput("main_ui")
     )
   )
@@ -204,6 +246,8 @@ quiz_server <- function(n_pairs = NULL) {
     shiny::observeEvent(input$prev_q, {
       if (state$current_q > 1L) {
         state$current_q <- state$current_q - 1L
+      } else {
+        state$phase <- "instructions"
       }
     })
 
@@ -216,6 +260,10 @@ quiz_server <- function(n_pairs = NULL) {
     })
 
     shiny::observeEvent(input$try_again, {
+      state$phase <- "instructions"
+    })
+
+    shiny::observeEvent(input$try_again_detail, {
       state$phase <- "instructions"
     })
 
@@ -234,31 +282,48 @@ quiz_server <- function(n_pairs = NULL) {
 
 # ---- Page builders ----
 
+quiz_encouragement_lines <- function() {
+  c(
+    "Go on, your inner actuary is dying to play. (Not literally.)",
+    "Warning: may cause sudden urge to recalculate your commute.",
+    "Spoiler: everything is riskier than you think.",
+    "No micromorts were harmed in the making of this quiz.",
+    "Side effects may include newfound respect for seatbelts.",
+    "Think you know risk? Prove it.",
+    "Your overconfidence is showing. Let's test it.",
+    "Statistically, you'll enjoy this. Probably."
+  )
+}
+
 instructions_ui <- function(n_pairs = NULL) {
+  encouragement <- sample(quiz_encouragement_lines(), 1L)
+
   shiny::tagList(
-    shiny::h2("Which Is Riskier?", class = "text-center mb-4"),
+    shiny::h4("Hints", class = "text-center mb-3"),
     bslib::card(
       bslib::card_body(
         shiny::tags$ul(
           shiny::tags$li(
-            "A ", shiny::strong("micromort (mm)"), " is a one-in-a-million ",
-            "chance of death."
+            "Each question shows two risky activities."
           ),
           shiny::tags$li(
-            "You face some of these risks every day \u2014 ",
-            "do you know which ones are bigger?"
-          ),
-          shiny::tags$li(
-            "Each question shows two activities \u2014 ",
-            "guess which carries more risk."
+            "Tap the activity that you think is ", shiny::strong("riskier"), "."
           ),
           shiny::tags$li(
             "You can ", shiny::strong("skip"), " questions or go ",
-            shiny::strong("back"), " and change answers."
+            shiny::strong("back"), " and review previous answers."
           ),
           shiny::tags$li(
             "Skipped (unanswered) questions score zero."
+          ),
+          shiny::tags$li(
+            "A ", shiny::strong("micromort (mm)"), " is a one-in-a-million ",
+            "chance of death."
           )
+        ),
+        shiny::div(
+          class = "text-center mt-2 mb-3",
+          shiny::tags$em(encouragement)
         ),
         if (is.null(n_pairs)) {
           shiny::radioButtons(
@@ -297,11 +362,15 @@ question_ui <- function(state) {
   left_category <- pair[[paste0("category_", left_side)]]
   left_mm <- pair[[paste0("micromorts_", left_side)]]
   left_period <- pair[[paste0("period_", left_side)]]
+  left_desc <- pair[[paste0("description_", left_side)]]
+  left_help <- pair[[paste0("help_url_", left_side)]]
 
   right_activity <- pair[[paste0("activity_", right_side)]]
   right_category <- pair[[paste0("category_", right_side)]]
   right_mm <- pair[[paste0("micromorts_", right_side)]]
   right_period <- pair[[paste0("period_", right_side)]]
+  right_desc <- pair[[paste0("description_", right_side)]]
+  right_help <- pair[[paste0("help_url_", right_side)]]
 
   # Button styling after reveal
   left_class <- "btn quiz-btn"
@@ -333,9 +402,21 @@ question_ui <- function(state) {
     right_extra <- sprintf("%.2f mm", right_mm)
   }
 
-  make_btn_content <- function(activity, category, period, mm_text) {
+  make_btn_content <- function(activity, category, period, mm_text,
+                               description = NULL, help_url = NULL) {
+    # Activity name with tooltip
+    name_el <- shiny::span(class = "activity-name", format_activity_name(activity))
+    if (!is.null(description) && nzchar(description)) {
+      name_el <- shiny::tagList(
+        name_el,
+        bslib::tooltip(
+          shiny::span(class = "help-icon", "\u24d8"),
+          description
+        )
+      )
+    }
     parts <- list(
-      shiny::span(class = "activity-name", activity),
+      name_el,
       shiny::div(
         shiny::span(class = "badge bg-secondary me-1", category),
         shiny::span(class = "badge bg-info", period)
@@ -346,11 +427,21 @@ question_ui <- function(state) {
         shiny::strong(mm_text, style = "font-size: 1.2rem; color: #333;")
       ))
     }
+    if (!is.null(help_url) && nzchar(help_url)) {
+      parts <- c(parts, list(
+        shiny::tags$a(
+          class = "help-link", href = help_url, target = "_blank",
+          onclick = "event.stopPropagation();",
+          "Learn more \u2192"
+        )
+      ))
+    }
     parts
   }
 
   # Result text
   result_text <- NULL
+  explanation_panel <- NULL
   if (revealed) {
     user_correct <- !is.na(answer) && answer == correct_answer
     result_text <- if (user_correct) {
@@ -366,29 +457,98 @@ question_ui <- function(state) {
         sprintf("%s is riskier.", riskier)
       )
     }
+
+    # Explanation panel
+    ratio_text <- sprintf("%.1f", pair$ratio)
+    riskier_side <- pair$answer
+    safer_side <- if (riskier_side == "a") "b" else "a"
+    hedge_a <- pair$hedgeable_pct_a
+    hedge_b <- pair$hedgeable_pct_b
+
+    explanation_panel <- bslib::card(
+      class = "explanation-panel mt-2",
+      bslib::card_body(
+        shiny::tags$p(
+          shiny::strong(pair[[paste0("activity_", riskier_side)]]),
+          sprintf(" has %.2f mm: ", pair[[paste0("micromorts_", riskier_side)]]),
+          pair[[paste0("description_", riskier_side)]]
+        ),
+        shiny::tags$p(
+          shiny::strong(pair[[paste0("activity_", safer_side)]]),
+          sprintf(" has %.2f mm: ", pair[[paste0("micromorts_", safer_side)]]),
+          pair[[paste0("description_", safer_side)]]
+        ),
+        shiny::tags$p(
+          sprintf(
+            "%s is %sx riskier than %s.",
+            pair[[paste0("activity_", riskier_side)]],
+            ratio_text,
+            pair[[paste0("activity_", safer_side)]]
+          )
+        ),
+        if (hedge_a > 0 || hedge_b > 0) {
+          hedgeable_parts <- character(0)
+          if (hedge_a > 0) {
+            hedgeable_parts <- c(hedgeable_parts,
+              sprintf("%s is %.0f%% hedgeable", pair$activity_a, hedge_a))
+          }
+          if (hedge_b > 0) {
+            hedgeable_parts <- c(hedgeable_parts,
+              sprintf("%s is %.0f%% hedgeable", pair$activity_b, hedge_b))
+          }
+          shiny::tags$p(
+            shiny::tags$em(paste(hedgeable_parts, collapse = "; "),
+                           " \u2014 you can reduce this risk!")
+          )
+        },
+        shiny::tags$p(
+          class = "mb-0",
+          "Learn more: ",
+          shiny::tags$a(
+            href = pair[[paste0("help_url_", riskier_side)]],
+            target = "_blank", pair[[paste0("activity_", riskier_side)]]
+          ),
+          " | ",
+          shiny::tags$a(
+            href = pair[[paste0("help_url_", safer_side)]],
+            target = "_blank", pair[[paste0("activity_", safer_side)]]
+          )
+        )
+      )
+    )
   }
 
-  # Running tally (shown from question 2 onwards)
+  # Running tally (shown from question 1)
   answered_so_far <- sum(!is.na(state$answers[seq_len(q - 1L)]) &
     state$revealed[seq_len(q - 1L)])
   correct_so_far <- sum(vapply(seq_len(q - 1L), function(i) {
     !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
   }, logical(1)))
 
-  tally_ui <- if (q > 1L) {
-    shiny::div(class = "text-center mb-1",
-      shiny::tags$small(class = "text-muted",
-        sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
-      )
+  tally_text <- sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
+
+  # Top navigation row: [Back] ... [N of M · Score] ... [Next]
+  nav_ui <- shiny::div(
+    class = "d-flex justify-content-between align-items-center mb-3",
+    shiny::actionButton(
+      "prev_q", "\u2190 Back",
+      class = "btn-secondary"
+    ),
+    shiny::span(
+      class = "text-muted",
+      sprintf("%d of %d", q, n),
+      " \u00b7 ",
+      shiny::tags$small(tally_text)
+    ),
+    shiny::actionButton(
+      "next_q",
+      if (q == n) "Finish" else "Next \u2192",
+      class = "btn-primary"
     )
-  }
+  )
 
   shiny::tagList(
-    shiny::h4(
-      sprintf("Question %d of %d", q, n),
-      class = "text-center text-muted mb-1"
-    ),
-    tally_ui,
+    nav_ui,
     shiny::div(
       class = "row align-items-center",
       shiny::div(
@@ -397,7 +557,8 @@ question_ui <- function(state) {
           shiny::actionButton(
             "choose_left",
             shiny::tagList(make_btn_content(
-              left_activity, left_category, left_period, left_extra
+              left_activity, left_category, left_period, left_extra,
+              left_desc, left_help
             )),
             class = left_class
           )
@@ -405,7 +566,8 @@ question_ui <- function(state) {
           shiny::div(
             class = left_class,
             make_btn_content(
-              left_activity, left_category, left_period, left_extra
+              left_activity, left_category, left_period, left_extra,
+              left_desc, left_help
             )
           )
         }
@@ -420,7 +582,8 @@ question_ui <- function(state) {
           shiny::actionButton(
             "choose_right",
             shiny::tagList(make_btn_content(
-              right_activity, right_category, right_period, right_extra
+              right_activity, right_category, right_period, right_extra,
+              right_desc, right_help
             )),
             class = right_class
           )
@@ -428,25 +591,15 @@ question_ui <- function(state) {
           shiny::div(
             class = right_class,
             make_btn_content(
-              right_activity, right_category, right_period, right_extra
+              right_activity, right_category, right_period, right_extra,
+              right_desc, right_help
             )
           )
         }
       )
     ),
     result_text,
-    shiny::div(
-      class = "d-flex justify-content-between mt-3",
-      shiny::actionButton(
-        "prev_q", "\u2190 Back",
-        class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
-      ),
-      shiny::actionButton(
-        "next_q",
-        if (q == n) "Finish" else "Next \u2192",
-        class = "btn-primary"
-      )
-    )
+    explanation_panel
   )
 }
 
@@ -509,6 +662,40 @@ results_summary_ui <- function(state) {
       shiny::actionButton(
         "try_again", "Try Again",
         class = "btn-primary btn-lg"
+      ),
+      shiny::tags$button(
+        id = "share_btn",
+        class = "btn btn-success btn-lg",
+        onclick = sprintf(
+          paste0(
+            "var text = 'I scored %d/%d on ",
+            "\"Which lifestyle event is more likely to kill you?\"\\n",
+            "Can you beat my score? Take the quiz:\\n",
+            "https://johngavin.github.io/micromort/articles/quiz_shinylive.html';",
+            "navigator.clipboard.writeText(text).then(function(){",
+            "var btn=document.getElementById('share_btn');",
+            "btn.textContent='Copied!';",
+            "setTimeout(function(){btn.textContent='Share';},2000);",
+            "});"
+          ),
+          score, n
+        ),
+        "Share"
+      ),
+      shiny::tags$button(
+        id = "submit_btn",
+        class = "btn btn-warning btn-lg",
+        onclick = sprintf("submitScore(%d, %d)", score, n),
+        "Submit Score"
+      )
+    ),
+    shiny::div(
+      class = "text-center mt-2",
+      shiny::tags$small(id = "percentile_text", class = "text-muted"),
+      shiny::tags$br(),
+      shiny::tags$small(
+        class = "text-muted",
+        "Scores are recorded anonymously (score, total, timestamp only)."
       )
     )
   )
@@ -557,19 +744,23 @@ results_detail_ui <- function(state) {
   )
 
   shiny::tagList(
-    shiny::h3("Question-by-Question Detail", class = "text-center mb-4"),
+    shiny::div(
+      class = "d-flex justify-content-between align-items-center mb-4",
+      shiny::actionButton(
+        "back_to_summary", "\u2190 Back to Results",
+        class = "btn-secondary"
+      ),
+      shiny::h3("Question-by-Question Detail", class = "mb-0"),
+      shiny::actionButton(
+        "try_again_detail", "Try Again",
+        class = "btn-primary"
+      )
+    ),
     if (requireNamespace("DT", quietly = TRUE)) {
       DT::DTOutput("detail_table")
     } else {
       shiny::tableOutput("detail_table_basic")
-    },
-    shiny::div(
-      class = "text-center mt-4",
-      shiny::actionButton(
-        "back_to_summary", "\u2190 Back to Summary",
-        class = "btn-secondary btn-lg"
-      )
-    )
+    }
   )
 }
 
@@ -610,6 +801,10 @@ quiz_result_phrase <- function(pct) {
 
 quiz_css <- function() {
   "
+  .quiz-title {
+    white-space: nowrap;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
   .quiz-btn {
     min-height: 180px;
     width: 100%;
@@ -624,6 +819,8 @@ quiz_css <- function() {
     border: 2px solid #dee2e6;
     border-radius: 8px;
     transition: border-color 0.3s, background-color 0.1s;
+    user-select: text;
+    -webkit-user-select: text;
   }
   .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
   .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
@@ -640,6 +837,68 @@ quiz_css <- function() {
     border: 3px solid #6c757d !important;
     background-color: #e9ecef !important;
   }
+  .quiz-btn .help-icon { font-size: 0.8rem; color: #6c757d; cursor: help; margin-left: 4px; }
+  .quiz-btn .help-link { font-size: 0.7rem; color: #0d6efd; text-decoration: none; }
+  .quiz-btn .help-link:hover { text-decoration: underline; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  "
+}
+
+
+leaderboard_js <- function() {
+  # Google Form POST URL and Sheet JSON endpoint
+  # Replace these with actual values after creating the form/sheet
+  "
+  var FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+  var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+  var scoreSubmitted = false;
+
+  function submitScore(score, total) {
+    if (scoreSubmitted) return;
+    var btn = document.getElementById('submit_btn');
+    if (btn) btn.disabled = true;
+
+    var data = new URLSearchParams();
+    data.append('entry.SCORE_FIELD', score);
+    data.append('entry.TOTAL_FIELD', total);
+    data.append('entry.TIMESTAMP_FIELD', new Date().toISOString());
+
+    fetch(FORM_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: data
+    }).then(function() {
+      scoreSubmitted = true;
+      if (btn) btn.textContent = 'Submitted!';
+      getPercentile(score, total);
+    }).catch(function() {
+      if (btn) {
+        btn.textContent = 'Score saved locally';
+        btn.disabled = true;
+      }
+    });
+  }
+
+  function getPercentile(score, total) {
+    fetch(SHEET_URL)
+      .then(function(r) { return r.text(); })
+      .then(function(text) {
+        var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
+        var rows = json.table.rows;
+        var pct = score / total * 100;
+        var below = 0;
+        for (var i = 0; i < rows.length; i++) {
+          var s = rows[i].c[0] ? rows[i].c[0].v : 0;
+          var t = rows[i].c[1] ? rows[i].c[1].v : 10;
+          if ((s / t * 100) < pct) below++;
+        }
+        var percentile = rows.length > 0 ? Math.round(below / rows.length * 100) : 50;
+        var el = document.getElementById('percentile_text');
+        if (el) el.textContent = 'You scored better than ' + percentile + '% of players!';
+      })
+      .catch(function() {});
+  }
   "
 }

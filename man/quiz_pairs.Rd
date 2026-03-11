@@ -29,6 +29,7 @@ A tibble with columns:
 \itemize{
 \item \code{activity_a}, \code{micromorts_a}, \code{category_a}, \code{hedgeable_pct_a}, \code{period_a}
 \item \code{activity_b}, \code{micromorts_b}, \code{category_b}, \code{hedgeable_pct_b}, \code{period_b}
+\item \code{description_a}, \code{help_url_a}, \code{description_b}, \code{help_url_b}
 \item \code{ratio} (max/min of the two micromort values)
 \item \code{answer} ("a" or "b" — whichever activity is riskier)
 }

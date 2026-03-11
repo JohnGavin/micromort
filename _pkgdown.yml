@@ -12,6 +12,10 @@ home:
   description: >
     A data package providing curated datasets of micromort (acute risk)
     and microlife (chronic risk) values from authoritative sources.
+  opengraph:
+    image:
+      src: man/figures/og-image.png
+      alt: "Micromort risk comparison quiz showing a ladder of activities from coffee to Mt. Everest"
 
 navbar:
   structure:
@@ -132,6 +136,7 @@ reference:
   - launch_dashboard
   - launch_quiz
   - quiz_pairs
+  - activity_descriptions
 
 footer:
   structure:
