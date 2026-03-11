@@ -849,9 +849,8 @@ quiz_css <- function() {
 
 leaderboard_js <- function() {
   # Google Form POST URL and Sheet JSON endpoint
-  # Replace these with actual values after creating the form/sheet
   "
-  var FORM_URL = 'https://docs.google.com/forms/d/e/PLACEHOLDER/formResponse';
+  var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
   var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
   var scoreSubmitted = false;
 
@@ -861,9 +860,9 @@ leaderboard_js <- function() {
     if (btn) btn.disabled = true;
 
     var data = new URLSearchParams();
-    data.append('entry.SCORE_FIELD', score);
-    data.append('entry.TOTAL_FIELD', total);
-    data.append('entry.TIMESTAMP_FIELD', new Date().toISOString());
+    data.append('entry.335579146', score);
+    data.append('entry.2122920576', total);
+    data.append('entry.621716914', new Date().toISOString());
 
     fetch(FORM_URL, {
       method: 'POST',
