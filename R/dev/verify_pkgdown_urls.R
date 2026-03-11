@@ -15,39 +15,92 @@ verify_pkgdown_urls <- function(
     timeout = 10,
     verbose = TRUE
 ) {
-  # Key pages to verify
+  # Key pages to verify — must match _pkgdown.yml navbar + reference sections
   pages <- c(
     # Home
     "/",
     "/index.html",
 
-
-    # Articles
+    # Articles (all 8 from _pkgdown.yml navbar)
+    "/articles/architecture.html",
     "/articles/introduction.html",
     "/articles/palatable_units.html",
+    "/articles/regional_variation.html",
+    "/articles/risk_equivalence.html",
+    "/articles/confounding.html",
+    "/articles/rest_api.html",
+    "/articles/quiz_shinylive.html",
 
     # Reference index
     "/reference/index.html",
 
-    # Core functions
-    "/reference/common_risks.html",
+    # Datasets
+    "/reference/acute_risks.html",
     "/reference/chronic_risks.html",
-    "/reference/plot_risks.html",
-    "/reference/plot_risks_interactive.html",
+    "/reference/risk_sources.html",
 
-    # Conditional risk functions
+    # Data Loaders
+    "/reference/load_acute_risks.html",
+    "/reference/load_chronic_risks.html",
+    "/reference/load_sources.html",
+
+    # Atomic Risk Schema
+    "/reference/atomic_risks.html",
+    "/reference/risk_components.html",
+    "/reference/risk_for_duration.html",
+    "/reference/common_risks.html",
+
+    # Risk Equivalence
+    "/reference/risk_equivalence.html",
+    "/reference/risk_exchange_matrix.html",
+
+    # Radiation Profiles
+    "/reference/radiation_profiles.html",
+    "/reference/patient_radiation_comparison.html",
+
+    # Legacy Data Functions
+    "/reference/demographic_factors.html",
+    "/reference/covid_vaccine_rr.html",
+    "/reference/risk_data_sources.html",
+
+    # Regional Life Expectancy
+    "/reference/regional_life_expectancy.html",
+    "/reference/vanguard_regions.html",
+    "/reference/laggard_regions.html",
+    "/reference/regional_mortality_multiplier.html",
+
+    # Conditional Risk Analysis
     "/reference/cancer_risks.html",
     "/reference/vaccination_risks.html",
     "/reference/conditional_risk.html",
     "/reference/hedged_portfolio.html",
 
-    # Conversion functions
+    # Conversion Functions
     "/reference/as_micromort.html",
     "/reference/as_microlife.html",
+    "/reference/as_probability.html",
+    "/reference/lle.html",
+    "/reference/value_of_micromort.html",
 
-    # Analysis functions
+    # Analysis Functions
     "/reference/compare_interventions.html",
-    "/reference/daily_hazard_rate.html"
+    "/reference/lifestyle_tradeoff.html",
+    "/reference/daily_hazard_rate.html",
+    "/reference/annual_risk_budget.html",
+
+    # Visualization
+    "/reference/prepare_risks_plot.html",
+    "/reference/plot_risks.html",
+    "/reference/plot_risks_interactive.html",
+    "/reference/plot_risk_components.html",
+    "/reference/theme_micromort_dark.html",
+
+    # Interactive Tools
+    "/reference/launch_api.html",
+    "/reference/launch_dashboard.html",
+    "/reference/launch_quiz.html",
+    "/reference/quiz_pairs.html",
+    "/reference/activity_descriptions.html"
   )
 
   results <- list()
