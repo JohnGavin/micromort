@@ -8,21 +8,38 @@ quiz_pairs(
   min_ratio = 1.1,
   max_ratio = 2,
   prefer_cross_category = TRUE,
-  seed = NULL
+  seed = NULL,
+  difficulty = NULL
 )
 }
 \arguments{
 \item{min_ratio}{Minimum ratio between micromort values in a pair.
 Values above 1.0 exclude identical-risk pairs that are unanswerable.
-Default 1.1.}
+Default 1.1. Ignored when \code{difficulty} is non-NULL.}
 
 \item{max_ratio}{Maximum ratio between micromort values in a pair.
-Lower values produce harder questions. Default 2.0.}
+Lower values produce harder questions. Default 2.0. Ignored when
+\code{difficulty} is non-NULL.}
 
 \item{prefer_cross_category}{If \code{TRUE} (default), pairs from different
 risk categories are prioritised over same-category pairs.}
 
 \item{seed}{Optional random seed for reproducibility.}
+
+\item{difficulty}{Optional difficulty level. One of \code{"easy"}, \code{"medium"},
+\code{"hard"}, or \code{"mixed"}. When non-NULL, overrides \code{min_ratio} and
+\code{max_ratio} to use the full pool (ratios 1.5--10) and assigns difficulty
+
+based on data-driven terciles:
+\itemize{
+\item \strong{hard}: lowest third of ratios (hardest to distinguish)
+\item \strong{medium}: middle third
+\item \strong{easy}: highest third (easiest to distinguish)
+\item \strong{mixed}: samples equally from all three tiers
+}
+
+When \code{NULL} (default), the original \code{min_ratio}/\code{max_ratio} behaviour
+is preserved and no \code{difficulty} column is added.}
 }
 \value{
 A tibble with columns:
@@ -32,6 +49,7 @@ A tibble with columns:
 \item \code{description_a}, \code{help_url_a}, \code{description_b}, \code{help_url_b}
 \item \code{ratio} (max/min of the two micromort values)
 \item \code{answer} ("a" or "b" — whichever activity is riskier)
+\item \code{difficulty} (only when \code{difficulty} is non-NULL)
 }
 }
 \description{
@@ -43,5 +61,9 @@ educational.
 \examples{
 pairs <- quiz_pairs(seed = 42)
 head(pairs)
+
+# Easy questions (large ratio differences)
+easy <- quiz_pairs(difficulty = "easy", seed = 42)
+head(easy)
 
 }

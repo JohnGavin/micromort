@@ -84,6 +84,63 @@ test_that("quiz_pairs() has description and help_url columns", {
 })
 
 
+# ---- difficulty feature tests ----
+
+test_that("difficulty='easy' returns only easy pairs with high ratios", {
+  qp <- quiz_pairs(difficulty = "easy", seed = 42)
+  expect_true(all(qp$difficulty == "easy"))
+  expect_true("difficulty" %in% names(qp))
+  # Easy = highest third of ratios (> ~6.6)
+  expect_true(all(qp$ratio > 5))
+})
+
+test_that("difficulty='hard' returns only hard pairs with >= 20 rows", {
+  qp <- quiz_pairs(difficulty = "hard", seed = 42)
+  expect_true(all(qp$difficulty == "hard"))
+  expect_gte(nrow(qp), 20)
+  # Hard = lowest third of ratios (< ~3.0)
+  expect_true(all(qp$ratio < 4))
+})
+
+test_that("difficulty='medium' returns only medium pairs with >= 20 rows", {
+  qp <- quiz_pairs(difficulty = "medium", seed = 42)
+  expect_true(all(qp$difficulty == "medium"))
+  expect_gte(nrow(qp), 20)
+})
+
+test_that("difficulty='mixed' returns all three tiers", {
+  qp <- quiz_pairs(difficulty = "mixed", seed = 42)
+  expect_true(all(c("easy", "medium", "hard") %in% qp$difficulty))
+  expect_true("difficulty" %in% names(qp))
+})
+
+test_that("difficulty=NULL preserves legacy behavior (no difficulty column)", {
+  qp <- quiz_pairs(seed = 42)
+  expect_false("difficulty" %in% names(qp))
+})
+
+test_that("difficulty overrides min_ratio/max_ratio", {
+  qp <- quiz_pairs(difficulty = "easy", seed = 42)
+  # Easy pairs should have ratios well above the default max_ratio of 2.0
+  expect_true(all(qp$ratio > 2.0))
+})
+
+test_that("assign_difficulty() produces roughly equal-sized tercile bins", {
+  cr <- common_risks()
+  cr <- cr[cr$micromorts > 0, ]
+  n <- nrow(cr)
+  idx <- utils::combn(n, 2)
+  ratios <- pmax(cr$micromorts[idx[1, ]] / cr$micromorts[idx[2, ]],
+                 cr$micromorts[idx[2, ]] / cr$micromorts[idx[1, ]])
+  pool_ratios <- ratios[ratios >= 1.5 & ratios <= 10]
+  labels <- micromort:::assign_difficulty(pool_ratios)
+  counts <- table(labels)
+  # Each tier should be within 10% of expected (1/3 of total)
+  expected <- length(pool_ratios) / 3
+  expect_true(all(abs(counts - expected) / expected < 0.15))
+})
+
+
 # ---- activity_descriptions() tests ----
 
 test_that("activity_descriptions() covers all common_risks activities", {
@@ -196,6 +253,12 @@ test_that("shinylive quiz code is in sync with R/quiz.R", {
   # Check description columns in embedded CSV
   qmd_has_desc_cols <- any(grepl("description_a", qmd_code))
   expect_true(qmd_has_desc_cols, label = "qmd CSV has description columns")
+
+  # Check difficulty selector exists in both
+  pkg_has_difficulty <- any(grepl("difficulty", pkg_code))
+  qmd_has_difficulty <- any(grepl("difficulty", qmd_code))
+  expect_true(pkg_has_difficulty, label = "R/quiz.R has difficulty selector")
+  expect_true(qmd_has_difficulty, label = "qmd has difficulty selector")
 
   # Check leaderboard/submit button pattern
   pkg_has_submit <- any(grepl("submit_btn", pkg_code))
