@@ -145,3 +145,7 @@ API, dashboard, and quiz
   : Launch Interactive "Which Is Riskier?" Quiz
 - [`quiz_pairs()`](https://johngavin.github.io/micromort/reference/quiz_pairs.md)
   : Generate Quiz Pairs for "Which Is Riskier?" Game
+- [`activity_descriptions()`](https://johngavin.github.io/micromort/reference/activity_descriptions.md)
+  : Activity Descriptions and Help URLs
+- [`format_activity_name()`](https://johngavin.github.io/micromort/reference/format_activity_name.md)
+  : Format Activity Name with Line Break Before Parenthetical

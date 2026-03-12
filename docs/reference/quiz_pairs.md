@@ -48,6 +48,8 @@ A tibble with columns:
 - `activity_b`, `micromorts_b`, `category_b`, `hedgeable_pct_b`,
   `period_b`
 
+- `description_a`, `help_url_a`, `description_b`, `help_url_b`
+
 - `ratio` (max/min of the two micromort values)
 
 - `answer` ("a" or "b" — whichever activity is riskier)
@@ -57,15 +59,17 @@ A tibble with columns:
 ``` r
 pairs <- quiz_pairs(seed = 42)
 head(pairs)
-#> # A tibble: 6 × 12
-#>   activity_a         micromorts_a category_a hedgeable_pct_a period_a activity_b
-#>   <chr>                     <dbl> <chr>                <dbl> <chr>    <chr>     
-#> 1 Ecstasy/MDMA (per…       13     Drugs                    0 per dose CT scan a…
-#> 2 Skydiving (UK)            8     Sport                    0 per eve… Flying (1…
-#> 3 COVID-19 unvaccin…        1     COVID-19                 0 11 week… Flying (2…
-#> 4 Interventional ca…        0.175 Occupation             100 per year Frequent …
-#> 5 Skydiving (UK)            8     Sport                    0 per eve… Living in…
-#> 6 Skydiving (US)            8     Sport                    0 per eve… Flying (1…
-#> # ℹ 6 more variables: micromorts_b <dbl>, category_b <chr>,
-#> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>
+#> # A tibble: 6 × 16
+#>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
+#>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
+#> 1 Airline pilot (an… Commuting…         0.13 Travel                   0 per trip
+#> 2 American football  COVID-19 …        23    COVID-19                 0 11 week…
+#> 3 American football  US milita…        25    Military                 0 per day 
+#> 4 Base jumping       Living in…       500    COVID-19                 0 per mon…
+#> 5 Business travelle… Working i…         0.03 Daily Life               0 per day 
+#> 6 COVID-19 infectio… Himalayan…     12000    Mountaine…               0 per exp…
+#> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
+#> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
+#> #   description_a <chr>, help_url_a <chr>, description_b <chr>,
+#> #   help_url_b <chr>
 ```

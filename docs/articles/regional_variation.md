@@ -38,7 +38,7 @@ The ~7 year gap between vanguard and laggard regions translates to a
 substantial lifetime difference in microlives:
 
     #> Life expectancy gap: 2.6 years
-    #> Lifetime microlives difference: 45,496 
+    #> Lifetime microlives difference: 45,496
     #> Daily microlives difference: 3.1 per day
 
 **Interpretation:** Living in a vanguard region vs a laggard region
@@ -75,7 +75,7 @@ pandemic distortions)
 
 The divergence became pronounced after 2005:
 
-![](regional_variation_files/figure-html/unnamed-chunk-5-1.png)
+![](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
 
 ## Mortality Risk Multiplier
 

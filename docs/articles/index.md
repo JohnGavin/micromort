@@ -10,8 +10,8 @@
   Visualization](https://johngavin.github.io/micromort/articles/introduction.md):
 - [Palatable Units: The Spiegelhalter
   Philosophy](https://johngavin.github.io/micromort/articles/palatable_units.md):
-- [Risk
-  Quiz](https://johngavin.github.io/micromort/articles/quiz_shinylive.md):
+- [Which lifestyle event is more likely to kill
+  you?](https://johngavin.github.io/micromort/articles/quiz_shinylive.md):
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):
 - [REST

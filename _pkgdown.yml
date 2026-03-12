@@ -137,6 +137,7 @@ reference:
   - launch_quiz
   - quiz_pairs
   - activity_descriptions
+  - format_activity_name
 
 footer:
   structure:

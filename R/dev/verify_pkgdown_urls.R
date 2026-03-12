@@ -100,7 +100,8 @@ verify_pkgdown_urls <- function(
     "/reference/launch_dashboard.html",
     "/reference/launch_quiz.html",
     "/reference/quiz_pairs.html",
-    "/reference/activity_descriptions.html"
+    "/reference/activity_descriptions.html",
+    "/reference/format_activity_name.html"
   )
 
   results <- list()

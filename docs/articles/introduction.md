@@ -47,11 +47,7 @@ attempted this?”
 
 ### Converting Probabilities to Micromorts
 
-``` r
-# 1 in 10,000 chance of death = 100 micromorts
-as_micromort(1/10000)
-#> [1] 100
-```
+    #> [1] 100
 
 ### Common Risks Table
 
@@ -80,7 +76,7 @@ make comparisons easier:
     #> log-10 transformation introduced infinite values.
     #> log-10 transformation introduced infinite values.
 
-![](introduction_files/figure-html/unnamed-chunk-4-1.png)
+![](introduction_files/figure-html/unnamed-chunk-3-1.png)
 
 #### Interactive Version
 
@@ -126,23 +122,9 @@ death is moving away from us even as we age.
 
 ### Converting Life Expectancy to Microlives
 
-``` r
-# as_microlife() converts minutes of life expectancy change to microlives
-# Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
-# Sign: negative = loss, positive = gain
-
-# Heavy smoker: 20 cigarettes/day, each costs ~30 mins
-as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
-#> [1] -20
-
-# Moderate exercise: 20 mins → ~60 mins life gained
-as_microlife(60)        # = +2 microlives/day (life gained)
-#> [1] 2
-
-# Being 5kg overweight costs 30 mins per day
-as_microlife(-30)       # = -1 microlife/day (life lost)
-#> [1] -1
-```
+    #> [1] -20
+    #> [1] 2
+    #> [1] -1
 
 ## 3. Relationship Between Micromorts and Microlives
 
@@ -213,11 +195,7 @@ people (10 micromorts), is it worth it? Cost per micromort saved = \$50
 / 10 = \$5. If VSL = \$10M, then 1 micromort = \$10. Since \$5 \< \$10,
 it is cost-effective.
 
-``` r
-# Standard US VSL of $10M implies $10 per micromort
-value_of_micromort(vsl = 10000000)
-#> [1] 10
-```
+    #> [1] 10
 
 ### UK Valuation: Micromorts ≈ Microlives
 
@@ -232,11 +210,7 @@ for micromorts and microlives:
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the
 theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
-``` r
-# UK Department of Transport VSL: £1.6M → £1.60 per micromort
-value_of_micromort(vsl = 1600000)
-#> [1] 1.6
-```
+    #> [1] 1.6
 
 This consistency suggests that policy decisions affecting acute risks
 (transport safety) and chronic risks (healthcare interventions) can be
@@ -248,15 +222,11 @@ compared on a common scale.
 specific risk. For a 1-in-a-million risk (1 micromort), the LLE is
 approximately 21 minutes (assuming 40 years remaining life).
 
-``` r
-# Loss of life expectancy from 1 micromort (assuming 40 years remaining)
-lle(prob = 1/1e6, life_expectancy = 40)
-#> [1] 21.0384
-#> attr(,"class")
-#> [1] "micromort_lle" "numeric"      
-#> attr(,"units")
-#> [1] "minutes"
-```
+    #> [1] 21.0384
+    #> attr(,"class")
+    #> [1] "micromort_lle" "numeric"
+    #> attr(,"units")
+    #> [1] "minutes"
 
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
@@ -427,7 +397,7 @@ encounter bees with beekeepers stung weekly.
 |----|----|----|
 | Falling out of bed | 1.36 micromorts/year (US) | Under-65: ~0.004/night; Age 85+ male: **10.2/night** |
 | Cow trampling | 0.07 micromorts/year (US) | General public: ~0; Cattle farmer: ~7.5/year |
-| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0; Outdoor agricultural worker: ~1.2/year |
+| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0.02; Outdoor agricultural worker: ~1.2/year |
 
 Falling out of bed kills ~450 Americans per year
 ([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)),

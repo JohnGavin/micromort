@@ -53,38 +53,12 @@ minimum micromort threshold, and result limit.
 curl "http://localhost:8080/v1/risks/acute?category=Medical&limit=10"
 ```
 
-``` r
-acute <- safe_tar_read("vig_api_acute_sample")
-if (!is.null(acute)) {
-  DT::datatable(
-    acute,
-    caption = "GET /v1/risks/acute?category=Medical — Medical activities ranked by risk",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("micromorts", "microlives"), 2)
-}
-```
-
 ### Chronic risks
 
 Query chronic lifestyle factors that gain or lose microlives per day.
 
 ``` bash
 curl "http://localhost:8080/v1/risks/chronic?direction=gain"
-```
-
-``` r
-chronic <- safe_tar_read("vig_api_chronic_gains")
-if (!is.null(chronic)) {
-  DT::datatable(
-    chronic,
-    caption = "GET /v1/risks/chronic?direction=gain — Factors that extend life",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("microlives_per_day", 1)
-}
 ```
 
 ### Cancer risks
@@ -94,19 +68,6 @@ multipliers.
 
 ``` bash
 curl "http://localhost:8080/v1/risks/cancer?age_group=All%20ages"
-```
-
-``` r
-cancer <- safe_tar_read("vig_api_cancer_top3")
-if (!is.null(cancer)) {
-  DT::datatable(
-    cancer,
-    caption = "GET /v1/risks/cancer — Top 3 cancers per sex (All ages)",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("deaths_per_100k", "micromorts_per_year"), 1)
-}
 ```
 
 ## Risk Analysis
@@ -119,19 +80,6 @@ one of each comparison activity).
 
 ``` bash
 curl "http://localhost:8080/v1/analysis/equivalence?reference=Chest+X-ray+(radiation+per+scan)"
-```
-
-``` r
-equiv <- safe_tar_read("vig_api_equivalence_sample")
-if (!is.null(equiv)) {
-  DT::datatable(
-    equiv,
-    caption = "GET /v1/analysis/equivalence — Activities expressed in chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("ratio", 1)
-}
 ```
 
 ### Exchange matrix
@@ -164,19 +112,6 @@ curl "http://localhost:8080/v1/convert/lle?prob=0.00001&life_expectancy=40"
 curl "http://localhost:8080/v1/convert/value?vsl=10000000"
 ```
 
-``` r
-conversions <- safe_tar_read("vig_api_conversion_table")
-if (!is.null(conversions)) {
-  DT::datatable(
-    conversions,
-    caption = "Unit conversions across the probability-to-microlife spectrum",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatSignif(c("probability", "micromorts", "lle_minutes", "microlife"), 3)
-}
-```
-
 ## Age-Based Hazard Rates
 
 Calculate daily micromort exposure from background mortality at any age,
@@ -186,67 +121,11 @@ using Gompertz-Makeham mortality models.
 curl "http://localhost:8080/v1/convert/hazard-rate?age=50&sex=female"
 ```
 
-``` r
-hazard <- safe_tar_read("vig_api_hazard_ages")
-if (!is.null(hazard)) {
-  DT::datatable(
-    hazard,
-    caption = "GET /v1/convert/hazard-rate — Daily background mortality by age and sex",
-    options = list(pageLength = 12, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("micromorts", 1) |>
-    DT::formatSignif("daily_prob", 3)
-}
-```
-
 ## Full Endpoint Reference
 
 All 30 API endpoints with their HTTP method, path, description, and
 parameters:
 
-``` r
-endpoints <- safe_tar_read("vig_api_endpoint_summary")
-if (!is.null(endpoints)) {
-  DT::datatable(
-    endpoints,
-    caption = "Complete API endpoint reference",
-    options = list(
-      pageLength = 30,
-      dom = "ftip",
-      columnDefs = list(list(width = "250px", targets = 1))
-    ),
-    rownames = FALSE,
-    filter = "top"
-  )
-}
-```
-
 ## Using from R
 
 You can call the API from R using [httr2](https://httr2.r-lib.org/):
-
-``` r
-library(httr2)
-
-base_url <- "http://localhost:8080"
-
-# GET request with query parameters
-resp <- request(base_url) |>
-  req_url_path("/v1/risks/acute") |>
-  req_url_query(category = "Sport", limit = 5) |>
-  req_perform() |>
-  resp_body_json()
-
-# The data lives in resp$data
-tibble::as_tibble(do.call(rbind, lapply(resp$data, as.data.frame)))
-
-# POST request with JSON body
-resp <- request(base_url) |>
-  req_url_path("/v1/analysis/exchange-matrix") |>
-  req_body_json(list(
-    activities = c("Skiing", "Scuba diving, trained")
-  )) |>
-  req_perform() |>
-  resp_body_json()
-```

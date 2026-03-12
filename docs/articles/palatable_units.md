@@ -91,7 +91,7 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-![](palatable_units_files/figure-html/unnamed-chunk-4-1.png)
+![](palatable_units_files/figure-html/unnamed-chunk-3-1.png)
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -100,8 +100,6 @@ which provides:
 - Hover details showing micromorts, microlives, and period
 - Click legend to show/hide categories
 - Dropdown filter for COVID-19 vs Other risks
-
-&nbsp;
 
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors

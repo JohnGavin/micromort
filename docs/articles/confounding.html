@@ -9,7 +9,9 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="confounding_files/libs/quarto-html/popper.min.js"></script><script src="confounding_files/libs/quarto-html/tippy.umd.min.js"></script><link href="confounding_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="confounding_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Confounding Variables in Risk Data">
 </head>
 <body>
@@ -57,67 +59,47 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-
+</nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Confounding Variables in Risk Data</h1>
-            
-      
-      <small class="dont-index">Source: <a href="https://github.com/johngavin/micromort/blob/HEAD/vignettes/confounding.Rmd" class="external-link"><code>vignettes/confounding.Rmd</code></a></small>
-      <div class="d-none name"><code>confounding.Rmd</code></div>
+
+
+
+
+      <small class="dont-index">Source: <a href="https://github.com/johngavin/micromort/blob/HEAD/vignettes/confounding.qmd" class="external-link"><code>vignettes/confounding.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<p>Population-average risk statistics can be dangerously misleading when
-<strong>confounding variables</strong> — unmeasured or ignored factors
-that correlate with both exposure and outcome — drive most of the
-variation. This vignette illustrates how conditioning on the right
-variable can change a risk estimate by orders of magnitude.</p>
-<p>For data quality criteria and denominator problems that motivate this
-analysis, see the <a href="introduction.html#data-quality-the-denominator-problem">Data
-Quality section</a> of the introduction. For the conditional risk
-functions used throughout this package, see <a href="introduction.html#conditional-risks-cancer-vaccination-and-risk-hedging">Conditional
-Risks</a>.</p>
-<div class="section level2">
-<h2 id="simpsons-paradox-in-risk-data">1. Simpson’s Paradox in Risk Data<a class="anchor" aria-label="anchor" href="#simpsons-paradox-in-risk-data"></a>
+
+
+
+
+
+    <p>Population-average risk statistics can be dangerously misleading when <strong>confounding variables</strong> — unmeasured or ignored factors that correlate with both exposure and outcome — drive most of the variation. This vignette illustrates how conditioning on the right variable can change a risk estimate by orders of magnitude.</p>
+<p>For data quality criteria and denominator problems that motivate this analysis, see the <a href="introduction.html#data-quality-the-denominator-problem">Data Quality section</a> of the introduction. For the conditional risk functions used throughout this package, see <a href="introduction.html#conditional-risks-cancer-vaccination-and-risk-hedging">Conditional Risks</a>.</p>
+<section class="level2"><h2 id="simpsons-paradox-in-risk-data">1. Simpson’s Paradox in Risk Data<a class="anchor" aria-label="anchor" href="#simpsons-paradox-in-risk-data"></a>
 </h2>
-<p><strong>Simpson’s paradox</strong> occurs when a trend that appears
-in aggregated data reverses or disappears when the data is split by a
-confounding variable. Risk data is especially vulnerable because:</p>
+<p><strong>Simpson’s paradox</strong> occurs when a trend that appears in aggregated data reverses or disappears when the data is split by a confounding variable. Risk data is especially vulnerable because:</p>
 <ul>
 <li>
-<strong>Exposure varies by subgroup</strong>: Not everyone faces the
-same hazard equally</li>
+<strong>Exposure varies by subgroup</strong>: Not everyone faces the same hazard equally</li>
 <li>
-<strong>Susceptibility varies by subgroup</strong>: Age, genetics,
-and occupation change vulnerability</li>
+<strong>Susceptibility varies by subgroup</strong>: Age, genetics, and occupation change vulnerability</li>
 <li>
-<strong>Reporting conflates subgroups</strong>: A single “micromorts
-per year” figure averages across vastly different populations</li>
+<strong>Reporting conflates subgroups</strong>: A single “micromorts per year” figure averages across vastly different populations</li>
 </ul>
-<p>The result: a population-average micromort value may describe
-<em>nobody</em> accurately.</p>
-</div>
-<div class="section level2">
-<h2 id="flagship-example-bed-falls-age-as-confounder">2. Flagship Example: Bed Falls (Age as Confounder)<a class="anchor" aria-label="anchor" href="#flagship-example-bed-falls-age-as-confounder"></a>
+<p>The result: a population-average micromort value may describe <em>nobody</em> accurately.</p>
+</section><section class="level2"><h2 id="flagship-example-bed-falls-age-as-confounder">2. Flagship Example: Bed Falls (Age as Confounder)<a class="anchor" aria-label="anchor" href="#flagship-example-bed-falls-age-as-confounder"></a>
 </h2>
-<p>Falling out of bed kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>).
-The population average is <strong>1.36 micromorts/year</strong>. But age
-is a massive confounder — the <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">CDC
-age-stratified data</a> reveals a <strong>2,500-fold</strong>
-difference:</p>
-<table class="table">
+<p>Falling out of bed kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>). The population average is <strong>1.36 micromorts/year</strong>. But age is a massive confounder — the <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">CDC age-stratified data</a> reveals a <strong>2,500-fold</strong> difference:</p>
+<table class="table caption-top">
 <colgroup>
-<col width="16%">
-<col width="7%">
-<col width="44%">
-<col width="32%">
+<col style="width: 16%">
+<col style="width: 7%">
+<col style="width: 44%">
+<col style="width: 32%">
 </colgroup>
 <thead><tr class="header">
 <th>Age group</th>
@@ -158,48 +140,32 @@ difference:</p>
 </tr>
 </tbody>
 </table>
-<div class="section level3">
-<h3 id="what-10-micromorts-per-night-means">What 10 micromorts per night means<a class="anchor" aria-label="anchor" href="#what-10-micromorts-per-night-means"></a>
+<section class="level3"><h3 id="what-10-micromorts-per-night-means">What 10 micromorts per night means<a class="anchor" aria-label="anchor" href="#what-10-micromorts-per-night-means"></a>
 </h3>
-<p>For an 85-year-old man, going to bed carries ~10 micromorts —
-comparable to:</p>
+<p>For an 85-year-old man, going to bed carries ~10 micromorts — comparable to:</p>
 <ul>
 <li>Riding a motorcycle 60 miles (10 micromorts/trip)</li>
 <li>A single ecstasy dose (13 micromorts/dose)</li>
-<li>A day of skiing (0.7 micromorts/day) repeated <strong>14
-times</strong>
+<li>A day of skiing (0.7 micromorts/day) repeated <strong>14 times</strong>
 </li>
 </ul>
-<p>For someone under 65, the same activity carries 0.004 micromorts per
-night — essentially zero. The population average of 1.36/year describes
-neither group accurately.</p>
-</div>
-<div class="section level3">
-<h3 id="the-confounding-mechanism">The confounding mechanism<a class="anchor" aria-label="anchor" href="#the-confounding-mechanism"></a>
+<p>For someone under 65, the same activity carries 0.004 micromorts per night — essentially zero. The population average of 1.36/year describes neither group accurately.</p>
+</section><section class="level3"><h3 id="the-confounding-mechanism">The confounding mechanism<a class="anchor" aria-label="anchor" href="#the-confounding-mechanism"></a>
 </h3>
 <p>Age confounds the bed fall risk through two pathways:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>
-<strong>Fragility</strong>: Older adults have lower bone density,
-slower reflexes, and higher complication rates from identical falls</li>
+<strong>Fragility</strong>: Older adults have lower bone density, slower reflexes, and higher complication rates from identical falls</li>
 <li>
-<strong>Bed type and environment</strong>: Hospital beds, care home
-beds, and medication-induced drowsiness increase fall frequency in older
-populations</li>
+<strong>Bed type and environment</strong>: Hospital beds, care home beds, and medication-induced drowsiness increase fall frequency in older populations</li>
 </ol>
 <p>Neither pathway is captured by the aggregate statistic.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="further-examples">3. Further Examples<a class="anchor" aria-label="anchor" href="#further-examples"></a>
+</section></section><section class="level2"><h2 id="further-examples">3. Further Examples<a class="anchor" aria-label="anchor" href="#further-examples"></a>
 </h2>
-<div class="section level3">
-<h3 id="bee-and-wasp-stings-allergy-as-confounder">3.1 Bee and wasp stings (allergy as confounder)<a class="anchor" aria-label="anchor" href="#bee-and-wasp-stings-allergy-as-confounder"></a>
+<section class="level3"><h3 id="bee-and-wasp-stings-allergy-as-confounder">3.1 Bee and wasp stings (allergy as confounder)<a class="anchor" aria-label="anchor" href="#bee-and-wasp-stings-allergy-as-confounder"></a>
 </h3>
-<p>Bee and wasp stings kill 72 Americans per year (<a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">CDC
-MMWR</a>). The population rate is 0.22 micromorts/year. But nearly all
-fatalities are among the ~1% with venom allergy (<a href="https://doi.org/10.1016/j.jaci.2015.07.017" class="external-link">JACI, 2015</a>):</p>
-<table class="table">
+<p>Bee and wasp stings kill 72 Americans per year (<a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">CDC MMWR</a>). The population rate is 0.22 micromorts/year. But nearly all fatalities are among the ~1% with venom allergy (<a href="https://doi.org/10.1016/j.jaci.2015.07.017" class="external-link">JACI, 2015</a>):</p>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Subgroup</th>
 <th>Prevalence</th>
@@ -218,17 +184,11 @@ fatalities are among the ~1% with venom allergy (<a href="https://doi.org/10.101
 </tr>
 </tbody>
 </table>
-<p>The confounder (allergy status) is binary and creates an extreme
-bimodal distribution. The population average — 0.22 micromorts/year — is
-meaningless for both groups.</p>
-</div>
-<div class="section level3">
-<h3 id="cow-trampling-occupation-as-confounder">3.2 Cow trampling (occupation as confounder)<a class="anchor" aria-label="anchor" href="#cow-trampling-occupation-as-confounder"></a>
+<p>The confounder (allergy status) is binary and creates an extreme bimodal distribution. The population average — 0.22 micromorts/year — is meaningless for both groups.</p>
+</section><section class="level3"><h3 id="cow-trampling-occupation-as-confounder">3.2 Cow trampling (occupation as confounder)<a class="anchor" aria-label="anchor" href="#cow-trampling-occupation-as-confounder"></a>
 </h3>
-<p>Cattle kill 22 Americans per year (<a href="https://www.cdc.gov/mmwr/volumes/64/wr/mm6446a8.htm" class="external-link">CDC
-MMWR</a>). Population rate: 0.07 micromorts/year. But exposure is
-concentrated among ~2.9 million cattle workers:</p>
-<table class="table">
+<p>Cattle kill 22 Americans per year (<a href="https://www.cdc.gov/mmwr/volumes/64/wr/mm6446a8.htm" class="external-link">CDC MMWR</a>). Population rate: 0.07 micromorts/year. But exposure is concentrated among ~2.9 million cattle workers:</p>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Subgroup</th>
 <th>Population</th>
@@ -247,18 +207,11 @@ concentrated among ~2.9 million cattle workers:</p>
 </tr>
 </tbody>
 </table>
-<p>That’s a <strong>100-fold</strong> difference. Occupation is the
-confounder: it determines both exposure frequency (daily cattle handling
-vs never) and risk magnitude (confined spaces, agitated animals, kick
-zones).</p>
-</div>
-<div class="section level3">
-<h3 id="lightning-strike-outdoor-work-as-confounder">3.3 Lightning strike (outdoor work as confounder)<a class="anchor" aria-label="anchor" href="#lightning-strike-outdoor-work-as-confounder"></a>
+<p>That’s a <strong>100-fold</strong> difference. Occupation is the confounder: it determines both exposure frequency (daily cattle handling vs never) and risk magnitude (confined spaces, agitated animals, kick zones).</p>
+</section><section class="level3"><h3 id="lightning-strike-outdoor-work-as-confounder">3.3 Lightning strike (outdoor work as confounder)<a class="anchor" aria-label="anchor" href="#lightning-strike-outdoor-work-as-confounder"></a>
 </h3>
-<p>Lightning kills 28 Americans per year (<a href="https://www.weather.gov/safety/lightning-fatalities" class="external-link">NOAA</a>).
-Population rate: 0.08 micromorts/year. But outdoor agricultural workers
-face ~15x the risk:</p>
-<table class="table">
+<p>Lightning kills 28 Americans per year (<a href="https://www.weather.gov/safety/lightning-fatalities" class="external-link">NOAA</a>). Population rate: 0.08 micromorts/year. But outdoor agricultural workers face ~15x the risk:</p>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Subgroup</th>
 <th>Micromorts/year</th>
@@ -278,16 +231,11 @@ face ~15x the risk:</p>
 </tr>
 </tbody>
 </table>
-<p>The confounders are occupation and behaviour: time spent outdoors, in
-open fields, near tall objects, and during storm season.</p>
-</div>
-<div class="section level3">
-<h3 id="drowning-age-and-setting-as-confounders">3.4 Drowning (age and setting as confounders)<a class="anchor" aria-label="anchor" href="#drowning-age-and-setting-as-confounders"></a>
+<p>The confounders are occupation and behaviour: time spent outdoors, in open fields, near tall objects, and during storm season.</p>
+</section><section class="level3"><h3 id="drowning-age-and-setting-as-confounders">3.4 Drowning (age and setting as confounders)<a class="anchor" aria-label="anchor" href="#drowning-age-and-setting-as-confounders"></a>
 </h3>
-<p>Drowning kills ~4,000 Americans per year (<a href="https://www.cdc.gov/drowning/data/index.html" class="external-link">CDC</a>). The
-population rate is ~12 micromorts/year. But the risk distribution is
-bimodal:</p>
-<table class="table">
+<p>Drowning kills ~4,000 Americans per year (<a href="https://www.cdc.gov/drowning/data/index.html" class="external-link">CDC</a>). The population rate is ~12 micromorts/year. But the risk distribution is bimodal:</p>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Subgroup</th>
 <th>Drowning rate per 100,000/year</th>
@@ -311,33 +259,22 @@ bimodal:</p>
 </tr>
 </tbody>
 </table>
-<p>Age and sex are strong confounders. Setting matters too: swimming
-pools (children), natural water (adults), and bathtubs (elderly,
-alcohol-related) each have distinct risk profiles that the aggregate
-hides.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="recognising-confounders-in-risk-data">4. Recognising Confounders in Risk Data<a class="anchor" aria-label="anchor" href="#recognising-confounders-in-risk-data"></a>
+<p>Age and sex are strong confounders. Setting matters too: swimming pools (children), natural water (adults), and bathtubs (elderly, alcohol-related) each have distinct risk profiles that the aggregate hides.</p>
+</section></section><section class="level2"><h2 id="recognising-confounders-in-risk-data">4. Recognising Confounders in Risk Data<a class="anchor" aria-label="anchor" href="#recognising-confounders-in-risk-data"></a>
 </h2>
 <p>A confounding variable must satisfy two conditions:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>
-<strong>Correlated with exposure</strong>: The confounder determines
-who is exposed (e.g., farmers are exposed to cattle; office workers are
-not)</li>
+<strong>Correlated with exposure</strong>: The confounder determines who is exposed (e.g., farmers are exposed to cattle; office workers are not)</li>
 <li>
-<strong>Correlated with outcome</strong>: The confounder affects the
-probability of death given exposure (e.g., age affects fall mortality;
-allergy affects sting mortality)</li>
+<strong>Correlated with outcome</strong>: The confounder affects the probability of death given exposure (e.g., age affects fall mortality; allergy affects sting mortality)</li>
 </ol>
-<div class="section level3">
-<h3 id="warning-signs-of-confounded-risk-data">Warning signs of confounded risk data<a class="anchor" aria-label="anchor" href="#warning-signs-of-confounded-risk-data"></a>
+<section class="level3"><h3 id="warning-signs-of-confounded-risk-data">Warning signs of confounded risk data<a class="anchor" aria-label="anchor" href="#warning-signs-of-confounded-risk-data"></a>
 </h3>
-<table class="table">
+<table class="table caption-top">
 <colgroup>
-<col width="59%">
-<col width="40%">
+<col style="width: 59%">
+<col style="width: 40%">
 </colgroup>
 <thead><tr class="header">
 <th>Warning sign</th>
@@ -362,88 +299,140 @@ allergy affects sting mortality)</li>
 </tr>
 <tr class="odd">
 <td>Dramatic differences between sources</td>
-<td>Different studies report 10x different values for the same
-activity</td>
+<td>Different studies report 10x different values for the same activity</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="what-to-do">What to do<a class="anchor" aria-label="anchor" href="#what-to-do"></a>
+</table></section><section class="level3"><h3 id="what-to-do">What to do<a class="anchor" aria-label="anchor" href="#what-to-do"></a>
 </h3>
 <p>When you encounter a population-average risk:</p>
-<ol style="list-style-type: decimal">
+<ol type="1">
 <li>
-<strong>Ask “conditional on what?”</strong> — identify the most
-likely confounders (age, sex, occupation, geography, pre-existing
-conditions)</li>
+<strong>Ask “conditional on what?”</strong> — identify the most likely confounders (age, sex, occupation, geography, pre-existing conditions)</li>
 <li>
-<strong>Seek stratified data</strong> — government agencies (CDC,
-CPSC, NOAA) often publish age- and sex-stratified breakdowns</li>
+<strong>Seek stratified data</strong> — government agencies (CDC, CPSC, NOAA) often publish age- and sex-stratified breakdowns</li>
 <li>
-<strong>Calculate conditional rates</strong> — use
-<code><a href="../reference/conditional_risk.html">conditional_risk()</a></code> from this package to compare hedged vs
-unhedged scenarios</li>
+<strong>Calculate conditional rates</strong> — use <code><a href="../reference/conditional_risk.html">conditional_risk()</a></code> from this package to compare hedged vs unhedged scenarios</li>
 <li>
-<strong>Report the range, not the average</strong> — a range like
-“0.004–10.2 micromorts/night depending on age” is more informative than
-“1.36 micromorts/year”</li>
-</ol>
-</div>
-</div>
-<div class="section level2">
-<h2 id="implications-for-the-micromort-package">5. Implications for the Micromort Package<a class="anchor" aria-label="anchor" href="#implications-for-the-micromort-package"></a>
+<strong>Report the range, not the average</strong> — a range like “0.004–10.2 micromorts/night depending on age” is more informative than “1.36 micromorts/year”</li>
+</ol></section></section><section class="level2"><h2 id="implications-for-the-micromort-package">5. Implications for the Micromort Package<a class="anchor" aria-label="anchor" href="#implications-for-the-micromort-package"></a>
 </h2>
 <p>This package addresses confounding in several ways:</p>
 <ul>
 <li>
-<strong><code><a href="../reference/conditional_risk.html">conditional_risk()</a></code></strong> and
-<strong><code><a href="../reference/hedged_portfolio.html">hedged_portfolio()</a></code></strong> explicitly compare
-conditioned subgroups (<a href="../reference/conditional_risk.html">documentation</a>)</li>
+<strong><code><a href="../reference/conditional_risk.html">conditional_risk()</a></code></strong> and <strong><code><a href="../reference/hedged_portfolio.html">hedged_portfolio()</a></code></strong> explicitly compare conditioned subgroups (<a href="../reference/conditional_risk.html">documentation</a>)</li>
 <li>
-<strong><code><a href="../reference/cancer_risks.html">cancer_risks()</a></code></strong> stratifies by sex, age
-group, and family history</li>
+<strong><code><a href="../reference/cancer_risks.html">cancer_risks()</a></code></strong> stratifies by sex, age group, and family history</li>
 <li>
-<strong><code><a href="../reference/vaccination_risks.html">vaccination_risks()</a></code></strong> stratifies by age
-group and vaccine type</li>
+<strong><code><a href="../reference/vaccination_risks.html">vaccination_risks()</a></code></strong> stratifies by age group and vaccine type</li>
 <li>
-<strong><code><a href="../reference/regional_life_expectancy.html">regional_life_expectancy()</a></code></strong> stratifies
-by geography, capturing regional confounders</li>
+<strong><code><a href="../reference/regional_life_expectancy.html">regional_life_expectancy()</a></code></strong> stratifies by geography, capturing regional confounders</li>
 <li>
-<strong>Data quality criteria</strong> in the <a href="introduction.html#data-quality-the-denominator-problem">Introduction</a>
-exclude risks with unknown denominators that would mask confounding</li>
+<strong>Data quality criteria</strong> in the <a href="introduction.html#data-quality-the-denominator-problem">Introduction</a> exclude risks with unknown denominators that would mask confounding</li>
 </ul>
-<p>The general principle: <strong>a micromort value is only as good as
-its denominator and conditioning variables</strong>.</p>
-</div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<p>The general principle: <strong>a micromort value is only as good as its denominator and conditioning variables</strong>.</p>
+</section><section class="level2"><h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <ul>
-<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’ to
-communicate the effects of lifetime habits and environment.”
-<em>BMJ</em> 345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">doi:10.1136/bmj.e8223</a>
+<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’ to communicate the effects of lifetime habits and environment.” <em>BMJ</em> 345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">doi:10.1136/bmj.e8223</a>
 </li>
 <li>CDC MMWR (2019). “Hymenoptera stings.” <a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm</a>
 </li>
 <li>CDC Data Brief 532. “Deaths from unintentional falls.” <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">cdc.gov/nchs/products/databriefs/db532.htm</a>
 </li>
-<li>CPSC (2022). “Older Americans Are More Likely to Suffer Fatalities
-from Falls.” <a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">cpsc.gov</a>
+<li>CPSC (2022). “Older Americans Are More Likely to Suffer Fatalities from Falls.” <a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">cpsc.gov</a>
 </li>
 <li>NOAA. “Lightning fatalities.” <a href="https://www.weather.gov/safety/lightning-fatalities" class="external-link">weather.gov/safety/lightning-fatalities</a>
 </li>
 <li>CDC. “Drowning data.” <a href="https://www.cdc.gov/drowning/data/index.html" class="external-link">cdc.gov/drowning/data</a>
 </li>
-<li>Golden DB et al. (2015). “Stinging insect hypersensitivity.”
-<em>JACI</em> 135(6):1429–35. <a href="https://doi.org/10.1016/j.jaci.2015.07.017" class="external-link">doi:10.1016/j.jaci.2015.07.017</a>
+<li>Golden DB et al. (2015). “Stinging insect hypersensitivity.” <em>JACI</em> 135(6):1429–35. <a href="https://doi.org/10.1016/j.jaci.2015.07.017" class="external-link">doi:10.1016/j.jaci.2015.07.017</a>
 </li>
-</ul>
-</div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
-
 
 
     <footer><div class="pkgdown-footer-left">

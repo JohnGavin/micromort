@@ -9,7 +9,17 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="introduction_files/libs/quarto-html/popper.min.js"></script><script src="introduction_files/libs/quarto-html/tippy.umd.min.js"></script><link href="introduction_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="introduction_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="introduction_files/libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="introduction_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="introduction_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="introduction_files/libs/datatables-binding-0.34.0/datatables.js"></script><link href="introduction_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="introduction_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<link href="introduction_files/libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<link href="introduction_files/libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="introduction_files/libs/selectize-0.12.0/selectize.min.js"></script><link href="introduction_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="introduction_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><script src="introduction_files/libs/plotly-binding-4.12.0/plotly.js"></script><script src="introduction_files/libs/typedarray-0.1/typedarray.min.js"></script><link href="introduction_files/libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="introduction_files/libs/plotly-main-2.25.2/plotly-latest.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Introduction to Micromorts and Risk Visualization">
 </head>
 <body>
@@ -57,47 +67,35 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-<link href="introduction_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
-<script src="introduction_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="introduction_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="introduction_files/datatables-binding-0.34.0/datatables.js"></script><link href="introduction_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="introduction_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="introduction_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="introduction_files/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
-<script src="introduction_files/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="introduction_files/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
-<script src="introduction_files/selectize-0.12.0/selectize.min.js"></script><link href="introduction_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
-<script src="introduction_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><script src="introduction_files/plotly-binding-4.12.0/plotly.js"></script><script src="introduction_files/typedarray-0.1/typedarray.min.js"></script><link href="introduction_files/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
-<script src="introduction_files/plotly-main-2.25.2/plotly-latest.min.js"></script><div class="row">
+</nav><div class="container template-quarto">
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Introduction to Micromorts and Risk Visualization</h1>
-            
-      
-      <small class="dont-index">Source: <a href="https://github.com/johngavin/micromort/blob/HEAD/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
-      <div class="d-none name"><code>introduction.Rmd</code></div>
+
+
+
+
+      <small class="dont-index">Source: <a href="https://github.com/johngavin/micromort/blob/HEAD/vignettes/introduction.qmd" class="external-link"><code>vignettes/introduction.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<p>This vignette introduces the <strong>micromort</strong> package,
-which provides tools for understanding and visualizing risks.</p>
-<div class="section level2">
-<h2 id="micromorts-acute-risk">1. Micromorts (Acute Risk)<a class="anchor" aria-label="anchor" href="#micromorts-acute-risk"></a>
+
+
+
+
+
+    <p>This vignette introduces the <strong>micromort</strong> package, which provides tools for understanding and visualizing risks.</p>
+<section class="level2"><h2 id="micromorts-acute-risk">1. Micromorts (Acute Risk)<a class="anchor" aria-label="anchor" href="#micromorts-acute-risk"></a>
 </h2>
-<p>A <strong>micromort</strong> is a unit of risk representing a
-one-in-a-million chance of death. More precisely, it’s a
-<strong>microprobability</strong> of death — a one-in-a-million chance
-of a specific event (death) occurring.</p>
-<div class="section level3">
-<h3 id="definition">Definition<a class="anchor" aria-label="anchor" href="#definition"></a>
+<p>A <strong>micromort</strong> is a unit of risk representing a one-in-a-million chance of death. More precisely, it’s a <strong>microprobability</strong> of death — a one-in-a-million chance of a specific event (death) occurring.</p>
+<section class="level3"><h3 id="definition">Definition<a class="anchor" aria-label="anchor" href="#definition"></a>
 </h3>
-<table class="table">
+<table class="table caption-top">
 <colgroup>
-<col width="22%">
-<col width="44%">
-<col width="33%">
+<col style="width: 22%">
+<col style="width: 44%">
+<col style="width: 33%">
 </colgroup>
 <thead><tr class="header">
 <th>Term</th>
@@ -116,14 +114,10 @@ of a specific event (death) occurring.</p>
 <td>Skydiving: 8 micromorts per jump</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="comparing-risks-period-matters">Comparing Risks: Period Matters!<a class="anchor" aria-label="anchor" href="#comparing-risks-period-matters"></a>
+</table></section><section class="level3"><h3 id="comparing-risks-period-matters">Comparing Risks: Period Matters!<a class="anchor" aria-label="anchor" href="#comparing-risks-period-matters"></a>
 </h3>
-<p><strong>CRITICAL:</strong> When comparing micromort values, ensure
-the <strong>period is the same</strong>. For example:</p>
-<table class="table">
+<p><strong>CRITICAL:</strong> When comparing micromort values, ensure the <strong>period is the same</strong>. For example:</p>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Activity</th>
 <th>Micromorts</th>
@@ -151,110 +145,81 @@ the <strong>period is the same</strong>. For example:</p>
 </tr>
 </tbody>
 </table>
-<p>The “per year” figure (164) conflates frequency with risk-per-event.
-A diver doing 5 dives/year vs 50 dives/year faces very different annual
-risk.</p>
-</div>
-<div class="section level3">
-<h3 id="conditional-risks">Conditional Risks<a class="anchor" aria-label="anchor" href="#conditional-risks"></a>
+<p>The “per year” figure (164) conflates frequency with risk-per-event. A diver doing 5 dives/year vs 50 dives/year faces very different annual risk.</p>
+</section><section class="level3"><h3 id="conditional-risks">Conditional Risks<a class="anchor" aria-label="anchor" href="#conditional-risks"></a>
 </h3>
-<p>Many activities have <strong>selection effects</strong>. For
-example:</p>
+<p>Many activities have <strong>selection effects</strong>. For example:</p>
 <ul>
 <li>
-<strong>Marathon running (7 micromorts):</strong> Runners are
-self-selected for fitness. This low figure reflects the health of
-participants, not the risk to an average person attempting a
-marathon.</li>
+<strong>Marathon running (7 micromorts):</strong> Runners are self-selected for fitness. This low figure reflects the health of participants, not the risk to an average person attempting a marathon.</li>
 <li>
-<strong>Motorcycle riding (10 micromorts/60 miles):</strong>
-Experienced riders face lower risk than novices, but the quoted figure
-is an average.</li>
+<strong>Motorcycle riding (10 micromorts/60 miles):</strong> Experienced riders face lower risk than novices, but the quoted figure is an average.</li>
 </ul>
-<p>These figures answer: “Given that someone completed this activity,
-what was their death risk?” Not: “What would happen if a random person
-attempted this?”</p>
-</div>
-<div class="section level3">
-<h3 id="converting-probabilities-to-micromorts">Converting Probabilities to Micromorts<a class="anchor" aria-label="anchor" href="#converting-probabilities-to-micromorts"></a>
+<p>These figures answer: “Given that someone completed this activity, what was their death risk?” Not: “What would happen if a random person attempted this?”</p>
+</section><section class="level3"><h3 id="converting-probabilities-to-micromorts">Converting Probabilities to Micromorts<a class="anchor" aria-label="anchor" href="#converting-probabilities-to-micromorts"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1 in 10,000 chance of death = 100 micromorts</span></span>
-<span><span class="fu"><a href="../reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 100</span></span></code></pre></div>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; [1] 100</span></span></code></pre>
 </div>
-<div class="section level3">
-<h3 id="common-risks-table">Common Risks Table<a class="anchor" aria-label="anchor" href="#common-risks-table"></a>
+</section><section class="level3"><h3 id="common-risks-table">Common Risks Table<a class="anchor" aria-label="anchor" href="#common-risks-table"></a>
 </h3>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.05\" data-max=\"37932\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"26552.4\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.01\" data-max=\"365\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"3000\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","caption":"<caption>Common risks in micromorts (click column headers to sort, use search box to filter)<\/caption>","data":[["Mt. Everest ascent","Himalayan mountaineering","COVID-19 infection (unvaccinated)","Spanish flu infection","Matterhorn ascent","Living in US during COVID-19 (Jul 2020)","Living (one day, age 90)","Base jumping (per jump)","First day of life (newborn)","COVID-19 unvaccinated (age 80+)","Caesarean birth (mother)","Scuba diving (per year, trained)","Vaginal birth (mother)","Living (one day, age 75)","COVID-19 unvaccinated (age 65-79)","Night in hospital","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","Heroin use (per dose)","US military in Afghanistan (2010)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","American football (per game)","Living (one day, under age 1)","Ecstasy/MDMA (per dose)","Swimming (drowning risk)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump, general)","COVID-19 monovalent vaccine (age 65-79)","Skydiving (per jump, US)","Skydiving (per jump, UK)","COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Running a marathon","Living in Maryland COVID-19 (Mar-May 2020)","Living (one day, age 45)","Scuba diving (per dive, trained)","Living (one day, age 50)","COVID-19 monovalent vaccine (all ages)","Rock climbing (per climb)","COVID-19 bivalent booster (age 65-79)","COVID-19 monovalent vaccine (age 50-64)","COVID-19 unvaccinated (age 18-49)","Living 2 months with a smoker","Walking (20 miles)","Driving (230 miles)","Flying (1000 miles)","Train (1000 miles)","Eating 1000 bananas (radiation)","1 hour in a coal mine","Eating 40 tbsp peanut butter (aflatoxin)","Eating 100 charbroiled steaks","Living (one day, age 20)","Living (one day, age 30)","COVID-19 bivalent booster (all ages)","COVID-19 bivalent booster (age 50-64)","Skiing (per day)","Horseback riding","COVID-19 monovalent vaccine (age 18-49)","Kangaroo encounter","COVID-19 bivalent booster (age 18-49)"],[37932,12000,10000,3000,2840,500,463,430,430,234,170,164,120,105,76,75,55,50,30,25,23,20,20,15,13,12,10,10,10,9,8,8,8,8,7,7,6,5,4,4,3,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.7,0.5,0.2,0.1,0.05],[26552.4,8400,7000,2100,1988,350,324.1,301,301,163.8,119,114.8,84,73.5,53.2,52.5,38.5,35,21,17.5,16.1,14,14,10.5,9.1,8.4,7,7,7,6.3,5.6,5.6,5.6,5.6,4.9,4.9,4.2,3.5,2.8,2.8,2.1,2.1,1.4,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.5,0.3,0.1,0.1,0],["Mountaineering","Mountaineering","COVID-19","Disease","Mountaineering","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Medical","Sport","Medical","Daily Life","COVID-19","Medical","COVID-19","COVID-19","Drugs","Military","COVID-19","COVID-19","Sport","Daily Life","Drugs","Sport","Medical","Travel","Sport","COVID-19","Sport","Sport","COVID-19","Sport","Sport","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Sport","COVID-19","COVID-19","COVID-19","Environment","Travel","Travel","Travel","Travel","Diet","Occupation","Diet","Diet","Daily Life","Daily Life","COVID-19","COVID-19","Sport","Sport","COVID-19","Wildlife","COVID-19"],["per ascent","per expedition","per infection","per infection","per ascent","per month","per day","per event","per day","11 weeks (2022)","per event","per year","per event","per day","11 weeks (2022)","per night","11 weeks (2022)","per 8 weeks","per dose","per day","11 weeks (2022)","11 weeks (2022)","per game","per day","per dose","per swim","per event","per trip","per event","11 weeks (2022)","per event","per event","11 weeks (2022)","per event","per event","per 8 weeks","per day","per event","per day","11 weeks (2022)","per event","11 weeks (2022)","11 weeks (2022)","11 weeks (2022)","per 2 months","per trip","per trip","per trip","per trip","per event","per hour","per event","per event","per day","per day","11 weeks (2022)","11 weeks (2022)","per day","per ride","11 weeks (2022)","per encounter","11 weeks (2022)"],["event","event","event","event","event","month","day","event","day","period","event","year","event","day","period","day","period","period","event","day","period","period","event","day","event","event","event","event","event","period","event","event","period","event","event","period","day","event","day","period","event","period","period","period","event","event","event","event","event","event","hour","event","event","day","day","period","period","day","event","period","event","period"],[60,45,14,14,60,30,1,1,1,77,1,365,1,1,77,1,77,56,0.01,1,77,77,0.13,1,0.01,0.04,1,0.17,1,77,1,1,77,1,1,56,1,1,1,77,1,77,77,77,60,0.17,0.17,0.17,0.17,1,0.04166666666666666,1,1,1,1,77,77,1,0.08,77,0.01,77],[632.2,266.67,714.29,214.29,47.33,16.67,463,430,430,3.04,170,0.45,120,105,0.99,75,0.71,0.89,3000,25,0.3,0.26,153.85,15,1300,300,10,58.82,10,0.12,8,8,0.1,8,7,0.12,6,5,4,0.05,3,0.04,0.03,0.01,0.02,5.88,5.88,5.88,5.88,1,24,1,1,1,1,0.01,0.01,0.7,6.25,0,10,0],["https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>activity<\/th>\n      <th>micromorts<\/th>\n      <th>microlives<\/th>\n      <th>category<\/th>\n      <th>period<\/th>\n      <th>period_type<\/th>\n      <th>period_days<\/th>\n      <th>micromorts_per_day<\/th>\n      <th>source_url<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[1,2,6,7]},{"name":"activity","targets":0},{"name":"micromorts","targets":1},{"name":"microlives","targets":2},{"name":"category","targets":3},{"name":"period","targets":4},{"name":"period_type","targets":5},{"name":"period_days","targets":6},{"name":"micromorts_per_day","targets":7},{"name":"source_url","targets":8}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-46704a4066aac18d900c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-46704a4066aac18d900c">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.05\" data-max=\"37932\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"26552.4\" data-scale=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0.01\" data-max=\"365\" data-scale=\"15\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"3000\" data-scale=\"2\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","caption":"<caption>Common risks in micromorts (click column headers to sort, use search box to filter)<\/caption>","data":[["Mt. Everest ascent","Himalayan mountaineering","COVID-19 infection (unvaccinated)","Spanish flu infection","Matterhorn ascent","Living in US during COVID-19 (Jul 2020)","Living (one day, age 90)","Base jumping (per jump)","First day of life (newborn)","COVID-19 unvaccinated (age 80+)","Caesarean birth (mother)","Scuba diving (per year, trained)","Vaginal birth (mother)","Living (one day, age 75)","COVID-19 unvaccinated (age 65-79)","Night in hospital","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","Heroin use (per dose)","US military in Afghanistan (2010)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","American football (per game)","Living (one day, under age 1)","Ecstasy/MDMA (per dose)","Swimming (drowning risk)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump, general)","COVID-19 monovalent vaccine (age 65-79)","Skydiving (per jump, US)","Skydiving (per jump, UK)","COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Running a marathon","Living in Maryland COVID-19 (Mar-May 2020)","Living (one day, age 45)","Scuba diving (per dive, trained)","Living (one day, age 50)","COVID-19 monovalent vaccine (all ages)","Rock climbing (per climb)","COVID-19 bivalent booster (age 65-79)","COVID-19 monovalent vaccine (age 50-64)","COVID-19 unvaccinated (age 18-49)","Living 2 months with a smoker","Walking (20 miles)","Driving (230 miles)","Flying (1000 miles)","Train (1000 miles)","Eating 1000 bananas (radiation)","1 hour in a coal mine","Eating 40 tbsp peanut butter (aflatoxin)","Eating 100 charbroiled steaks","Living (one day, age 20)","Living (one day, age 30)","COVID-19 bivalent booster (all ages)","COVID-19 bivalent booster (age 50-64)","Skiing (per day)","Horseback riding","COVID-19 monovalent vaccine (age 18-49)","Kangaroo encounter","COVID-19 bivalent booster (age 18-49)"],[37932,12000,10000,3000,2840,500,463,430,430,234,170,164,120,105,76,75,55,50,30,25,23,20,20,15,13,12,10,10,10,9,8,8,8,8,7,7,6,5,4,4,3,3,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.7,0.5,0.2,0.1,0.05],[26552.4,8400,7000,2100,1988,350,324.1,301,301,163.8,119,114.8,84,73.5,53.2,52.5,38.5,35,21,17.5,16.1,14,14,10.5,9.1,8.4,7,7,7,6.3,5.6,5.6,5.6,5.6,4.9,4.9,4.2,3.5,2.8,2.8,2.1,2.1,1.4,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.7,0.5,0.3,0.1,0.1,0],["Mountaineering","Mountaineering","COVID-19","Disease","Mountaineering","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Medical","Sport","Medical","Daily Life","COVID-19","Medical","COVID-19","COVID-19","Drugs","Military","COVID-19","COVID-19","Sport","Daily Life","Drugs","Sport","Medical","Travel","Sport","COVID-19","Sport","Sport","COVID-19","Sport","Sport","COVID-19","Daily Life","Sport","Daily Life","COVID-19","Sport","COVID-19","COVID-19","COVID-19","Environment","Travel","Travel","Travel","Travel","Diet","Occupation","Diet","Diet","Daily Life","Daily Life","COVID-19","COVID-19","Sport","Sport","COVID-19","Wildlife","COVID-19"],["per ascent","per expedition","per infection","per infection","per ascent","per month","per day","per event","per day","11 weeks (2022)","per event","per year","per event","per day","11 weeks (2022)","per night","11 weeks (2022)","per 8 weeks","per dose","per day","11 weeks (2022)","11 weeks (2022)","per game","per day","per dose","per swim","per event","per trip","per event","11 weeks (2022)","per event","per event","11 weeks (2022)","per event","per event","per 8 weeks","per day","per event","per day","11 weeks (2022)","per event","11 weeks (2022)","11 weeks (2022)","11 weeks (2022)","per 2 months","per trip","per trip","per trip","per trip","per event","per hour","per event","per event","per day","per day","11 weeks (2022)","11 weeks (2022)","per day","per ride","11 weeks (2022)","per encounter","11 weeks (2022)"],["event","event","event","event","event","month","day","event","day","period","event","year","event","day","period","day","period","period","event","day","period","period","event","day","event","event","event","event","event","period","event","event","period","event","event","period","day","event","day","period","event","period","period","period","event","event","event","event","event","event","hour","event","event","day","day","period","period","day","event","period","event","period"],[60,45,14,14,60,30,1,1,1,77,1,365,1,1,77,1,77,56,0.01,1,77,77,0.13,1,0.01,0.04,1,0.17,1,77,1,1,77,1,1,56,1,1,1,77,1,77,77,77,60,0.17,0.17,0.17,0.17,1,0.04166666666666666,1,1,1,1,77,77,1,0.08,77,0.01,77],[632.2,266.67,714.29,214.29,47.33,16.67,463,430,430,3.04,170,0.45,120,105,0.99,75,0.71,0.89,3000,25,0.3,0.26,153.85,15,1300,300,10,58.82,10,0.12,8,8,0.1,8,7,0.12,6,5,4,0.05,3,0.04,0.03,0.01,0.02,5.88,5.88,5.88,5.88,1,24,1,1,1,1,0.01,0.01,0.7,6.25,0,10,0],["https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://micromorts.rip/","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://micromorts.rip/","https://en.wikipedia.org/wiki/Micromort","https://en.wikipedia.org/wiki/Micromort","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","https://micromorts.rip/","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>activity<\/th>\n      <th>micromorts<\/th>\n      <th>microlives<\/th>\n      <th>category<\/th>\n      <th>period<\/th>\n      <th>period_type<\/th>\n      <th>period_days<\/th>\n      <th>micromorts_per_day<\/th>\n      <th>source_url<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[1,2,6,7]},{"name":"activity","targets":0},{"name":"micromorts","targets":1},{"name":"microlives","targets":2},{"name":"category","targets":3},{"name":"period","targets":4},{"name":"period_type","targets":5},{"name":"period_days","targets":6},{"name":"micromorts_per_day","targets":7},{"name":"source_url","targets":8}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="section level3">
-<h3 id="visualizing-risks">Visualizing Risks<a class="anchor" aria-label="anchor" href="#visualizing-risks"></a>
+</div>
+</section><section class="level3"><h3 id="visualizing-risks">Visualizing Risks<a class="anchor" aria-label="anchor" href="#visualizing-risks"></a>
 </h3>
-<p>Using <a href="../reference/plot_risks.html"><code>plot_risks()</code></a>, we
-can see the relative magnitude of different activities on a logarithmic
-scale. The plot is split into COVID-19 and Other risks to make
-comparisons easier:</p>
-<pre><code><span><span class="co">#&gt; Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span></code></pre>
-<p><img src="introduction_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="960" style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"></p>
-<div class="section level4">
-<h4 id="interactive-version">Interactive Version<a class="anchor" aria-label="anchor" href="#interactive-version"></a>
+<p>Using <a href="../reference/plot_risks.html"><code>plot_risks()</code></a>, we can see the relative magnitude of different activities on a logarithmic scale. The plot is split into COVID-19 and Other risks to make comparisons easier:</p>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span></code></pre>
+<div class="cell-output-display">
+<div>
+<figure><p><img src="introduction_files/figure-html/unnamed-chunk-3-1.png" style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<section class="level4"><h4 id="interactive-version">Interactive Version<a class="anchor" aria-label="anchor" href="#interactive-version"></a>
 </h4>
-<p>For interactive exploration with hover details and category
-filtering, use <a href="../reference/plot_risks_interactive.html"><code>plot_risks_interactive()</code></a>:</p>
+<p>For interactive exploration with hover details and category filtering, use <a href="../reference/plot_risks_interactive.html"><code>plot_risks_interactive()</code></a>:</p>
+<div class="cell">
 <pre><code><span><span class="co">#&gt; Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8</span></span>
 <span><span class="co">#&gt; Returning the palette you asked for with that many colors</span></span>
 <span><span class="co">#&gt; Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8</span></span>
 <span><span class="co">#&gt; Returning the palette you asked for with that many colors</span></span></code></pre>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:700px;height:432.632880098888px;"></div>
-<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"visdat":{"10c852c5f8d7":["function () ","plotlyVisDat"]},"cur_data":"10c852c5f8d7","attrs":{"10c852c5f8d7":{"x":{},"y":{},"orientation":"h","text":{},"hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":120,"l":200,"t":80,"r":50},"title":{"text":"Risk of Activities in Micromorts<br><sup>Click legend to filter categories<\/sup>","font":{"size":16,"color":"white"}},"xaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Micromorts (Log Scale)","font":{"color":"white"}},"type":"log","tickformat":",d","tickfont":{"color":"white"},"gridcolor":"#333333"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"size":9,"color":"white"},"type":"category","categoryorder":"array","categoryarray":["Annual tourist flyer (annual cosmic)","Cup of coffee","Dental radiographer (annual radiation)","Crossing a road","Working in an office (8 hours)","High-altitude resident (annual cosmic)","Business traveller (annual cosmic)","COVID-19 bivalent booster (age 18-49)","Dental X-ray (radiation per scan)","X-ray technician (annual radiation)","Taking a bath","Chest X-ray (radiation per scan)","Granite resident (annual radon)","Kangaroo encounter","Mammogram (radiation per scan)","Nuclear plant worker (annual radiation)","Normal background radiation","Commuting by car (30 min)","Airline pilot (annual radiation)","Frequent executive flyer (annual cosmic)","Interventional cardiologist (annual radiation)","COVID-19 monovalent vaccine (age 18-49)","Commuting by bicycle (30 min)","Drinking a glass of wine","Horseback riding","Skiing (per day)","1 hour in a coal mine","COVID-19 bivalent booster (age 50-64)","COVID-19 bivalent booster (all ages)","COVID-19 unvaccinated (age 18-49)","Driving (230 miles)","Eating 100 charbroiled steaks","Eating 1000 bananas (radiation)","Eating 40 tbsp peanut butter (aflatoxin)","Living (one day, age 20)","Living (one day, age 30)","Living 2 months with a smoker","Train (1000 miles)","Walking (20 miles)","Flying (2h short-haul)","Flying (5h medium-haul)","COVID-19 monovalent vaccine (age 50-64)","CT scan head (radiation per scan)","Barium enema (radiation per scan)","COVID-19 bivalent booster (age 65-79)","Rock climbing (per climb)","Flying (8h long-haul)","COVID-19 monovalent vaccine (all ages)","Living (one day, age 50)","Coronary angiogram (radiation per scan)","Scuba diving (per dive, trained)","Living (one day, age 45)","Flying (12h ultra-long-haul)","CT scan chest (radiation per scan)","Living in Maryland COVID-19 (Mar-May 2020)","Running a marathon","COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Skydiving (per jump, UK)","Skydiving (per jump, US)","COVID-19 monovalent vaccine (age 65-79)","CT scan abdomen (radiation per scan)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump, general)","Swimming (drowning risk)","Ecstasy/MDMA (per dose)","Living (one day, under age 1)","American football (per game)","COVID-19 unvaccinated (all ages)","COVID-19 bivalent booster (age 80+)","US military in Afghanistan (2010)","Heroin use (per dose)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 monovalent vaccine (age 80+)","Night in hospital","COVID-19 unvaccinated (age 65-79)","Living (one day, age 75)","Vaginal birth (mother)","Scuba diving (per year, trained)","Caesarean birth (mother)","COVID-19 unvaccinated (age 80+)","Base jumping (per jump)","First day of life (newborn)","Living (one day, age 90)","Living in US during COVID-19 (Jul 2020)","Matterhorn ascent","Spanish flu infection","COVID-19 infection (unvaccinated)","Himalayan mountaineering","Mt. Everest ascent"]},"legend":{"title":{"text":"Category","font":{"color":"white"}},"font":{"color":"white"},"bgcolor":"rgba(26,26,26,0.8)","orientation":"h","y":-0.14999999999999999},"paper_bgcolor":"#1a1a1a","plot_bgcolor":"#1a1a1a","font":{"color":"white"},"annotations":[{"text":"Sources: Wikipedia, CDC MMWR","xref":"paper","yref":"paper","x":0,"y":-0.22,"showarrow":false,"font":{"color":"#999999","size":10},"xanchor":"left"}],"updatemenus":[{"type":"dropdown","active":0,"x":1,"y":1.1499999999999999,"bgcolor":"#333333","font":{"color":"white"},"buttons":[{"label":"All Categories","method":"update","args":[{"visible":true}]},{"label":"COVID-19 Only","method":"update","args":[{"visible":[false,true,false,false,false,false,false,false,false,false,false,false,false]}]},{"label":"Non-COVID Only","method":"update","args":[{"visible":[true,false,true,true,true,true,true,true,true,true,true,true,true]}]}]}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[10000,500,234,76,55,50,23,20,9,8,7,4,3,2,1.0700000000000001,1.0700000000000001,1.0700000000000001,0.20000000000000001,0.050000000000000003],"y":["COVID-19 infection (unvaccinated)","Living in US during COVID-19 (Jul 2020)","COVID-19 unvaccinated (age 80+)","COVID-19 unvaccinated (age 65-79)","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","COVID-19 monovalent vaccine (age 65-79)","COVID-19 unvaccinated (age 50-64)","Living in Maryland COVID-19 (Mar-May 2020)","COVID-19 monovalent vaccine (all ages)","COVID-19 bivalent booster (age 65-79)","COVID-19 monovalent vaccine (age 50-64)","COVID-19 unvaccinated (age 18-49)","COVID-19 bivalent booster (all ages)","COVID-19 bivalent booster (age 50-64)","COVID-19 monovalent vaccine (age 18-49)","COVID-19 bivalent booster (age 18-49)"],"orientation":"h","text":["<b>COVID-19 infection (unvaccinated)<\/b><br>Micromorts: 10,000.0000<br>Microlives: 7000<br>Period: per infection<br>Category: COVID-19","<b>Living in US during COVID-19 (Jul 2020)<\/b><br>Micromorts: 500.0000<br>Microlives: 350<br>Period: per month<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 80+)<\/b><br>Micromorts: 234.0000<br>Microlives: 163.8<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 65-79)<\/b><br>Micromorts: 76.0000<br>Microlives: 53.2<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 80+)<\/b><br>Micromorts: 55.0000<br>Microlives: 38.5<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>Living in NYC COVID-19 (Mar-May 2020)<\/b><br>Micromorts: 50.0000<br>Microlives: 35<br>Period: per 8 weeks<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 80+)<\/b><br>Micromorts: 23.0000<br>Microlives: 16.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (all ages)<\/b><br>Micromorts: 20.0000<br>Microlives: 14<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 65-79)<\/b><br>Micromorts: 9.0000<br>Microlives: 6.3<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 50-64)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>Living in Maryland COVID-19 (Mar-May 2020)<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per 8 weeks<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (all ages)<\/b><br>Micromorts: 4.0000<br>Microlives: 2.8<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 65-79)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 50-64)<\/b><br>Micromorts: 2.0000<br>Microlives: 1.4<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 18-49)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (all ages)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 50-64)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 18-49)<\/b><br>Micromorts: 0.2000<br>Microlives: 0.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 18-49)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: 11 weeks (2022)<br>Category: COVID-19"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"COVID-19","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[463,430,105,15,6,4,1.0700000000000001,1.0700000000000001,0.5,0.070000000000000007,0.029999999999999999,0.02,0.01],"y":["Living (one day, age 90)","First day of life (newborn)","Living (one day, age 75)","Living (one day, under age 1)","Living (one day, age 45)","Living (one day, age 50)","Living (one day, age 20)","Living (one day, age 30)","Drinking a glass of wine","Taking a bath","Working in an office (8 hours)","Crossing a road","Cup of coffee"],"orientation":"h","text":["<b>Living (one day, age 90)<\/b><br>Micromorts: 463.0000<br>Microlives: 324.1<br>Period: per day<br>Category: Daily Life","<b>First day of life (newborn)<\/b><br>Micromorts: 430.0000<br>Microlives: 301<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 75)<\/b><br>Micromorts: 105.0000<br>Microlives: 73.5<br>Period: per day<br>Category: Daily Life","<b>Living (one day, under age 1)<\/b><br>Micromorts: 15.0000<br>Microlives: 10.5<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 45)<\/b><br>Micromorts: 6.0000<br>Microlives: 4.2<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 50)<\/b><br>Micromorts: 4.0000<br>Microlives: 2.8<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 20)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 30)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per day<br>Category: Daily Life","<b>Drinking a glass of wine<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per event<br>Category: Daily Life","<b>Taking a bath<\/b><br>Micromorts: 0.0700<br>Microlives: 0<br>Period: per event<br>Category: Daily Life","<b>Working in an office (8 hours)<\/b><br>Micromorts: 0.0300<br>Microlives: 0<br>Period: per day<br>Category: Daily Life","<b>Crossing a road<\/b><br>Micromorts: 0.0200<br>Microlives: 0<br>Period: per event<br>Category: Daily Life","<b>Cup of coffee<\/b><br>Micromorts: 0.0100<br>Microlives: 0<br>Period: per event<br>Category: Daily Life"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Daily Life","marker":{"color":"rgba(204,167,126,1)","line":{"color":"rgba(204,167,126,1)"}},"textfont":{"color":"rgba(204,167,126,1)"},"error_y":{"color":"rgba(204,167,126,1)"},"error_x":{"color":"rgba(204,167,126,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,1.0700000000000001,1.0700000000000001],"y":["Eating 1000 bananas (radiation)","Eating 40 tbsp peanut butter (aflatoxin)","Eating 100 charbroiled steaks"],"orientation":"h","text":["<b>Eating 1000 bananas (radiation)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet","<b>Eating 40 tbsp peanut butter (aflatoxin)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet","<b>Eating 100 charbroiled steaks<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet"],"hoverinfo":["text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Diet","marker":{"color":"rgba(238,145,116,1)","line":{"color":"rgba(238,145,116,1)"}},"textfont":{"color":"rgba(238,145,116,1)"},"error_y":{"color":"rgba(238,145,116,1)"},"error_x":{"color":"rgba(238,145,116,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[3000],"y":["Spanish flu infection"],"orientation":"h","text":"<b>Spanish flu infection<\/b><br>Micromorts: 3,000.0000<br>Microlives: 2100<br>Period: per infection<br>Category: Disease","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Disease","marker":{"color":"rgba(178,156,177,1)","line":{"color":"rgba(178,156,177,1)"}},"textfont":{"color":"rgba(178,156,177,1)"},"error_y":{"color":"rgba(178,156,177,1)"},"error_x":{"color":"rgba(178,156,177,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[30,13],"y":["Heroin use (per dose)","Ecstasy/MDMA (per dose)"],"orientation":"h","text":["<b>Heroin use (per dose)<\/b><br>Micromorts: 30.0000<br>Microlives: 21<br>Period: per dose<br>Category: Drugs","<b>Ecstasy/MDMA (per dose)<\/b><br>Micromorts: 13.0000<br>Microlives: 9.1<br>Period: per dose<br>Category: Drugs"],"hoverinfo":["text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Drugs","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,0.12,0.10000000000000001,0.035000000000000003],"y":["Living 2 months with a smoker","Normal background radiation","Granite resident (annual radon)","High-altitude resident (annual cosmic)"],"orientation":"h","text":["<b>Living 2 months with a smoker<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per 2 months<br>Category: Environment","<b>Normal background radiation<\/b><br>Micromorts: 0.1200<br>Microlives: 0.1<br>Period: per year<br>Category: Environment","<b>Granite resident (annual radon)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per year<br>Category: Environment","<b>High-altitude resident (annual cosmic)<\/b><br>Micromorts: 0.0350<br>Microlives: 0<br>Period: per year<br>Category: Environment"],"hoverinfo":["text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Environment","marker":{"color":"rgba(224,140,196,1)","line":{"color":"rgba(224,140,196,1)"}},"textfont":{"color":"rgba(224,140,196,1)"},"error_y":{"color":"rgba(224,140,196,1)"},"error_x":{"color":"rgba(224,140,196,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[170,120,75,10,10,7,5,3,2,0.10000000000000001,0.10000000000000001,0.050000000000000003],"y":["Caesarean birth (mother)","Vaginal birth (mother)","Night in hospital","General anesthesia (emergency)","CT scan abdomen (radiation per scan)","CT scan chest (radiation per scan)","Coronary angiogram (radiation per scan)","Barium enema (radiation per scan)","CT scan head (radiation per scan)","Chest X-ray (radiation per scan)","Mammogram (radiation per scan)","Dental X-ray (radiation per scan)"],"orientation":"h","text":["<b>Caesarean birth (mother)<\/b><br>Micromorts: 170.0000<br>Microlives: 119<br>Period: per event<br>Category: Medical","<b>Vaginal birth (mother)<\/b><br>Micromorts: 120.0000<br>Microlives: 84<br>Period: per event<br>Category: Medical","<b>Night in hospital<\/b><br>Micromorts: 75.0000<br>Microlives: 52.5<br>Period: per night<br>Category: Medical","<b>General anesthesia (emergency)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Medical","<b>CT scan abdomen (radiation per scan)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Medical","<b>CT scan chest (radiation per scan)<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per event<br>Category: Medical","<b>Coronary angiogram (radiation per scan)<\/b><br>Micromorts: 5.0000<br>Microlives: 3.5<br>Period: per event<br>Category: Medical","<b>Barium enema (radiation per scan)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: per event<br>Category: Medical","<b>CT scan head (radiation per scan)<\/b><br>Micromorts: 2.0000<br>Microlives: 1.4<br>Period: per event<br>Category: Medical","<b>Chest X-ray (radiation per scan)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per event<br>Category: Medical","<b>Mammogram (radiation per scan)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per event<br>Category: Medical","<b>Dental X-ray (radiation per scan)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: per event<br>Category: Medical"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Medical","marker":{"color":"rgba(205,180,144,1)","line":{"color":"rgba(205,180,144,1)"}},"textfont":{"color":"rgba(205,180,144,1)"},"error_y":{"color":"rgba(205,180,144,1)"},"error_x":{"color":"rgba(205,180,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[25],"y":["US military in Afghanistan (2010)"],"orientation":"h","text":"<b>US military in Afghanistan (2010)<\/b><br>Micromorts: 25.0000<br>Microlives: 17.5<br>Period: per day<br>Category: Military","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Military","marker":{"color":"rgba(174,216,81,1)","line":{"color":"rgba(174,216,81,1)"}},"textfont":{"color":"rgba(174,216,81,1)"},"error_y":{"color":"rgba(174,216,81,1)"},"error_x":{"color":"rgba(174,216,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[37932,12000,2840],"y":["Mt. Everest ascent","Himalayan mountaineering","Matterhorn ascent"],"orientation":"h","text":["<b>Mt. Everest ascent<\/b><br>Micromorts: 37,932.0000<br>Microlives: 26552.4<br>Period: per ascent<br>Category: Mountaineering","<b>Himalayan mountaineering<\/b><br>Micromorts: 12,000.0000<br>Microlives: 8400<br>Period: per expedition<br>Category: Mountaineering","<b>Matterhorn ascent<\/b><br>Micromorts: 2,840.0000<br>Microlives: 1988<br>Period: per ascent<br>Category: Mountaineering"],"hoverinfo":["text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Mountaineering","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,0.17499999999999999,0.14999999999999999,0.10000000000000001,0.050000000000000003,0.01],"y":["1 hour in a coal mine","Interventional cardiologist (annual radiation)","Airline pilot (annual radiation)","Nuclear plant worker (annual radiation)","X-ray technician (annual radiation)","Dental radiographer (annual radiation)"],"orientation":"h","text":["<b>1 hour in a coal mine<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per hour<br>Category: Occupation","<b>Interventional cardiologist (annual radiation)<\/b><br>Micromorts: 0.1750<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>Airline pilot (annual radiation)<\/b><br>Micromorts: 0.1500<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>Nuclear plant worker (annual radiation)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>X-ray technician (annual radiation)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: per year<br>Category: Occupation","<b>Dental radiographer (annual radiation)<\/b><br>Micromorts: 0.0100<br>Microlives: 0<br>Period: per year<br>Category: Occupation"],"hoverinfo":["text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Occupation","marker":{"color":"rgba(250,212,80,1)","line":{"color":"rgba(250,212,80,1)"}},"textfont":{"color":"rgba(250,212,80,1)"},"error_y":{"color":"rgba(250,212,80,1)"},"error_x":{"color":"rgba(250,212,80,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[430,164,20,12,10,8,8,8,7,5,3,0.69999999999999996,0.5],"y":["Base jumping (per jump)","Scuba diving (per year, trained)","American football (per game)","Swimming (drowning risk)","Skydiving (per jump, general)","Skydiving (per jump, US)","Skydiving (per jump, UK)","Hang gliding (per flight)","Running a marathon","Scuba diving (per dive, trained)","Rock climbing (per climb)","Skiing (per day)","Horseback riding"],"orientation":"h","text":["<b>Base jumping (per jump)<\/b><br>Micromorts: 430.0000<br>Microlives: 301<br>Period: per event<br>Category: Sport","<b>Scuba diving (per year, trained)<\/b><br>Micromorts: 164.0000<br>Microlives: 114.8<br>Period: per year<br>Category: Sport","<b>American football (per game)<\/b><br>Micromorts: 20.0000<br>Microlives: 14<br>Period: per game<br>Category: Sport","<b>Swimming (drowning risk)<\/b><br>Micromorts: 12.0000<br>Microlives: 8.4<br>Period: per swim<br>Category: Sport","<b>Skydiving (per jump, general)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Sport","<b>Skydiving (per jump, US)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Skydiving (per jump, UK)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Hang gliding (per flight)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Running a marathon<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per event<br>Category: Sport","<b>Scuba diving (per dive, trained)<\/b><br>Micromorts: 5.0000<br>Microlives: 3.5<br>Period: per event<br>Category: Sport","<b>Rock climbing (per climb)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: per event<br>Category: Sport","<b>Skiing (per day)<\/b><br>Micromorts: 0.7000<br>Microlives: 0.5<br>Period: per day<br>Category: Sport","<b>Horseback riding<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per ride<br>Category: Sport"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Sport","marker":{"color":"rgba(234,199,134,1)","line":{"color":"rgba(234,199,134,1)"}},"textfont":{"color":"rgba(234,199,134,1)"},"error_y":{"color":"rgba(234,199,134,1)"},"error_x":{"color":"rgba(234,199,134,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[10,6.5999999999999996,3.8999999999999999,1.75,1.1000000000000001,1.0700000000000001,1.0700000000000001,1.0700000000000001,0.5,0.14999999999999999,0.13,0.037499999999999999,0.0060000000000000001],"y":["Motorcycling (60 miles)","Flying (12h ultra-long-haul)","Flying (8h long-haul)","Flying (5h medium-haul)","Flying (2h short-haul)","Walking (20 miles)","Driving (230 miles)","Train (1000 miles)","Commuting by bicycle (30 min)","Frequent executive flyer (annual cosmic)","Commuting by car (30 min)","Business traveller (annual cosmic)","Annual tourist flyer (annual cosmic)"],"orientation":"h","text":["<b>Motorcycling (60 miles)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per trip<br>Category: Travel","<b>Flying (12h ultra-long-haul)<\/b><br>Micromorts: 6.6000<br>Microlives: 4.6<br>Period: per 12h flight<br>Category: Travel","<b>Flying (8h long-haul)<\/b><br>Micromorts: 3.9000<br>Microlives: 2.7<br>Period: per 8h flight<br>Category: Travel","<b>Flying (5h medium-haul)<\/b><br>Micromorts: 1.7500<br>Microlives: 1.2<br>Period: per 5h flight<br>Category: Travel","<b>Flying (2h short-haul)<\/b><br>Micromorts: 1.1000<br>Microlives: 0.8<br>Period: per 2h flight<br>Category: Travel","<b>Walking (20 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Driving (230 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Train (1000 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Commuting by bicycle (30 min)<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per trip<br>Category: Travel","<b>Frequent executive flyer (annual cosmic)<\/b><br>Micromorts: 0.1500<br>Microlives: 0.1<br>Period: per year<br>Category: Travel","<b>Commuting by car (30 min)<\/b><br>Micromorts: 0.1300<br>Microlives: 0.1<br>Period: per trip<br>Category: Travel","<b>Business traveller (annual cosmic)<\/b><br>Micromorts: 0.0375<br>Microlives: 0<br>Period: per year<br>Category: Travel","<b>Annual tourist flyer (annual cosmic)<\/b><br>Micromorts: 0.0060<br>Microlives: 0<br>Period: per year<br>Category: Travel"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Travel","marker":{"color":"rgba(209,189,161,1)","line":{"color":"rgba(209,189,161,1)"}},"textfont":{"color":"rgba(209,189,161,1)"},"error_y":{"color":"rgba(209,189,161,1)"},"error_x":{"color":"rgba(209,189,161,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[0.10000000000000001],"y":["Kangaroo encounter"],"orientation":"h","text":"<b>Kangaroo encounter<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per encounter<br>Category: Wildlife","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Wildlife","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-bd67cbc5a0b0930aac56" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-bd67cbc5a0b0930aac56">{"x":{"visdat":{"10c852c5f8d7":["function () ","plotlyVisDat"]},"cur_data":"10c852c5f8d7","attrs":{"10c852c5f8d7":{"x":{},"y":{},"orientation":"h","text":{},"hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":120,"l":200,"t":80,"r":50},"title":{"text":"Risk of Activities in Micromorts<br><sup>Click legend to filter categories<\/sup>","font":{"size":16,"color":"white"}},"xaxis":{"domain":[0,1],"automargin":true,"title":{"text":"Micromorts (Log Scale)","font":{"color":"white"}},"type":"log","tickformat":",d","tickfont":{"color":"white"},"gridcolor":"#333333"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"size":9,"color":"white"},"type":"category","categoryorder":"array","categoryarray":["Annual tourist flyer (annual cosmic)","Cup of coffee","Dental radiographer (annual radiation)","Crossing a road","Working in an office (8 hours)","High-altitude resident (annual cosmic)","Business traveller (annual cosmic)","COVID-19 bivalent booster (age 18-49)","Dental X-ray (radiation per scan)","X-ray technician (annual radiation)","Taking a bath","Chest X-ray (radiation per scan)","Granite resident (annual radon)","Kangaroo encounter","Mammogram (radiation per scan)","Nuclear plant worker (annual radiation)","Normal background radiation","Commuting by car (30 min)","Airline pilot (annual radiation)","Frequent executive flyer (annual cosmic)","Interventional cardiologist (annual radiation)","COVID-19 monovalent vaccine (age 18-49)","Commuting by bicycle (30 min)","Drinking a glass of wine","Horseback riding","Skiing (per day)","1 hour in a coal mine","COVID-19 bivalent booster (age 50-64)","COVID-19 bivalent booster (all ages)","COVID-19 unvaccinated (age 18-49)","Driving (230 miles)","Eating 100 charbroiled steaks","Eating 1000 bananas (radiation)","Eating 40 tbsp peanut butter (aflatoxin)","Living (one day, age 20)","Living (one day, age 30)","Living 2 months with a smoker","Train (1000 miles)","Walking (20 miles)","Flying (2h short-haul)","Flying (5h medium-haul)","COVID-19 monovalent vaccine (age 50-64)","CT scan head (radiation per scan)","Barium enema (radiation per scan)","COVID-19 bivalent booster (age 65-79)","Rock climbing (per climb)","Flying (8h long-haul)","COVID-19 monovalent vaccine (all ages)","Living (one day, age 50)","Coronary angiogram (radiation per scan)","Scuba diving (per dive, trained)","Living (one day, age 45)","Flying (12h ultra-long-haul)","CT scan chest (radiation per scan)","Living in Maryland COVID-19 (Mar-May 2020)","Running a marathon","COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Skydiving (per jump, UK)","Skydiving (per jump, US)","COVID-19 monovalent vaccine (age 65-79)","CT scan abdomen (radiation per scan)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump, general)","Swimming (drowning risk)","Ecstasy/MDMA (per dose)","Living (one day, under age 1)","American football (per game)","COVID-19 unvaccinated (all ages)","COVID-19 bivalent booster (age 80+)","US military in Afghanistan (2010)","Heroin use (per dose)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 monovalent vaccine (age 80+)","Night in hospital","COVID-19 unvaccinated (age 65-79)","Living (one day, age 75)","Vaginal birth (mother)","Scuba diving (per year, trained)","Caesarean birth (mother)","COVID-19 unvaccinated (age 80+)","Base jumping (per jump)","First day of life (newborn)","Living (one day, age 90)","Living in US during COVID-19 (Jul 2020)","Matterhorn ascent","Spanish flu infection","COVID-19 infection (unvaccinated)","Himalayan mountaineering","Mt. Everest ascent"]},"legend":{"title":{"text":"Category","font":{"color":"white"}},"font":{"color":"white"},"bgcolor":"rgba(26,26,26,0.8)","orientation":"h","y":-0.14999999999999999},"paper_bgcolor":"#1a1a1a","plot_bgcolor":"#1a1a1a","font":{"color":"white"},"annotations":[{"text":"Sources: Wikipedia, CDC MMWR","xref":"paper","yref":"paper","x":0,"y":-0.22,"showarrow":false,"font":{"color":"#999999","size":10},"xanchor":"left"}],"updatemenus":[{"type":"dropdown","active":0,"x":1,"y":1.1499999999999999,"bgcolor":"#333333","font":{"color":"white"},"buttons":[{"label":"All Categories","method":"update","args":[{"visible":true}]},{"label":"COVID-19 Only","method":"update","args":[{"visible":[false,true,false,false,false,false,false,false,false,false,false,false,false]}]},{"label":"Non-COVID Only","method":"update","args":[{"visible":[true,false,true,true,true,true,true,true,true,true,true,true,true]}]}]}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[10000,500,234,76,55,50,23,20,9,8,7,4,3,2,1.0700000000000001,1.0700000000000001,1.0700000000000001,0.20000000000000001,0.050000000000000003],"y":["COVID-19 infection (unvaccinated)","Living in US during COVID-19 (Jul 2020)","COVID-19 unvaccinated (age 80+)","COVID-19 unvaccinated (age 65-79)","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","COVID-19 monovalent vaccine (age 65-79)","COVID-19 unvaccinated (age 50-64)","Living in Maryland COVID-19 (Mar-May 2020)","COVID-19 monovalent vaccine (all ages)","COVID-19 bivalent booster (age 65-79)","COVID-19 monovalent vaccine (age 50-64)","COVID-19 unvaccinated (age 18-49)","COVID-19 bivalent booster (all ages)","COVID-19 bivalent booster (age 50-64)","COVID-19 monovalent vaccine (age 18-49)","COVID-19 bivalent booster (age 18-49)"],"orientation":"h","text":["<b>COVID-19 infection (unvaccinated)<\/b><br>Micromorts: 10,000.0000<br>Microlives: 7000<br>Period: per infection<br>Category: COVID-19","<b>Living in US during COVID-19 (Jul 2020)<\/b><br>Micromorts: 500.0000<br>Microlives: 350<br>Period: per month<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 80+)<\/b><br>Micromorts: 234.0000<br>Microlives: 163.8<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 65-79)<\/b><br>Micromorts: 76.0000<br>Microlives: 53.2<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 80+)<\/b><br>Micromorts: 55.0000<br>Microlives: 38.5<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>Living in NYC COVID-19 (Mar-May 2020)<\/b><br>Micromorts: 50.0000<br>Microlives: 35<br>Period: per 8 weeks<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 80+)<\/b><br>Micromorts: 23.0000<br>Microlives: 16.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (all ages)<\/b><br>Micromorts: 20.0000<br>Microlives: 14<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 65-79)<\/b><br>Micromorts: 9.0000<br>Microlives: 6.3<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 50-64)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>Living in Maryland COVID-19 (Mar-May 2020)<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per 8 weeks<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (all ages)<\/b><br>Micromorts: 4.0000<br>Microlives: 2.8<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 65-79)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 50-64)<\/b><br>Micromorts: 2.0000<br>Microlives: 1.4<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 unvaccinated (age 18-49)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (all ages)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 50-64)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 monovalent vaccine (age 18-49)<\/b><br>Micromorts: 0.2000<br>Microlives: 0.1<br>Period: 11 weeks (2022)<br>Category: COVID-19","<b>COVID-19 bivalent booster (age 18-49)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: 11 weeks (2022)<br>Category: COVID-19"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"COVID-19","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[463,430,105,15,6,4,1.0700000000000001,1.0700000000000001,0.5,0.070000000000000007,0.029999999999999999,0.02,0.01],"y":["Living (one day, age 90)","First day of life (newborn)","Living (one day, age 75)","Living (one day, under age 1)","Living (one day, age 45)","Living (one day, age 50)","Living (one day, age 20)","Living (one day, age 30)","Drinking a glass of wine","Taking a bath","Working in an office (8 hours)","Crossing a road","Cup of coffee"],"orientation":"h","text":["<b>Living (one day, age 90)<\/b><br>Micromorts: 463.0000<br>Microlives: 324.1<br>Period: per day<br>Category: Daily Life","<b>First day of life (newborn)<\/b><br>Micromorts: 430.0000<br>Microlives: 301<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 75)<\/b><br>Micromorts: 105.0000<br>Microlives: 73.5<br>Period: per day<br>Category: Daily Life","<b>Living (one day, under age 1)<\/b><br>Micromorts: 15.0000<br>Microlives: 10.5<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 45)<\/b><br>Micromorts: 6.0000<br>Microlives: 4.2<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 50)<\/b><br>Micromorts: 4.0000<br>Microlives: 2.8<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 20)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per day<br>Category: Daily Life","<b>Living (one day, age 30)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per day<br>Category: Daily Life","<b>Drinking a glass of wine<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per event<br>Category: Daily Life","<b>Taking a bath<\/b><br>Micromorts: 0.0700<br>Microlives: 0<br>Period: per event<br>Category: Daily Life","<b>Working in an office (8 hours)<\/b><br>Micromorts: 0.0300<br>Microlives: 0<br>Period: per day<br>Category: Daily Life","<b>Crossing a road<\/b><br>Micromorts: 0.0200<br>Microlives: 0<br>Period: per event<br>Category: Daily Life","<b>Cup of coffee<\/b><br>Micromorts: 0.0100<br>Microlives: 0<br>Period: per event<br>Category: Daily Life"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Daily Life","marker":{"color":"rgba(204,167,126,1)","line":{"color":"rgba(204,167,126,1)"}},"textfont":{"color":"rgba(204,167,126,1)"},"error_y":{"color":"rgba(204,167,126,1)"},"error_x":{"color":"rgba(204,167,126,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,1.0700000000000001,1.0700000000000001],"y":["Eating 1000 bananas (radiation)","Eating 40 tbsp peanut butter (aflatoxin)","Eating 100 charbroiled steaks"],"orientation":"h","text":["<b>Eating 1000 bananas (radiation)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet","<b>Eating 40 tbsp peanut butter (aflatoxin)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet","<b>Eating 100 charbroiled steaks<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per event<br>Category: Diet"],"hoverinfo":["text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Diet","marker":{"color":"rgba(238,145,116,1)","line":{"color":"rgba(238,145,116,1)"}},"textfont":{"color":"rgba(238,145,116,1)"},"error_y":{"color":"rgba(238,145,116,1)"},"error_x":{"color":"rgba(238,145,116,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[3000],"y":["Spanish flu infection"],"orientation":"h","text":"<b>Spanish flu infection<\/b><br>Micromorts: 3,000.0000<br>Microlives: 2100<br>Period: per infection<br>Category: Disease","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Disease","marker":{"color":"rgba(178,156,177,1)","line":{"color":"rgba(178,156,177,1)"}},"textfont":{"color":"rgba(178,156,177,1)"},"error_y":{"color":"rgba(178,156,177,1)"},"error_x":{"color":"rgba(178,156,177,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[30,13],"y":["Heroin use (per dose)","Ecstasy/MDMA (per dose)"],"orientation":"h","text":["<b>Heroin use (per dose)<\/b><br>Micromorts: 30.0000<br>Microlives: 21<br>Period: per dose<br>Category: Drugs","<b>Ecstasy/MDMA (per dose)<\/b><br>Micromorts: 13.0000<br>Microlives: 9.1<br>Period: per dose<br>Category: Drugs"],"hoverinfo":["text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Drugs","marker":{"color":"rgba(175,154,200,1)","line":{"color":"rgba(175,154,200,1)"}},"textfont":{"color":"rgba(175,154,200,1)"},"error_y":{"color":"rgba(175,154,200,1)"},"error_x":{"color":"rgba(175,154,200,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,0.12,0.10000000000000001,0.035000000000000003],"y":["Living 2 months with a smoker","Normal background radiation","Granite resident (annual radon)","High-altitude resident (annual cosmic)"],"orientation":"h","text":["<b>Living 2 months with a smoker<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per 2 months<br>Category: Environment","<b>Normal background radiation<\/b><br>Micromorts: 0.1200<br>Microlives: 0.1<br>Period: per year<br>Category: Environment","<b>Granite resident (annual radon)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per year<br>Category: Environment","<b>High-altitude resident (annual cosmic)<\/b><br>Micromorts: 0.0350<br>Microlives: 0<br>Period: per year<br>Category: Environment"],"hoverinfo":["text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Environment","marker":{"color":"rgba(224,140,196,1)","line":{"color":"rgba(224,140,196,1)"}},"textfont":{"color":"rgba(224,140,196,1)"},"error_y":{"color":"rgba(224,140,196,1)"},"error_x":{"color":"rgba(224,140,196,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[170,120,75,10,10,7,5,3,2,0.10000000000000001,0.10000000000000001,0.050000000000000003],"y":["Caesarean birth (mother)","Vaginal birth (mother)","Night in hospital","General anesthesia (emergency)","CT scan abdomen (radiation per scan)","CT scan chest (radiation per scan)","Coronary angiogram (radiation per scan)","Barium enema (radiation per scan)","CT scan head (radiation per scan)","Chest X-ray (radiation per scan)","Mammogram (radiation per scan)","Dental X-ray (radiation per scan)"],"orientation":"h","text":["<b>Caesarean birth (mother)<\/b><br>Micromorts: 170.0000<br>Microlives: 119<br>Period: per event<br>Category: Medical","<b>Vaginal birth (mother)<\/b><br>Micromorts: 120.0000<br>Microlives: 84<br>Period: per event<br>Category: Medical","<b>Night in hospital<\/b><br>Micromorts: 75.0000<br>Microlives: 52.5<br>Period: per night<br>Category: Medical","<b>General anesthesia (emergency)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Medical","<b>CT scan abdomen (radiation per scan)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Medical","<b>CT scan chest (radiation per scan)<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per event<br>Category: Medical","<b>Coronary angiogram (radiation per scan)<\/b><br>Micromorts: 5.0000<br>Microlives: 3.5<br>Period: per event<br>Category: Medical","<b>Barium enema (radiation per scan)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: per event<br>Category: Medical","<b>CT scan head (radiation per scan)<\/b><br>Micromorts: 2.0000<br>Microlives: 1.4<br>Period: per event<br>Category: Medical","<b>Chest X-ray (radiation per scan)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per event<br>Category: Medical","<b>Mammogram (radiation per scan)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per event<br>Category: Medical","<b>Dental X-ray (radiation per scan)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: per event<br>Category: Medical"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Medical","marker":{"color":"rgba(205,180,144,1)","line":{"color":"rgba(205,180,144,1)"}},"textfont":{"color":"rgba(205,180,144,1)"},"error_y":{"color":"rgba(205,180,144,1)"},"error_x":{"color":"rgba(205,180,144,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[25],"y":["US military in Afghanistan (2010)"],"orientation":"h","text":"<b>US military in Afghanistan (2010)<\/b><br>Micromorts: 25.0000<br>Microlives: 17.5<br>Period: per day<br>Category: Military","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Military","marker":{"color":"rgba(174,216,81,1)","line":{"color":"rgba(174,216,81,1)"}},"textfont":{"color":"rgba(174,216,81,1)"},"error_y":{"color":"rgba(174,216,81,1)"},"error_x":{"color":"rgba(174,216,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[37932,12000,2840],"y":["Mt. Everest ascent","Himalayan mountaineering","Matterhorn ascent"],"orientation":"h","text":["<b>Mt. Everest ascent<\/b><br>Micromorts: 37,932.0000<br>Microlives: 26552.4<br>Period: per ascent<br>Category: Mountaineering","<b>Himalayan mountaineering<\/b><br>Micromorts: 12,000.0000<br>Microlives: 8400<br>Period: per expedition<br>Category: Mountaineering","<b>Matterhorn ascent<\/b><br>Micromorts: 2,840.0000<br>Microlives: 1988<br>Period: per ascent<br>Category: Mountaineering"],"hoverinfo":["text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Mountaineering","marker":{"color":"rgba(227,217,62,1)","line":{"color":"rgba(227,217,62,1)"}},"textfont":{"color":"rgba(227,217,62,1)"},"error_y":{"color":"rgba(227,217,62,1)"},"error_x":{"color":"rgba(227,217,62,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1.0700000000000001,0.17499999999999999,0.14999999999999999,0.10000000000000001,0.050000000000000003,0.01],"y":["1 hour in a coal mine","Interventional cardiologist (annual radiation)","Airline pilot (annual radiation)","Nuclear plant worker (annual radiation)","X-ray technician (annual radiation)","Dental radiographer (annual radiation)"],"orientation":"h","text":["<b>1 hour in a coal mine<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per hour<br>Category: Occupation","<b>Interventional cardiologist (annual radiation)<\/b><br>Micromorts: 0.1750<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>Airline pilot (annual radiation)<\/b><br>Micromorts: 0.1500<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>Nuclear plant worker (annual radiation)<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per year<br>Category: Occupation","<b>X-ray technician (annual radiation)<\/b><br>Micromorts: 0.0500<br>Microlives: 0<br>Period: per year<br>Category: Occupation","<b>Dental radiographer (annual radiation)<\/b><br>Micromorts: 0.0100<br>Microlives: 0<br>Period: per year<br>Category: Occupation"],"hoverinfo":["text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Occupation","marker":{"color":"rgba(250,212,80,1)","line":{"color":"rgba(250,212,80,1)"}},"textfont":{"color":"rgba(250,212,80,1)"},"error_y":{"color":"rgba(250,212,80,1)"},"error_x":{"color":"rgba(250,212,80,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[430,164,20,12,10,8,8,8,7,5,3,0.69999999999999996,0.5],"y":["Base jumping (per jump)","Scuba diving (per year, trained)","American football (per game)","Swimming (drowning risk)","Skydiving (per jump, general)","Skydiving (per jump, US)","Skydiving (per jump, UK)","Hang gliding (per flight)","Running a marathon","Scuba diving (per dive, trained)","Rock climbing (per climb)","Skiing (per day)","Horseback riding"],"orientation":"h","text":["<b>Base jumping (per jump)<\/b><br>Micromorts: 430.0000<br>Microlives: 301<br>Period: per event<br>Category: Sport","<b>Scuba diving (per year, trained)<\/b><br>Micromorts: 164.0000<br>Microlives: 114.8<br>Period: per year<br>Category: Sport","<b>American football (per game)<\/b><br>Micromorts: 20.0000<br>Microlives: 14<br>Period: per game<br>Category: Sport","<b>Swimming (drowning risk)<\/b><br>Micromorts: 12.0000<br>Microlives: 8.4<br>Period: per swim<br>Category: Sport","<b>Skydiving (per jump, general)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per event<br>Category: Sport","<b>Skydiving (per jump, US)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Skydiving (per jump, UK)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Hang gliding (per flight)<\/b><br>Micromorts: 8.0000<br>Microlives: 5.6<br>Period: per event<br>Category: Sport","<b>Running a marathon<\/b><br>Micromorts: 7.0000<br>Microlives: 4.9<br>Period: per event<br>Category: Sport","<b>Scuba diving (per dive, trained)<\/b><br>Micromorts: 5.0000<br>Microlives: 3.5<br>Period: per event<br>Category: Sport","<b>Rock climbing (per climb)<\/b><br>Micromorts: 3.0000<br>Microlives: 2.1<br>Period: per event<br>Category: Sport","<b>Skiing (per day)<\/b><br>Micromorts: 0.7000<br>Microlives: 0.5<br>Period: per day<br>Category: Sport","<b>Horseback riding<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per ride<br>Category: Sport"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Sport","marker":{"color":"rgba(234,199,134,1)","line":{"color":"rgba(234,199,134,1)"}},"textfont":{"color":"rgba(234,199,134,1)"},"error_y":{"color":"rgba(234,199,134,1)"},"error_x":{"color":"rgba(234,199,134,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[10,6.5999999999999996,3.8999999999999999,1.75,1.1000000000000001,1.0700000000000001,1.0700000000000001,1.0700000000000001,0.5,0.14999999999999999,0.13,0.037499999999999999,0.0060000000000000001],"y":["Motorcycling (60 miles)","Flying (12h ultra-long-haul)","Flying (8h long-haul)","Flying (5h medium-haul)","Flying (2h short-haul)","Walking (20 miles)","Driving (230 miles)","Train (1000 miles)","Commuting by bicycle (30 min)","Frequent executive flyer (annual cosmic)","Commuting by car (30 min)","Business traveller (annual cosmic)","Annual tourist flyer (annual cosmic)"],"orientation":"h","text":["<b>Motorcycling (60 miles)<\/b><br>Micromorts: 10.0000<br>Microlives: 7<br>Period: per trip<br>Category: Travel","<b>Flying (12h ultra-long-haul)<\/b><br>Micromorts: 6.6000<br>Microlives: 4.6<br>Period: per 12h flight<br>Category: Travel","<b>Flying (8h long-haul)<\/b><br>Micromorts: 3.9000<br>Microlives: 2.7<br>Period: per 8h flight<br>Category: Travel","<b>Flying (5h medium-haul)<\/b><br>Micromorts: 1.7500<br>Microlives: 1.2<br>Period: per 5h flight<br>Category: Travel","<b>Flying (2h short-haul)<\/b><br>Micromorts: 1.1000<br>Microlives: 0.8<br>Period: per 2h flight<br>Category: Travel","<b>Walking (20 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Driving (230 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Train (1000 miles)<\/b><br>Micromorts: 1.0000<br>Microlives: 0.7<br>Period: per trip<br>Category: Travel","<b>Commuting by bicycle (30 min)<\/b><br>Micromorts: 0.5000<br>Microlives: 0.3<br>Period: per trip<br>Category: Travel","<b>Frequent executive flyer (annual cosmic)<\/b><br>Micromorts: 0.1500<br>Microlives: 0.1<br>Period: per year<br>Category: Travel","<b>Commuting by car (30 min)<\/b><br>Micromorts: 0.1300<br>Microlives: 0.1<br>Period: per trip<br>Category: Travel","<b>Business traveller (annual cosmic)<\/b><br>Micromorts: 0.0375<br>Microlives: 0<br>Period: per year<br>Category: Travel","<b>Annual tourist flyer (annual cosmic)<\/b><br>Micromorts: 0.0060<br>Microlives: 0<br>Period: per year<br>Category: Travel"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text"],"hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Travel","marker":{"color":"rgba(209,189,161,1)","line":{"color":"rgba(209,189,161,1)"}},"textfont":{"color":"rgba(209,189,161,1)"},"error_y":{"color":"rgba(209,189,161,1)"},"error_x":{"color":"rgba(209,189,161,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[0.10000000000000001],"y":["Kangaroo encounter"],"orientation":"h","text":"<b>Kangaroo encounter<\/b><br>Micromorts: 0.1000<br>Microlives: 0.1<br>Period: per encounter<br>Category: Wildlife","hoverinfo":"text","hoverlabel":{"bgcolor":"#333333","font":{"color":"white","size":12},"bordercolor":"#555555"},"type":"bar","name":"Wildlife","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="microlives-chronic-risk">2. Microlives (Chronic Risk)<a class="anchor" aria-label="anchor" href="#microlives-chronic-risk"></a>
+</section></section></section><section class="level2"><h2 id="microlives-chronic-risk">2. Microlives (Chronic Risk)<a class="anchor" aria-label="anchor" href="#microlives-chronic-risk"></a>
 </h2>
-<p>While micromorts measure sudden death, <strong>microlives</strong>
-measure the impact of chronic habits on your life expectancy. A
-microlife represents a 30-minute change in life expectancy <strong>per
-day of exposure</strong>.</p>
-<div class="section level3">
-<h3 id="living-at-different-speeds">Living at Different Speeds<a class="anchor" aria-label="anchor" href="#living-at-different-speeds"></a>
+<p>While micromorts measure sudden death, <strong>microlives</strong> measure the impact of chronic habits on your life expectancy. A microlife represents a 30-minute change in life expectancy <strong>per day of exposure</strong>.</p>
+<section class="level3"><h3 id="living-at-different-speeds">Living at Different Speeds<a class="anchor" aria-label="anchor" href="#living-at-different-speeds"></a>
 </h3>
-<p>A useful way to think about microlives: we all “use up” <strong>48
-microlives per day</strong> just by living (24 hours = 48 × 30 minutes).
-Unhealthy habits accelerate this consumption, while healthy habits slow
-it down.</p>
-<p>A smoker who smokes 20 cigarettes per day uses up an additional 10
-microlives, which can be interpreted as <strong>rushing towards death at
-29 hours per day</strong> instead of 24. Conversely, someone with
-excellent lifestyle habits might effectively live at only 22 hours per
-day.</p>
-<p><strong>Healthcare bonus:</strong> Modern healthcare and healthier
-lifestyles give us a “payback” of approximately <strong>12 microlives
-per day</strong> — our expected death is moving away from us even as we
-age.</p>
-</div>
-<div class="section level3">
-<h3 id="common-chronic-risks">Common Chronic Risks<a class="anchor" aria-label="anchor" href="#common-chronic-risks"></a>
+<p>A useful way to think about microlives: we all “use up” <strong>48 microlives per day</strong> just by living (24 hours = 48 × 30 minutes). Unhealthy habits accelerate this consumption, while healthy habits slow it down.</p>
+<p>A smoker who smokes 20 cigarettes per day uses up an additional 10 microlives, which can be interpreted as <strong>rushing towards death at 29 hours per day</strong> instead of 24. Conversely, someone with excellent lifestyle habits might effectively live at only 22 hours per day.</p>
+<p><strong>Healthcare bonus:</strong> Modern healthcare and healthier lifestyles give us a “payback” of approximately <strong>12 microlives per day</strong> — our expected death is moving away from us even as we age.</p>
+</section><section class="level3"><h3 id="common-chronic-risks">Common Chronic Risks<a class="anchor" aria-label="anchor" href="#common-chronic-risks"></a>
 </h3>
-<table class="table">
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Factor</th>
 <th>Microlives/day</th>
@@ -287,45 +252,20 @@ age.</p>
 <td>Healthy diet</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="converting-life-expectancy-to-microlives">Converting Life Expectancy to Microlives<a class="anchor" aria-label="anchor" href="#converting-life-expectancy-to-microlives"></a>
+</table></section><section class="level3"><h3 id="converting-life-expectancy-to-microlives">Converting Life Expectancy to Microlives<a class="anchor" aria-label="anchor" href="#converting-life-expectancy-to-microlives"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># as_microlife() converts minutes of life expectancy change to microlives</span></span>
-<span><span class="co"># Unit: 1 microlife = 30 minutes of life expectancy change PER DAY</span></span>
-<span><span class="co"># Sign: negative = loss, positive = gain</span></span>
-<span></span>
-<span><span class="co"># Heavy smoker: 20 cigarettes/day, each costs ~30 mins</span></span>
-<span><span class="fu"><a href="../reference/as_microlife.html">as_microlife</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span> <span class="op">*</span> <span class="fl">30</span><span class="op">)</span>  <span class="co"># = -20 microlives/day (life lost)</span></span>
-<span><span class="co">#&gt; [1] -20</span></span>
-<span></span>
-<span><span class="co"># Moderate exercise: 20 mins → ~60 mins life gained</span></span>
-<span><span class="fu"><a href="../reference/as_microlife.html">as_microlife</a></span><span class="op">(</span><span class="fl">60</span><span class="op">)</span>        <span class="co"># = +2 microlives/day (life gained)</span></span>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; [1] -20</span></span>
 <span><span class="co">#&gt; [1] 2</span></span>
-<span></span>
-<span><span class="co"># Being 5kg overweight costs 30 mins per day</span></span>
-<span><span class="fu"><a href="../reference/as_microlife.html">as_microlife</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span><span class="op">)</span>       <span class="co"># = -1 microlife/day (life lost)</span></span>
-<span><span class="co">#&gt; [1] -1</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] -1</span></span></code></pre>
 </div>
-</div>
-<div class="section level2">
-<h2 id="relationship-between-micromorts-and-microlives">3. Relationship Between Micromorts and Microlives<a class="anchor" aria-label="anchor" href="#relationship-between-micromorts-and-microlives"></a>
+</section></section><section class="level2"><h2 id="relationship-between-micromorts-and-microlives">3. Relationship Between Micromorts and Microlives<a class="anchor" aria-label="anchor" href="#relationship-between-micromorts-and-microlives"></a>
 </h2>
-<div class="section level3">
-<h3 id="theoretical-conversion">Theoretical Conversion<a class="anchor" aria-label="anchor" href="#theoretical-conversion"></a>
+<section class="level3"><h3 id="theoretical-conversion">Theoretical Conversion<a class="anchor" aria-label="anchor" href="#theoretical-conversion"></a>
 </h3>
-<p>Micromorts (acute, per-event risk) and microlives (chronic, per-day
-attrition) measure different phenomena, but can be approximately
-converted using expected value theory.</p>
+<p>Micromorts (acute, per-event risk) and microlives (chronic, per-day attrition) measure different phenomena, but can be approximately converted using expected value theory.</p>
 <p><strong>Key relationship:</strong> 1 micromort ≈ 0.7 microlives</p>
-<p><strong>Assumptions for this conversion:</strong> 1. Remaining life
-expectancy = 40 years (use <code>lle(prob, life_expectancy = ...)</code>
-to <a href="rest_api.html#age-based-hazard-rates">adjust for any
-age</a>; see also <code><a href="../reference/daily_hazard_rate.html">daily_hazard_rate()</a></code>) 2. Death occurs
-immediately upon the event (worst case) 3. Linear approximation (valid
-for small probabilities)</p>
+<p><strong>Assumptions for this conversion:</strong> 1. Remaining life expectancy = 40 years (use <code>lle(prob, life_expectancy = ...)</code> to <a href="rest_api.html#age-based-hazard-rates">adjust for any age</a>; see also <code><a href="../reference/daily_hazard_rate.html">daily_hazard_rate()</a></code>) 2. Death occurs immediately upon the event (worst case) 3. Linear approximation (valid for small probabilities)</p>
 <p><strong>Mathematical derivation:</strong></p>
 <ul>
 <li>1 micromort = 1/1,000,000 probability of death</li>
@@ -334,32 +274,23 @@ for small probabilities)</p>
 <li>= 4e-5 × 525,960 minutes/year ≈ 21 minutes</li>
 <li>1 microlife = 30 minutes, so 21 minutes ≈ 0.7 microlives</li>
 </ul>
-<p><strong>Why <code><a href="../reference/common_risks.html">common_risks()</a></code> uses microlives = micromorts
-× 0.7:</strong></p>
-<p>The conversion allows comparing a single risky event (like one
-skydive at 8 micromorts) to chronic daily habits (like smoking at -10
-microlives/day). However, <strong>the approximation breaks down
-when:</strong></p>
-<ol style="list-style-type: decimal">
+<p><strong>Why <code><a href="../reference/common_risks.html">common_risks()</a></code> uses microlives = micromorts × 0.7:</strong></p>
+<p>The conversion allows comparing a single risky event (like one skydive at 8 micromorts) to chronic daily habits (like smoking at -10 microlives/day). However, <strong>the approximation breaks down when:</strong></p>
+<ol type="1">
 <li>
-<strong>Remaining life expectancy differs</strong> from 40 years (a
-20-year-old loses more per micromort than an 80-year-old)</li>
+<strong>Remaining life expectancy differs</strong> from 40 years (a 20-year-old loses more per micromort than an 80-year-old)</li>
 <li>
-<strong>The risk is not immediate death</strong> (injuries,
-disabilities are not captured)</li>
+<strong>The risk is not immediate death</strong> (injuries, disabilities are not captured)</li>
 <li>
 <strong>Repeated exposures</strong> compound non-linearly</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="unit-definitions-summary">Unit Definitions (Summary)<a class="anchor" aria-label="anchor" href="#unit-definitions-summary"></a>
+</ol></section><section class="level3"><h3 id="unit-definitions-summary">Unit Definitions (Summary)<a class="anchor" aria-label="anchor" href="#unit-definitions-summary"></a>
 </h3>
-<table class="table">
+<table class="table caption-top">
 <colgroup>
-<col width="21%">
-<col width="44%">
-<col width="18%">
-<col width="15%">
+<col style="width: 21%">
+<col style="width: 44%">
+<col style="width: 18%">
+<col style="width: 15%">
 </colgroup>
 <thead><tr class="header">
 <th>Metric</th>
@@ -381,55 +312,33 @@ disabilities are not captured)</li>
 <td>+ = gain, − = loss</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="when-to-use-each">When to Use Each<a class="anchor" aria-label="anchor" href="#when-to-use-each"></a>
+</table></section><section class="level3"><h3 id="when-to-use-each">When to Use Each<a class="anchor" aria-label="anchor" href="#when-to-use-each"></a>
 </h3>
 <ul>
 <li>
-<strong>Use micromorts</strong> for discrete, short-duration events
-with binary outcomes (death or survival): surgery, skydiving, a single
-car trip</li>
+<strong>Use micromorts</strong> for discrete, short-duration events with binary outcomes (death or survival): surgery, skydiving, a single car trip</li>
 <li>
-<strong>Use microlives</strong> for chronic, daily habits that
-accumulate over a lifetime: smoking, exercise, diet</li>
+<strong>Use microlives</strong> for chronic, daily habits that accumulate over a lifetime: smoking, exercise, diet</li>
 <li>
-<strong>Convert between them</strong> for policy decisions, but
-state your assumptions (age, remaining life expectancy)</li>
-</ul>
-</div>
-</div>
-<div class="section level2">
-<h2 id="value-of-statistical-life-vsl">4. Value of Statistical Life (VSL)<a class="anchor" aria-label="anchor" href="#value-of-statistical-life-vsl"></a>
+<strong>Convert between them</strong> for policy decisions, but state your assumptions (age, remaining life expectancy)</li>
+</ul></section></section><section class="level2"><h2 id="value-of-statistical-life-vsl">4. Value of Statistical Life (VSL)<a class="anchor" aria-label="anchor" href="#value-of-statistical-life-vsl"></a>
 </h2>
-<p>The <strong>Value of a Statistical Life (VSL)</strong> is the
-monetary value used to justify safety spending. It is NOT the value of
-an individual life, but the aggregate willingness to pay for small risk
-reductions.</p>
-<div class="section level3">
-<h3 id="us-valuation">US Valuation<a class="anchor" aria-label="anchor" href="#us-valuation"></a>
+<p>The <strong>Value of a Statistical Life (VSL)</strong> is the monetary value used to justify safety spending. It is NOT the value of an individual life, but the aggregate willingness to pay for small risk reductions.</p>
+<section class="level3"><h3 id="us-valuation">US Valuation<a class="anchor" aria-label="anchor" href="#us-valuation"></a>
 </h3>
-<p>Example: If a safety feature costs $50 and saves 1 life in 100,000
-people (10 micromorts), is it worth it? Cost per micromort saved = $50 /
-10 = $5. If VSL = $10M, then 1 micromort = $10. Since $5 &lt; $10, it is
-cost-effective.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Standard US VSL of $10M implies $10 per micromort</span></span>
-<span><span class="fu"><a href="../reference/value_of_micromort.html">value_of_micromort</a></span><span class="op">(</span>vsl <span class="op">=</span> <span class="fl">10000000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 10</span></span></code></pre></div>
+<p>Example: If a safety feature costs $50 and saves 1 life in 100,000 people (10 micromorts), is it worth it? Cost per micromort saved = $50 / 10 = $5. If VSL = $10M, then 1 micromort = $10. Since $5 &lt; $10, it is cost-effective.</p>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; [1] 10</span></span></code></pre>
 </div>
-<div class="section level3">
-<h3 id="uk-valuation-micromorts-microlives">UK Valuation: Micromorts ≈ Microlives<a class="anchor" aria-label="anchor" href="#uk-valuation-micromorts-microlives"></a>
+</section><section class="level3"><h3 id="uk-valuation-micromorts-microlives">UK Valuation: Micromorts ≈ Microlives<a class="anchor" aria-label="anchor" href="#uk-valuation-micromorts-microlives"></a>
 </h3>
-<p>Interestingly, two UK government agencies arrive at similar
-valuations for micromorts and microlives:</p>
-<table class="table">
+<p>Interestingly, two UK government agencies arrive at similar valuations for micromorts and microlives:</p>
+<table class="table caption-top">
 <colgroup>
-<col width="24%">
-<col width="24%">
-<col width="21%">
-<col width="30%">
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 21%">
+<col style="width: 30%">
 </colgroup>
 <thead><tr class="header">
 <th>Agency</th>
@@ -453,53 +362,32 @@ valuations for micromorts and microlives:</p>
 </tr>
 </tbody>
 </table>
-<p>This near-equivalence (£1.60 ≈ £1.70) provides empirical support for
-the theoretical conversion: <strong>1 micromort ≈ 1 microlife</strong>
-in policy terms.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># UK Department of Transport VSL: £1.6M → £1.60 per micromort</span></span>
-<span><span class="fu"><a href="../reference/value_of_micromort.html">value_of_micromort</a></span><span class="op">(</span>vsl <span class="op">=</span> <span class="fl">1600000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 1.6</span></span></code></pre></div>
-<p>This consistency suggests that policy decisions affecting acute risks
-(transport safety) and chronic risks (healthcare interventions) can be
-compared on a common scale.</p>
+<p>This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the theoretical conversion: <strong>1 micromort ≈ 1 microlife</strong> in policy terms.</p>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; [1] 1.6</span></span></code></pre>
 </div>
-</div>
-<div class="section level2">
-<h2 id="loss-of-life-expectancy-lle">5. Loss of Life Expectancy (LLE)<a class="anchor" aria-label="anchor" href="#loss-of-life-expectancy-lle"></a>
+<p>This consistency suggests that policy decisions affecting acute risks (transport safety) and chronic risks (healthcare interventions) can be compared on a common scale.</p>
+</section></section><section class="level2"><h2 id="loss-of-life-expectancy-lle">5. Loss of Life Expectancy (LLE)<a class="anchor" aria-label="anchor" href="#loss-of-life-expectancy-lle"></a>
 </h2>
-<p><strong>LLE</strong> estimates the average time lost from a lifespan
-due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE
-is approximately 21 minutes (assuming 40 years remaining life).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Loss of life expectancy from 1 micromort (assuming 40 years remaining)</span></span>
-<span><span class="fu"><a href="../reference/lle.html">lle</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1e6</span>, life_expectancy <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 21.0384</span></span>
+<p><strong>LLE</strong> estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is approximately 21 minutes (assuming 40 years remaining life).</p>
+<div class="cell">
+<pre><code><span><span class="co">#&gt; [1] 21.0384</span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "micromort_lle" "numeric"      </span></span>
+<span><span class="co">#&gt; [1] "micromort_lle" "numeric"</span></span>
 <span><span class="co">#&gt; attr(,"units")</span></span>
-<span><span class="co">#&gt; [1] "minutes"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "minutes"</span></span></code></pre>
 </div>
-<div class="section level2">
-<h2 id="complementary-metrics-qaly-daly-and-morbidity">6. Complementary Metrics: QALY, DALY, and Morbidity<a class="anchor" aria-label="anchor" href="#complementary-metrics-qaly-daly-and-morbidity"></a>
+</section><section class="level2"><h2 id="complementary-metrics-qaly-daly-and-morbidity">6. Complementary Metrics: QALY, DALY, and Morbidity<a class="anchor" aria-label="anchor" href="#complementary-metrics-qaly-daly-and-morbidity"></a>
 </h2>
-<p>Micromorts and microlives focus on mortality. But many conditions
-(like the common cold) cause significant quality of life loss without
-being fatal. Complementary metrics capture this morbidity burden.</p>
-<div class="section level3">
-<h3 id="qaly-quality-adjusted-life-year">QALY (Quality-Adjusted Life Year)<a class="anchor" aria-label="anchor" href="#qaly-quality-adjusted-life-year"></a>
+<p>Micromorts and microlives focus on mortality. But many conditions (like the common cold) cause significant quality of life loss without being fatal. Complementary metrics capture this morbidity burden.</p>
+<section class="level3"><h3 id="qaly-quality-adjusted-life-year">QALY (Quality-Adjusted Life Year)<a class="anchor" aria-label="anchor" href="#qaly-quality-adjusted-life-year"></a>
 </h3>
-<p>Measures years of life adjusted for quality. <strong>1 QALY = 1 year
-of perfect health.</strong></p>
+<p>Measures years of life adjusted for quality. <strong>1 QALY = 1 year of perfect health.</strong></p>
 <ul>
 <li>Health states are weighted 0 (death) to 1 (perfect health)</li>
 <li>A year with chronic pain at 0.7 quality = 0.7 QALYs</li>
-<li>Used to assess cost-effectiveness of medical interventions (e.g.,
-£20,000-30,000 per QALY threshold in UK)</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="daly-disability-adjusted-life-years">DALY (Disability-Adjusted Life Years)<a class="anchor" aria-label="anchor" href="#daly-disability-adjusted-life-years"></a>
+<li>Used to assess cost-effectiveness of medical interventions (e.g., £20,000-30,000 per QALY threshold in UK)</li>
+</ul></section><section class="level3"><h3 id="daly-disability-adjusted-life-years">DALY (Disability-Adjusted Life Years)<a class="anchor" aria-label="anchor" href="#daly-disability-adjusted-life-years"></a>
 </h3>
 <p>Measures disease burden as the sum of two components:</p>
 <ul>
@@ -507,27 +395,22 @@ of perfect health.</strong></p>
 <strong>DALY = YLL + YLD</strong>, where:
 <ul>
 <li>
-<strong>YLL (Years of Life Lost):</strong> From premature
-mortality</li>
+<strong>YLL (Years of Life Lost):</strong> From premature mortality</li>
 <li>
-<strong>YLD (Years Lived with Disability):</strong> From morbidity,
-weighted by disability severity</li>
+<strong>YLD (Years Lived with Disability):</strong> From morbidity, weighted by disability severity</li>
 </ul>
 </li>
 </ul>
-<p>For fatal diseases like COVID-19, YLL dominates. For non-fatal
-conditions like the common cold, YLD dominates.</p>
-</div>
-<div class="section level3">
-<h3 id="comparing-metrics">Comparing Metrics<a class="anchor" aria-label="anchor" href="#comparing-metrics"></a>
+<p>For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like the common cold, YLD dominates.</p>
+</section><section class="level3"><h3 id="comparing-metrics">Comparing Metrics<a class="anchor" aria-label="anchor" href="#comparing-metrics"></a>
 </h3>
-<table class="table">
+<table class="table caption-top">
 <colgroup>
-<col width="16%">
-<col width="35%">
-<col width="14%">
-<col width="12%">
-<col width="20%">
+<col style="width: 16%">
+<col style="width: 35%">
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 20%">
 </colgroup>
 <thead><tr class="header">
 <th>Metric</th>
@@ -573,90 +456,85 @@ conditions like the common cold, YLD dominates.</p>
 <td>Short-term morbidity (colds, flu)</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</table></section><section class="level3"><h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
 <ul>
-<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.”
-BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">doi:10.1136/bmj.e8223</a>
+<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.” BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">doi:10.1136/bmj.e8223</a>
 </li>
-<li>Spiegelhalter D (2012). “Understanding uncertainty: Microlives.”
-Plus Magazine. <a href="https://plus.maths.org/content/understanding-uncertainty-microlives" class="external-link">plus.maths.org</a>
+<li>Spiegelhalter D (2012). “Understanding uncertainty: Microlives.” Plus Magazine. <a href="https://plus.maths.org/content/understanding-uncertainty-microlives" class="external-link">plus.maths.org</a>
 </li>
 <li>WHO Global Burden of Disease: <a href="https://ghdx.healthdata.org/" class="external-link">ghdx.healthdata.org</a>
 </li>
 <li>NICE Methods Guide: <a href="https://www.nice.org.uk/process/pmg9/chapter/the-reference-case" class="external-link">nice.org.uk</a>
 </li>
-</ul>
-</div>
-</div>
-<div class="section level2">
-<h2 id="conditional-risks-cancer-vaccination-and-risk-hedging">7. Conditional Risks: Cancer, Vaccination, and Risk Hedging<a class="anchor" aria-label="anchor" href="#conditional-risks-cancer-vaccination-and-risk-hedging"></a>
+</ul></section></section><section class="level2"><h2 id="conditional-risks-cancer-vaccination-and-risk-hedging">7. Conditional Risks: Cancer, Vaccination, and Risk Hedging<a class="anchor" aria-label="anchor" href="#conditional-risks-cancer-vaccination-and-risk-hedging"></a>
 </h2>
-<div class="section level3">
-<h3 id="cancer-risks-by-type-and-sex">Cancer Risks by Type and Sex<a class="anchor" aria-label="anchor" href="#cancer-risks-by-type-and-sex"></a>
+<section class="level3"><h3 id="cancer-risks-by-type-and-sex">Cancer Risks by Type and Sex<a class="anchor" aria-label="anchor" href="#cancer-risks-by-type-and-sex"></a>
 </h3>
-<p>The <a href="../reference/cancer_risks.html"><code>cancer_risks()</code></a>
-function provides mortality data stratified by cancer type, sex, and age
-group:</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-36aa3d2a04d42bbc2145" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-36aa3d2a04d42bbc2145">{"x":{"filter":"none","vertical":false,"caption":"<caption>Top 3 cancers by mortality rate (click to sort)<\/caption>","data":[["All cancers","Lung &amp; Bronchus","Breast","All cancers","Lung &amp; Bronchus","Prostate"],["Female","Female","Female","Male","Male","Male"],[128.1,27.1,19.2,183.5,37.2,19.2],[1281,271,192,1835,372,192],[1.5,2,2,1.5,2,2.5]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>cancer_type<\/th>\n      <th>sex<\/th>\n      <th>deaths_per_100k<\/th>\n      <th>micromorts_per_year<\/th>\n      <th>family_history_rr<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":6,"dom":"t","columnDefs":[{"className":"dt-right","targets":[2,3,4]},{"name":"cancer_type","targets":0},{"name":"sex","targets":1},{"name":"deaths_per_100k","targets":2},{"name":"micromorts_per_year","targets":3},{"name":"family_history_rr","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><p><strong>Family history impact:</strong> The
-<code>family_history_rr</code> column shows relative risk increase with
-a first-degree relative’s diagnosis. For example, prostate cancer risk
-increases 2.5× with family history.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-febe03efa1a2d8d52a86" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-febe03efa1a2d8d52a86">{"x":{"filter":"none","vertical":false,"caption":"<caption>Cancer risk with family history (Male, 50-64 years)<\/caption>","data":[["Lung &amp; Bronchus","Prostate","Colon &amp; Rectum"],[450,80,180],[900,200,360],[450,120,180]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>cancer_type<\/th>\n      <th>micromorts_per_year<\/th>\n      <th>micromorts_with_family_history<\/th>\n      <th>increase_mm<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"cancer_type","targets":0},{"name":"micromorts_per_year","targets":1},{"name":"micromorts_with_family_history","targets":2},{"name":"increase_mm","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<p>The <a href="../reference/cancer_risks.html"><code>cancer_risks()</code></a> function provides mortality data stratified by cancer type, sex, and age group:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5743e61dae478646ad92" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5743e61dae478646ad92">{"x":{"filter":"none","vertical":false,"caption":"<caption>Top 3 cancers by mortality rate (click to sort)<\/caption>","data":[["All cancers","Lung &amp; Bronchus","Breast","All cancers","Lung &amp; Bronchus","Prostate"],["Female","Female","Female","Male","Male","Male"],[128.1,27.1,19.2,183.5,37.2,19.2],[1281,271,192,1835,372,192],[1.5,2,2,1.5,2,2.5]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>cancer_type<\/th>\n      <th>sex<\/th>\n      <th>deaths_per_100k<\/th>\n      <th>micromorts_per_year<\/th>\n      <th>family_history_rr<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":6,"dom":"t","columnDefs":[{"className":"dt-right","targets":[2,3,4]},{"name":"cancer_type","targets":0},{"name":"sex","targets":1},{"name":"deaths_per_100k","targets":2},{"name":"micromorts_per_year","targets":3},{"name":"family_history_rr","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="section level3">
-<h3 id="vaccination-risk-reduction">Vaccination Risk Reduction<a class="anchor" aria-label="anchor" href="#vaccination-risk-reduction"></a>
-</h3>
-<p>The <a href="../reference/vaccination_risks.html"><code>vaccination_risks()</code></a>
-function quantifies micromorts avoided through vaccination:</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-1fb4450895fe099f74a1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-1fb4450895fe099f74a1">{"x":{"filter":"none","vertical":false,"caption":"<caption>Complete childhood vaccination schedule impact<\/caption>","data":[["US","UK","Australia","Global average"],[27,27,27,24],[500,480,450,400],[7.3,7,6.6,5.8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>country<\/th>\n      <th>mortality_reduction_pct<\/th>\n      <th>micromorts_avoided_per_year<\/th>\n      <th>annual_life_days_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"country","targets":0},{"name":"mortality_reduction_pct","targets":1},{"name":"micromorts_avoided_per_year","targets":2},{"name":"annual_life_days_gained","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><div class="datatables html-widget html-fill-item" id="htmlwidget-10b3b7155e8045a1b2ad" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-10b3b7155e8045a1b2ad">{"x":{"filter":"none","vertical":false,"caption":"<caption>Adult vaccination benefits (US, age 65+)<\/caption>","data":[["Annual influenza vaccine","Pneumococcal vaccine","COVID-19 vaccine (annual)","Unvaccinated baseline"],[200,100,800,0],[0.38,0.19,1.53,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>vaccine_schedule<\/th>\n      <th>micromorts_avoided_per_year<\/th>\n      <th>microlives_gained_per_day<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2]},{"name":"vaccine_schedule","targets":0},{"name":"micromorts_avoided_per_year","targets":1},{"name":"microlives_gained_per_day","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="section level3">
-<h3 id="hedged-vs-unhedged-optimal-lifestyle-comparison">Hedged vs Unhedged: Optimal Lifestyle Comparison<a class="anchor" aria-label="anchor" href="#hedged-vs-unhedged-optimal-lifestyle-comparison"></a>
-</h3>
-<p>The <a href="../reference/conditional_risk.html"><code>conditional_risk()</code></a>
-function compares risk factors between optimal (“hedged”) and suboptimal
-(“unhedged”) states:</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-4018eef1a407a0df6b52" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4018eef1a407a0df6b52">{"x":{"filter":"none","vertical":false,"caption":"<caption>Cardiovascular hedging: microlives gained by optimal choices<\/caption>","data":[["Smoking","Blood pressure","Exercise","Diet","Cholesterol","Weight","Diabetes","Alcohol"],["20 cigarettes/day","Untreated hypertension","Sedentary (&lt;30 min/week)","Western diet (high processed)","High LDL untreated","15 kg overweight","Poorly controlled T2D","Heavy (4+ drinks/day)"],["Non-smoker","Controlled &lt;130/80","150 min moderate/week","Mediterranean diet","Statin therapy if indicated","Healthy BMI","Well-controlled HbA1c &lt;7%","Moderate (1 drink/day)"],[10,4,4,4,3,3,2,3],[76,30.4,30.4,30.4,22.8,22.8,15.2,22.8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>risk_factor<\/th>\n      <th>unhedged_state<\/th>\n      <th>hedged_state<\/th>\n      <th>microlives_gained<\/th>\n      <th>annual_days_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[3,4]},{"name":"risk_factor","targets":0},{"name":"unhedged_state","targets":1},{"name":"hedged_state","targets":2},{"name":"microlives_gained","targets":3},{"name":"annual_days_gained","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p><strong>Family history impact:</strong> The <code>family_history_rr</code> column shows relative risk increase with a first-degree relative’s diagnosis. For example, prostate cancer risk increases 2.5× with family history.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-852bb16c7844b5dee571" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-852bb16c7844b5dee571">{"x":{"filter":"none","vertical":false,"caption":"<caption>Cancer risk with family history (Male, 50-64 years)<\/caption>","data":[["Lung &amp; Bronchus","Prostate","Colon &amp; Rectum"],[450,80,180],[900,200,360],[450,120,180]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>cancer_type<\/th>\n      <th>micromorts_per_year<\/th>\n      <th>micromorts_with_family_history<\/th>\n      <th>increase_mm<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"cancer_type","targets":0},{"name":"micromorts_per_year","targets":1},{"name":"micromorts_with_family_history","targets":2},{"name":"increase_mm","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div class="section level3">
-<h3 id="total-portfolio-effect">Total Portfolio Effect<a class="anchor" aria-label="anchor" href="#total-portfolio-effect"></a>
-</h3>
-<p>The <a href="../reference/hedged_portfolio.html"><code>hedged_portfolio()</code></a>
-function calculates total life expectancy gain from adopting all optimal
-lifestyle choices:</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-5b1b2f4ad92281566982" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5b1b2f4ad92281566982">{"x":{"filter":"none","vertical":false,"caption":"<caption>Microlives gained by disease category<\/caption>","data":[["cancer","cardiovascular","infectious","respiratory"],[7,8,4,4],[-15.5,-28,-5.8,-8],[2,5,-0.1,0],[17.5,33,5.7,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>disease_category<\/th>\n      <th>n_factors<\/th>\n      <th>total_unhedged_ml<\/th>\n      <th>total_hedged_ml<\/th>\n      <th>total_ml_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"name":"disease_category","targets":0},{"name":"n_factors","targets":1},{"name":"total_unhedged_ml","targets":2},{"name":"total_hedged_ml","targets":3},{"name":"total_ml_gained","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><div class="datatables html-widget html-fill-item" id="htmlwidget-25c3e940e6859592f801" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-25c3e940e6859592f801">{"x":{"filter":"none","vertical":false,"caption":"<caption>Total hedged portfolio effect<\/caption>","data":[["Total microlives gained per day (raw)","Overlap adjustment (smoking affects multiple diseases)","Net microlives gained per day","Annual days of life gained","Equivalent micromorts avoided per day","Life expectancy gain over 40 years (days)"],[64.2,-20,44.2,336.1,63.1,13444]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":6,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script><p><strong>Interpretation:</strong> A fully “hedged” individual
-(non-smoker, regular exercise, healthy diet, vaccinated, etc.) can
-expect to gain significant additional life expectancy compared to an
-“unhedged” baseline.</p>
 </div>
-<div class="section level3">
-<h3 id="conditional-acute-risks-age-changes-everything">Conditional Acute Risks: Age Changes Everything<a class="anchor" aria-label="anchor" href="#conditional-acute-risks-age-changes-everything"></a>
+</section><section class="level3"><h3 id="vaccination-risk-reduction">Vaccination Risk Reduction<a class="anchor" aria-label="anchor" href="#vaccination-risk-reduction"></a>
 </h3>
-<p>Conditional risk analysis isn’t limited to chronic lifestyle factors.
-Some acute risks show extreme <strong>age-conditioning</strong> that
-makes population averages misleading.</p>
-<p><strong>Example: Falling out of bed</strong> kills ~450 Americans per
-year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>).
-The population average is 1.36 micromorts/year — but the <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">CDC
-age-stratified data</a> reveals a <strong>2,500-fold</strong> difference
-across age groups:</p>
-<table class="table">
+<p>The <a href="../reference/vaccination_risks.html"><code>vaccination_risks()</code></a> function quantifies micromorts avoided through vaccination:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5305b2d71bbd6b748145" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5305b2d71bbd6b748145">{"x":{"filter":"none","vertical":false,"caption":"<caption>Complete childhood vaccination schedule impact<\/caption>","data":[["US","UK","Australia","Global average"],[27,27,27,24],[500,480,450,400],[7.3,7,6.6,5.8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>country<\/th>\n      <th>mortality_reduction_pct<\/th>\n      <th>micromorts_avoided_per_year<\/th>\n      <th>annual_life_days_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3]},{"name":"country","targets":0},{"name":"mortality_reduction_pct","targets":1},{"name":"micromorts_avoided_per_year","targets":2},{"name":"annual_life_days_gained","targets":3}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-bda22a8942d7572182e4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-bda22a8942d7572182e4">{"x":{"filter":"none","vertical":false,"caption":"<caption>Adult vaccination benefits (US, age 65+)<\/caption>","data":[["Annual influenza vaccine","Pneumococcal vaccine","COVID-19 vaccine (annual)","Unvaccinated baseline"],[200,100,800,0],[0.38,0.19,1.53,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>vaccine_schedule<\/th>\n      <th>micromorts_avoided_per_year<\/th>\n      <th>microlives_gained_per_day<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2]},{"name":"vaccine_schedule","targets":0},{"name":"micromorts_avoided_per_year","targets":1},{"name":"microlives_gained_per_day","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section><section class="level3"><h3 id="hedged-vs-unhedged-optimal-lifestyle-comparison">Hedged vs Unhedged: Optimal Lifestyle Comparison<a class="anchor" aria-label="anchor" href="#hedged-vs-unhedged-optimal-lifestyle-comparison"></a>
+</h3>
+<p>The <a href="../reference/conditional_risk.html"><code>conditional_risk()</code></a> function compares risk factors between optimal (“hedged”) and suboptimal (“unhedged”) states:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9547cea5b6e4f269b235" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9547cea5b6e4f269b235">{"x":{"filter":"none","vertical":false,"caption":"<caption>Cardiovascular hedging: microlives gained by optimal choices<\/caption>","data":[["Smoking","Blood pressure","Exercise","Diet","Cholesterol","Weight","Diabetes","Alcohol"],["20 cigarettes/day","Untreated hypertension","Sedentary (&lt;30 min/week)","Western diet (high processed)","High LDL untreated","15 kg overweight","Poorly controlled T2D","Heavy (4+ drinks/day)"],["Non-smoker","Controlled &lt;130/80","150 min moderate/week","Mediterranean diet","Statin therapy if indicated","Healthy BMI","Well-controlled HbA1c &lt;7%","Moderate (1 drink/day)"],[10,4,4,4,3,3,2,3],[76,30.4,30.4,30.4,22.8,22.8,15.2,22.8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>risk_factor<\/th>\n      <th>unhedged_state<\/th>\n      <th>hedged_state<\/th>\n      <th>microlives_gained<\/th>\n      <th>annual_days_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"scrollX":true,"columnDefs":[{"className":"dt-right","targets":[3,4]},{"name":"risk_factor","targets":0},{"name":"unhedged_state","targets":1},{"name":"hedged_state","targets":2},{"name":"microlives_gained","targets":3},{"name":"annual_days_gained","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section><section class="level3"><h3 id="total-portfolio-effect">Total Portfolio Effect<a class="anchor" aria-label="anchor" href="#total-portfolio-effect"></a>
+</h3>
+<p>The <a href="../reference/hedged_portfolio.html"><code>hedged_portfolio()</code></a> function calculates total life expectancy gain from adopting all optimal lifestyle choices:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-aaf8a09e793a19f6200e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-aaf8a09e793a19f6200e">{"x":{"filter":"none","vertical":false,"caption":"<caption>Microlives gained by disease category<\/caption>","data":[["cancer","cardiovascular","infectious","respiratory"],[7,8,4,4],[-15.5,-28,-5.8,-8],[2,5,-0.1,0],[17.5,33,5.7,8]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>disease_category<\/th>\n      <th>n_factors<\/th>\n      <th>total_unhedged_ml<\/th>\n      <th>total_hedged_ml<\/th>\n      <th>total_ml_gained<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"name":"disease_category","targets":0},{"name":"n_factors","targets":1},{"name":"total_unhedged_ml","targets":2},{"name":"total_hedged_ml","targets":3},{"name":"total_ml_gained","targets":4}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-215c0012441c8f10147b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-215c0012441c8f10147b">{"x":{"filter":"none","vertical":false,"caption":"<caption>Total hedged portfolio effect<\/caption>","data":[["Total microlives gained per day (raw)","Overlap adjustment (smoking affects multiple diseases)","Net microlives gained per day","Annual days of life gained","Equivalent micromorts avoided per day","Life expectancy gain over 40 years (days)"],[64.2,-20,44.2,336.1,63.1,13444]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":6,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[6,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p><strong>Interpretation:</strong> A fully “hedged” individual (non-smoker, regular exercise, healthy diet, vaccinated, etc.) can expect to gain significant additional life expectancy compared to an “unhedged” baseline.</p>
+</section><section class="level3"><h3 id="conditional-acute-risks-age-changes-everything">Conditional Acute Risks: Age Changes Everything<a class="anchor" aria-label="anchor" href="#conditional-acute-risks-age-changes-everything"></a>
+</h3>
+<p>Conditional risk analysis isn’t limited to chronic lifestyle factors. Some acute risks show extreme <strong>age-conditioning</strong> that makes population averages misleading.</p>
+<p><strong>Example: Falling out of bed</strong> kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>). The population average is 1.36 micromorts/year — but the <a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">CDC age-stratified data</a> reveals a <strong>2,500-fold</strong> difference across age groups:</p>
+<table class="table caption-top">
 <colgroup>
-<col width="14%">
-<col width="6%">
-<col width="39%">
-<col width="39%">
+<col style="width: 14%">
+<col style="width: 6%">
+<col style="width: 39%">
+<col style="width: 39%">
 </colgroup>
 <thead><tr class="header">
 <th>Age group</th>
@@ -697,54 +575,29 @@ across age groups:</p>
 </tr>
 </tbody>
 </table>
-<p>An 85-year-old man going to bed faces ~10 micromorts per night —
-comparable to riding a motorcycle 60 miles (10 micromorts/trip) or a
-single dose of ecstasy (13 micromorts/dose). For someone under 65, the
-same activity carries 0.004 micromorts per night — essentially zero.</p>
+<p>An 85-year-old man going to bed faces ~10 micromorts per night — comparable to riding a motorcycle 60 miles (10 micromorts/trip) or a single dose of ecstasy (13 micromorts/dose). For someone under 65, the same activity carries 0.004 micromorts per night — essentially zero.</p>
 <p>This pattern recurs across many “exotic” risks:</p>
 <ul>
 <li>
-<strong>Bee/wasp stings</strong> (72 deaths/year, US): Nearly all
-fatalities are among the ~1% of the population with venom allergy.
-Conditional on allergy: high risk per sting. Conditional on no allergy:
-near-zero.</li>
+<strong>Bee/wasp stings</strong> (72 deaths/year, US): Nearly all fatalities are among the ~1% of the population with venom allergy. Conditional on allergy: high risk per sting. Conditional on no allergy: near-zero.</li>
 <li>
-<strong>Cow trampling</strong> (22 deaths/year, US): Population rate
-is 0.07 micromorts/year. For cattle farmers handling animals daily: ~7.5
-micromorts/year — a 100-fold increase.</li>
+<strong>Cow trampling</strong> (22 deaths/year, US): Population rate is 0.07 micromorts/year. For cattle farmers handling animals daily: ~7.5 micromorts/year — a 100-fold increase.</li>
 <li>
-<strong>Lightning strike</strong> (28 deaths/year, US): Population
-rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2
-micromorts/year — a 15-fold increase.</li>
+<strong>Lightning strike</strong> (28 deaths/year, US): Population rate is 0.08 micromorts/year. For outdoor agricultural workers: ~1.2 micromorts/year — a 15-fold increase.</li>
 </ul>
-<p>The lesson: <strong>always ask “conditional on what?”</strong> before
-comparing micromort values across populations or activities. For a
-deeper treatment of how confounding variables distort risk data,
-including Simpson’s paradox and stratification strategies, see the <a href="confounding.html">Confounding Variables</a> vignette.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="data-quality-the-denominator-problem">8. Data Quality: The Denominator Problem<a class="anchor" aria-label="anchor" href="#data-quality-the-denominator-problem"></a>
+<p>The lesson: <strong>always ask “conditional on what?”</strong> before comparing micromort values across populations or activities. For a deeper treatment of how confounding variables distort risk data, including Simpson’s paradox and stratification strategies, see the <a href="confounding.html">Confounding Variables</a> vignette.</p>
+</section></section><section class="level2"><h2 id="data-quality-the-denominator-problem">8. Data Quality: The Denominator Problem<a class="anchor" aria-label="anchor" href="#data-quality-the-denominator-problem"></a>
 </h2>
-<p>Not every widely-cited risk statistic belongs in a curated dataset.
-Many “exotic” risk figures circulate in media and popular science
-without the rigorous <strong>exposure denominator</strong> needed for
-meaningful micromort calculations. This section explains why certain
-risks were excluded and what to watch for when interpreting risk
-data.</p>
-<div class="section level3">
-<h3 id="the-three-denominator-failures">8.1 The Three Denominator Failures<a class="anchor" aria-label="anchor" href="#the-three-denominator-failures"></a>
+<p>Not every widely-cited risk statistic belongs in a curated dataset. Many “exotic” risk figures circulate in media and popular science without the rigorous <strong>exposure denominator</strong> needed for meaningful micromort calculations. This section explains why certain risks were excluded and what to watch for when interpreting risk data.</p>
+<section class="level3"><h3 id="the-three-denominator-failures">8.1 The Three Denominator Failures<a class="anchor" aria-label="anchor" href="#the-three-denominator-failures"></a>
 </h3>
-<p>A micromort value is only meaningful when paired with a clear
-<strong>period</strong> — the unit of exposure. We require: <em>Deaths ÷
-Exposures = Probability</em>. Three common failures make this
-impossible:</p>
+<p>A micromort value is only meaningful when paired with a clear <strong>period</strong> — the unit of exposure. We require: <em>Deaths ÷ Exposures = Probability</em>. Three common failures make this impossible:</p>
 <p><strong>1. Unknown denominator (no exposure count)</strong></p>
-<table class="table">
+<table class="table caption-top">
 <colgroup>
-<col width="13%">
-<col width="42%">
-<col width="44%">
+<col style="width: 13%">
+<col style="width: 42%">
+<col style="width: 44%">
 </colgroup>
 <thead><tr class="header">
 <th>Risk</th>
@@ -755,14 +608,12 @@ impossible:</p>
 <tr class="odd">
 <td>Bee/wasp stings</td>
 <td>72</td>
-<td>How many sting <em>exposures</em> per year? Is this per sting, per
-outdoor hour, per year of beekeeping?</td>
+<td>How many sting <em>exposures</em> per year? Is this per sting, per outdoor hour, per year of beekeeping?</td>
 </tr>
 <tr class="even">
 <td>Dog mauling</td>
 <td>43-127</td>
-<td>Per dog interaction? Per year of dog ownership? Per year of existing
-near dogs?</td>
+<td>Per dog interaction? Per year of dog ownership? Per year of existing near dogs?</td>
 </tr>
 <tr class="odd">
 <td>Fire ant stings</td>
@@ -771,19 +622,13 @@ near dogs?</td>
 </tr>
 </tbody>
 </table>
-<p>The 72 bee sting deaths per year (<a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">CDC MMWR</a>)
-is a solid numerator from the National Vital Statistics System. But
-without knowing the total number of sting exposures, we cannot calculate
-a per-sting micromort value. The best we can do is a per-year population
-rate (0.22 micromorts/year for any US resident), which conflates people
-who never encounter bees with beekeepers stung weekly.</p>
-<p><strong>2. Misleading population average (hides conditional
-risk)</strong></p>
-<table class="table">
+<p>The 72 bee sting deaths per year (<a href="https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm" class="external-link">CDC MMWR</a>) is a solid numerator from the National Vital Statistics System. But without knowing the total number of sting exposures, we cannot calculate a per-sting micromort value. The best we can do is a per-year population rate (0.22 micromorts/year for any US resident), which conflates people who never encounter bees with beekeepers stung weekly.</p>
+<p><strong>2. Misleading population average (hides conditional risk)</strong></p>
+<table class="table caption-top">
 <colgroup>
-<col width="13%">
-<col width="41%">
-<col width="45%">
+<col style="width: 13%">
+<col style="width: 41%">
+<col style="width: 45%">
 </colgroup>
 <thead><tr class="header">
 <th>Risk</th>
@@ -794,8 +639,7 @@ risk)</strong></p>
 <tr class="odd">
 <td>Falling out of bed</td>
 <td>1.36 micromorts/year (US)</td>
-<td>Under-65: ~0.004/night; Age 85+ male:
-<strong>10.2/night</strong>
+<td>Under-65: ~0.004/night; Age 85+ male: <strong>10.2/night</strong>
 </td>
 </tr>
 <tr class="even">
@@ -806,24 +650,13 @@ risk)</strong></p>
 <tr class="odd">
 <td>Lightning strike</td>
 <td>0.08 micromorts/year (US)</td>
-<td>Indoor worker: ~0; Outdoor agricultural worker: ~1.2/year</td>
+<td>Indoor worker: ~0.02; Outdoor agricultural worker: ~1.2/year</td>
 </tr>
 </tbody>
 </table>
-<p>Falling out of bed kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>),
-but the CDC age-stratified data (<a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">Data Brief
-532</a>) reveals a <strong>2,500-fold</strong> difference: an
-85-year-old man faces ~10 micromorts per night of sleep (comparable to
-riding a motorcycle 60 miles), while someone under 65 faces ~0.004. The
-population average of 1.36/year is technically correct but practically
-useless.</p>
+<p>Falling out of bed kills ~450 Americans per year (<a href="https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home" class="external-link">CPSC</a>), but the CDC age-stratified data (<a href="https://www.cdc.gov/nchs/products/databriefs/db532.htm" class="external-link">Data Brief 532</a>) reveals a <strong>2,500-fold</strong> difference: an 85-year-old man faces ~10 micromorts per night of sleep (comparable to riding a motorcycle 60 miles), while someone under 65 faces ~0.004. The population average of 1.36/year is technically correct but practically useless.</p>
 <p><strong>3. Fabricated or untraceable numerator</strong></p>
-<table class="table">
-<colgroup>
-<col width="18%">
-<col width="35%">
-<col width="45%">
-</colgroup>
+<table class="table caption-top">
 <thead><tr class="header">
 <th>Claim</th>
 <th>Cited figure</th>
@@ -833,104 +666,139 @@ useless.</p>
 <tr class="odd">
 <td>Coconut deaths</td>
 <td>“150 per year worldwide”</td>
-<td>Originated from a <strong>travel insurance press release</strong>
-(Club Direct, late 1990s), not from Barss (1984). The original <a href="https://pubmed.ncbi.nlm.nih.gov/6502774/" class="external-link">Barss paper</a>
-documented only 2 deaths over 4 years at one Papua New Guinea hospital.
-(<a href="https://www.snopes.com/fact-check/coconuts-kill-more-sharks/" class="external-link">Snopes:
-Unproven</a>)</td>
+<td>Originated from a <strong>travel insurance press release</strong> (Club Direct, late 1990s), not from Barss (1984). The original <a href="https://pubmed.ncbi.nlm.nih.gov/6502774/" class="external-link">Barss paper</a> documented only 2 deaths over 4 years at one Papua New Guinea hospital. (<a href="https://www.snopes.com/fact-check/coconuts-kill-more-sharks/" class="external-link">Snopes: Unproven</a>)</td>
 </tr>
 <tr class="even">
 <td>Champagne cork deaths</td>
 <td>“24 per year”</td>
-<td>Traced to a 2008 <em>Daily Mail</em> article citing a tabloid book.
-No government vital statistics, hospital registry, or peer-reviewed
-study supports this figure.</td>
+<td>Traced to a 2008 <em>Daily Mail</em> article citing a tabloid book. No government vital statistics, hospital registry, or peer-reviewed study supports this figure.</td>
 </tr>
 <tr class="odd">
 <td>Left-handed equipment deaths</td>
 <td>“9 years shorter lifespan”</td>
-<td>A statistical artefact from <a href="https://pubmed.ncbi.nlm.nih.gov/2006231/" class="external-link">Halpern &amp; Coren
-(1991)</a>, debunked by multiple papers. The apparent age gap reflects
-historical suppression of left-handedness reporting, not excess
-mortality (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10369838/" class="external-link">van der Hoeven
-et al., 2023</a>).</td>
+<td>A statistical artefact from <a href="https://pubmed.ncbi.nlm.nih.gov/2006231/" class="external-link">Halpern &amp; Coren (1991)</a>, debunked by multiple papers. The apparent age gap reflects historical suppression of left-handedness reporting, not excess mortality (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10369838/" class="external-link">van der Hoeven et al., 2023</a>).</td>
 </tr>
 </tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="inclusion-criteria-for-this-package">8.2 Inclusion Criteria for This Package<a class="anchor" aria-label="anchor" href="#inclusion-criteria-for-this-package"></a>
+</table></section><section class="level3"><h3 id="inclusion-criteria-for-this-package">8.2 Inclusion Criteria for This Package<a class="anchor" aria-label="anchor" href="#inclusion-criteria-for-this-package"></a>
 </h3>
-<p>Risks in <code><a href="../reference/common_risks.html">common_risks()</a></code> and <code><a href="../reference/acute_risks.html">acute_risks()</a></code>
-meet these minimum standards:</p>
-<ol style="list-style-type: decimal">
+<p>Risks in <code><a href="../reference/common_risks.html">common_risks()</a></code> and <code><a href="../reference/acute_risks.html">acute_risks()</a></code> meet these minimum standards:</p>
+<ol type="1">
 <li>
-<strong>Traceable numerator</strong>: Death count from a government
-agency (CDC, CPSC, WHO, NOAA) or peer-reviewed epidemiological
-study</li>
+<strong>Traceable numerator</strong>: Death count from a government agency (CDC, CPSC, WHO, NOAA) or peer-reviewed epidemiological study</li>
 <li>
-<strong>Defined denominator</strong>: A meaningful exposure unit
-(per ride, per climb, per day, per trip) — not just “per year of being
-alive”</li>
+<strong>Defined denominator</strong>: A meaningful exposure unit (per ride, per climb, per day, per trip) — not just “per year of being alive”</li>
 <li>
-<strong>Reproducible calculation</strong>: The micromort derivation
-can be independently verified from the cited source</li>
+<strong>Reproducible calculation</strong>: The micromort derivation can be independently verified from the cited source</li>
 <li>
-<strong>Not a myth</strong>: The figure has not been debunked by
-subsequent peer-reviewed work</li>
+<strong>Not a myth</strong>: The figure has not been debunked by subsequent peer-reviewed work</li>
 </ol>
-<p>Risks that fail criterion 2 but pass the others may still appear with
-<code>period = "per year"</code> as a background population rate,
-clearly labelled as such. See <code><a href="../reference/risk_data_sources.html">risk_data_sources()</a></code> for full
-provenance of each entry. For examples of how confounding variables
-(age, occupation, allergy status) can change risk estimates by orders of
-magnitude, see the <a href="confounding.html">Confounding Variables</a>
-vignette.</p>
-</div>
-<div class="section level3">
-<h3 id="when-per-year-is-legitimate">8.3 When “Per Year” Is Legitimate<a class="anchor" aria-label="anchor" href="#when-per-year-is-legitimate"></a>
+<p>Risks that fail criterion 2 but pass the others may still appear with <code>period = "per year"</code> as a background population rate, clearly labelled as such. See <code><a href="../reference/risk_data_sources.html">risk_data_sources()</a></code> for full provenance of each entry. For examples of how confounding variables (age, occupation, allergy status) can change risk estimates by orders of magnitude, see the <a href="confounding.html">Confounding Variables</a> vignette.</p>
+</section><section class="level3"><h3 id="when-per-year-is-legitimate">8.3 When “Per Year” Is Legitimate<a class="anchor" aria-label="anchor" href="#when-per-year-is-legitimate"></a>
 </h3>
-<p>Some risks are genuinely <strong>background hazards</strong> where
-the exposure is simply <em>being alive in a given geography</em>:</p>
+<p>Some risks are genuinely <strong>background hazards</strong> where the exposure is simply <em>being alive in a given geography</em>:</p>
 <ul>
-<li>Lightning strike: 0.08 micromorts/year (US) — everyone is exposed to
-thunderstorms</li>
-<li>Asteroid impact: 0.01 micromorts/year (global) — a theoretical
-actuarial average (<a href="https://ntrs.nasa.gov/api/citations/20160013841/downloads/20160013841.pdf" class="external-link">NASA</a>)</li>
-<li>Living one day at age 75: 120 micromorts/day — the baseline hazard
-rate from all causes</li>
+<li>Lightning strike: 0.08 micromorts/year (US) — everyone is exposed to thunderstorms</li>
+<li>Asteroid impact: 0.01 micromorts/year (global) — a theoretical actuarial average (<a href="https://ntrs.nasa.gov/api/citations/20160013841/downloads/20160013841.pdf" class="external-link">NASA</a>)</li>
+<li>Living one day at age 75: 120 micromorts/day — the baseline hazard rate from all causes</li>
 </ul>
-<p>These are valid “per year” figures because the denominator is the
-entire population and the exposure is unavoidable. The problem arises
-when a per-year population rate is presented for an activity that only a
-fraction of the population engages in.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="conclusion">9. Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+<p>These are valid “per year” figures because the denominator is the entire population and the exposure is unavoidable. The problem arises when a per-year population rate is presented for an activity that only a fraction of the population engages in.</p>
+</section></section><section class="level2"><h2 id="conclusion">9. Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
 </h2>
-<p>The <code>micromort</code> package helps translate abstract
-probabilities into concrete units for better decision-making. By
-comparing acute risks (micromorts), chronic risks (microlives), and
-quality-of-life metrics (QALYs, DALYs), individuals and policymakers can
-make more informed choices about risk trade-offs.</p>
+<p>The <code>micromort</code> package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts), chronic risks (microlives), and quality-of-life metrics (QALYs, DALYs), individuals and policymakers can make more informed choices about risk trade-offs.</p>
 <p>The new conditional risk functions enable:</p>
 <ul>
 <li>
-<strong>Cancer risk assessment:</strong> Compare baseline risk to
-family history scenarios</li>
+<strong>Cancer risk assessment:</strong> Compare baseline risk to family history scenarios</li>
 <li>
-<strong>Vaccination value:</strong> Quantify micromorts avoided
-through vaccination schedules</li>
+<strong>Vaccination value:</strong> Quantify micromorts avoided through vaccination schedules</li>
 <li>
-<strong>Lifestyle optimization:</strong> Calculate total life
-expectancy gain from adopting optimal “hedged” behaviors</li>
-</ul>
-</div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+<strong>Lifestyle optimization:</strong> Calculate total life expectancy gain from adopting optimal “hedged” behaviors</li>
+</ul></section><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
-
 
 
     <footer><div class="pkgdown-footer-left">
