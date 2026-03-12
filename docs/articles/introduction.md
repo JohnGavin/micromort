@@ -76,7 +76,16 @@ make comparisons easier:
     #> log-10 transformation introduced infinite values.
     #> log-10 transformation introduced infinite values.
 
-![](introduction_files/figure-html/unnamed-chunk-3-1.png)
+![Horizontal bar chart on a logarithmic scale showing micromort risk
+values for approximately 40 activities. Activities range from drinking a
+cup of coffee (less than 1 micromort) to climbing Mount Everest (over
+10,000 micromorts). Bars are colour-coded by category: COVID-19 risks in
+red and other risks in
+blue.](introduction_files/figure-html/unnamed-chunk-3-1.png)
+
+Logarithmic risk ladder comparing micromort values across everyday
+activities, medical procedures, and extreme sports, split by COVID-19
+and other risk categories.
 
 #### Interactive Version
 
@@ -88,6 +97,8 @@ use
     #> Returning the palette you asked for with that many colors
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
+
+Interactive risk ladder with hover details and category filtering.
 
 ## 2. Microlives (Chronic Risk)
 

@@ -113,6 +113,8 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 
 ```{r, fig.width=8, fig.height=14}
 #| echo: false
+#| fig-cap: "Logarithmic risk ladder placing rare risks like asteroid impacts in context with everyday risks like driving."
+#| fig-alt: "Horizontal bar chart on a logarithmic scale showing micromort values for activities spanning six orders of magnitude, from 1-in-10-million risks to 1-in-10 risks, split by COVID-19 and other categories."
 print(safe_tar_read("vig_palatable_risk_plot"))
 ```
 
@@ -124,6 +126,8 @@ For interactive exploration, use `plot_risks_interactive()` which provides:
 
 ```{r}
 #| echo: false
+#| fig-cap: "Interactive risk explorer with hover details, legend filtering, and COVID-19 vs other risks dropdown."
+#| fig-alt: "Interactive plotly bar chart allowing hover for exact micromort and microlife values per activity, with dropdown to filter between COVID-19 and other risk categories."
 safe_tar_read("vig_palatable_risk_plot_interactive")
 ```
 

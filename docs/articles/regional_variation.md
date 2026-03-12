@@ -75,7 +75,13 @@ pandemic distortions)
 
 The divergence became pronounced after 2005:
 
-![](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
+![Line plot with year on x-axis and life expectancy on y-axis. Vanguard
+regions show continued upward progress while laggard regions stall after
+the mid-2000s, illustrating growing geographic inequality in mortality
+outcomes.](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
+
+Regional life expectancy trends showing divergence between vanguard and
+laggard regions after 2005.
 
 ## Mortality Risk Multiplier
 

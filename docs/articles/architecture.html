@@ -101,6 +101,8 @@ await mermaid.run({ querySelector: '.mermaid' });
 </script><section class="level2"><h2 id="data-pipeline">1. Data Pipeline<a class="anchor" aria-label="anchor" href="#data-pipeline"></a>
 </h2>
 <p>The targets pipeline processes risk data through five stages. Target counts update automatically when plan files change.</p>
+<div id="fig-pipeline" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <pre class="mermaid" id="vigarchpipelinediagram"></pre>
 <script type="text/plain" data-mermaid="vigarchpipelinediagram">
 %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
@@ -135,9 +137,17 @@ graph LR
   style S3 fill:#3d2d1a,stroke:#F57F17
   style S4 fill:#3d1a2a,stroke:#C62828
   style S5 fill:#2d1a3d,stroke:#7B1FA2
-</script></section><section class="level2"><h2 id="function-hierarchy">2. Function Hierarchy<a class="anchor" aria-label="anchor" href="#function-hierarchy"></a>
+</script>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Data pipeline flowchart showing five stages of risk data processing with target counts per stage.
+</figcaption></figure>
+</div>
+</section><section class="level2"><h2 id="function-hierarchy">2. Function Hierarchy<a class="anchor" aria-label="anchor" href="#function-hierarchy"></a>
 </h2>
 <p>All exported functions grouped by category. Click any function to view its documentation.</p>
+<div id="fig-concept" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-concept-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <pre class="mermaid" id="vigarchconceptdiagram"></pre>
 <script type="text/plain" data-mermaid="vigarchconceptdiagram">
 %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
@@ -265,9 +275,17 @@ graph TD
   click launch_dashboard "../reference/launch_dashboard.html" "launch_dashboard"
   click launch_quiz "../reference/launch_quiz.html" "launch_quiz"
   click quiz_pairs "../reference/quiz_pairs.html" "quiz_pairs"
-</script></section><section class="level2"><h2 id="user-journey">3. User Journey<a class="anchor" aria-label="anchor" href="#user-journey"></a>
+</script>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-concept-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Function hierarchy grouping all exported functions by category.
+</figcaption></figure>
+</div>
+</section><section class="level2"><h2 id="user-journey">3. User Journey<a class="anchor" aria-label="anchor" href="#user-journey"></a>
 </h2>
 <p>Which function should you start with? Follow the decision tree below.</p>
+<div id="fig-journey" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-journey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <pre class="mermaid" id="vigarchuserjourneydiagram"></pre>
 <script type="text/plain" data-mermaid="vigarchuserjourneydiagram">
 %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
@@ -323,9 +341,17 @@ graph TD
   click v_equiv "../articles/risk_equivalence.html" "Risk Equivalence"
   click v_pal "../articles/palatable_units.html" "Palatable Units"
   click v_api "../articles/rest_api.html" "REST API"
-</script></section><section class="level2"><h2 id="developer-workflow">4. Developer Workflow<a class="anchor" aria-label="anchor" href="#developer-workflow"></a>
+</script>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-journey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 3: Decision tree showing which function to start with based on your analysis goal.
+</figcaption></figure>
+</div>
+</section><section class="level2"><h2 id="developer-workflow">4. Developer Workflow<a class="anchor" aria-label="anchor" href="#developer-workflow"></a>
 </h2>
 <p>The 9-step workflow for contributing to this package. Steps 4–5 follow the RED-GREEN TDD cycle.</p>
+<div id="fig-developer" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-developer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <pre class="mermaid" id="vigarchdeveloperdiagram"></pre>
 <script type="text/plain" data-mermaid="vigarchdeveloperdiagram">
 %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
@@ -355,9 +381,25 @@ graph LR
   style s7 fill:#3d1a2a,stroke:#C62828
   style s8 fill:#1a2d4a,stroke:#1976D2
   style s9 fill:#1a3d1a,stroke:#2E7D32
-</script></section><section class="level2"><h2 id="targets-dag">5. Targets DAG<a class="anchor" aria-label="anchor" href="#targets-dag"></a>
+</script>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-developer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 4: Nine-step developer workflow including RED-GREEN TDD cycle at steps 4–5.
+</figcaption></figure>
+</div>
+</section><section class="level2"><h2 id="targets-dag">5. Targets DAG<a class="anchor" aria-label="anchor" href="#targets-dag"></a>
 </h2>
 <p>Auto-generated dependency graph of the full targets pipeline.</p>
+<div id="fig-visnetwork" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-visnetwork-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-visnetwork-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 5: Auto-generated dependency graph of the full targets pipeline showing all targets and their connections.
+</figcaption></figure>
+</div>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);

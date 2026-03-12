@@ -130,6 +130,8 @@ The divergence became pronounced after 2005:
 
 ```{r, fig.width=8, fig.height=5}
 #| echo: false
+#| fig-cap: "Regional life expectancy trends showing divergence between vanguard and laggard regions after 2005."
+#| fig-alt: "Line plot with year on x-axis and life expectancy on y-axis. Vanguard regions show continued upward progress while laggard regions stall after the mid-2000s, illustrating growing geographic inequality in mortality outcomes."
 print(safe_tar_read("vig_regional_trends_plot"))
 ```
 

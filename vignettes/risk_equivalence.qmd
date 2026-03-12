@@ -72,6 +72,8 @@ if (!is.null(everyday)) {
 Everyday activities expressed in chest X-ray equivalents:
 
 ```{r everyday-chart, fig.width=8, fig.height=5}
+#| fig-cap: "Everyday activities ranked by micromort risk, expressed in chest X-ray equivalents."
+#| fig-alt: "Horizontal bar chart showing everyday activities ordered by increasing risk in chest X-ray equivalents. Activities include driving, cycling, swimming, and skiing, with blue bars indicating relative risk magnitude."
 everyday <- safe_tar_read("vig_equiv_everyday")
 if (!is.null(everyday) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(
@@ -103,6 +105,8 @@ Flying is a composite risk: crash + deep vein thrombosis (DVT) + cosmic radiatio
 ### By Duration
 
 ```{r flight-duration, fig.width=9, fig.height=5}
+#| fig-cap: "Flight risk decomposition by duration, showing crash, DVT, and cosmic radiation components."
+#| fig-alt: "Stacked bar chart with flight durations (2h, 5h, 8h, 12h) on x-axis and micromorts on y-axis. Each bar is split into crash risk (roughly constant), DVT risk (grows nonlinearly after 4 hours), and cosmic radiation (linear with duration)."
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(
@@ -229,6 +233,8 @@ if (!is.null(med)) {
 How many chest X-rays equal one CT scan?
 
 ```{r medical-exchange, fig.width=8, fig.height=4}
+#| fig-cap: "Medical radiation procedures ranked by chest X-ray equivalents."
+#| fig-alt: "Horizontal bar chart with red bars showing medical procedures ordered by radiation dose in chest X-ray equivalents. Ranges from a single chest X-ray (1 equivalent) to coronary angiogram (several hundred equivalents), with CT scans in between."
 med <- safe_tar_read("vig_equiv_medical_focus")
 if (!is.null(med) && requireNamespace("plotly", quietly = TRUE)) {
   med <- med |>
@@ -280,6 +286,8 @@ if (!is.null(hedgeable)) {
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 
 ```{r hedgeable-plot, fig.width=9, fig.height=5}
+#| fig-cap: "Flight risk decomposition showing hedgeable (green) vs non-hedgeable (red) risk components."
+#| fig-alt: "Stacked bar chart with flight durations on x-axis and micromorts on y-axis. Green segments represent hedgeable risks (DVT, mitigated by compression socks) and red segments represent non-hedgeable risks (crash, cosmic radiation)."
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
   flight_data <- flight_data |>
@@ -361,6 +369,8 @@ Key insight: 100 lifetime chest X-rays (10 micromorts) exceeds a 40-year X-ray t
 Cumulative radiation exposure over a 40-year career:
 
 ```{r radiation-timeline, fig.width=9, fig.height=6}
+#| fig-cap: "Cumulative radiation micromorts over a 40-year career for different occupational and passenger exposure profiles."
+#| fig-alt: "Line chart with years of exposure on x-axis and cumulative micromorts on y-axis. Separate coloured lines show nuclear plant worker, X-ray technician, airline pilot, and frequent flyer profiles diverging over time."
 timeline <- safe_tar_read("vig_radiation_timeline_data")
 if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
   plotly::plot_ly(

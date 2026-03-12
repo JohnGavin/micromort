@@ -98,6 +98,8 @@ Using [`plot_risks()`](../reference/plot_risks.html), we can see the relative ma
 
 ```{r, fig.width=10, fig.height=14, out.extra='style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"'}
 #| echo: false
+#| fig-cap: "Logarithmic risk ladder comparing micromort values across everyday activities, medical procedures, and extreme sports, split by COVID-19 and other risk categories."
+#| fig-alt: "Horizontal bar chart on a logarithmic scale showing micromort risk values for approximately 40 activities. Activities range from drinking a cup of coffee (less than 1 micromort) to climbing Mount Everest (over 10,000 micromorts). Bars are colour-coded by category: COVID-19 risks in red and other risks in blue."
 print(safe_tar_read("vig_intro_risk_plot"))
 ```
 
@@ -107,6 +109,8 @@ For interactive exploration with hover details and category filtering, use [`plo
 
 ```{r}
 #| echo: false
+#| fig-cap: "Interactive risk ladder with hover details and category filtering."
+#| fig-alt: "Interactive plotly version of the risk ladder allowing hover for exact micromort values and legend click to filter by COVID-19 or other risk categories."
 safe_tar_read("vig_intro_risk_plot_interactive")
 ```
 

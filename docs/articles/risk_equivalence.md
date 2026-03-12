@@ -19,6 +19,9 @@ How risky are the mundane things we do every day?
 
 Everyday activities expressed in chest X-ray equivalents:
 
+Everyday activities ranked by micromort risk, expressed in chest X-ray
+equivalents.
+
 ## Flight Risk Decomposition
 
 Flying is a composite risk: crash + deep vein thrombosis (DVT) + cosmic
@@ -26,6 +29,9 @@ radiation. The **atomic decomposition** reveals which components
 dominate at each duration, and which you can mitigate.
 
 ### By Duration
+
+Flight risk decomposition by duration, showing crash, DVT, and cosmic
+radiation components.
 
 Key observations:
 
@@ -62,6 +68,8 @@ Medical imaging procedures vary enormously in radiation dose:
 
 How many chest X-rays equal one CT scan?
 
+Medical radiation procedures ranked by chest X-ray equivalents.
+
 ## Hedgeability Analysis
 
 ### By Activity
@@ -71,6 +79,9 @@ Which activities have hedgeable risk components?
 ### Stacked Components
 
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
+
+Flight risk decomposition showing hedgeable (green) vs non-hedgeable
+(red) risk components.
 
 ## Radiation Exposure Profiles
 
@@ -102,6 +113,9 @@ Cumulative radiation exposure over a 40-year career:
     #> Returning the palette you asked for with that many colors
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
+
+Cumulative radiation micromorts over a 40-year career for different
+occupational and passenger exposure profiles.
 
 ### Regulatory Context
 

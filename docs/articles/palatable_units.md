@@ -91,7 +91,13 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-![](palatable_units_files/figure-html/unnamed-chunk-3-1.png)
+![Horizontal bar chart on a logarithmic scale showing micromort values
+for activities spanning six orders of magnitude, from 1-in-10-million
+risks to 1-in-10 risks, split by COVID-19 and other
+categories.](palatable_units_files/figure-html/unnamed-chunk-3-1.png)
+
+Logarithmic risk ladder placing rare risks like asteroid impacts in
+context with everyday risks like driving.
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -105,6 +111,9 @@ which provides:
     #> Returning the palette you asked for with that many colors
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
+
+Interactive risk explorer with hover details, legend filtering, and
+COVID-19 vs other risks dropdown.
 
 ## 5. Media Perception vs. Actual Risk
 
