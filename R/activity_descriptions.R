@@ -418,6 +418,93 @@ activity_descriptions <- function() {
 
     "Snake bite (rural sub-Saharan Africa)",
     "Snake bite fatality risk in rural Africa with limited antivenom access.",
-    "https://www.who.int/news-room/fact-sheets/detail/snakebite-envenoming"
+    "https://www.who.int/news-room/fact-sheets/detail/snakebite-envenoming",
+
+    # Occupational fatality risks (BLS CFOI 2022)
+    "Logging (per work day)",
+    "Highest US occupational fatality rate; hazards include falling trees, chainsaw injuries, and terrain.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Commercial fishing (per work day)",
+    "Extreme weather, vessel sinking, and deck machinery make fishing one of the deadliest occupations.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Roofing (per work day)",
+    "Falls from height are the primary cause of roofing fatalities.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Structural iron/steel work (per work day)",
+    "Working at height on building frames with fall and struck-by hazards.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Truck driving (per work day)",
+    "Long hours and highway driving make truck driving a high-fatality occupation by total deaths.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Mining (per work day)",
+    "Roof collapse, gas explosion, and heavy equipment hazards in underground and surface mining.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Agriculture (per work day)",
+    "Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "Construction (all, per work day)",
+    "Falls, struck-by, electrocution, and caught-in hazards across all construction trades.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    "All US workers baseline (per work day)",
+    "Average occupational fatality rate across all US industries; baseline for comparison.",
+    "https://www.bls.gov/iif/fatal-injuries-tables.htm",
+
+    # Road traffic mortality by country (WHO 2023)
+    "Daily road traffic risk (US)",
+    "Daily population-level risk of road traffic death in the United States.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    "Daily road traffic risk (UK)",
+    "Daily population-level risk of road traffic death in the United Kingdom.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    "Daily road traffic risk (Germany)",
+    "Daily population-level risk of road traffic death in Germany.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    "Daily road traffic risk (Japan)",
+    "Daily population-level risk of road traffic death in Japan.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    "Daily road traffic risk (India)",
+    "Daily population-level risk of road traffic death in India; among the highest globally.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    "Daily road traffic risk (Brazil)",
+    "Daily population-level risk of road traffic death in Brazil.",
+    "https://www.who.int/publications/i/item/9789240086517",
+
+    # Homicide rates by country (UNODC 2023)
+    "Daily homicide risk (US)",
+    "Daily population-level homicide risk in the United States.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    "Daily homicide risk (UK)",
+    "Daily population-level homicide risk in the United Kingdom.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    "Daily homicide risk (Japan)",
+    "Daily population-level homicide risk in Japan; among the lowest globally.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    "Daily homicide risk (India)",
+    "Daily population-level homicide risk in India.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    "Daily homicide risk (Brazil)",
+    "Daily population-level homicide risk in Brazil; one of the highest globally.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    "Daily homicide risk (Honduras)",
+    "Daily population-level homicide risk in Honduras; among the world's highest rates.",
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
   )
 }
