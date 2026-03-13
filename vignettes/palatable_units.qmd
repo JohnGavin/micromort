@@ -117,6 +117,8 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 
 ```{r, fig.width=8, fig.height=14}
 #| echo: false
+#| fig-cap: "Spiegelhalter's logarithmic risk ladder placing activities from negligible (banana dose) to extreme (BASE jumping) on a unified scale."
+#| fig-alt: "Horizontal bar chart on log scale showing ~40 activities ordered by micromorts. Activities span 5 orders of magnitude from 0.001 to 430 micromorts, coloured by category."
 print(safe_tar_read("vig_palatable_risk_plot"))
 ```
 
@@ -128,6 +130,8 @@ For interactive exploration, use `plot_risks_interactive()` which provides:
 
 ```{r}
 #| echo: false
+#| fig-cap: "Interactive risk ladder with hover details, category filtering, and zoom."
+#| fig-alt: "Interactive plotly version of the risk ladder allowing users to hover for exact micromort values and filter categories via the legend."
 safe_tar_read("vig_palatable_risk_plot_interactive")
 ```
 
