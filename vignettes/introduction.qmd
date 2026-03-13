@@ -102,6 +102,8 @@ Using [`plot_risks()`](../reference/plot_risks.html), we can see the relative ma
 
 ```{r, fig.width=10, fig.height=14, out.extra='style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"'}
 #| echo: false
+#| fig-cap: "Logarithmic risk ladder showing micromorts per activity, split by COVID-19 and other categories. Activities range from a chest X-ray (0.1 micromort) to BASE jumping (430 micromorts)."
+#| fig-alt: "Horizontal bar chart on a log scale showing micromorts for ~40 activities. COVID-19 risks (vaccination, infection by age) are grouped separately from other risks (transport, medical, recreational). Bars are coloured by category."
 print(safe_tar_read("vig_intro_risk_plot"))
 ```
 
@@ -111,6 +113,8 @@ For interactive exploration with hover details and category filtering, use [`plo
 
 ```{r}
 #| echo: false
+#| fig-cap: "Interactive version of the risk ladder with hover details and category filtering."
+#| fig-alt: "Interactive plotly bar chart of micromorts per activity with tooltips showing exact values, microlives, and source period."
 safe_tar_read("vig_intro_risk_plot_interactive")
 ```
 

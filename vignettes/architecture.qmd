@@ -39,14 +39,20 @@ safe_tar_read <- function(name) {
 
 # Helper: emit mermaid diagram as a script/div pair so pandoc cannot
 # HTML-encode the arrows (-->) or wrap lines in <p> tags.
-emit_mermaid <- function(target_name, fallback_msg) {
+emit_mermaid <- function(target_name, fallback_msg, caption = NULL, alt_text = NULL) {
   diagram <- safe_tar_read(target_name)
   if (!is.null(diagram)) {
     id <- gsub("[^a-z0-9]", "", target_name)
-    cat(sprintf('<pre class="mermaid" id="%s"></pre>\n', id))
+    if (!is.null(caption)) cat('<figure role="figure">\n')
+    cat(sprintf('<pre class="mermaid" id="%s"', id))
+    if (!is.null(alt_text)) cat(sprintf(' aria-label="%s"', alt_text))
+    cat('></pre>\n')
     cat(sprintf('<script type="text/plain" data-mermaid="%s">\n', id))
     cat(diagram)
     cat("\n</script>\n")
+    if (!is.null(caption)) {
+      cat(sprintf('<figcaption>%s</figcaption>\n</figure>\n', caption))
+    }
   } else {
     cat(paste0("*", fallback_msg, "*\n"))
   }
@@ -89,7 +95,9 @@ Target counts update automatically when plan files change.
 
 ```{r pipeline, results='asis'}
 emit_mermaid("vig_arch_pipeline_diagram",
-             "Pipeline diagram not available. Run `targets::tar_make()` first.")
+             "Pipeline diagram not available. Run `targets::tar_make()` first.",
+             caption = "Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets.",
+             alt_text = "Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage.")
 ```
 
 ## 2. Function Hierarchy
@@ -99,7 +107,9 @@ Click any function to view its documentation.
 
 ```{r concept, results='asis'}
 emit_mermaid("vig_arch_concept_diagram",
-             "Concept diagram not available. Run `targets::tar_make()` first.")
+             "Concept diagram not available. Run `targets::tar_make()` first.",
+             caption = "Figure 2: Exported functions grouped by category — risk data, conversion utilities, regional analysis, visualisation, and quiz.",
+             alt_text = "Mermaid diagram showing all exported functions organised into five categories with links to their documentation pages.")
 ```
 
 ## 3. User Journey
@@ -108,7 +118,9 @@ Which function should you start with? Follow the decision tree below.
 
 ```{r journey, results='asis'}
 emit_mermaid("vig_arch_user_journey_diagram",
-             "User journey diagram not available. Run `targets::tar_make()` first.")
+             "User journey diagram not available. Run `targets::tar_make()` first.",
+             caption = "Figure 3: Decision tree guiding users from their question (compare risks, explore regions, convert units) to the appropriate function.",
+             alt_text = "Mermaid decision tree flowchart with three entry points — compare risks, explore regions, convert units — leading to specific package functions.")
 ```
 
 ## 4. Developer Workflow
@@ -118,7 +130,9 @@ Steps 4--5 follow the RED-GREEN TDD cycle.
 
 ```{r developer, results='asis'}
 emit_mermaid("vig_arch_developer_diagram",
-             "Developer diagram not available. Run `targets::tar_make()` first.")
+             "Developer diagram not available. Run `targets::tar_make()` first.",
+             caption = "Figure 4: Nine-step contributor workflow from issue creation through TDD (steps 4–5), documentation, CI checks, and PR merge.",
+             alt_text = "Mermaid flowchart showing a nine-step development workflow: issue, branch, plan, RED test, GREEN implementation, refactor, document, check, and PR.")
 ```
 
 ## 5. Targets DAG
@@ -126,6 +140,8 @@ emit_mermaid("vig_arch_developer_diagram",
 Auto-generated dependency graph of the full targets pipeline.
 
 ```{r visnetwork}
+#| fig-cap: "Interactive dependency graph of the full targets pipeline. Nodes represent targets; edges show dependencies. Hover for details, drag to rearrange."
+#| fig-alt: "Interactive visNetwork graph showing the directed acyclic graph (DAG) of approximately 40 targets with colour-coded nodes for data, function, and vignette targets."
 vis <- safe_tar_read("vig_arch_tar_visnetwork")
 if (!is.null(vis)) vis
 ```

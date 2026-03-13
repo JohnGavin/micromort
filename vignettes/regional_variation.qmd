@@ -134,6 +134,8 @@ The divergence became pronounced after 2005:
 
 ```{r, fig.width=8, fig.height=5}
 #| echo: false
+#| fig-cap: "Life expectancy trends in Western Europe diverged after 2005, with some regions stalling while others continued to improve."
+#| fig-alt: "Line chart of life expectancy over time for multiple Western European regions. Lines converge until ~2005, then diverge, with UK regions showing the slowest improvement."
 print(safe_tar_read("vig_regional_trends_plot"))
 ```
 
