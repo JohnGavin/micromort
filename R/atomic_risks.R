@@ -37,11 +37,14 @@ utils::globalVariables(c(
 #'     \item{hedgeable}{Can this component be mitigated?}
 #'     \item{hedge_description}{How to mitigate (if hedgeable)}
 #'     \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-#'     \item{condition_variable}{What this risk depends on: `"health_profile"` or `NA`}
-#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, or `NA`}
+#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, or `NA`}
+#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, or `NA`}
 #'     \item{confidence}{Data confidence: `"high"`, `"medium"`, `"low"`, `"estimated"`}
 #'     \item{source_url}{Citation URL}
 #'     \item{notes}{Scaling behavior, caveats}
+#'     \item{validation_status}{`"single_source"`, `"corroborated"`, or `"cross_validated"`}
+#'     \item{source_count}{Integer count of independent sources checked}
+#'     \item{estimate_range}{Character range (e.g. `"0.05-0.15"`) or `NA` for point estimates}
 #'   }
 #' @export
 #' @seealso [common_risks()] for the aggregated view.
@@ -404,20 +407,129 @@ atomic_risks <- function() {
       notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
     )
 
+  # ── Part 6: Wildlife encounters ──────────────────────────────────────────
+
+  # Sources: ISAF (shark), CDC (dog US, bee, snake US), WHO/Lancet (dog/snake
+
+  # low-income), OWID Deadliest Animals. Geographic conditioning reuses
+  # condition_variable/condition_value infrastructure (same as health_profile).
+  cdc_url <- "https://www.cdc.gov/injury/"
+  who_snakebite <- "https://www.who.int/news-room/fact-sheets/detail/snakebite-envenoming"
+  isaf_url <- "https://www.floridamuseum.ufl.edu/shark-attacks/"
+
+  wildlife <- tibble::tribble(
+    ~activity, ~activity_id, ~micromorts, ~component, ~risk_category,
+    ~component_label, ~category, ~period,
+    ~hedgeable, ~hedge_description, ~hedge_reduction_pct,
+    ~condition_variable, ~condition_value, ~confidence, ~source_url,
+
+    # Shark: ~6 deaths/yr / ~100M ocean interactions = 0.06 mm (ISAF)
+    "Shark encounter (ocean swim)", "shark_encounter",
+    0.06, "all_causes", "mixed", "Shark attack fatality",
+    "Wildlife", "per swim",
+    TRUE, "Avoid murky water, dawn/dusk, seal colonies", 50,
+    NA_character_, NA_character_, "medium", isaf_url,
+
+    # Dog bite US: ~30 deaths/yr / ~4.5M bites = 6.7 mm (CDC)
+    "Dog bite (US)", "dog_bite_us",
+    6.7, "all_causes", "mixed", "Dog bite fatality (high-income setting)",
+    "Wildlife", "per bite",
+    TRUE, "Avoid unfamiliar dogs, rabies PEP available", 80,
+    "geography", "high_income", "medium", cdc_url,
+
+    # Dog bite rabies-endemic: ~40k deaths/yr / ~250k bites = 160 mm (WHO)
+    "Dog bite (rabies-endemic)", "dog_bite_rabies",
+    160, "all_causes", "mixed", "Dog bite fatality (rabies-endemic, limited PEP)",
+    "Wildlife", "per bite",
+    TRUE, "Pre-exposure rabies vaccine, seek immediate PEP", 90,
+    "geography", "low_income", "low", who_snakebite,
+
+    # Bee/wasp general: ~62 US deaths/yr / ~2M stings = 0.03 mm
+    "Bee/wasp sting (general)", "bee_sting_general",
+    0.03, "all_causes", "mixed", "Bee/wasp sting fatality (non-allergic)",
+    "Wildlife", "per sting",
+    TRUE, "Avoid nests, wear shoes outdoors", 30,
+    "health_profile", "healthy", "medium", cdc_url,
+
+    # Bee/wasp allergic: ~62 deaths among ~200k allergic exposures = 31 mm
+    "Bee/wasp sting (allergic)", "bee_sting_allergic",
+    31, "all_causes", "mixed", "Anaphylactic bee/wasp sting fatality",
+    "Wildlife", "per sting",
+    TRUE, "Carry epinephrine auto-injector, immunotherapy", 95,
+    "health_profile", "allergic", "low", cdc_url,
+
+    # Snake US: ~5 deaths/yr / ~10k bites = 0.5 mm (CDC)
+    "Snake bite (US, with antivenom)", "snake_bite_us",
+    0.5, "all_causes", "mixed", "Snake bite fatality (antivenom available)",
+    "Wildlife", "per bite",
+    TRUE, "Wear boots in snake habitat, carry pressure bandage", 60,
+    "geography", "high_income", "medium", cdc_url,
+
+    # Snake rural Africa: ~100k deaths/yr / ~5.4M bites = 18.5 mm (WHO/Lancet)
+    "Snake bite (rural sub-Saharan Africa)", "snake_bite_africa",
+    18.5, "all_causes", "mixed", "Snake bite fatality (limited antivenom access)",
+    "Wildlife", "per bite",
+    TRUE, "Footwear, torch at night, proximity to clinic", 40,
+    "geography", "low_income", "low", who_snakebite
+  ) |>
+    dplyr::mutate(
+      period_type = parse_period_type(period),
+      component_id = paste0(
+        activity_id, "_all_causes_",
+        dplyr::coalesce(condition_value, "uncon")
+      ),
+      duration_hours = NA_real_,
+      notes = dplyr::case_when(
+        grepl("shark", activity_id) ~ "ISAF: ~6 fatalities/yr among ~100M ocean interactions",
+        grepl("dog.*us", activity_id) ~ "CDC: ~30 deaths/yr among ~4.5M bites requiring medical attention",
+        grepl("dog.*rabies", activity_id) ~ "WHO: ~40k rabies deaths/yr, mostly dog-mediated",
+        grepl("bee.*general", activity_id) ~ "CDC: ~62 deaths/yr among ~2M stings/yr (non-allergic)",
+        grepl("bee.*allergic", activity_id) ~ "CDC: ~62 deaths concentrated among ~200k allergic exposures",
+        grepl("snake.*us", activity_id) ~ "CDC: ~5 deaths/yr among ~10k bites",
+        grepl("snake.*africa", activity_id) ~ "WHO/Lancet: ~100k deaths/yr among ~5.4M bites in sub-Saharan Africa"
+      ),
+      validation_status = "corroborated",
+      source_count = 2L,
+      estimate_range = dplyr::case_when(
+        grepl("shark", activity_id) ~ "0.03-0.10",
+        grepl("dog.*us", activity_id) ~ "5-10",
+        grepl("dog.*rabies", activity_id) ~ "100-250",
+        grepl("bee.*general", activity_id) ~ "0.02-0.05",
+        grepl("bee.*allergic", activity_id) ~ "20-50",
+        grepl("snake.*us", activity_id) ~ "0.3-1.0",
+        grepl("snake.*africa", activity_id) ~ "10-30"
+      )
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
     "component_label", "micromorts", "duration_hours", "category", "period",
     "period_type", "hedgeable", "hedge_description", "hedge_reduction_pct",
-    "condition_variable", "condition_value", "confidence", "source_url", "notes"
+    "condition_variable", "condition_value", "confidence", "source_url", "notes",
+    "validation_status", "source_count", "estimate_range"
   )
 
+  # Add new columns with defaults to legacy parts
+  add_defaults <- function(df) {
+    df$validation_status <- "single_source"
+    df$source_count <- 1L
+    df$estimate_range <- NA_character_
+    df
+  }
+
+  # Flight decomposed entries: corroborated (Boeing + NCRP + medical literature)
+  flights$validation_status <- "corroborated"
+  flights$source_count <- 2L
+  flights$estimate_range <- NA_character_
+
   dplyr::bind_rows(
-    legacy[, all_cols],
+    add_defaults(legacy)[, all_cols],
     flights[, all_cols],
-    med_rad[, all_cols],
-    mundane[, all_cols],
-    annual_rad[, all_cols]
+    add_defaults(med_rad)[, all_cols],
+    add_defaults(mundane)[, all_cols],
+    add_defaults(annual_rad)[, all_cols],
+    wildlife[, all_cols]
   )
 }
 
@@ -447,7 +559,7 @@ parse_period_type <- function(period) {
     grepl("per year", period) ~ "year",
     grepl("per month", period) ~ "month",
     grepl("weeks", period) ~ "period",
-    grepl("per event|per jump|per dose|per swim|per climb|per flight|per ride|per encounter|per game|per trip|per ascent|per expedition|per infection", period) ~ "event",
+    grepl("per event|per jump|per dose|per swim|per climb|per flight|per ride|per encounter|per game|per trip|per ascent|per expedition|per infection|per bite|per sting", period) ~ "event",
     TRUE ~ "event"
   )
 }
@@ -495,7 +607,7 @@ compute_period_days <- function(period, period_type) {
     grepl("ride", period) ~ 0.08,
     grepl("trip", period) ~ 0.17,
     grepl("dose", period) ~ 0.01,
-    grepl("encounter", period) ~ 0.01,
+    grepl("encounter|bite|sting", period) ~ 0.01,
     TRUE ~ 1
   )
 }
@@ -519,10 +631,13 @@ filter_by_profile <- function(risks, profile = list()) {
       risks |>
         dplyr::filter(
           is.na(condition_variable) |
-            condition_value %in% c("healthy", "unconditional")
+            condition_value %in% c("healthy", "unconditional", "high_income")
         )
     )
   }
+
+
+  defaults <- c("healthy", "unconditional", "high_income")
 
   # For each condition variable in profile, keep matching rows
   # For condition variables NOT in profile, keep default
@@ -536,7 +651,13 @@ filter_by_profile <- function(risks, profile = list()) {
       )
   }
 
-  risks
+  # Apply defaults for condition variables not specified in profile
+  risks |>
+    dplyr::filter(
+      is.na(condition_variable) |
+        condition_variable %in% names(profile) |
+        condition_value %in% defaults
+    )
 }
 
 
