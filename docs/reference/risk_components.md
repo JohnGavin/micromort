@@ -41,25 +41,27 @@ A tibble of atomic components for the requested activity.
 
 ``` r
 risk_components("flying_8h")
-#> # A tibble: 3 × 19
+#> # A tibble: 3 × 22
 #>   component_id      activity_id activity component risk_category component_label
 #>   <chr>             <chr>       <chr>    <chr>     <chr>         <chr>          
 #> 1 flying_8h_8h_cra… flying_8h   Flying … crash     physical      Aircraft crash 
 #> 2 flying_8h_8h_dvt… flying_8h   Flying … dvt       medical       Deep vein thro…
 #> 3 flying_8h_8h_rad… flying_8h   Flying … radiation radiation     Cosmic radiati…
-#> # ℹ 13 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
+#> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
-#> #   confidence <chr>, source_url <chr>, notes <chr>
+#> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
+#> #   source_count <int>, estimate_range <chr>
 risk_components("flying_8h", profile = list(health_profile = "dvt_risk_factors"))
-#> # A tibble: 3 × 19
+#> # A tibble: 3 × 22
 #>   component_id      activity_id activity component risk_category component_label
 #>   <chr>             <chr>       <chr>    <chr>     <chr>         <chr>          
 #> 1 flying_8h_8h_cra… flying_8h   Flying … crash     physical      Aircraft crash 
 #> 2 flying_8h_8h_dvt… flying_8h   Flying … dvt       medical       Deep vein thro…
 #> 3 flying_8h_8h_rad… flying_8h   Flying … radiation radiation     Cosmic radiati…
-#> # ℹ 13 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
+#> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
-#> #   confidence <chr>, source_url <chr>, notes <chr>
+#> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
+#> #   source_count <int>, estimate_range <chr>
 ```

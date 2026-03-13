@@ -19,6 +19,9 @@ How risky are the mundane things we do every day?
 
 Everyday activities expressed in chest X-ray equivalents:
 
+Everyday activities expressed in chest X-ray equivalents, showing that a
+long-haul flight equals ~50 chest X-rays while a banana is negligible.
+
 ## Flight Risk Decomposition
 
 Flying is a composite risk: crash + deep vein thrombosis (DVT) + cosmic
@@ -26,6 +29,9 @@ radiation. The **atomic decomposition** reveals which components
 dominate at each duration, and which you can mitigate.
 
 ### By Duration
+
+Stacked bar chart decomposing flight risk into crash, DVT, and cosmic
+radiation components across 2h, 5h, 8h, and 12h flights.
 
 Key observations:
 
@@ -62,6 +68,9 @@ Medical imaging procedures vary enormously in radiation dose:
 
 How many chest X-rays equal one CT scan?
 
+Medical procedures ranked by chest X-ray equivalents, showing that a CT
+abdomen equals ~200 chest X-rays.
+
 ## Hedgeability Analysis
 
 ### By Activity
@@ -71,6 +80,9 @@ Which activities have hedgeable risk components?
 ### Stacked Components
 
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
+
+Flight risk decomposition by hedgeability: DVT risk (green, hedgeable
+via compression socks) vs crash and radiation (red, not hedgeable).
 
 ## Radiation Exposure Profiles
 
@@ -103,6 +115,10 @@ Cumulative radiation exposure over a 40-year career:
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
 
+Cumulative radiation micromorts over a 40-year career for different
+exposure profiles, showing that 100 lifetime chest X-rays exceeds
+occupational exposure.
+
 ### Regulatory Context
 
 How do actual doses compare to ICRP regulatory limits?
@@ -126,7 +142,11 @@ indicating the breakdown is unknown).
 DVT risk varies by whether you have risk factors). The default profile
 assumes “healthy” values; use
 `common_risks(profile = list(health_profile = "dvt_risk_factors"))` for
-alternatives.
+alternatives. Geographic conditioning can change equivalences
+dramatically: a snake bite is 0.5 mm in the US but 18.5 mm in rural
+Africa (37x). See the [Data
+Reliability](https://johngavin.github.io/micromort/articles/data_reliability.md)
+vignette for details.
 
 **Duration bucketing.** Rather than encoding rate functions, flight
 risks are pre-computed at standard duration buckets (2h, 5h, 8h, 12h).

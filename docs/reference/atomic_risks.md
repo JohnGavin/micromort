@@ -76,11 +76,12 @@ A tibble with columns:
 
 - condition_variable:
 
-  What this risk depends on: `"health_profile"` or `NA`
+  What this risk depends on: `"health_profile"`, `"geography"`, or `NA`
 
 - condition_value:
 
-  Condition value: `"healthy"`, `"dvt_risk_factors"`, or `NA`
+  Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`,
+  `"low_income"`, `"allergic"`, or `NA`
 
 - confidence:
 
@@ -93,6 +94,18 @@ A tibble with columns:
 - notes:
 
   Scaling behavior, caveats
+
+- validation_status:
+
+  `"single_source"`, `"corroborated"`, or `"cross_validated"`
+
+- source_count:
+
+  Integer count of independent sources checked
+
+- estimate_range:
+
+  Character range (e.g. `"0.05-0.15"`) or `NA` for point estimates
 
 ## Details
 
@@ -109,7 +122,7 @@ for the aggregated view.
 
 ``` r
 atomic_risks()
-#> # A tibble: 103 × 19
+#> # A tibble: 110 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 mt_everest_asce… mt_everest… Mt. Eve… all_caus… mixed         Mt. Everest as…
@@ -122,13 +135,14 @@ atomic_risks()
 #>  8 base_jumping_al… base_jumpi… Base ju… all_caus… mixed         Base jumping   
 #>  9 first_day_of_li… first_day_… First d… all_caus… mixed         First day of l…
 #> 10 covid_19_unvacc… covid_19_u… COVID-1… all_caus… mixed         COVID-19 unvac…
-#> # ℹ 93 more rows
-#> # ℹ 13 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
+#> # ℹ 100 more rows
+#> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
-#> #   confidence <chr>, source_url <chr>, notes <chr>
+#> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
+#> #   source_count <int>, estimate_range <chr>
 atomic_risks() |> dplyr::filter(component != "all_causes")
-#> # A tibble: 38 × 19
+#> # A tibble: 38 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 flying_2h_2h_cr… flying_2h   Flying … crash     physical      Aircraft crash 
@@ -142,12 +156,13 @@ atomic_risks() |> dplyr::filter(component != "all_causes")
 #>  9 flying_8h_8h_cr… flying_8h   Flying … crash     physical      Aircraft crash 
 #> 10 flying_8h_8h_dv… flying_8h   Flying … dvt       medical       Deep vein thro…
 #> # ℹ 28 more rows
-#> # ℹ 13 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
+#> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
-#> #   confidence <chr>, source_url <chr>, notes <chr>
+#> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
+#> #   source_count <int>, estimate_range <chr>
 atomic_risks() |> dplyr::filter(hedgeable)
-#> # A tibble: 14 × 19
+#> # A tibble: 21 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 flying_2h_2h_dv… flying_2h   Flying … dvt       medical       Deep vein thro…
@@ -160,12 +175,10 @@ atomic_risks() |> dplyr::filter(hedgeable)
 #>  8 flying_12h_12h_… flying_12h  Flying … dvt       medical       Deep vein thro…
 #>  9 airline_pilot_a… airline_pi… Airline… radiation radiation     Ionizing radia…
 #> 10 xray_tech_annua… xray_tech_… X-ray t… radiation radiation     Ionizing radia…
-#> 11 dental_radiogra… dental_rad… Dental … radiation radiation     Ionizing radia…
-#> 12 nuclear_worker_… nuclear_wo… Nuclear… radiation radiation     Ionizing radia…
-#> 13 interventional_… interventi… Interve… radiation radiation     Ionizing radia…
-#> 14 granite_residen… granite_re… Granite… radiation radiation     Ionizing radia…
-#> # ℹ 13 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
+#> # ℹ 11 more rows
+#> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
-#> #   confidence <chr>, source_url <chr>, notes <chr>
+#> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
+#> #   source_count <int>, estimate_range <chr>
 ```

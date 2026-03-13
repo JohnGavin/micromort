@@ -64,7 +64,7 @@ Other visualization:
 ``` r
 # All risks
 prepare_risks_plot()
-#> # A tibble: 80 × 12
+#> # A tibble: 82 × 12
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event                60
@@ -77,7 +77,7 @@ prepare_risks_plot()
 #>  8 Base jumping           430       301  Sport    per e… event                 1
 #>  9 First day of l…        430       301  Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period               77
-#> # ℹ 70 more rows
+#> # ℹ 72 more rows
 #> # ℹ 5 more variables: micromorts_per_day <dbl>, source_url <chr>,
 #> #   n_components <int>, hedgeable_pct <dbl>, facet_group <fct>
 
@@ -109,7 +109,7 @@ prepare_risks_plot(categories = "COVID-19")
 
 # Exclude COVID-19
 prepare_risks_plot(exclude_categories = "COVID-19")
-#> # A tibble: 62 × 12
+#> # A tibble: 64 × 12
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event                60
@@ -122,7 +122,7 @@ prepare_risks_plot(exclude_categories = "COVID-19")
 #>  8 Caesarean birt…        170       119  Medical  per e… event                 1
 #>  9 Scuba diving, …        164       115. Sport    per y… year                365
 #> 10 Vaginal birth …        120        84  Medical  per e… event                 1
-#> # ℹ 52 more rows
+#> # ℹ 54 more rows
 #> # ℹ 5 more variables: micromorts_per_day <dbl>, source_url <chr>,
 #> #   n_components <int>, hedgeable_pct <dbl>, facet_group <fct>
 

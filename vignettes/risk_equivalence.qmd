@@ -146,7 +146,7 @@ Key observations:
 
 How does DVT risk status change the total?
 
-```{r flight-health, fig.width=8}
+```{r flight-health}
 components <- safe_tar_read("vig_equiv_flight_components")
 if (!is.null(components)) {
   DT::datatable(

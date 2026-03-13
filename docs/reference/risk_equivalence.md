@@ -43,7 +43,7 @@ A tibble with columns: `activity`, `micromorts`, `reference`,
 
 ``` r
 risk_equivalence("Chest X-ray (radiation per scan)")
-#> # A tibble: 90 × 6
+#> # A tibble: 94 × 6
 #>    activity         micromorts reference reference_micromorts  ratio equivalence
 #>    <chr>                 <dbl> <chr>                    <dbl>  <dbl> <chr>      
 #>  1 Mt. Everest asc…      37932 Chest X-…                  0.1 379320 1 Mt. Ever…
@@ -56,9 +56,9 @@ risk_equivalence("Chest X-ray (radiation per scan)")
 #>  8 Base jumping            430 Chest X-…                  0.1   4300 1 Base jum…
 #>  9 First day of li…        430 Chest X-…                  0.1   4300 1 First da…
 #> 10 COVID-19 unvacc…        234 Chest X-…                  0.1   2340 1 COVID-19…
-#> # ℹ 80 more rows
+#> # ℹ 84 more rows
 risk_equivalence("Skydiving (US)")
-#> # A tibble: 83 × 6
+#> # A tibble: 86 × 6
 #>    activity         micromorts reference reference_micromorts  ratio equivalence
 #>    <chr>                 <dbl> <chr>                    <dbl>  <dbl> <chr>      
 #>  1 Mt. Everest asc…      37932 Skydivin…                    8 4742.  1 Mt. Ever…
@@ -71,5 +71,5 @@ risk_equivalence("Skydiving (US)")
 #>  8 Base jumping            430 Skydivin…                    8   53.8 1 Base jum…
 #>  9 First day of li…        430 Skydivin…                    8   53.8 1 First da…
 #> 10 COVID-19 unvacc…        234 Skydivin…                    8   29.2 1 COVID-19…
-#> # ℹ 73 more rows
+#> # ℹ 76 more rows
 ```

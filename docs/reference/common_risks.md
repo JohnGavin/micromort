@@ -105,7 +105,7 @@ for the component-level data.
 
 ``` r
 common_risks()
-#> # A tibble: 91 × 11
+#> # A tibble: 95 × 11
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event                60
@@ -118,7 +118,7 @@ common_risks()
 #>  8 Base jumping           430       301  Sport    per e… event                 1
 #>  9 First day of l…        430       301  Daily L… per d… day                   1
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period               77
-#> # ℹ 81 more rows
+#> # ℹ 85 more rows
 #> # ℹ 4 more variables: micromorts_per_day <dbl>, source_url <chr>,
 #> #   n_components <int>, hedgeable_pct <dbl>
 common_risks() |> dplyr::filter(category == "COVID-19")

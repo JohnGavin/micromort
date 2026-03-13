@@ -91,7 +91,13 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-![](palatable_units_files/figure-html/unnamed-chunk-3-1.png)
+![Horizontal bar chart on log scale showing ~40 activities ordered by
+micromorts. Activities span 5 orders of magnitude from 0.001 to 430
+micromorts, coloured by
+category.](palatable_units_files/figure-html/unnamed-chunk-3-1.png)
+
+Spiegelhalter’s logarithmic risk ladder placing activities from
+negligible (banana dose) to extreme (BASE jumping) on a unified scale.
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -105,6 +111,9 @@ which provides:
     #> Returning the palette you asked for with that many colors
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
+
+Interactive risk ladder with hover details, category filtering, and
+zoom.
 
 ## 5. Media Perception vs. Actual Risk
 

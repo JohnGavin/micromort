@@ -76,7 +76,15 @@ make comparisons easier:
     #> log-10 transformation introduced infinite values.
     #> log-10 transformation introduced infinite values.
 
-![](introduction_files/figure-html/unnamed-chunk-3-1.png)
+![Horizontal bar chart on a log scale showing micromorts for ~40
+activities. COVID-19 risks (vaccination, infection by age) are grouped
+separately from other risks (transport, medical, recreational). Bars are
+coloured by
+category.](introduction_files/figure-html/unnamed-chunk-3-1.png)
+
+Logarithmic risk ladder showing micromorts per activity, split by
+COVID-19 and other categories. Activities range from a chest X-ray (0.1
+micromort) to BASE jumping (430 micromorts).
 
 #### Interactive Version
 
@@ -88,6 +96,9 @@ use
     #> Returning the palette you asked for with that many colors
     #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
     #> Returning the palette you asked for with that many colors
+
+Interactive version of the risk ladder with hover details and category
+filtering.
 
 ## 2. Microlives (Chronic Risk)
 

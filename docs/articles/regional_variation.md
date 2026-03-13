@@ -75,7 +75,13 @@ pandemic distortions)
 
 The divergence became pronounced after 2005:
 
-![](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
+![Line chart of life expectancy over time for multiple Western European
+regions. Lines converge until ~2005, then diverge, with UK regions
+showing the slowest
+improvement.](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
+
+Life expectancy trends in Western Europe diverged after 2005, with some
+regions stalling while others continued to improve.
 
 ## Mortality Risk Multiplier
 

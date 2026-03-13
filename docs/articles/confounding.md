@@ -177,21 +177,55 @@ When you encounter a population-average risk:
     micromorts/night depending on age” is more informative than “1.36
     micromorts/year”
 
-## 5. Implications for the Micromort Package
+## 5. Geographic Confounding: Snake Bites
+
+Geography is arguably the most powerful confounder in risk data. The
+same encounter — a snake bite — has vastly different outcomes depending
+on location:
+
+| activity | micromorts | condition_value | hedge_description | confidence |
+|:---|---:|:---|:---|:---|
+| Snake bite (US, with antivenom) | 0.5 | high_income | Wear boots in snake habitat, carry pressure bandage | medium |
+| Snake bite (rural sub-Saharan Africa) | 18.5 | low_income | Footwear, torch at night, proximity to clinic | low |
+
+Snake bite micromorts by geography
+
+The 37x difference between the US and rural sub-Saharan Africa reflects
+differences in antivenom availability, hospital proximity, and emergency
+transport infrastructure — not differences in snake venom potency. A
+population-average snake bite risk that blends these geographies would
+be misleading for everyone: too high for Americans, too low for rural
+Africans.
+
+The same pattern applies to dog bites (24x difference driven by rabies
+PEP availability). For more on the systematic framework behind these
+geographic estimates, see the [Data
+Reliability](https://johngavin.github.io/micromort/articles/data_reliability.md)
+vignette.
+
+## 6. Implications for the Micromort Package
 
 This package addresses confounding in several ways:
+
+- **Geographic conditioning** via
+  `filter_by_profile(list(geography = "low_income"))` compares high- and
+  low-income variants of the same risk
 
 - **[`conditional_risk()`](https://johngavin.github.io/micromort/reference/conditional_risk.md)**
   and
   **[`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)**
   explicitly compare conditioned subgroups
   ([documentation](https://johngavin.github.io/micromort/reference/conditional_risk.md))
+
 - **[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md)**
   stratifies by sex, age group, and family history
+
 - **[`vaccination_risks()`](https://johngavin.github.io/micromort/reference/vaccination_risks.md)**
   stratifies by age group and vaccine type
+
 - **[`regional_life_expectancy()`](https://johngavin.github.io/micromort/reference/regional_life_expectancy.md)**
   stratifies by geography, capturing regional confounders
+
 - **Data quality criteria** in the
   [Introduction](https://johngavin.github.io/micromort/articles/introduction.html#data-quality-the-denominator-problem)
   exclude risks with unknown denominators that would mask confounding

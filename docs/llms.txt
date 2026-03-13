@@ -895,6 +895,8 @@ API, dashboard, and quiz
   Overview](https://johngavin.github.io/micromort/articles/architecture.md):
 - [Confounding Variables in Risk
   Data](https://johngavin.github.io/micromort/articles/confounding.md):
+- [How Reliable Are These
+  Numbers?](https://johngavin.github.io/micromort/articles/data_reliability.md):
 - [Introduction to Micromorts and Risk
   Visualization](https://johngavin.github.io/micromort/articles/introduction.md):
 - [Palatable Units: The Spiegelhalter
