@@ -122,7 +122,7 @@ for the aggregated view.
 
 ``` r
 atomic_risks()
-#> # A tibble: 110 × 22
+#> # A tibble: 131 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 mt_everest_asce… mt_everest… Mt. Eve… all_caus… mixed         Mt. Everest as…
@@ -135,7 +135,7 @@ atomic_risks()
 #>  8 base_jumping_al… base_jumpi… Base ju… all_caus… mixed         Base jumping   
 #>  9 first_day_of_li… first_day_… First d… all_caus… mixed         First day of l…
 #> 10 covid_19_unvacc… covid_19_u… COVID-1… all_caus… mixed         COVID-19 unvac…
-#> # ℹ 100 more rows
+#> # ℹ 121 more rows
 #> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,

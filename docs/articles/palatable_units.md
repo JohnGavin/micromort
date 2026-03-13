@@ -24,6 +24,27 @@ activities.
 - **Microlife:** 30 minutes of life expectancy lost/gained **per day**
   (chronic **attrition**).
 
+### What does 1-in-a-million feel like?
+
+Abstract probabilities are hard to grasp. Spiegelhalter offers a
+concrete anchor (*The Norm Chronicles*, 2013;
+[plus.maths.org](https://plus.maths.org/content/os/issue55/features/risk/index)):
+
+> **Flip a fair coin 20 times. The probability of getting 20 heads in a
+> row is 1 in 1,048,576 — approximately 1 micromort.**
+
+This is a mathematical constant ($`1/2^{20}`$), not an estimate. It
+requires no denominator, no data source, and no geographic adjustment.
+If you can imagine the surprise of 20 consecutive heads, you can feel
+the scale of 1 micromort.
+
+For context, Gigerenzer (*Calculated Risks*, 2002) recommends expressing
+all probabilities as **natural frequencies** — counts in a defined
+population rather than percentages. “1 death per 1,000,000 exposures” is
+clearer than “0.0001% mortality rate.” This package follows that
+convention: every micromort value has a traceable numerator (deaths) and
+denominator (exposures).
+
 ## 2. Micromorts: Measuring “Stopping Living” (Hazard)
 
 A micromort measures **acute hazard**: the immediate probability of an

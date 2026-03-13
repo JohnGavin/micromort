@@ -54,7 +54,7 @@ Validation status levels
 
 | confidence | corroborated | single_source |
 |:-----------|-------------:|--------------:|
-| high       |            8 |             9 |
+| high       |           29 |             9 |
 | low        |            3 |             0 |
 | medium     |           12 |            76 |
 | estimated  |            0 |             2 |
