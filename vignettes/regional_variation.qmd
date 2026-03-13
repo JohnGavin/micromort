@@ -1,6 +1,10 @@
 ---
 title: "Regional Variation in Life Expectancy"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Regional Variation in Life Expectancy}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

@@ -1,6 +1,10 @@
 ---
 title: "Risk Equivalence Dashboard"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Risk Equivalence Dashboard}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{css, echo=FALSE}

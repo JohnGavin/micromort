@@ -1,6 +1,10 @@
 ---
 title: "Architecture Overview"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Architecture Overview}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

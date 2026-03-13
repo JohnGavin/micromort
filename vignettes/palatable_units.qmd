@@ -1,6 +1,10 @@
 ---
 title: "Palatable Units: The Spiegelhalter Philosophy"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Palatable Units: The Spiegelhalter Philosophy}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

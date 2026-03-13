@@ -1,6 +1,10 @@
 ---
 title: "How Reliable Are These Numbers?"
 format: html
+vignette: >
+  %\VignetteIndexEntry{How Reliable Are These Numbers?}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

@@ -1,6 +1,10 @@
 ---
 title: "REST API"
 format: html
+vignette: >
+  %\VignetteIndexEntry{REST API}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{css, echo=FALSE}

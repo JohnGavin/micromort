@@ -1,6 +1,10 @@
 ---
 title: "Confounding Variables in Risk Data"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Confounding Variables in Risk Data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
