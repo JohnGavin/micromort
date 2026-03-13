@@ -23,8 +23,8 @@ A tibble with columns:
 \item{hedgeable}{Can this component be mitigated?}
 \item{hedge_description}{How to mitigate (if hedgeable)}
 \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-\item{condition_variable}{What this risk depends on: \code{"health_profile"}, \code{"geography"}, or \code{NA}}
-\item{condition_value}{Condition value: \code{"healthy"}, \code{"dvt_risk_factors"}, \code{"high_income"}, \code{"low_income"}, \code{"allergic"}, or \code{NA}}
+\item{condition_variable}{What this risk depends on: \code{"health_profile"}, \code{"geography"}, \code{"country"}, or \code{NA}}
+\item{condition_value}{Condition value: \code{"healthy"}, \code{"dvt_risk_factors"}, \code{"high_income"}, \code{"low_income"}, \code{"allergic"}, ISO-2 country codes (e.g. \code{"US"}, \code{"UK"}), or \code{NA}}
 \item{confidence}{Data confidence: \code{"high"}, \code{"medium"}, \code{"low"}, \code{"estimated"}}
 \item{source_url}{Citation URL}
 \item{notes}{Scaling behavior, caveats}

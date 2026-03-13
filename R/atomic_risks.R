@@ -37,8 +37,8 @@ utils::globalVariables(c(
 #'     \item{hedgeable}{Can this component be mitigated?}
 #'     \item{hedge_description}{How to mitigate (if hedgeable)}
 #'     \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, or `NA`}
-#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, or `NA`}
+#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, `"country"`, or `NA`}
+#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, ISO-2 country codes (e.g. `"US"`, `"UK"`), or `NA`}
 #'     \item{confidence}{Data confidence: `"high"`, `"medium"`, `"low"`, `"estimated"`}
 #'     \item{source_url}{Citation URL}
 #'     \item{notes}{Scaling behavior, caveats}

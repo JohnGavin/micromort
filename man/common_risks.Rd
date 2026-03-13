@@ -8,8 +8,9 @@ common_risks(profile = list(), duration_hours = NULL)
 }
 \arguments{
 \item{profile}{A named list of condition variables for filtering conditional
-risks, e.g. \code{list(health_profile = "dvt_risk_factors")}. Default
-\code{list()} returns unconditional/healthy defaults.}
+risks, e.g. \code{list(health_profile = "dvt_risk_factors")} or
+\code{list(country = "US")} for country-specific road traffic and homicide
+risks. Default \code{list()} returns unconditional/healthy defaults.}
 
 \item{duration_hours}{Optional numeric. For duration-dependent activities,
 selects the nearest pre-computed duration bucket \emph{within each activity}.

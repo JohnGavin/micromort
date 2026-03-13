@@ -12,8 +12,9 @@
 #' Data sources: Wikipedia, micromorts.rip, CDC MMWR, academic literature.
 #'
 #' @param profile A named list of condition variables for filtering conditional
-#'   risks, e.g. `list(health_profile = "dvt_risk_factors")`. Default
-#'   `list()` returns unconditional/healthy defaults.
+#'   risks, e.g. `list(health_profile = "dvt_risk_factors")` or
+#'   `list(country = "US")` for country-specific road traffic and homicide
+#'   risks. Default `list()` returns unconditional/healthy defaults.
 #' @param duration_hours Optional numeric. For duration-dependent activities,
 #'   selects the nearest pre-computed duration bucket *within each activity*.
 #'   All flying variants (2h, 5h, 8h, 12h) are retained. `NULL` (default)
