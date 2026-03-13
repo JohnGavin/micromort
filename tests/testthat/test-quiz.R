@@ -90,7 +90,8 @@ test_that("activity_descriptions() covers all common_risks activities", {
   desc <- activity_descriptions()
   cr <- common_risks()
   expect_true(all(cr$activity %in% desc$activity))
-  expect_equal(nrow(desc), nrow(cr))
+  # desc may have more rows than cr (covers conditional variants like low_income)
+  expect_true(nrow(desc) >= nrow(cr))
 })
 
 test_that("activity_descriptions() has required columns", {

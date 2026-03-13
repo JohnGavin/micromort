@@ -389,6 +389,35 @@ activity_descriptions <- function() {
 
     "Normal background radiation",
     "Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).",
-    "https://en.wikipedia.org/wiki/Background_radiation"
+    "https://en.wikipedia.org/wiki/Background_radiation",
+
+    # Wildlife encounters
+    "Shark encounter (ocean swim)",
+    "Shark attack fatality risk per ocean swim, based on ISAF incident data.",
+    "https://www.floridamuseum.ufl.edu/shark-attacks/",
+
+    "Dog bite (US)",
+    "Dog bite fatality risk in a high-income setting with rabies PEP available.",
+    "https://en.wikipedia.org/wiki/Dog_bite",
+
+    "Dog bite (rabies-endemic)",
+    "Dog bite fatality risk in rabies-endemic regions with limited post-exposure prophylaxis.",
+    "https://www.who.int/news-room/fact-sheets/detail/rabies",
+
+    "Bee/wasp sting (general)",
+    "Bee or wasp sting fatality risk for non-allergic individuals.",
+    "https://en.wikipedia.org/wiki/Bee_sting",
+
+    "Bee/wasp sting (allergic)",
+    "Anaphylactic bee or wasp sting fatality risk for individuals with known allergy.",
+    "https://en.wikipedia.org/wiki/Bee_sting",
+
+    "Snake bite (US, with antivenom)",
+    "Snake bite fatality risk in the US where antivenom is readily available.",
+    "https://en.wikipedia.org/wiki/Snakebite",
+
+    "Snake bite (rural sub-Saharan Africa)",
+    "Snake bite fatality risk in rural Africa with limited antivenom access.",
+    "https://www.who.int/news-room/fact-sheets/detail/snakebite-envenoming"
   )
 }
