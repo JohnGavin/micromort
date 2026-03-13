@@ -40,10 +40,12 @@ test_that("atomic_risks() has correct column types", {
 test_that("atomic_risks() has expected row count", {
 
   ar <- atomic_risks()
-  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife = 110
-  expect_equal(nrow(ar), 110)
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife = 98 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 98)
+  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
+  # + 9 occupational + 6 road traffic + 6 homicide = 131
+  expect_equal(nrow(ar), 131)
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
+  # + 9 occupational + 1 road traffic + 1 homicide = 109 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 109)
 })
 
 test_that("component_id values are unique", {
@@ -149,9 +151,11 @@ test_that("annual radiation categories are correct", {
 
 test_that("common_risks() has correct activity count", {
   cr <- common_risks()
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default) = 96
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default)
+  # + 9 occupational = 105
+  # But road traffic + homicide excluded (condition_value not in defaults)
   # Kangaroo is legacy Wildlife; default filter: shark, dog_US, bee_general, snake_US = +4 new
-  expect_equal(nrow(cr), 95)
+  expect_equal(nrow(cr), 104)
 })
 
 test_that("common_risks() has expected columns", {
@@ -361,6 +365,92 @@ test_that("common_risks() aggregates wildlife correctly", {
   expect_true("Shark encounter (ocean swim)" %in% wildlife$activity)
   expect_true("Dog bite (US)" %in% wildlife$activity)
   expect_true("Snake bite (US, with antivenom)" %in% wildlife$activity)
+})
+
+
+# ── Part 7: Occupational fatality risks ──────────────────────────────────────
+
+test_that("occupational entries exist with correct structure", {
+  ar <- atomic_risks()
+  occ <- ar[ar$category == "Occupation" & ar$period == "per day", ]
+  expect_equal(nrow(occ), 9)
+  expect_true(all(occ$confidence == "high"))
+  expect_true(all(occ$validation_status == "corroborated"))
+  expect_true(all(occ$source_count == 2L))
+  expect_true(all(grepl("bls.gov", occ$source_url)))
+})
+
+test_that("logging is highest occupational risk", {
+  ar <- atomic_risks()
+  occ <- ar[ar$category == "Occupation" & ar$period == "per day", ]
+  expect_equal(occ$activity_id[which.max(occ$micromorts)], "logging_work_day")
+})
+
+test_that("occupational entries included in default common_risks()", {
+  cr <- common_risks()
+  occ <- cr[cr$category == "Occupation" & cr$period == "per day", ]
+  expect_equal(nrow(occ), 9)
+})
+
+
+# ── Part 8: Road traffic mortality ──────────────────────────────────────────
+
+test_that("road traffic entries exist with correct structure", {
+  ar <- atomic_risks()
+  rt <- ar[ar$activity_id == "daily_road_traffic", ]
+  expect_equal(nrow(rt), 6)
+  expect_true(all(rt$condition_variable == "country"))
+  expect_true(all(rt$category == "Travel"))
+  expect_true(all(rt$confidence == "high"))
+  expect_true(all(rt$validation_status == "corroborated"))
+})
+
+test_that("road traffic hidden from default common_risks()", {
+  cr <- common_risks()
+  expect_false("daily_road_traffic" %in%
+    cr$activity[grepl("Daily road traffic", cr$activity)])
+})
+
+test_that("road traffic included with country profile", {
+  cr <- common_risks(profile = list(country = "US"))
+  rt <- cr[grepl("Daily road traffic", cr$activity), ]
+  expect_equal(nrow(rt), 1)
+  expect_equal(rt$micromorts, 0.35)
+})
+
+
+# ── Part 9: Homicide rates ─────────────────────────────────────────────────
+
+test_that("homicide entries exist with correct structure", {
+  ar <- atomic_risks()
+  hom <- ar[ar$activity_id == "daily_homicide", ]
+  expect_equal(nrow(hom), 6)
+  expect_true(all(hom$condition_variable == "country"))
+  expect_true(all(hom$category == "Daily Life"))
+  expect_true(all(hom$confidence == "high"))
+})
+
+test_that("homicide hidden from default common_risks()", {
+  cr <- common_risks()
+  expect_false(any(grepl("Daily homicide", cr$activity)))
+})
+
+test_that("homicide included with country profile", {
+  cr <- common_risks(profile = list(country = "US"))
+  hom <- cr[grepl("Daily homicide", cr$activity), ]
+  expect_equal(nrow(hom), 1)
+  expect_equal(hom$micromorts, 0.18)
+})
+
+test_that("country-conditioned entries hidden from default view", {
+  ar <- atomic_risks()
+  country <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "country", ]
+  expect_equal(nrow(country), 12)  # 6 road + 6 homicide
+
+  cr <- common_risks()
+  # None of these should appear in default common_risks
+  cr_country <- cr[grepl("Daily road traffic|Daily homicide", cr$activity), ]
+  expect_equal(nrow(cr_country), 0)
 })
 
 

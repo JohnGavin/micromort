@@ -37,8 +37,8 @@ utils::globalVariables(c(
 #'     \item{hedgeable}{Can this component be mitigated?}
 #'     \item{hedge_description}{How to mitigate (if hedgeable)}
 #'     \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, or `NA`}
-#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, or `NA`}
+#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, `"country"`, or `NA`}
+#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, ISO-2 country codes (e.g. `"US"`, `"UK"`), or `NA`}
 #'     \item{confidence}{Data confidence: `"high"`, `"medium"`, `"low"`, `"estimated"`}
 #'     \item{source_url}{Citation URL}
 #'     \item{notes}{Scaling behavior, caveats}
@@ -501,6 +501,120 @@ atomic_risks <- function() {
       )
     )
 
+  # ── Part 7: Occupational fatality risks (BLS CFOI 2022) ────────────────
+  # Source: BLS Census of Fatal Occupational Injuries 2022
+  # Conversion: rate_per_100k_FTE → mm/work_day (see data-raw/03_osha_occupational_risks.R)
+  bls_url <- "https://www.bls.gov/iif/fatal-injuries-tables.htm"
+
+  occupational <- tibble::tribble(
+    ~activity, ~activity_id, ~micromorts,
+
+    "Logging (per work day)",                  "logging_work_day",          3.3,
+    "Commercial fishing (per work day)",       "fishing_work_day",          3.0,
+    "Roofing (per work day)",                  "roofing_work_day",          1.9,
+    "Structural iron/steel work (per work day)", "ironworker_work_day",     1.5,
+    "Truck driving (per work day)",            "truck_driving_work_day",    1.2,
+    "Mining (per work day)",                   "mining_work_day",           0.9,
+    "Agriculture (per work day)",              "agriculture_work_day",      0.7,
+    "Construction (all, per work day)",        "construction_work_day",     0.5,
+    "All US workers baseline (per work day)",  "all_workers_baseline",      0.15
+  ) |>
+    dplyr::mutate(
+      component = "all_causes",
+      risk_category = "mixed",
+      component_label = activity,
+      category = "Occupation",
+      period = "per day",
+      period_type = "day",
+      source_url = bls_url,
+      component_id = paste0(activity_id, "_all_causes"),
+      duration_hours = NA_real_,
+      hedgeable = FALSE,
+      hedge_description = NA_character_,
+      hedge_reduction_pct = NA_real_,
+      condition_variable = NA_character_,
+      condition_value = NA_character_,
+      confidence = "high",
+      notes = "BLS CFOI 2022; rate_per_100k_FTE / 2000 * 8 = mm/work_day",
+      validation_status = "corroborated",
+      source_count = 2L,
+      estimate_range = NA_character_
+    )
+
+  # ── Part 8: Road traffic mortality by country (WHO 2023) ───────────────
+  # Source: WHO Global Status Report on Road Safety 2023
+  # Conversion: rate_per_100k_year / 365 * 10 = mm/day
+  who_road_url <- "https://www.who.int/publications/i/item/9789240086517"
+
+  road_traffic <- tibble::tribble(
+    ~activity, ~condition_value, ~micromorts,
+
+    "Daily road traffic risk (US)", "US", 0.35,
+    "Daily road traffic risk (UK)", "UK", 0.08,
+    "Daily road traffic risk (Germany)", "DE", 0.10,
+    "Daily road traffic risk (Japan)", "JP", 0.07,
+    "Daily road traffic risk (India)", "IN", 0.62,
+    "Daily road traffic risk (Brazil)", "BR", 0.50
+  ) |>
+    dplyr::mutate(
+      activity_id = "daily_road_traffic",
+      component = "all_causes",
+      risk_category = "mixed",
+      component_label = activity,
+      category = "Travel",
+      period = "per day",
+      period_type = "day",
+      source_url = who_road_url,
+      component_id = paste0("daily_road_traffic_all_causes_", condition_value),
+      duration_hours = NA_real_,
+      hedgeable = FALSE,
+      hedge_description = NA_character_,
+      hedge_reduction_pct = NA_real_,
+      condition_variable = "country",
+      confidence = "high",
+      notes = "WHO 2023; rate_per_100k_year / 365 * 10 = mm/day",
+      validation_status = "corroborated",
+      source_count = 2L,
+      estimate_range = NA_character_
+    )
+
+  # ── Part 9: Homicide rates by country (UNODC 2023) ────────────────────
+  # Source: UNODC Global Study on Homicide 2023
+  # Conversion: rate_per_100k_year / 365 * 10 = mm/day
+  unodc_url <- "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
+
+  homicide <- tibble::tribble(
+    ~activity, ~condition_value, ~micromorts,
+
+    "Daily homicide risk (US)", "US", 0.18,
+    "Daily homicide risk (UK)", "UK", 0.03,
+    "Daily homicide risk (Japan)", "JP", 0.008,
+    "Daily homicide risk (India)", "IN", 0.08,
+    "Daily homicide risk (Brazil)", "BR", 0.62,
+    "Daily homicide risk (Honduras)", "HN", 1.07
+  ) |>
+    dplyr::mutate(
+      activity_id = "daily_homicide",
+      component = "all_causes",
+      risk_category = "mixed",
+      component_label = activity,
+      category = "Daily Life",
+      period = "per day",
+      period_type = "day",
+      source_url = unodc_url,
+      component_id = paste0("daily_homicide_all_causes_", condition_value),
+      duration_hours = NA_real_,
+      hedgeable = FALSE,
+      hedge_description = NA_character_,
+      hedge_reduction_pct = NA_real_,
+      condition_variable = "country",
+      confidence = "high",
+      notes = "UNODC 2023; rate_per_100k_year / 365 * 10 = mm/day",
+      validation_status = "corroborated",
+      source_count = 2L,
+      estimate_range = NA_character_
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -529,7 +643,10 @@ atomic_risks <- function() {
     add_defaults(med_rad)[, all_cols],
     add_defaults(mundane)[, all_cols],
     add_defaults(annual_rad)[, all_cols],
-    wildlife[, all_cols]
+    wildlife[, all_cols],
+    occupational[, all_cols],
+    road_traffic[, all_cols],
+    homicide[, all_cols]
   )
 }
 
