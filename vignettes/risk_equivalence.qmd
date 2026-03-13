@@ -431,7 +431,7 @@ if (!is.null(mat)) {
 
 **Atomic vs composite risks.** The `atomic_risks()` function returns ONE row per risk component per activity. Activities not yet decomposed use `component = "all_causes"` (an honest placeholder indicating the breakdown is unknown).
 
-**Conditional risks.** Some components depend on health profile (e.g., DVT risk varies by whether you have risk factors). The default profile assumes "healthy" values; use `common_risks(profile = list(health_profile = "dvt_risk_factors"))` for alternatives.
+**Conditional risks.** Some components depend on health profile (e.g., DVT risk varies by whether you have risk factors). The default profile assumes "healthy" values; use `common_risks(profile = list(health_profile = "dvt_risk_factors"))` for alternatives. Geographic conditioning can change equivalences dramatically: a snake bite is 0.5 mm in the US but 18.5 mm in rural Africa (37x). See the [Data Reliability](data_reliability.html) vignette for details.
 
 **Duration bucketing.** Rather than encoding rate functions, flight risks are pre-computed at standard duration buckets (2h, 5h, 8h, 12h). Every number is directly citable --- no hidden formulas.
 

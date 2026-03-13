@@ -1,0 +1,213 @@
+---
+title: "How Reliable Are These Numbers?"
+format: html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+library(dplyr)
+```
+
+Risk numbers disagree. The WHO and the Institute for Health Metrics and Evaluation (IHME) report malaria deaths as 550,000 and 760,000 respectively — a 38% gap from the *same underlying deaths*. Our World in Data's [Deadliest Animals](https://ourworldindata.org/deadliest-animals) chart is visually compelling, but converting annual death counts to per-encounter micromorts is non-trivial. This vignette documents how we handle that uncertainty.
+
+## 1. Why Risk Numbers Disagree
+
+Three factors drive disagreement between sources:
+
+1. **Numerator uncertainty**: Death attribution varies by coding system (ICD-10 codes, verbal autopsy, hospital records)
+2. **Denominator uncertainty**: How many people were *exposed*? A "deaths per year" figure means nothing without knowing the exposure population
+3. **Temporal and geographic aggregation**: A global annual average hides enormous regional and seasonal variation
+
+Our inclusion criteria: **traceable numerator** + **defined denominator** + **reproducible calculation**. We reject risks where we cannot identify both the death count *and* the population at risk.
+
+## 2. The Confidence System
+
+Every entry in `atomic_risks()` carries a `confidence` tier:
+
+```{r confidence-table}
+#| tbl-cap: "Confidence tiers with examples from the micromort dataset"
+ar <- atomic_risks()
+
+tibble::tribble(
+  ~Tier, ~Criteria, ~Example, ~`Source type`,
+  "**high**", "Peer-reviewed, large-N studies with defined denominators",
+  "Medical radiation (NRC dosimetry)", "Regulatory agency",
+  "**medium**", "Reputable sources, reasonable denominators, some extrapolation",
+  "Wikipedia micromort list, CDC injury data", "Secondary compilation",
+  "**low**", "Limited sources, regional uncertainty, or extrapolated denominators",
+  "Snake bite in rural Africa (WHO estimate)", "Expert estimate",
+  "**estimated**", "Derived by calculation from a model (e.g., LNT for radiation)",
+  "Annual cosmic radiation from LNT model", "Model-derived"
+) |>
+  knitr::kable()
+```
+
+### Validation status (new)
+
+Within each confidence tier, we now track how thoroughly the estimate has been cross-checked:
+
+```{r validation-table}
+#| tbl-cap: "Validation status levels"
+tibble::tribble(
+  ~Status, ~Definition, ~`Source count`, ~Example,
+  "`single_source`", "One citation, no cross-check", "1",
+  "Most legacy entries from Wikipedia/micromorts.rip",
+  "`corroborated`", "2+ sources agree within 2x", "2+",
+  "Flight risks (Boeing + NCRP + medical literature)",
+  "`cross_validated`", "3+ sources, range documented, outliers explained", "3+",
+  "(Future: entries with systematic literature review)"
+) |>
+  knitr::kable()
+```
+
+```{r validation-summary}
+#| tbl-cap: "Current validation status across all entries"
+#| fig-cap: "Distribution of validation status in the dataset"
+ar |>
+  count(validation_status, confidence) |>
+  tidyr::pivot_wider(names_from = validation_status, values_from = n, values_fill = 0) |>
+  knitr::kable()
+```
+
+## 3. Geographic Conditioning: The Biggest Source of Variation
+
+The same animal encounter can produce dramatically different micromort values depending on location and healthcare access:
+
+```{r geography-table}
+#| tbl-cap: "Geographic conditioning: same encounter, different risk"
+ar |>
+  filter(condition_variable == "geography") |>
+  select(activity, micromorts, condition_value, confidence, notes) |>
+  arrange(activity, condition_value) |>
+  knitr::kable(digits = 1)
+```
+
+Snake bite: **0.5 mm** (US, with antivenom) vs **18.5 mm** (rural Africa) — a **37x difference**.
+Dog bite: **6.7 mm** (US, with rabies PEP) vs **160 mm** (rabies-endemic, no treatment) — a **24x difference**.
+
+### The hedgeability asymmetry
+
+Geography is a **hedgeable conditional risk** — but only for some people:
+
+- A **tourist** can hedge: choose destination, get travel vaccines, carry antivenom kit, buy travel insurance
+- A **resident** cannot hedge: they live there, and may lack healthcare infrastructure, vaccines, or economic choice
+
+This parallels the existing health profile conditioning. A bee sting is 0.03 mm for someone who is not allergic, but **31 mm** for someone with a known allergy — a 1,000x difference. The allergic person can hedge (carry an epinephrine auto-injector), but they cannot eliminate the underlying vulnerability.
+
+```{r health-conditioning}
+#| tbl-cap: "Health profile conditioning: same sting, different risk"
+ar |>
+  filter(condition_variable == "health_profile", grepl("bee|wasp", activity, ignore.case = TRUE)) |>
+  select(activity, micromorts, condition_value, hedge_description, hedge_reduction_pct) |>
+  knitr::kable(digits = 2)
+```
+
+### Using geographic filtering
+
+```r
+# Default: returns high-income estimates
+common_risks() |> filter(category == "Wildlife")
+
+# Explicitly request low-income geography
+common_risks(profile = list(geography = "low_income")) |> filter(category == "Wildlife")
+
+# Combine with health profile
+common_risks(profile = list(geography = "low_income", health_profile = "allergic"))
+```
+
+## 4. Cross-Validation Methods
+
+We use five methods to assess data reliability:
+
+### Source triangulation
+
+Compare the same risk across independent sources. For wildlife risks, we cross-reference:
+
+- **OWID** annual death counts (numerator)
+- **CDC** injury surveillance (US denominator)
+- **WHO** fact sheets (global denominator)
+- **ISAF** shark attack database (species-specific data)
+
+### Denominator audit
+
+The most common failure mode. Does the source report **both** a numerator (deaths) **and** a denominator (exposures)?
+
+| Animal | Numerator available? | Denominator available? | Included? |
+|--------|---------------------|----------------------|-----------|
+| Shark | Yes (ISAF) | Yes (~100M swims/yr) | Yes |
+| Dog | Yes (CDC, WHO) | Yes (4.5M bites US) | Yes |
+| Mosquito | Yes (WHO: 600k+) | No per-encounter rate | **No** |
+| Crocodile | Yes (CrocBITE) | No exposure estimate | **No** |
+
+### Temporal stability
+
+Has the number changed significantly across editions of the source? Stable estimates across 5+ years increase confidence.
+
+### Geographic consistency
+
+Do US, UK, and global estimates agree within an order of magnitude? Large discrepancies suggest unmeasured confounders (see [Confounding Variables](confounding.html)).
+
+### Order-of-magnitude test
+
+Is the number physically plausible? A micromort value that implies more deaths than the population can support is a red flag.
+
+## 5. Worked Example: Animal Risks from OWID
+
+Our World in Data reports annual deaths by animal. Converting to per-encounter micromorts requires:
+
+$$\text{micromorts} = \frac{\text{deaths per year}}{\text{encounters per year}} \times 10^6$$
+
+```{r owid-conversion}
+#| tbl-cap: "Converting OWID annual counts to per-encounter micromorts"
+tibble::tribble(
+  ~Animal, ~`Annual deaths (approx)`, ~`Encounters/yr (approx)`,
+  ~`Micromorts`, ~`Source for denominator`, ~`In dataset?`,
+  "Shark", "~6 (US)", "~100M ocean swims", "0.06", "ISAF", "Yes",
+  "Dog (US)", "~30", "~4.5M bites", "6.7", "CDC", "Yes",
+  "Bee/wasp (US)", "~62", "~2M stings", "0.03", "CDC", "Yes",
+  "Snake (US)", "~5", "~10,000 bites", "0.5", "CDC", "Yes",
+  "Snake (Africa)", "~100,000", "~5.4M bites", "18.5", "WHO/Lancet", "Yes",
+  "Mosquito", "~600,000+", "Unknown per-bite", "—", "—", "**No**",
+  "Crocodile", "~1,000", "Unknown", "—", "—", "**No**",
+  "Elephant", "~500", "Unknown", "—", "—", "**No**"
+) |>
+  knitr::kable()
+```
+
+Mosquito, crocodile, and elephant fail our inclusion criteria: there is no defensible per-encounter denominator. Mosquito bites are ubiquitous in endemic regions, making a per-bite risk meaningless. We cite OWID for context but do not include these as micromort entries.
+
+## 6. Estimate Ranges
+
+For wildlife entries, we document plausible ranges reflecting source disagreement:
+
+```{r ranges}
+#| tbl-cap: "Estimate ranges for wildlife entries"
+ar |>
+  filter(category == "Wildlife", !is.na(estimate_range)) |>
+  select(activity, micromorts, estimate_range, source_count, validation_status) |>
+  knitr::kable(digits = 2)
+```
+
+The range reflects uncertainty in both the numerator (death counts vary by year and reporting) and denominator (exposure estimates are often rough). The point estimate is our best central value; the range brackets the plausible minimum and maximum.
+
+## 7. What You Can Contribute
+
+If you find a better source for an existing entry, or want to propose a new risk:
+open an issue at [github.com/johngavin/micromort](https://github.com/johngavin/micromort/issues) with:
+
+1. **Numerator**: Death count and source citation
+2. **Denominator**: Exposure count and source citation
+3. **Geography/condition**: Does the estimate apply globally, or to a specific population?
+4. **Time period**: When was the data collected?
+
+Entries start at `validation_status = "single_source"` and get upgraded as more sources confirm them.
