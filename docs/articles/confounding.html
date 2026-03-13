@@ -42,6 +42,7 @@
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="../articles/risk_equivalence.html">Risk Equivalence</a></li>
     <li><a class="dropdown-item" href="../articles/confounding.html">Confounding Variables</a></li>
+    <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
@@ -314,20 +315,58 @@
 <strong>Calculate conditional rates</strong> — use <code><a href="../reference/conditional_risk.html">conditional_risk()</a></code> from this package to compare hedged vs unhedged scenarios</li>
 <li>
 <strong>Report the range, not the average</strong> — a range like “0.004–10.2 micromorts/night depending on age” is more informative than “1.36 micromorts/year”</li>
-</ol></section></section><section class="level2"><h2 id="implications-for-the-micromort-package">5. Implications for the Micromort Package<a class="anchor" aria-label="anchor" href="#implications-for-the-micromort-package"></a>
+</ol></section></section><section class="level2"><h2 id="geographic-confounding-snake-bites">5. Geographic Confounding: Snake Bites<a class="anchor" aria-label="anchor" href="#geographic-confounding-snake-bites"></a>
+</h2>
+<p>Geography is arguably the most powerful confounder in risk data. The same encounter — a snake bite — has vastly different outcomes depending on location:</p>
+<div class="cell" data-tbl-cap="Snake bite micromorts by geography">
+<div class="cell-output-display">
+<table class="table caption-top">
+<caption>Snake bite micromorts by geography</caption>
+<colgroup>
+<col style="width: 29%">
+<col style="width: 8%">
+<col style="width: 12%">
+<col style="width: 40%">
+<col style="width: 8%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">activity</th>
+<th style="text-align: right;">micromorts</th>
+<th style="text-align: left;">condition_value</th>
+<th style="text-align: left;">hedge_description</th>
+<th style="text-align: left;">confidence</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Snake bite (US, with antivenom)</td>
+<td style="text-align: right;">0.5</td>
+<td style="text-align: left;">high_income</td>
+<td style="text-align: left;">Wear boots in snake habitat, carry pressure bandage</td>
+<td style="text-align: left;">medium</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Snake bite (rural sub-Saharan Africa)</td>
+<td style="text-align: right;">18.5</td>
+<td style="text-align: left;">low_income</td>
+<td style="text-align: left;">Footwear, torch at night, proximity to clinic</td>
+<td style="text-align: left;">low</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The 37x difference between the US and rural sub-Saharan Africa reflects differences in antivenom availability, hospital proximity, and emergency transport infrastructure — not differences in snake venom potency. A population-average snake bite risk that blends these geographies would be misleading for everyone: too high for Americans, too low for rural Africans.</p>
+<p>The same pattern applies to dog bites (24x difference driven by rabies PEP availability). For more on the systematic framework behind these geographic estimates, see the <a href="data_reliability.html">Data Reliability</a> vignette.</p>
+</section><section class="level2"><h2 id="implications-for-the-micromort-package">6. Implications for the Micromort Package<a class="anchor" aria-label="anchor" href="#implications-for-the-micromort-package"></a>
 </h2>
 <p>This package addresses confounding in several ways:</p>
 <ul>
-<li>
-<strong><code><a href="../reference/conditional_risk.html">conditional_risk()</a></code></strong> and <strong><code><a href="../reference/hedged_portfolio.html">hedged_portfolio()</a></code></strong> explicitly compare conditioned subgroups (<a href="../reference/conditional_risk.html">documentation</a>)</li>
-<li>
-<strong><code><a href="../reference/cancer_risks.html">cancer_risks()</a></code></strong> stratifies by sex, age group, and family history</li>
-<li>
-<strong><code><a href="../reference/vaccination_risks.html">vaccination_risks()</a></code></strong> stratifies by age group and vaccine type</li>
-<li>
-<strong><code><a href="../reference/regional_life_expectancy.html">regional_life_expectancy()</a></code></strong> stratifies by geography, capturing regional confounders</li>
-<li>
-<strong>Data quality criteria</strong> in the <a href="introduction.html#data-quality-the-denominator-problem">Introduction</a> exclude risks with unknown denominators that would mask confounding</li>
+<li><p><strong>Geographic conditioning</strong> via <code>filter_by_profile(list(geography = "low_income"))</code> compares high- and low-income variants of the same risk</p></li>
+<li><p><strong><code><a href="../reference/conditional_risk.html">conditional_risk()</a></code></strong> and <strong><code><a href="../reference/hedged_portfolio.html">hedged_portfolio()</a></code></strong> explicitly compare conditioned subgroups (<a href="../reference/conditional_risk.html">documentation</a>)</p></li>
+<li><p><strong><code><a href="../reference/cancer_risks.html">cancer_risks()</a></code></strong> stratifies by sex, age group, and family history</p></li>
+<li><p><strong><code><a href="../reference/vaccination_risks.html">vaccination_risks()</a></code></strong> stratifies by age group and vaccine type</p></li>
+<li><p><strong><code><a href="../reference/regional_life_expectancy.html">regional_life_expectancy()</a></code></strong> stratifies by geography, capturing regional confounders</p></li>
+<li><p><strong>Data quality criteria</strong> in the <a href="introduction.html#data-quality-the-denominator-problem">Introduction</a> exclude risks with unknown denominators that would mask confounding</p></li>
 </ul>
 <p>The general principle: <strong>a micromort value is only as good as its denominator and conditioning variables</strong>.</p>
 </section><section class="level2"><h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

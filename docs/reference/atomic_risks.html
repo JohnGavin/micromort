@@ -31,6 +31,7 @@ common_risks() aggregates composite values."></head><body>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="../articles/risk_equivalence.html">Risk Equivalence</a></li>
     <li><a class="dropdown-item" href="../articles/confounding.html">Confounding Variables</a></li>
+    <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
@@ -109,10 +110,10 @@ mixed in the same row. This is the foundational dataset from which
 <dd><p>Estimated percent reduction from hedging</p></dd>
 
 <dt>condition_variable</dt>
-<dd><p>What this risk depends on: <code>"health_profile"</code> or <code>NA</code></p></dd>
+<dd><p>What this risk depends on: <code>"health_profile"</code>, <code>"geography"</code>, or <code>NA</code></p></dd>
 
 <dt>condition_value</dt>
-<dd><p>Condition value: <code>"healthy"</code>, <code>"dvt_risk_factors"</code>, or <code>NA</code></p></dd>
+<dd><p>Condition value: <code>"healthy"</code>, <code>"dvt_risk_factors"</code>, <code>"high_income"</code>, <code>"low_income"</code>, <code>"allergic"</code>, or <code>NA</code></p></dd>
 
 <dt>confidence</dt>
 <dd><p>Data confidence: <code>"high"</code>, <code>"medium"</code>, <code>"low"</code>, <code>"estimated"</code></p></dd>
@@ -122,6 +123,15 @@ mixed in the same row. This is the foundational dataset from which
 
 <dt>notes</dt>
 <dd><p>Scaling behavior, caveats</p></dd>
+
+<dt>validation_status</dt>
+<dd><p><code>"single_source"</code>, <code>"corroborated"</code>, or <code>"cross_validated"</code></p></dd>
+
+<dt>source_count</dt>
+<dd><p>Integer count of independent sources checked</p></dd>
+
+<dt>estimate_range</dt>
+<dd><p>Character range (e.g. <code>"0.05-0.15"</code>) or <code>NA</code> for point estimates</p></dd>
 
 
 </dl></div>
@@ -138,7 +148,7 @@ and <code>risk_category = "mixed"</code> as honest placeholders.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">atomic_risks</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 103 × 19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 110 × 22</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    component_id     activity_id activity component risk_category component_label</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> mt_everest_asce… mt_everest… Mt. Eve… all_caus… mixed         Mt. Everest as…</span>
@@ -151,13 +161,14 @@ and <code>risk_category = "mixed"</code> as honest placeholders.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> base_jumping_al… base_jumpi… Base ju… all_caus… mixed         Base jumping   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> first_day_of_li… first_day_… First d… all_caus… mixed         First day of l…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> covid_19_unvacc… covid_19_u… COVID-1… all_caus… mixed         COVID-19 unvac…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 93 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 13 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 100 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   period &lt;chr&gt;, period_type &lt;chr&gt;, hedgeable &lt;lgl&gt;, hedge_description &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   hedge_reduction_pct &lt;dbl&gt;, condition_variable &lt;chr&gt;, condition_value &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;</span></span>
-<span class="r-in"><span><span class="fu">atomic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">component</span> <span class="op">!=</span> <span class="st">"all_causes"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 38 × 19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;, validation_status &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_count &lt;int&gt;, estimate_range &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="fu">atomic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">component</span> <span class="op">!=</span> <span class="st">"all_causes"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 38 × 22</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    component_id     activity_id activity component risk_category component_label</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> flying_2h_2h_cr… flying_2h   Flying … crash     physical      Aircraft crash </span>
@@ -171,12 +182,13 @@ and <code>risk_category = "mixed"</code> as honest placeholders.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> flying_8h_8h_cr… flying_8h   Flying … crash     physical      Aircraft crash </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> flying_8h_8h_dv… flying_8h   Flying … dvt       medical       Deep vein thro…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 28 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 13 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   period &lt;chr&gt;, period_type &lt;chr&gt;, hedgeable &lt;lgl&gt;, hedge_description &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   hedge_reduction_pct &lt;dbl&gt;, condition_variable &lt;chr&gt;, condition_value &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;</span></span>
-<span class="r-in"><span><span class="fu">atomic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">hedgeable</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;, validation_status &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_count &lt;int&gt;, estimate_range &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="fu">atomic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">hedgeable</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 21 × 22</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    component_id     activity_id activity component risk_category component_label</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> flying_2h_2h_dv… flying_2h   Flying … dvt       medical       Deep vein thro…</span>
@@ -189,14 +201,12 @@ and <code>risk_category = "mixed"</code> as honest placeholders.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> flying_12h_12h_… flying_12h  Flying … dvt       medical       Deep vein thro…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> airline_pilot_a… airline_pi… Airline… radiation radiation     Ionizing radia…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> xray_tech_annua… xray_tech_… X-ray t… radiation radiation     Ionizing radia…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> dental_radiogra… dental_rad… Dental … radiation radiation     Ionizing radia…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> nuclear_worker_… nuclear_wo… Nuclear… radiation radiation     Ionizing radia…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> interventional_… interventi… Interve… radiation radiation     Ionizing radia…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> granite_residen… granite_re… Granite… radiation radiation     Ionizing radia…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 13 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more variables: micromorts &lt;dbl&gt;, duration_hours &lt;dbl&gt;, category &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   period &lt;chr&gt;, period_type &lt;chr&gt;, hedgeable &lt;lgl&gt;, hedge_description &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   hedge_reduction_pct &lt;dbl&gt;, condition_variable &lt;chr&gt;, condition_value &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, source_url &lt;chr&gt;, notes &lt;chr&gt;, validation_status &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_count &lt;int&gt;, estimate_range &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
