@@ -20,3 +20,8 @@
 ^\.claude$
 ^pkgdown$
 ^plans$
+^\.roborev\.toml$
+^_extensions$
+^_targets\.yaml$
+^vignettes/\.quarto$
+^vignettes/quiz_shinylive\.qmd$

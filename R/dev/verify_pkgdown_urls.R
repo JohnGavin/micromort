@@ -28,6 +28,7 @@ verify_pkgdown_urls <- function(
     "/articles/regional_variation.html",
     "/articles/risk_equivalence.html",
     "/articles/confounding.html",
+    "/articles/data_reliability.html",
     "/articles/rest_api.html",
     "/articles/quiz_shinylive.html",
 

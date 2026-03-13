@@ -35,6 +35,7 @@ Suggests:
     knitr,
     pkgdown,
     plotly,
+    pkgload,
     plumber,
     readr,
     rlang,
@@ -42,10 +43,11 @@ Suggests:
     rprojroot,
     shiny,
     targets,
+    quarto,
     testthat (>= 3.0.0),
     urlchecker,
     usethis
 Config/testthat/edition: 3
-VignetteBuilder: knitr
+VignetteBuilder: quarto, knitr
 URL: https://johngavin.github.io/micromort/, https://github.com/johngavin/micromort
 BugReports: https://github.com/johngavin/micromort/issues

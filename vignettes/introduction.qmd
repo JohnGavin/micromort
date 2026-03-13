@@ -1,6 +1,10 @@
 ---
 title: "Introduction to Micromorts and Risk Visualization"
 format: html
+vignette: >
+  %\VignetteIndexEntry{Introduction to Micromorts and Risk Visualization}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

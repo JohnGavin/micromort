@@ -7,7 +7,8 @@ test_that("atomic_risks() returns correct schema", {
     "component_id", "activity_id", "activity", "component", "risk_category",
     "component_label", "micromorts", "duration_hours", "category", "period",
     "period_type", "hedgeable", "hedge_description", "hedge_reduction_pct",
-    "condition_variable", "condition_value", "confidence", "source_url", "notes"
+    "condition_variable", "condition_value", "confidence", "source_url", "notes",
+    "validation_status", "source_count", "estimate_range"
   )
   expect_identical(names(ar), expected_cols)
 })
@@ -39,10 +40,10 @@ test_that("atomic_risks() has correct column types", {
 test_that("atomic_risks() has expected row count", {
 
   ar <- atomic_risks()
-  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation = 103
-  expect_equal(nrow(ar), 103)
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation = 91 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 91)
+  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife = 110
+  expect_equal(nrow(ar), 110)
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife = 98 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 98)
 })
 
 test_that("component_id values are unique", {
@@ -82,12 +83,13 @@ test_that("micromorts are non-negative", {
   expect_true(all(ar$micromorts >= 0))
 })
 
-test_that("undecomposed activities are not hedgeable", {
+test_that("legacy undecomposed activities are not hedgeable", {
   ar <- atomic_risks()
-  all_causes <- ar[ar$component == "all_causes", ]
-  expect_true(all(!all_causes$hedgeable))
-  expect_true(all(is.na(all_causes$hedge_description)))
-  expect_true(all(is.na(all_causes$hedge_reduction_pct)))
+  # Legacy all_causes (exclude wildlife which are all_causes but hedgeable)
+  legacy_all_causes <- ar[ar$component == "all_causes" & ar$category != "Wildlife", ]
+  expect_true(all(!legacy_all_causes$hedgeable))
+  expect_true(all(is.na(legacy_all_causes$hedge_description)))
+  expect_true(all(is.na(legacy_all_causes$hedge_reduction_pct)))
 })
 
 test_that("hedgeable components have descriptions", {
@@ -147,8 +149,9 @@ test_that("annual radiation categories are correct", {
 
 test_that("common_risks() has correct activity count", {
   cr <- common_risks()
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation = 91
-  expect_equal(nrow(cr), 91)
+  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default) = 96
+  # Kangaroo is legacy Wildlife; default filter: shark, dog_US, bee_general, snake_US = +4 new
+  expect_equal(nrow(cr), 95)
 })
 
 test_that("common_risks() has expected columns", {
@@ -207,11 +210,12 @@ test_that("n_components is 1 for undecomposed activities", {
   expect_true(all(legacy_subset$n_components == 1))
 })
 
-test_that("hedgeable_pct is 0 for all_causes undecomposed activities", {
+test_that("hedgeable_pct is 0 for legacy all_causes undecomposed activities", {
   cr <- common_risks()
-  # Exclude annual radiation rows which are single-component but hedgeable
+  # Exclude annual radiation rows and wildlife (single-component but hedgeable)
   legacy_subset <- cr[cr$n_components == 1 &
-                      !grepl("annual", cr$activity, ignore.case = TRUE), ]
+                      !grepl("annual", cr$activity, ignore.case = TRUE) &
+                      !cr$category %in% c("Wildlife"), ]
   expect_true(all(legacy_subset$hedgeable_pct == 0))
 })
 
@@ -299,4 +303,97 @@ test_that("filter_by_profile with health_profile keeps correct rows", {
   # Should include dvt_risk_factors and exclude healthy for DVT
   dvt_rows <- filtered[filtered$component == "dvt", ]
   expect_true(all(dvt_rows$condition_value == "dvt_risk_factors"))
+})
+
+
+# ── Part 6: Wildlife encounters ──────────────────────────────────────────────
+
+test_that("wildlife entries exist with correct structure", {
+  ar <- atomic_risks()
+  wildlife <- ar[ar$category == "Wildlife", ]
+  # 1 legacy (kangaroo) + 7 new = 8 total wildlife rows
+  expect_equal(nrow(wildlife), 8)
+  # 7 unique wildlife activity_ids (kangaroo + 6 new)
+  expect_equal(length(unique(wildlife$activity_id)), 8)
+})
+
+test_that("geographic conditioning rows exist", {
+  ar <- atomic_risks()
+  geo <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "geography", ]
+  # dog_bite_us, dog_bite_rabies, snake_bite_us, snake_bite_africa = 4 rows
+  expect_equal(nrow(geo), 4)
+  expect_true(all(geo$condition_value %in% c("high_income", "low_income")))
+})
+
+test_that("default filter returns high_income, not low_income", {
+  ar <- atomic_risks()
+  filtered <- filter_by_profile(ar)
+  geo_filtered <- filtered[!is.na(filtered$condition_variable) &
+                            filtered$condition_variable == "geography", ]
+  expect_true(all(geo_filtered$condition_value == "high_income"))
+  expect_equal(nrow(geo_filtered), 2)  # dog_US + snake_US
+})
+
+test_that("low_income filter returns low_income geography", {
+  ar <- atomic_risks()
+  filtered <- filter_by_profile(ar, list(geography = "low_income"))
+  geo_filtered <- filtered[!is.na(filtered$condition_variable) &
+                            filtered$condition_variable == "geography", ]
+  expect_true(all(geo_filtered$condition_value == "low_income"))
+  expect_equal(nrow(geo_filtered), 2)  # dog_rabies + snake_africa
+})
+
+test_that("partial profile defaults unspecified condition variables", {
+  ar <- atomic_risks()
+  # geography=low_income should still default health_profile to "healthy"
+  filtered <- filter_by_profile(ar, list(geography = "low_income"))
+  bee_rows <- filtered[grepl("bee_sting", filtered$activity_id), ]
+  expect_equal(nrow(bee_rows), 1)
+  expect_equal(bee_rows$condition_value, "healthy")
+})
+
+test_that("common_risks() aggregates wildlife correctly", {
+  cr <- common_risks()
+  wildlife <- cr[cr$category == "Wildlife", ]
+  # Default filter: kangaroo, shark, dog_US, bee_general, snake_US = 5
+
+  expect_equal(nrow(wildlife), 5)
+  expect_true("Shark encounter (ocean swim)" %in% wildlife$activity)
+  expect_true("Dog bite (US)" %in% wildlife$activity)
+  expect_true("Snake bite (US, with antivenom)" %in% wildlife$activity)
+})
+
+
+# ── Schema: validation columns ───────────────────────────────────────────────
+
+test_that("validation_status has valid values", {
+  ar <- atomic_risks()
+  valid <- c("single_source", "corroborated", "cross_validated")
+  expect_true(all(ar$validation_status %in% valid))
+})
+
+test_that("source_count is positive integer", {
+  ar <- atomic_risks()
+  expect_type(ar$source_count, "integer")
+  expect_true(all(ar$source_count >= 1L))
+})
+
+test_that("estimate_range is character or NA", {
+  ar <- atomic_risks()
+  expect_type(ar$estimate_range, "character")
+  # Wildlife entries have ranges; most legacy entries are NA
+  wildlife_ranges <- ar[ar$category == "Wildlife" & !is.na(ar$estimate_range), ]
+  expect_true(nrow(wildlife_ranges) >= 6)  # all new wildlife have ranges
+})
+
+test_that("flight entries are corroborated", {
+  ar <- atomic_risks()
+  flights <- ar[grepl("^flying_", ar$activity_id), ]
+  expect_true(all(flights$validation_status == "corroborated"))
+  expect_true(all(flights$source_count >= 2L))
+})
+
+test_that("parse_period_type handles bite and sting", {
+  expect_equal(parse_period_type("per bite"), "event")
+  expect_equal(parse_period_type("per sting"), "event")
 })

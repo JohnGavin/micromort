@@ -38,6 +38,8 @@ navbar:
         href: articles/risk_equivalence.html
       - text: "Confounding Variables"
         href: articles/confounding.html
+      - text: "Data Reliability"
+        href: articles/data_reliability.html
       - text: "REST API"
         href: articles/rest_api.html
       - text: "---"

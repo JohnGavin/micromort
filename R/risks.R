@@ -443,7 +443,7 @@ cancer_risks <- function() {
 #' MMWR 2024;73:1-8. \url{https://www.cdc.gov/mmwr/}
 #'
 #' Lancet 2024. Contribution of vaccination to improved survival: 50 years of EPI.
-#' \url{https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(24)00850-X/fulltext}
+#' \doi{10.1016/S0140-6736(24)00850-X}
 #' @family conditional-risk
 #' @seealso [cancer_risks()], [conditional_risk()], [hedged_portfolio()]
 #' @examples

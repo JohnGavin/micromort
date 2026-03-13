@@ -23,11 +23,14 @@ A tibble with columns:
 \item{hedgeable}{Can this component be mitigated?}
 \item{hedge_description}{How to mitigate (if hedgeable)}
 \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-\item{condition_variable}{What this risk depends on: \code{"health_profile"} or \code{NA}}
-\item{condition_value}{Condition value: \code{"healthy"}, \code{"dvt_risk_factors"}, or \code{NA}}
+\item{condition_variable}{What this risk depends on: \code{"health_profile"}, \code{"geography"}, or \code{NA}}
+\item{condition_value}{Condition value: \code{"healthy"}, \code{"dvt_risk_factors"}, \code{"high_income"}, \code{"low_income"}, \code{"allergic"}, or \code{NA}}
 \item{confidence}{Data confidence: \code{"high"}, \code{"medium"}, \code{"low"}, \code{"estimated"}}
 \item{source_url}{Citation URL}
 \item{notes}{Scaling behavior, caveats}
+\item{validation_status}{\code{"single_source"}, \code{"corroborated"}, or \code{"cross_validated"}}
+\item{source_count}{Integer count of independent sources checked}
+\item{estimate_range}{Character range (e.g. \code{"0.05-0.15"}) or \code{NA} for point estimates}
 }
 }
 \description{
