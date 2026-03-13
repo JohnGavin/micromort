@@ -1,3 +1,22 @@
+# ---- Difficulty assignment ----
+
+#' Assign difficulty labels based on ratio terciles
+#'
+#' Low ratios are hard (activities close in risk), high ratios are easy.
+#' @param ratios Numeric vector of risk ratios.
+#' @return Character vector of `"hard"`, `"medium"`, or `"easy"`.
+#' @noRd
+assign_difficulty <- function(ratios) {
+  breaks <- stats::quantile(ratios, probs = c(0, 1 / 3, 2 / 3, 1))
+  breaks <- unique(breaks)
+  if (length(breaks) < 4) return(rep("mixed", length(ratios)))
+  as.character(cut(
+    ratios, breaks, include.lowest = TRUE,
+    labels = c("hard", "medium", "easy")
+  ))
+}
+
+
 #' Generate Quiz Pairs for "Which Is Riskier?" Game
 #'
 #' Creates candidate question pairs from [common_risks()] for use in
@@ -7,12 +26,25 @@
 #'
 #' @param min_ratio Minimum ratio between micromort values in a pair.
 #'   Values above 1.0 exclude identical-risk pairs that are unanswerable.
-#'   Default 1.1.
+#'   Default 1.1. Ignored when `difficulty` is non-NULL.
 #' @param max_ratio Maximum ratio between micromort values in a pair.
-#'   Lower values produce harder questions. Default 2.0.
+#'   Lower values produce harder questions. Default 2.0. Ignored when
+#'   `difficulty` is non-NULL.
 #' @param prefer_cross_category If `TRUE` (default), pairs from different
 #'   risk categories are prioritised over same-category pairs.
 #' @param seed Optional random seed for reproducibility.
+#' @param difficulty Optional difficulty level. One of `"easy"`, `"medium"`,
+#'   `"hard"`, or `"mixed"`. When non-NULL, overrides `min_ratio` and
+#'   `max_ratio` to use the full pool (ratios 1.5--10) and assigns difficulty
+#'
+#'   based on data-driven terciles:
+#'   - **hard**: lowest third of ratios (hardest to distinguish)
+#'   - **medium**: middle third
+#'   - **easy**: highest third (easiest to distinguish)
+#'   - **mixed**: samples equally from all three tiers
+#'
+#'   When `NULL` (default), the original `min_ratio`/`max_ratio` behaviour
+#'   is preserved and no `difficulty` column is added.
 #'
 #' @return A tibble with columns:
 #'   - `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`, `period_a`
@@ -20,18 +52,33 @@
 #'   - `description_a`, `help_url_a`, `description_b`, `help_url_b`
 #'   - `ratio` (max/min of the two micromort values)
 #'   - `answer` ("a" or "b" — whichever activity is riskier)
+#'   - `difficulty` (only when `difficulty` is non-NULL)
 #'
 #' @examples
 #' pairs <- quiz_pairs(seed = 42)
 #' head(pairs)
 #'
+#' # Easy questions (large ratio differences)
+#' easy <- quiz_pairs(difficulty = "easy", seed = 42)
+#' head(easy)
+#'
 #' @export
 quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
-                       prefer_cross_category = TRUE, seed = NULL) {
+                       prefer_cross_category = TRUE, seed = NULL,
+                       difficulty = NULL) {
   checkmate::assert_number(min_ratio, lower = 1.0)
   checkmate::assert_number(max_ratio, lower = 1.0)
   checkmate::assert_flag(prefer_cross_category)
   checkmate::assert_int(seed, null.ok = TRUE)
+  checkmate::assert_choice(difficulty, c("easy", "medium", "hard", "mixed"),
+                           null.ok = TRUE)
+
+  # When difficulty is set, use wider ratio pool
+
+  if (!is.null(difficulty)) {
+    min_ratio <- 1.5
+    max_ratio <- 10
+  }
 
   if (!is.null(seed)) set.seed(seed)
 
@@ -59,9 +106,38 @@ quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
                        pairs$micromorts_b / pairs$micromorts_a)
   pairs <- pairs[pairs$ratio >= min_ratio & pairs$ratio <= max_ratio, ]
 
+  # Assign difficulty tiers when requested
+  if (!is.null(difficulty)) {
+    pairs$difficulty <- assign_difficulty(pairs$ratio)
+    if (difficulty != "mixed") {
+      pairs <- pairs[pairs$difficulty == difficulty, ]
+    }
+  }
+
   pairs$cross_category <- pairs$category_a != pairs$category_b
 
-  if (prefer_cross_category) {
+  if (!is.null(difficulty) && difficulty == "mixed") {
+    # Round-robin interleave tiers for equal representation
+    tiers <- split(pairs, pairs$difficulty)
+    tiers <- lapply(tiers, function(t) {
+      if (prefer_cross_category) {
+        t[order(!t$cross_category, t$ratio), ]
+      } else {
+        t[order(t$ratio), ]
+      }
+    })
+    max_rows <- max(vapply(tiers, nrow, integer(1)))
+    indices <- lapply(tiers, function(t) seq_len(nrow(t)))
+    interleaved <- list()
+    for (i in seq_len(max_rows)) {
+      for (nm in names(tiers)) {
+        if (i <= nrow(tiers[[nm]])) {
+          interleaved <- c(interleaved, list(tiers[[nm]][i, ]))
+        }
+      }
+    }
+    pairs <- do.call(rbind, interleaved)
+  } else if (prefer_cross_category) {
     pairs <- pairs[order(!pairs$cross_category, pairs$ratio), ]
   } else {
     pairs <- pairs[order(pairs$ratio), ]
@@ -97,6 +173,12 @@ quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
   pairs <- pairs[sample(nrow(pairs)), ]
 
   pairs$cross_category <- NULL
+
+  # Remove difficulty column for legacy mode (NULL difficulty)
+  # Keep it when difficulty is explicitly requested
+  if (is.null(difficulty) && "difficulty" %in% names(pairs)) {
+    pairs$difficulty <- NULL
+  }
 
   # Join activity descriptions for tooltips and explanations
   desc <- activity_descriptions()
@@ -210,7 +292,8 @@ quiz_server <- function(n_pairs = NULL) {
     # ---- Instructions ----
     shiny::observeEvent(input$start_quiz, {
       n <- as.integer(input$n_questions %||% state$n_questions)
-      pool <- quiz_pairs(seed = NULL)
+      diff <- input$difficulty
+      pool <- quiz_pairs(seed = NULL, difficulty = diff)
       n <- min(n, nrow(pool))
       state$n_questions <- n
       state$pairs <- pool[sample(nrow(pool), n), ]
@@ -324,6 +407,12 @@ instructions_ui <- function(n_pairs = NULL) {
         shiny::div(
           class = "text-center mt-2 mb-3",
           shiny::tags$em(encouragement)
+        ),
+        shiny::radioButtons(
+          "difficulty", "Difficulty:",
+          choices = c("Easy" = "easy", "Medium" = "medium",
+                      "Hard" = "hard", "Mixed" = "mixed"),
+          selected = "mixed", inline = TRUE
         ),
         if (is.null(n_pairs)) {
           shiny::radioButtons(
@@ -536,6 +625,13 @@ question_ui <- function(state) {
     ),
     shiny::span(
       class = "text-muted",
+      if ("difficulty" %in% names(pair) && !is.na(pair$difficulty)) {
+        diff_colors <- c(easy = "success", medium = "warning", hard = "danger")
+        shiny::span(
+          class = paste0("badge bg-", diff_colors[pair$difficulty], " me-2"),
+          pair$difficulty
+        )
+      },
       sprintf("%d of %d", q, n),
       " \u00b7 ",
       shiny::tags$small(tally_text)
