@@ -15,8 +15,9 @@ common_risks(profile = list(), duration_hours = NULL)
 - profile:
 
   A named list of condition variables for filtering conditional risks,
-  e.g. `list(health_profile = "dvt_risk_factors")`. Default
-  [`list()`](https://rdrr.io/r/base/list.html) returns
+  e.g. `list(health_profile = "dvt_risk_factors")` or
+  `list(country = "US")` for country-specific road traffic and homicide
+  risks. Default [`list()`](https://rdrr.io/r/base/list.html) returns
   unconditional/healthy defaults.
 
 - duration_hours:

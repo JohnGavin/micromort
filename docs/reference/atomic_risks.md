@@ -76,12 +76,14 @@ A tibble with columns:
 
 - condition_variable:
 
-  What this risk depends on: `"health_profile"`, `"geography"`, or `NA`
+  What this risk depends on: `"health_profile"`, `"geography"`,
+  `"country"`, or `NA`
 
 - condition_value:
 
   Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`,
-  `"low_income"`, `"allergic"`, or `NA`
+  `"low_income"`, `"allergic"`, ISO-2 country codes (e.g. `"US"`,
+  `"UK"`), or `NA`
 
 - confidence:
 

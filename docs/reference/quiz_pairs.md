@@ -13,7 +13,8 @@ quiz_pairs(
   min_ratio = 1.1,
   max_ratio = 2,
   prefer_cross_category = TRUE,
-  seed = NULL
+  seed = NULL,
+  difficulty = NULL
 )
 ```
 
@@ -23,11 +24,12 @@ quiz_pairs(
 
   Minimum ratio between micromort values in a pair. Values above 1.0
   exclude identical-risk pairs that are unanswerable. Default 1.1.
+  Ignored when `difficulty` is non-NULL.
 
 - max_ratio:
 
   Maximum ratio between micromort values in a pair. Lower values produce
-  harder questions. Default 2.0.
+  harder questions. Default 2.0. Ignored when `difficulty` is non-NULL.
 
 - prefer_cross_category:
 
@@ -37,6 +39,25 @@ quiz_pairs(
 - seed:
 
   Optional random seed for reproducibility.
+
+- difficulty:
+
+  Optional difficulty level. One of `"easy"`, `"medium"`, `"hard"`, or
+  `"mixed"`. When non-NULL, overrides `min_ratio` and `max_ratio` to use
+  the full pool (ratios 1.5–10) and assigns difficulty
+
+  based on data-driven terciles:
+
+  - **hard**: lowest third of ratios (hardest to distinguish)
+
+  - **medium**: middle third
+
+  - **easy**: highest third (easiest to distinguish)
+
+  - **mixed**: samples equally from all three tiers
+
+  When `NULL` (default), the original `min_ratio`/`max_ratio` behaviour
+  is preserved and no `difficulty` column is added.
 
 ## Value
 
@@ -53,6 +74,8 @@ A tibble with columns:
 - `ratio` (max/min of the two micromort values)
 
 - `answer` ("a" or "b" — whichever activity is riskier)
+
+- `difficulty` (only when `difficulty` is non-NULL)
 
 ## Examples
 
@@ -71,5 +94,22 @@ head(pairs)
 #> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
 #> #   description_a <chr>, help_url_a <chr>, description_b <chr>,
+#> #   help_url_b <chr>
+
+# Easy questions (large ratio differences)
+easy <- quiz_pairs(difficulty = "easy", seed = 42)
+head(easy)
+#> # A tibble: 6 × 17
+#>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
+#>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
+#> 1 Airline pilot (an… COVID-19 …            1 COVID-19                 0 11 week…
+#> 2 Airline pilot (an… Walking (…            1 Travel                   0 per trip
+#> 3 Airline pilot (an… Living 2 …            1 Environme…               0 per 2 m…
+#> 4 All US workers ba… Walking (…            1 Travel                   0 per trip
+#> 5 All US workers ba… Train (10…            1 Travel                   0 per trip
+#> 6 All US workers ba… Driving (…            1 Travel                   0 per trip
+#> # ℹ 11 more variables: micromorts_b <dbl>, category_b <chr>,
+#> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, difficulty <chr>,
+#> #   answer <chr>, description_a <chr>, help_url_a <chr>, description_b <chr>,
 #> #   help_url_b <chr>
 ```
