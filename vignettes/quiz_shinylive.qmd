@@ -194,27 +194,32 @@ quiz_css <- "
     font-size: 1rem;
     border: 2px solid #dee2e6;
     border-radius: 8px;
+    background-color: #2b3e50;
+    color: #ffffff;
     transition: border-color 0.3s, background-color 0.1s;
     user-select: text;
     -webkit-user-select: text;
   }
-  .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; color: #ffffff; }
   .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
   .quiz-btn .badge { font-size: 0.75em; }
   .quiz-btn-correct {
     border: 3px solid #198754 !important;
     background-color: #d1e7dd !important;
+    color: #0f5132 !important;
   }
   .quiz-btn-wrong {
     border: 3px solid #dc3545 !important;
     background-color: #f8d7da !important;
+    color: #842029 !important;
   }
   .quiz-btn-neutral {
     border: 3px solid #6c757d !important;
     background-color: #e9ecef !important;
+    color: #495057 !important;
   }
-  .quiz-btn .help-icon { font-size: 0.8rem; color: #6c757d; cursor: help; margin-left: 4px; }
-  .quiz-btn .help-link { font-size: 0.7rem; color: #0d6efd; text-decoration: none; }
+  .quiz-btn .help-icon { font-size: 0.8rem; color: #adb5bd; cursor: help; margin-left: 4px; }
+  .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
