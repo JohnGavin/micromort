@@ -34,6 +34,9 @@ c(
   # Documentation
   plan_documentation,
 
+  # Telemetry: pipeline health, GitHub activity, codebase metrics
+  plan_telemetry,
+
   # Vignette pre-computed objects (MANDATORY per quarto-files.md)
   plan_vignette_outputs,
 

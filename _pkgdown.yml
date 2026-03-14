@@ -27,6 +27,8 @@ navbar:
       menu:
       - text: "Architecture Overview"
         href: articles/architecture.html
+      - text: "Project Telemetry"
+        href: articles/telemetry.html
       - text: "---"
       - text: "Introduction"
         href: articles/introduction.html

@@ -27,6 +27,8 @@ Suggests:
     DT,
     eurostat,
     fs,
+    gert,
+    gh,
     here,
     htmltools,
     stringr,

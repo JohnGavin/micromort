@@ -67,7 +67,8 @@ mermaid_dark_theme_header <- function() {
     theme_micromort_dark = "Visualization",
     # Apps
     launch_api = "Apps", launch_dashboard = "Apps",
-    launch_quiz = "Apps", quiz_pairs = "Apps"
+    launch_quiz = "Apps", quiz_pairs = "Apps",
+    activity_descriptions = "Apps", format_activity_name = "Apps"
   )
 }
 

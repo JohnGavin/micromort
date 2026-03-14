@@ -22,7 +22,18 @@ library(bslib)
 
 # ---- Pre-computed quiz pairs from micromort::quiz_pairs(difficulty = ..., seed = 42) ----
 # 50 per difficulty tier (easy/medium/hard), 150 total
-# Embedded to avoid loading micromort (arrow dep unavailable in WebR)
+#
+# WHY INLINE: This quiz runs in Shinylive (WebR/WASM in the browser).
+# WebR cannot load the micromort package because arrow is not available
+# in WASM. So quiz data MUST be embedded as inline CSV.
+#
+# PIPELINE TRACKED: The targets pipeline verifies this embedded CSV
+# matches the canonical output of quiz_pairs() via the
+# vig_quiz_csv_check target. If data drifts, that target returns "STALE".
+#
+# TO REGENERATE: Run `Rscript data-raw/generate_quiz_csv.R` then paste
+# the output CSV here. The canonical copy is also saved to
+# inst/extdata/vignettes/quiz_pairs.csv for traceability.
 quiz_pool <- read.csv(textConnection(
 '"activity_b","activity_a","micromorts_a","category_a","hedgeable_pct_a","period_a","micromorts_b","category_b","hedgeable_pct_b","period_b","ratio","difficulty","answer","description_a","help_url_a","description_b","help_url_b"
 "Airline pilot (annual radiation)","COVID-19 unvaccinated (age 18-49)",1,"COVID-19",0,"11 weeks (2022)",0.15,"Occupation",100,"per year",6.66666666666667,"easy","a","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"

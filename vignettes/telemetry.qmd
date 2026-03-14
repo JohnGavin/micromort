@@ -1,0 +1,160 @@
+---
+title: "Project Telemetry"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Project Telemetry}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = FALSE
+)
+
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+
+library(targets)
+library(DT)
+
+# Safe tar_read with graceful fallback (finds project root for pkgdown builds)
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+```
+
+This vignette tracks the health and evolution of the **micromort** pipeline, codebase, and GitHub activity. All data is pre-computed via `targets` --- zero inline computation.
+
+## 1. Pipeline Metrics
+
+### Dependency Graph
+
+```{r}
+#| fig-cap: "Target dependency graph showing data flow across the micromort pipeline."
+#| fig-alt: "Directed graph of targets pipeline dependencies, with nodes representing targets and edges showing data flow from data acquisition through normalization, export, logging, documentation, telemetry, and vignette outputs."
+dep_graph <- safe_tar_read("vig_pipeline_dependency_graph")
+if (!is.null(dep_graph)) {
+  # Render mermaid via htmltools
+  htmltools::HTML(paste0(
+    '<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>',
+    '<script>mermaid.initialize({startOnLoad: true, securityLevel: "loose"});</script>',
+    '<div class="mermaid">\n', dep_graph, '\n</div>'
+  ))
+} else {
+  htmltools::p("Dependency graph not available. Run tar_make() first.")
+}
+```
+
+### Plans and Targets
+
+```{r}
+summary <- safe_tar_read("vig_pipeline_summary")
+if (!is.null(summary)) {
+  summary$plans |>
+    DT::datatable(
+      caption = paste0(
+        "Target counts by plan file (",
+        summary$total_targets, " total targets)"
+      ),
+      options = list(pageLength = 10, dom = "t"),
+      rownames = FALSE
+    )
+}
+```
+
+### Top 5 Targets by Storage Size
+
+```{r}
+if (!is.null(summary) && !is.null(summary$top_by_size)) {
+  summary$top_by_size |>
+    dplyr::select(name, size_kb) |>
+    DT::datatable(
+      caption = "Largest targets by stored object size (KB)",
+      options = list(pageLength = 5, dom = "t"),
+      rownames = FALSE
+    )
+}
+```
+
+### Top 5 Targets by Compute Time
+
+```{r}
+if (!is.null(summary) && !is.null(summary$top_by_time)) {
+  summary$top_by_time |>
+    dplyr::select(name, seconds) |>
+    DT::datatable(
+      caption = "Slowest targets by computation time (seconds)",
+      options = list(pageLength = 5, dom = "t"),
+      rownames = FALSE
+    )
+}
+```
+
+## 2. GitHub Activity
+
+### Commit Velocity
+
+```{r, fig.width=10, fig.height=5}
+#| fig-cap: "Weekly commit frequency over the last 26 weeks."
+#| fig-alt: "Bar chart showing number of commits per week over the last 6 months, with weeks on the x-axis and commit count on the y-axis."
+velocity <- safe_tar_read("vig_commit_velocity")
+if (!is.null(velocity)) {
+  ggplot2::ggplot(velocity, ggplot2::aes(x = week, y = commits)) +
+    ggplot2::geom_col(fill = "#1976D2") +
+    ggplot2::labs(
+      title = "Commit Velocity",
+      subtitle = "Last 26 weeks",
+      x = "Week",
+      y = "Commits"
+    ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+}
+```
+
+### Issues and Pull Requests
+
+```{r}
+activity <- safe_tar_read("vig_github_activity")
+if (!is.null(activity)) {
+  activity |>
+    DT::datatable(
+      caption = "GitHub issues and pull requests summary",
+      options = list(pageLength = 5, dom = "t"),
+      rownames = FALSE
+    )
+}
+```
+
+## 3. Project Structure
+
+```{r}
+metrics <- safe_tar_read("vig_codebase_metrics")
+if (!is.null(metrics)) {
+  metrics |>
+    DT::datatable(
+      caption = "Codebase metrics snapshot",
+      options = list(pageLength = 10, dom = "t"),
+      rownames = FALSE
+    )
+}
+```

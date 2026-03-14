@@ -25,3 +25,10 @@ cat("\n\nPaste into vignettes/quiz_shinylive.qmd between textConnection() quotes
 tmp <- tempfile(fileext = ".csv")
 writeLines(csv_text, tmp)
 cat("Full CSV written to:", tmp, "\n")
+
+# Also save canonical CSV for traceability (pipeline checks this hash)
+extdata_dir <- file.path("inst", "extdata", "vignettes")
+if (!dir.exists(extdata_dir)) dir.create(extdata_dir, recursive = TRUE)
+canonical_path <- file.path(extdata_dir, "quiz_pairs.csv")
+utils::write.csv(all_pairs, canonical_path, row.names = FALSE)
+cat("Canonical CSV written to:", canonical_path, "\n")
