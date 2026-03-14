@@ -1,17 +1,15 @@
 ---
 title: "Project Telemetry"
-format: html
-vignette: >
-  %\VignetteIndexEntry{Project Telemetry}
-  %\VignetteEngine{quarto::html}
-  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 ---
 
-```{r setup, include=FALSE}
+```{r telemetry-setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -48,8 +46,8 @@ This vignette tracks the health and evolution of the **micromort** pipeline, cod
 
 ### Dependency Graph
 
-```{r}
-#| fig-cap: "Target dependency graph showing data flow across the micromort pipeline."
+```{r telemetry-dep-graph}
+#| fig-cap: "Target dependency graph showing data flow across the micromort pipeline. Nodes represent individual targets; edges show upstream dependencies. The graph spans data acquisition, normalization, export, logging, documentation, telemetry, and vignette output stages. Built from `targets::tar_network()` edges. See the introduction vignette for a conceptual overview of the pipeline architecture."
 #| fig-alt: "Directed graph of targets pipeline dependencies, with nodes representing targets and edges showing data flow from data acquisition through normalization, export, logging, documentation, telemetry, and vignette outputs."
 dep_graph <- safe_tar_read("vig_pipeline_dependency_graph")
 if (!is.null(dep_graph)) {
@@ -66,7 +64,7 @@ if (!is.null(dep_graph)) {
 
 ### Plans and Targets
 
-```{r}
+```{r telemetry-plans-targets}
 summary <- safe_tar_read("vig_pipeline_summary")
 if (!is.null(summary)) {
   summary$plans |>
@@ -83,7 +81,7 @@ if (!is.null(summary)) {
 
 ### Top 5 Targets by Storage Size
 
-```{r}
+```{r telemetry-top-by-size}
 if (!is.null(summary) && !is.null(summary$top_by_size)) {
   summary$top_by_size |>
     dplyr::select(name, size_kb) |>
@@ -97,7 +95,7 @@ if (!is.null(summary) && !is.null(summary$top_by_size)) {
 
 ### Top 5 Targets by Compute Time
 
-```{r}
+```{r telemetry-top-by-time}
 if (!is.null(summary) && !is.null(summary$top_by_time)) {
   summary$top_by_time |>
     dplyr::select(name, seconds) |>
@@ -113,8 +111,8 @@ if (!is.null(summary) && !is.null(summary$top_by_time)) {
 
 ### Commit Velocity
 
-```{r, fig.width=10, fig.height=5}
-#| fig-cap: "Weekly commit frequency over the last 26 weeks."
+```{r telemetry-commit-velocity, fig.width=10, fig.height=5}
+#| fig-cap: "Weekly commit frequency over the last 26 weeks. Each bar represents commits merged in a calendar week. Data sourced from `gert::git_log()` with a 500-commit lookback window. Weeks with zero commits indicate maintenance pauses or release stabilization periods. Compare with GitHub Activity table below for issue/PR context."
 #| fig-alt: "Bar chart showing number of commits per week over the last 6 months, with weeks on the x-axis and commit count on the y-axis."
 velocity <- safe_tar_read("vig_commit_velocity")
 if (!is.null(velocity)) {
@@ -133,7 +131,7 @@ if (!is.null(velocity)) {
 
 ### Issues and Pull Requests
 
-```{r}
+```{r telemetry-github-activity}
 activity <- safe_tar_read("vig_github_activity")
 if (!is.null(activity)) {
   activity |>
@@ -147,7 +145,7 @@ if (!is.null(activity)) {
 
 ## 3. Project Structure
 
-```{r}
+```{r telemetry-codebase-metrics}
 metrics <- safe_tar_read("vig_codebase_metrics")
 if (!is.null(metrics)) {
   metrics |>
@@ -157,4 +155,10 @@ if (!is.null(metrics)) {
       rownames = FALSE
     )
 }
+```
+
+## Reproducibility
+
+```{r telemetry-session-info, eval=TRUE}
+sessionInfo()
 ```

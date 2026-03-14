@@ -640,12 +640,18 @@ plan_vignette_outputs <- list(
         return(list(status = "ERROR", message = "Failed to parse embedded CSV"))
       }
 
-      # Compare hashes — normalize to plain data.frame for consistent hashing
+      # Compare — normalize to plain data.frame, round numerics for CSV round-trip tolerance
       canonical <- as.data.frame(vig_quiz_pairs, stringsAsFactors = FALSE)
       canonical <- canonical[order(canonical$activity_a, canonical$activity_b), ]
       embedded <- embedded[order(embedded$activity_a, embedded$activity_b), ]
       rownames(canonical) <- NULL
       rownames(embedded) <- NULL
+      # Round numeric columns to handle CSV serialization precision loss
+      num_cols <- names(canonical)[vapply(canonical, is.numeric, logical(1))]
+      for (col in num_cols) {
+        canonical[[col]] <- round(canonical[[col]], 10)
+        embedded[[col]] <- round(embedded[[col]], 10)
+      }
       hash_canonical <- digest::digest(canonical)
       hash_embedded <- digest::digest(embedded)
 
