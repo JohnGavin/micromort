@@ -1,6 +1,9 @@
 ---
 title: "REST API"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{REST API}
   %\VignetteEngine{quarto::html}
@@ -15,8 +18,7 @@ body .container-fluid { max-width: 95vw; }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -290,4 +292,10 @@ resp <- request(base_url) |>
   )) |>
   req_perform() |>
   resp_body_json()
+```
+
+## Reproducibility
+
+```{r rest_api-session-info, eval=TRUE}
+sessionInfo()
 ```

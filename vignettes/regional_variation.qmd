@@ -1,6 +1,9 @@
 ---
 title: "Regional Variation in Life Expectancy"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{Regional Variation in Life Expectancy}
   %\VignetteEngine{quarto::html}
@@ -10,8 +13,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 library(targets)
@@ -63,7 +65,7 @@ Since the mid-2000s, Western Europe has fragmented into:
 
 This divergence reversed decades of convergence observed in the 1990s.
 
-```{r}
+```{r regional_variation-chunk-1}
 #| echo: false
 safe_tar_read("vig_regional_classification_summary") |>
   DT::datatable(
@@ -77,7 +79,7 @@ safe_tar_read("vig_regional_classification_summary") |>
 
 The ~7 year gap between vanguard and laggard regions translates to a substantial lifetime difference in microlives:
 
-```{r}
+```{r regional_variation-chunk-2}
 #| echo: false
 gap_data <- safe_tar_read("vig_regional_le_gap")
 if (!is.null(gap_data)) {
@@ -111,7 +113,7 @@ if (!is.null(gap_data)) {
 - **Bottom region:** Mayotte (FR overseas) at 74.9 years
 - **Microlives interpretation:** +1.0 microlives/day ≈ +30 min life expectancy/day ≈ +7.6 days/year
 
-```{r}
+```{r regional_variation-chunk-3}
 #| echo: false
 safe_tar_read("vig_regional_explorer_data") |>
   DT::datatable(
@@ -132,7 +134,7 @@ safe_tar_read("vig_regional_explorer_data") |>
 
 The divergence became pronounced after 2005:
 
-```{r, fig.width=8, fig.height=5}
+```{r regional_variation-chunk-4, fig.width=8, fig.height=5}
 #| echo: false
 #| fig-cap: "Life expectancy trends in Western Europe diverged after 2005, with some regions stalling while others continued to improve."
 #| fig-alt: "Line chart of life expectancy over time for multiple Western European regions. Lines converge until ~2005, then diverge, with UK regions showing the slowest improvement."
@@ -143,7 +145,7 @@ print(safe_tar_read("vig_regional_trends_plot"))
 
 Use `regional_mortality_multiplier()` to adjust baseline micromort estimates by location:
 
-```{r}
+```{r regional_variation-chunk-5}
 #| echo: false
 safe_tar_read("vig_regional_paris_multiplier") |>
   DT::datatable(
@@ -188,3 +190,9 @@ Raw data from Eurostat `demo_r_mlifexp` dataset. Interactive exploration availab
 | `vanguard_regions()` | Top-performing regions only |
 | `laggard_regions()` | Stagnating regions only |
 | `regional_mortality_multiplier()` | Location-based risk adjustment |
+
+## Reproducibility
+
+```{r regional_variation-session-info, eval=TRUE}
+sessionInfo()
+```

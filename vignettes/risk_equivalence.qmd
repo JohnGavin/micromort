@@ -1,6 +1,9 @@
 ---
 title: "Risk Equivalence Dashboard"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{Risk Equivalence Dashboard}
   %\VignetteEngine{quarto::html}
@@ -16,8 +19,7 @@ body .container-fluid { max-width: 95vw; }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -454,3 +456,9 @@ if (!is.null(mat)) {
 **Medical radiation.** The "(radiation)" label indicates that the radiation dose IS the risk. For invasive procedures (e.g., coronary angiogram), procedural risks (infection, bleeding) are separate components not yet decomposed.
 
 **Confidence levels.** Each component carries a confidence rating: "high" (published meta-analyses), "medium" (single studies or expert consensus), "low" (extrapolated), "estimated" (order-of-magnitude).
+
+## Reproducibility
+
+```{r risk_equivalence-session-info, eval=TRUE}
+sessionInfo()
+```

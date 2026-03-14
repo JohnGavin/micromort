@@ -47,7 +47,13 @@ attempted this?”
 
 ### Converting Probabilities to Micromorts
 
-    #> [1] 100
+Show code
+
+``` r
+# 1 in 10,000 chance of death = 100 micromorts
+as_micromort(1/10000)
+#> [1] 100
+```
 
 ### Common Risks Table
 
@@ -80,7 +86,7 @@ make comparisons easier:
 activities. COVID-19 risks (vaccination, infection by age) are grouped
 separately from other risks (transport, medical, recreational). Bars are
 coloured by
-category.](introduction_files/figure-html/unnamed-chunk-3-1.png)
+category.](introduction_files/figure-html/introduction-chunk-3-1.png)
 
 Logarithmic risk ladder showing micromorts per activity, split by
 COVID-19 and other categories. Activities range from a chest X-ray (0.1
@@ -133,9 +139,25 @@ death is moving away from us even as we age.
 
 ### Converting Life Expectancy to Microlives
 
-    #> [1] -20
-    #> [1] 2
-    #> [1] -1
+Show code
+
+``` r
+# as_microlife() converts minutes of life expectancy change to microlives
+# Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
+# Sign: negative = loss, positive = gain
+
+# Heavy smoker: 20 cigarettes/day, each costs ~30 mins
+as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
+#> [1] -20
+
+# Moderate exercise: 20 mins → ~60 mins life gained
+as_microlife(60)        # = +2 microlives/day (life gained)
+#> [1] 2
+
+# Being 5kg overweight costs 30 mins per day
+as_microlife(-30)       # = -1 microlife/day (life lost)
+#> [1] -1
+```
 
 ## 3. Relationship Between Micromorts and Microlives
 
@@ -206,7 +228,13 @@ people (10 micromorts), is it worth it? Cost per micromort saved = \$50
 / 10 = \$5. If VSL = \$10M, then 1 micromort = \$10. Since \$5 \< \$10,
 it is cost-effective.
 
-    #> [1] 10
+Show code
+
+``` r
+# Standard US VSL of $10M implies $10 per micromort
+value_of_micromort(vsl = 10000000)
+#> [1] 10
+```
 
 ### UK Valuation: Micromorts ≈ Microlives
 
@@ -221,7 +249,13 @@ for micromorts and microlives:
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the
 theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
-    #> [1] 1.6
+Show code
+
+``` r
+# UK Department of Transport VSL: £1.6M → £1.60 per micromort
+value_of_micromort(vsl = 1600000)
+#> [1] 1.6
+```
 
 This consistency suggests that policy decisions affecting acute risks
 (transport safety) and chronic risks (healthcare interventions) can be
@@ -233,11 +267,17 @@ compared on a common scale.
 specific risk. For a 1-in-a-million risk (1 micromort), the LLE is
 approximately 21 minutes (assuming 40 years remaining life).
 
-    #> [1] 21.0384
-    #> attr(,"class")
-    #> [1] "micromort_lle" "numeric"
-    #> attr(,"units")
-    #> [1] "minutes"
+Show code
+
+``` r
+# Loss of life expectancy from 1 micromort (assuming 40 years remaining)
+lle(prob = 1/1e6, life_expectancy = 40)
+#> [1] 21.0384
+#> attr(,"class")
+#> [1] "micromort_lle" "numeric"      
+#> attr(,"units")
+#> [1] "minutes"
+```
 
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
@@ -488,3 +528,56 @@ The new conditional risk functions enable:
   schedules
 - **Lifestyle optimization:** Calculate total life expectancy gain from
   adopting optimal “hedged” behaviors
+
+## Reproducibility
+
+Show code
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: aarch64-apple-darwin25.2.0
+#> Running under: macOS Tahoe 26.3
+#> 
+#> Matrix products: default
+#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+#> 
+#> locale:
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Belfast
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] DT_0.34.0       targets_1.11.4  micromort_0.1.0 testthat_3.3.2 
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] gtable_0.3.6        xfun_0.56           bslib_0.10.0       
+#>  [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
+#>  [7] callr_3.7.6         vctrs_0.7.1         tools_4.5.2        
+#> [10] crosstalk_1.2.2     ps_1.9.1            generics_0.1.4     
+#> [13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
+#> [16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
+#> [19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
+#> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
+#> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
+#> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
+#> [31] sys_3.4.3           usethis_3.2.1       lazyeval_0.2.2     
+#> [34] yaml_2.3.12         plotly_4.12.0       tidyr_1.3.2        
+#> [37] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+#> [40] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+#> [43] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
+#> [46] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
+#> [49] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
+#> [52] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
+#> [55] backports_1.5.0     bit64_4.6.0-1       httr_1.4.7         
+#> [58] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
+#> [61] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
+#> [64] knitr_1.51          viridisLite_0.4.2   rlang_1.1.7        
+#> [67] gert_2.3.1          glue_1.8.0          pkgload_1.4.1      
+#> [70] jsonlite_2.0.0      R6_2.6.1            fs_1.6.6
+```

@@ -1,6 +1,9 @@
 ---
 title: "How Reliable Are These Numbers?"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{How Reliable Are These Numbers?}
   %\VignetteEngine{quarto::html}
@@ -10,8 +13,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -215,3 +217,9 @@ open an issue at [github.com/johngavin/micromort](https://github.com/johngavin/m
 4. **Time period**: When was the data collected?
 
 Entries start at `validation_status = "single_source"` and get upgraded as more sources confirm them.
+
+## Reproducibility
+
+```{r data_reliability-session-info, eval=TRUE}
+sessionInfo()
+```

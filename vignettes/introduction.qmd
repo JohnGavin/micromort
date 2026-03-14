@@ -1,6 +1,9 @@
 ---
 title: "Introduction to Micromorts and Risk Visualization"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{Introduction to Micromorts and Risk Visualization}
   %\VignetteEngine{quarto::html}
@@ -10,8 +13,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -78,14 +80,14 @@ These figures answer: "Given that someone completed this activity, what was thei
 
 ### Converting Probabilities to Micromorts
 
-```{r}
+```{r introduction-chunk-1}
 # 1 in 10,000 chance of death = 100 micromorts
 as_micromort(1/10000)
 ```
 
 ### Common Risks Table
 
-```{r}
+```{r introduction-chunk-2}
 #| echo: false
 safe_tar_read("vig_intro_common_risks") |>
   DT::datatable(
@@ -100,7 +102,7 @@ safe_tar_read("vig_intro_common_risks") |>
 
 Using [`plot_risks()`](../reference/plot_risks.html), we can see the relative magnitude of different activities on a logarithmic scale. The plot is split into COVID-19 and Other risks to make comparisons easier:
 
-```{r, fig.width=10, fig.height=14, out.extra='style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"'}
+```{r introduction-chunk-3, fig.width=10, fig.height=14, out.extra='style="background-color: #1a1a1a; padding: 10px; border-radius: 4px;"'}
 #| echo: false
 #| fig-cap: "Logarithmic risk ladder showing micromorts per activity, split by COVID-19 and other categories. Activities range from a chest X-ray (0.1 micromort) to BASE jumping (430 micromorts)."
 #| fig-alt: "Horizontal bar chart on a log scale showing micromorts for ~40 activities. COVID-19 risks (vaccination, infection by age) are grouped separately from other risks (transport, medical, recreational). Bars are coloured by category."
@@ -111,7 +113,7 @@ print(safe_tar_read("vig_intro_risk_plot"))
 
 For interactive exploration with hover details and category filtering, use [`plot_risks_interactive()`](../reference/plot_risks_interactive.html):
 
-```{r}
+```{r introduction-chunk-4}
 #| echo: false
 #| fig-cap: "Interactive version of the risk ladder with hover details and category filtering."
 #| fig-alt: "Interactive plotly bar chart of micromorts per activity with tooltips showing exact values, microlives, and source period."
@@ -142,7 +144,7 @@ A smoker who smokes 20 cigarettes per day uses up an additional 10 microlives, w
 
 ### Converting Life Expectancy to Microlives
 
-```{r}
+```{r introduction-chunk-5}
 # as_microlife() converts minutes of life expectancy change to microlives
 # Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
 # Sign: negative = loss, positive = gain
@@ -209,7 +211,7 @@ Example: If a safety feature costs $50 and saves 1 life in 100,000 people (10 mi
 Cost per micromort saved = $50 / 10 = $5.
 If VSL = $10M, then 1 micromort = $10. Since $5 < $10, it is cost-effective.
 
-```{r}
+```{r introduction-chunk-6}
 # Standard US VSL of $10M implies $10 per micromort
 value_of_micromort(vsl = 10000000)
 ```
@@ -225,7 +227,7 @@ Interestingly, two UK government agencies arrive at similar valuations for micro
 
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
-```{r}
+```{r introduction-chunk-7}
 # UK Department of Transport VSL: £1.6M → £1.60 per micromort
 value_of_micromort(vsl = 1600000)
 ```
@@ -236,7 +238,7 @@ This consistency suggests that policy decisions affecting acute risks (transport
 
 **LLE** estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is approximately 21 minutes (assuming 40 years remaining life).
 
-```{r}
+```{r introduction-chunk-8}
 # Loss of life expectancy from 1 micromort (assuming 40 years remaining)
 lle(prob = 1/1e6, life_expectancy = 40)
 ```
@@ -286,7 +288,7 @@ For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like t
 
 The [`cancer_risks()`](../reference/cancer_risks.html) function provides mortality data stratified by cancer type, sex, and age group:
 
-```{r}
+```{r introduction-chunk-9}
 #| echo: false
 safe_tar_read("vig_intro_cancer_top3") |>
   DT::datatable(
@@ -298,7 +300,7 @@ safe_tar_read("vig_intro_cancer_top3") |>
 
 **Family history impact:** The `family_history_rr` column shows relative risk increase with a first-degree relative's diagnosis. For example, prostate cancer risk increases 2.5× with family history.
 
-```{r}
+```{r introduction-chunk-10}
 #| echo: false
 safe_tar_read("vig_intro_cancer_family_history") |>
   DT::datatable(
@@ -312,7 +314,7 @@ safe_tar_read("vig_intro_cancer_family_history") |>
 
 The [`vaccination_risks()`](../reference/vaccination_risks.html) function quantifies micromorts avoided through vaccination:
 
-```{r}
+```{r introduction-chunk-11}
 #| echo: false
 safe_tar_read("vig_intro_vaccination_childhood") |>
   DT::datatable(
@@ -322,7 +324,7 @@ safe_tar_read("vig_intro_vaccination_childhood") |>
   )
 ```
 
-```{r}
+```{r introduction-chunk-12}
 #| echo: false
 safe_tar_read("vig_intro_vaccination_adult") |>
   DT::datatable(
@@ -336,7 +338,7 @@ safe_tar_read("vig_intro_vaccination_adult") |>
 
 The [`conditional_risk()`](../reference/conditional_risk.html) function compares risk factors between optimal ("hedged") and suboptimal ("unhedged") states:
 
-```{r}
+```{r introduction-chunk-13}
 #| echo: false
 safe_tar_read("vig_intro_cardiovascular_risk") |>
   DT::datatable(
@@ -350,7 +352,7 @@ safe_tar_read("vig_intro_cardiovascular_risk") |>
 
 The [`hedged_portfolio()`](../reference/hedged_portfolio.html) function calculates total life expectancy gain from adopting all optimal lifestyle choices:
 
-```{r}
+```{r introduction-chunk-14}
 #| echo: false
 portfolio <- safe_tar_read("vig_intro_hedged_portfolio")
 if (!is.null(portfolio)) {
@@ -363,7 +365,7 @@ if (!is.null(portfolio)) {
 }
 ```
 
-```{r}
+```{r introduction-chunk-15}
 #| echo: false
 if (!is.null(portfolio)) {
   portfolio$portfolio_summary |>
@@ -467,3 +469,9 @@ The new conditional risk functions enable:
 *   **Cancer risk assessment:** Compare baseline risk to family history scenarios
 *   **Vaccination value:** Quantify micromorts avoided through vaccination schedules
 *   **Lifestyle optimization:** Calculate total life expectancy gain from adopting optimal "hedged" behaviors
+
+## Reproducibility
+
+```{r introduction-session-info, eval=TRUE}
+sessionInfo()
+```

@@ -1,6 +1,9 @@
 ---
 title: "Palatable Units: The Spiegelhalter Philosophy"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{Palatable Units: The Spiegelhalter Philosophy}
   %\VignetteEngine{quarto::html}
@@ -10,8 +13,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -79,7 +81,7 @@ A micromort measures **acute hazard**: the immediate probability of an event cau
 
 The following table uses [`common_risks()`](../reference/common_risks.html), the package's curated dataset of 62 acute risks with full provenance tracking:
 
-```{r}
+```{r palatable_units-chunk-1}
 #| echo: false
 safe_tar_read("vig_palatable_risks_filtered") |>
   DT::datatable(
@@ -105,7 +107,7 @@ While micromorts measure sudden death (Hazard), **Microlives** measure **chronic
 
 Using [`chronic_risks()`](../reference/chronic_risks.html), the package's curated dataset of 22 chronic lifestyle factors:
 
-```{r}
+```{r palatable_units-chunk-2}
 #| echo: false
 safe_tar_read("vig_palatable_chronic_risks") |>
   DT::datatable(
@@ -125,7 +127,7 @@ Spiegelhalter advocates for a **Logarithmic Risk Ladder**. This visualization he
 *   **Why Log Scale?** Because risks span vast orders of magnitude (1 in 10 to 1 in 10 million).
 *   **Interpretation:** A "100% increase" in a very rare risk (e.g., eating bacon increasing bowel cancer risk) might look huge in headlines but is often negligible on the ladder compared to the baseline risk of driving.
 
-```{r, fig.width=8, fig.height=14}
+```{r palatable_units-chunk-3, fig.width=8, fig.height=14}
 #| echo: false
 #| fig-cap: "Spiegelhalter's logarithmic risk ladder placing activities from negligible (banana dose) to extreme (BASE jumping) on a unified scale."
 #| fig-alt: "Horizontal bar chart on log scale showing ~40 activities ordered by micromorts. Activities span 5 orders of magnitude from 0.001 to 430 micromorts, coloured by category."
@@ -138,7 +140,7 @@ For interactive exploration, use `plot_risks_interactive()` which provides:
 *   Click legend to show/hide categories
 *   Dropdown filter for COVID-19 vs Other risks
 
-```{r}
+```{r palatable_units-chunk-4}
 #| echo: false
 #| fig-cap: "Interactive risk ladder with hover details, category filtering, and zoom."
 #| fig-alt: "Interactive plotly version of the risk ladder allowing users to hover for exact micromort values and filter categories via the legend."
@@ -207,3 +209,9 @@ While David Spiegelhalter focuses on concepts rather than specific software, the
 7.  [Terrorism and You: The Real Odds](https://www.aei.org/articles/terrorism-and-you-the-real-odds/) - American Enterprise Institute analysis of terrorism risk perception.
 8.  [Risk communication in the news](https://researchbriefings.files.parliament.uk/documents/POST-PN-0564/POST-PN-0564.pdf) - UK Parliamentary Office of Science and Technology briefing.
 9.  [Media Coverage and Mortality Risk Assessment](https://pmc.ncbi.nlm.nih.gov/articles/PMC10102679/) - PMC research on media effects on risk perception.
+
+## Reproducibility
+
+```{r palatable_units-session-info, eval=TRUE}
+sessionInfo()
+```

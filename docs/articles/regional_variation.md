@@ -78,7 +78,7 @@ The divergence became pronounced after 2005:
 ![Line chart of life expectancy over time for multiple Western European
 regions. Lines converge until ~2005, then diverge, with UK regions
 showing the slowest
-improvement.](regional_variation_files/figure-html/unnamed-chunk-4-1.png)
+improvement.](regional_variation_files/figure-html/regional_variation-chunk-4-1.png)
 
 Life expectancy trends in Western Europe diverged after 2005, with some
 regions stalling while others continued to improve.
@@ -134,3 +134,52 @@ tool](https://histdemo.shinyapps.io/ReLoG_Europe/).
 | [`vanguard_regions()`](https://johngavin.github.io/micromort/reference/vanguard_regions.md) | Top-performing regions only |
 | [`laggard_regions()`](https://johngavin.github.io/micromort/reference/laggard_regions.md) | Stagnating regions only |
 | [`regional_mortality_multiplier()`](https://johngavin.github.io/micromort/reference/regional_mortality_multiplier.md) | Location-based risk adjustment |
+
+## Reproducibility
+
+Show code
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: aarch64-apple-darwin25.2.0
+#> Running under: macOS Tahoe 26.3
+#> 
+#> Matrix products: default
+#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+#> 
+#> locale:
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Belfast
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] DT_0.34.0      targets_1.11.4
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] generics_0.1.4      sass_0.4.10         digest_0.6.39      
+#>  [4] magrittr_2.0.4      RColorBrewer_1.1-3  evaluate_1.0.5     
+#>  [7] grid_4.5.2          fastmap_1.2.0       rprojroot_2.1.1    
+#> [10] jsonlite_2.0.0      processx_3.8.6      backports_1.5.0    
+#> [13] secretbase_1.1.1    ps_1.9.1            purrr_1.2.1        
+#> [16] scales_1.4.0        crosstalk_1.2.2     codetools_0.2-20   
+#> [19] jquerylib_0.1.4     cli_3.6.5           rlang_1.1.7        
+#> [22] withr_3.0.2         cachem_1.1.0        yaml_2.3.12        
+#> [25] otel_0.2.0          tools_4.5.2         dplyr_1.1.4        
+#> [28] ggplot2_4.0.1       base64url_1.4       credentials_2.0.3  
+#> [31] vctrs_0.7.1         R6_2.6.1            lifecycle_1.0.5    
+#> [34] fs_1.6.6            htmlwidgets_1.6.4   usethis_3.2.1      
+#> [37] pkgconfig_2.0.3     callr_3.7.6         pillar_1.11.1      
+#> [40] bslib_0.10.0        gtable_0.3.6        data.table_1.18.2.1
+#> [43] glue_1.8.0          gert_2.3.1          xfun_0.56          
+#> [46] tibble_3.3.1        tidyselect_1.2.1    sys_3.4.3          
+#> [49] knitr_1.51          farver_2.1.2        htmltools_0.5.9    
+#> [52] igraph_2.2.1        labeling_0.4.3      rmarkdown_2.30     
+#> [55] compiler_4.5.2      prettyunits_1.2.0   S7_0.2.1           
+#> [58] askpass_1.2.1       openssl_2.3.4
+```
