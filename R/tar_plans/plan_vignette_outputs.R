@@ -605,30 +605,32 @@ plan_vignette_outputs <- list(
     }
   ),
 
-  # Check embedded CSV in quiz_shinylive.qmd matches canonical pairs
+  # Check CSV in quiz_shinylive.qmd (via ## file: directive) matches canonical pairs
   targets::tar_target(
     vig_quiz_csv_check,
     {
-      # Read embedded CSV from the qmd file
+      # Read CSV from the ## file: quiz_pairs.csv section in the qmd
       qmd_lines <- readLines("vignettes/quiz_shinylive.qmd", warn = FALSE)
 
-      # Find the CSV block: starts after textConnection(, ends at line with ')
-      csv_start <- grep("textConnection\\(", qmd_lines)[1]
-      # The closing line contains '), stringsAsFactors or just ')
-      csv_end <- grep("'\\),\\s*stringsAsFactors|'\\)\\s*\\)", qmd_lines)
-      csv_end <- csv_end[csv_end > csv_start][1]
-
-      if (is.na(csv_start) || is.na(csv_end)) {
-        return(list(status = "ERROR", message = "Could not find CSV in qmd"))
+      # Find the ## file: quiz_pairs.csv marker
+      file_marker <- grep("^## file: quiz_pairs\\.csv", qmd_lines)[1]
+      if (is.na(file_marker)) {
+        return(list(status = "ERROR", message = "Could not find ## file: quiz_pairs.csv in qmd"))
       }
 
-      # Extract CSV lines: from line after textConnection( to closing line
-      # The first CSV line starts with ' (quote), last line ends with ')
-      csv_text <- qmd_lines[(csv_start + 1):csv_end]
-      # First line starts with ' — remove leading quote
-      csv_text[1] <- sub("^'", "", csv_text[1])
-      # Last line ends with '), stringsAsFactors... — trim after closing quote
-      csv_text[length(csv_text)] <- sub("'\\).*$", "", csv_text[length(csv_text)])
+      # CSV starts after optional ## type: line, ends at closing ```
+      csv_start <- file_marker + 1L
+      # Skip ## type: line if present
+      if (grepl("^## type:", qmd_lines[csv_start])) csv_start <- csv_start + 1L
+      # Find closing ``` fence after the marker
+      fence_lines <- grep("^```$", qmd_lines)
+      csv_end <- fence_lines[fence_lines > file_marker][1] - 1L
+
+      if (is.na(csv_end) || csv_end < csv_start) {
+        return(list(status = "ERROR", message = "Could not find CSV boundaries in qmd"))
+      }
+
+      csv_text <- qmd_lines[csv_start:csv_end]
 
       embedded <- tryCatch(
         utils::read.csv(textConnection(paste(csv_text, collapse = "\n")),
