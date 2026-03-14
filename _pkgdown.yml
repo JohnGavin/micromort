@@ -3,6 +3,7 @@ url: https://johngavin.github.io/micromort/
 template:
   bootstrap: 5
   bootswatch: flatly
+  light-switch: true
   bslib:
     code-fold: true
     code-summary: "Show code"
@@ -27,6 +28,8 @@ navbar:
       menu:
       - text: "Architecture Overview"
         href: articles/architecture.html
+      - text: "Project Telemetry"
+        href: articles/telemetry.html
       - text: "---"
       - text: "Introduction"
         href: articles/introduction.html

@@ -30,6 +30,25 @@ Every entry in
 [`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
 carries a `confidence` tier:
 
+Show code
+
+``` r
+ar <- atomic_risks()
+
+tibble::tribble(
+  ~Tier, ~Criteria, ~Example, ~`Source type`,
+  "**high**", "Peer-reviewed, large-N studies with defined denominators",
+  "Medical radiation (NRC dosimetry)", "Regulatory agency",
+  "**medium**", "Reputable sources, reasonable denominators, some extrapolation",
+  "Wikipedia micromort list, CDC injury data", "Secondary compilation",
+  "**low**", "Limited sources, regional uncertainty, or extrapolated denominators",
+  "Snake bite in rural Africa (WHO estimate)", "Expert estimate",
+  "**estimated**", "Derived by calculation from a model (e.g., LNT for radiation)",
+  "Annual cosmic radiation from LNT model", "Model-derived"
+) |>
+  knitr::kable()
+```
+
 | Tier | Criteria | Example | Source type |
 |:---|:---|:---|:---|
 | **high** | Peer-reviewed, large-N studies with defined denominators | Medical radiation (NRC dosimetry) | Regulatory agency |
@@ -44,6 +63,21 @@ Confidence tiers with examples from the micromort dataset
 Within each confidence tier, we now track how thoroughly the estimate
 has been cross-checked:
 
+Show code
+
+``` r
+tibble::tribble(
+  ~Status, ~Definition, ~`Source count`, ~Example,
+  "`single_source`", "One citation, no cross-check", "1",
+  "Most legacy entries from Wikipedia/micromorts.rip",
+  "`corroborated`", "2+ sources agree within 2x", "2+",
+  "Flight risks (Boeing + NCRP + medical literature)",
+  "`cross_validated`", "3+ sources, range documented, outliers explained", "3+",
+  "(Future: entries with systematic literature review)"
+) |>
+  knitr::kable()
+```
+
 | Status | Definition | Source count | Example |
 |:---|:---|:---|:---|
 | `single_source` | One citation, no cross-check | 1 | Most legacy entries from Wikipedia/micromorts.rip |
@@ -51,6 +85,15 @@ has been cross-checked:
 | `cross_validated` | 3+ sources, range documented, outliers explained | 3+ | (Future: entries with systematic literature review) |
 
 Validation status levels
+
+Show code
+
+``` r
+ar |>
+  count(validation_status, confidence) |>
+  tidyr::pivot_wider(names_from = validation_status, values_from = n, values_fill = 0) |>
+  knitr::kable()
+```
 
 | confidence | corroborated | single_source |
 |:-----------|-------------:|--------------:|
@@ -67,6 +110,16 @@ Distribution of validation status in the dataset
 
 The same animal encounter can produce dramatically different micromort
 values depending on location and healthcare access:
+
+Show code
+
+``` r
+ar |>
+  filter(condition_variable == "geography") |>
+  select(activity, micromorts, condition_value, confidence, notes) |>
+  arrange(activity, condition_value) |>
+  knitr::kable(digits = 1)
+```
 
 | activity | micromorts | condition_value | confidence | notes |
 |:---|---:|:---|:---|:---|
@@ -97,6 +150,15 @@ This parallels the existing health profile conditioning. A bee sting is
 a known allergy — a 1,000x difference. The allergic person can hedge
 (carry an epinephrine auto-injector), but they cannot eliminate the
 underlying vulnerability.
+
+Show code
+
+``` r
+ar |>
+  filter(condition_variable == "health_profile", grepl("bee|wasp", activity, ignore.case = TRUE)) |>
+  select(activity, micromorts, condition_value, hedge_description, hedge_reduction_pct) |>
+  knitr::kable(digits = 2)
+```
 
 | activity | micromorts | condition_value | hedge_description | hedge_reduction_pct |
 |:---|---:|:---|:---|---:|
@@ -169,6 +231,24 @@ per-encounter micromorts requires:
 \text{micromorts} = \frac{\text{deaths per year}}{\text{encounters per year}} \times 10^6
 ```
 
+Show code
+
+``` r
+tibble::tribble(
+  ~Animal, ~`Annual deaths (approx)`, ~`Encounters/yr (approx)`,
+  ~`Micromorts`, ~`Source for denominator`, ~`In dataset?`,
+  "Shark", "~6 (US)", "~100M ocean swims", "0.06", "ISAF", "Yes",
+  "Dog (US)", "~30", "~4.5M bites", "6.7", "CDC", "Yes",
+  "Bee/wasp (US)", "~62", "~2M stings", "0.03", "CDC", "Yes",
+  "Snake (US)", "~5", "~10,000 bites", "0.5", "CDC", "Yes",
+  "Snake (Africa)", "~100,000", "~5.4M bites", "18.5", "WHO/Lancet", "Yes",
+  "Mosquito", "~600,000+", "Unknown per-bite", "—", "—", "**No**",
+  "Crocodile", "~1,000", "Unknown", "—", "—", "**No**",
+  "Elephant", "~500", "Unknown", "—", "—", "**No**"
+) |>
+  knitr::kable()
+```
+
 | Animal | Annual deaths (approx) | Encounters/yr (approx) | Micromorts | Source for denominator | In dataset? |
 |:---|:---|:---|:---|:---|:---|
 | Shark | ~6 (US) | ~100M ocean swims | 0.06 | ISAF | Yes |
@@ -191,6 +271,15 @@ context but do not include these as micromort entries.
 
 For wildlife entries, we document plausible ranges reflecting source
 disagreement:
+
+Show code
+
+``` r
+ar |>
+  filter(category == "Wildlife", !is.na(estimate_range)) |>
+  select(activity, micromorts, estimate_range, source_count, validation_status) |>
+  knitr::kable(digits = 2)
+```
 
 | activity | micromorts | estimate_range | source_count | validation_status |
 |:---|---:|:---|---:|:---|
@@ -224,3 +313,45 @@ with:
 
 Entries start at `validation_status = "single_source"` and get upgraded
 as more sources confirm them.
+
+## Reproducibility
+
+Show code
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: aarch64-apple-darwin25.2.0
+#> Running under: macOS Tahoe 26.3
+#> 
+#> Matrix products: default
+#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+#> 
+#> locale:
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Belfast
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] dplyr_1.1.4     micromort_0.1.0 testthat_3.3.2 
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] generics_0.1.4     tidyr_1.3.2        digest_0.6.39      magrittr_2.0.4    
+#>  [5] evaluate_1.0.5     grid_4.5.2         RColorBrewer_1.1-3 pkgload_1.4.1     
+#>  [9] fastmap_1.2.0      rprojroot_2.1.1    jsonlite_2.0.0     pkgbuild_1.4.8    
+#> [13] backports_1.5.0    brio_1.1.5         purrr_1.2.1        scales_1.4.0      
+#> [17] cli_3.6.5          rlang_1.1.7        bit64_4.6.0-1      withr_3.0.2       
+#> [21] yaml_2.3.12        otel_0.2.0         tools_4.5.2        checkmate_2.3.3   
+#> [25] ggplot2_4.0.1      credentials_2.0.3  assertthat_0.2.1   vctrs_0.7.1       
+#> [29] R6_2.6.1           lifecycle_1.0.5    fs_1.6.6           bit_4.6.0         
+#> [33] usethis_3.2.1      arrow_22.0.0       pkgconfig_2.0.3    desc_1.4.3        
+#> [37] pillar_1.11.1      gtable_0.3.6       glue_1.8.0         gert_2.3.1        
+#> [41] xfun_0.56          tibble_3.3.1       tidyselect_1.2.1   sys_3.4.3         
+#> [45] knitr_1.51         farver_2.1.2       htmltools_0.5.9    rmarkdown_2.30    
+#> [49] compiler_4.5.2     S7_0.2.1           askpass_1.2.1      openssl_2.3.4
+```

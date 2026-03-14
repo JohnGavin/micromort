@@ -10,5 +10,7 @@ inst/extdata/logs/
 vignettes/quiz_shinylive.html
 vignettes/quiz_shinylive_files/
 vignettes/shinylive-sw.js
+# Prevent pkgdown from re-rendering quiz as markdown article
+docs/articles/quiz_shinylive.md
 /_extensions/
 .roborev.toml

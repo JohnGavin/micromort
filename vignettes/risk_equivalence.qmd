@@ -1,6 +1,9 @@
 ---
 title: "Risk Equivalence Dashboard"
-format: html
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
 vignette: >
   %\VignetteIndexEntry{Risk Equivalence Dashboard}
   %\VignetteEngine{quarto::html}
@@ -16,8 +19,7 @@ body .container-fluid { max-width: 95vw; }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  echo = FALSE
+  comment = "#>"
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -109,22 +111,32 @@ Flying is a composite risk: crash + deep vein thrombosis (DVT) + cosmic radiatio
 ### By Duration
 
 ```{r flight-duration, fig.width=9, fig.height=5}
-#| fig-cap: "Stacked bar chart decomposing flight risk into crash, DVT, and cosmic radiation components across 2h, 5h, 8h, and 12h flights."
-#| fig-alt: "Stacked bar chart showing flight micromorts by duration. Crash risk is constant (~1 mm), DVT appears above 4 hours and grows nonlinearly, cosmic radiation increases linearly with duration."
+#| fig-cap: "Cleveland dotplot decomposing flight risk into crash, DVT, and cosmic radiation components across 2h, 5h, 8h, and 12h flights, ordered by total micromorts."
+#| fig-alt: "Dotplot showing flight micromorts by duration and component. Each row is a flight duration ordered by total risk. Dots are coloured by component: crash, DVT, and cosmic radiation."
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
+  # Order activities by total micromorts
+  totals <- flight_data |>
+    dplyr::group_by(activity) |>
+    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+    dplyr::arrange(total)
+  flight_data <- flight_data |>
+    dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
   plotly::plot_ly(
     flight_data,
-    x = ~activity,
-    y = ~micromorts,
+    y = ~activity,
+    x = ~micromorts,
     color = ~component_label,
-    type = "bar"
+    type = "scatter",
+    mode = "markers",
+    marker = list(size = 12)
   ) |>
     plotly::layout(
-      barmode = "stack",
       title = "Flight Risk by Duration and Component (Healthy Profile)",
-      xaxis = list(title = ""),
-      yaxis = list(title = "Micromorts"),
+      xaxis = list(title = "Micromorts"),
+      yaxis = list(title = "", categoryorder = "array",
+                   categoryarray = totals$activity),
       legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
                     bgcolor = "rgba(255,255,255,0.9)"),
       paper_bgcolor = "white",
@@ -290,8 +302,8 @@ if (!is.null(hedgeable)) {
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 
 ```{r hedgeable-plot, fig.width=9, fig.height=5}
-#| fig-cap: "Flight risk decomposition by hedgeability: DVT risk (green, hedgeable via compression socks) vs crash and radiation (red, not hedgeable)."
-#| fig-alt: "Stacked bar chart of flight micromorts by duration, coloured green for hedgeable components (DVT) and red for non-hedgeable (crash, cosmic radiation). DVT dominates hedgeable risk on longer flights."
+#| fig-cap: "Flight risk decomposition by hedgeability: DVT risk (green, hedgeable via compression socks) vs crash and radiation (red, not hedgeable), ordered by total micromorts."
+#| fig-alt: "Dotplot of flight micromorts by duration, coloured green for hedgeable components (DVT) and red for non-hedgeable (crash, cosmic radiation), ordered by total risk per flight duration."
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
   flight_data <- flight_data |>
@@ -299,19 +311,29 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       hedge_status = ifelse(hedgeable, "Hedgeable", "Not hedgeable")
     )
 
+  # Order activities by total micromorts
+  totals <- flight_data |>
+    dplyr::group_by(activity) |>
+    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+    dplyr::arrange(total)
+  flight_data <- flight_data |>
+    dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
   plotly::plot_ly(
     flight_data,
-    x = ~activity,
-    y = ~micromorts,
+    y = ~activity,
+    x = ~micromorts,
     color = ~hedge_status,
     colors = c("Hedgeable" = "#2E7D32", "Not hedgeable" = "#C62828"),
-    type = "bar"
+    type = "scatter",
+    mode = "markers",
+    marker = list(size = 12)
   ) |>
     plotly::layout(
-      barmode = "stack",
       title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
-      xaxis = list(title = ""),
-      yaxis = list(title = "Micromorts"),
+      xaxis = list(title = "Micromorts"),
+      yaxis = list(title = "", categoryorder = "array",
+                   categoryarray = totals$activity),
       legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
                     bgcolor = "rgba(255,255,255,0.9)"),
       paper_bgcolor = "white",
@@ -377,11 +399,15 @@ Cumulative radiation exposure over a 40-year career:
 #| fig-alt: "Line chart of cumulative micromorts vs years of exposure. Multiple lines for different radiation scenarios (dental, X-ray tech, CT patient, annual cosmic). Lines diverge over time showing compounding differences."
 timeline <- safe_tar_read("vig_radiation_timeline_data")
 if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
+  n_activities <- length(unique(timeline$activity))
+  pal <- grDevices::hcl.colors(n_activities, palette = "Dark 3")
+
   plotly::plot_ly(
     timeline,
     x = ~year,
     y = ~cumulative_micromorts,
     color = ~activity,
+    colors = pal,
     type = "scatter",
     mode = "lines"
   ) |>
@@ -454,3 +480,9 @@ if (!is.null(mat)) {
 **Medical radiation.** The "(radiation)" label indicates that the radiation dose IS the risk. For invasive procedures (e.g., coronary angiogram), procedural risks (infection, bleeding) are separate components not yet decomposed.
 
 **Confidence levels.** Each component carries a confidence rating: "high" (published meta-analyses), "medium" (single studies or expert consensus), "low" (extrapolated), "estimated" (order-of-magnitude).
+
+## Reproducibility
+
+```{r risk_equivalence-session-info, eval=TRUE}
+sessionInfo()
+```

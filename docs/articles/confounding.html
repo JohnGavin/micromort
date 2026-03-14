@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Confounding Variables in Risk Data • micromort</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -18,7 +18,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">micromort</a>
 
@@ -36,6 +36,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
@@ -319,7 +320,13 @@
 </h2>
 <p>Geography is arguably the most powerful confounder in risk data. The same encounter — a snake bite — has vastly different outcomes depending on location:</p>
 <div class="cell" data-tbl-cap="Snake bite micromorts by geography">
-<div class="cell-output-display">
+<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/atomic_risks.html">atomic_risks</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">ar</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"snake_bite"</span>, <span class="va">activity_id</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">activity</span>, <span class="va">micromorts</span>, <span class="va">condition_value</span>, <span class="va">hedge_description</span>, <span class="va">confidence</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output-display">
 <table class="table caption-top">
 <caption>Snake bite micromorts by geography</caption>
 <colgroup>
@@ -386,7 +393,48 @@
 </li>
 <li>Golden DB et al. (2015). “Stinging insect hypersensitivity.” <em>JACI</em> 135(6):1429–35. <a href="https://doi.org/10.1016/j.jaci.2015.07.017" class="external-link">doi:10.1016/j.jaci.2015.07.017</a>
 </li>
-</ul></section><script id="quarto-html-after-body" type="application/javascript">
+</ul></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+</h2>
+<div class="cell">
+<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
+<span><span class="co">#&gt; Platform: aarch64-apple-darwin25.2.0</span></span>
+<span><span class="co">#&gt; Running under: macOS Tahoe 26.3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib </span></span>
+<span><span class="co">#&gt; LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; time zone: Europe/Belfast</span></span>
+<span><span class="co">#&gt; tzcode source: internal</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] micromort_0.1.0 testthat_3.3.2 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] bit_4.6.0          gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4       </span></span>
+<span><span class="co">#&gt;  [5] compiler_4.5.2     brio_1.1.5         tidyselect_1.2.1   assertthat_0.2.1  </span></span>
+<span><span class="co">#&gt;  [9] scales_1.4.0       arrow_22.0.0       credentials_2.0.3  yaml_2.3.12       </span></span>
+<span><span class="co">#&gt; [13] fastmap_1.2.0      ggplot2_4.0.1      R6_2.6.1           generics_0.1.4    </span></span>
+<span><span class="co">#&gt; [17] knitr_1.51         backports_1.5.0    tibble_3.3.1       checkmate_2.3.3   </span></span>
+<span><span class="co">#&gt; [21] desc_1.4.3         rprojroot_2.1.1    openssl_2.3.4      RColorBrewer_1.1-3</span></span>
+<span><span class="co">#&gt; [25] pillar_1.11.1      rlang_1.1.7        xfun_0.56          S7_0.2.1          </span></span>
+<span><span class="co">#&gt; [29] fs_1.6.6           sys_3.4.3          bit64_4.6.0-1      pkgload_1.4.1     </span></span>
+<span><span class="co">#&gt; [33] otel_0.2.0         cli_3.6.5          withr_3.0.2        magrittr_2.0.4    </span></span>
+<span><span class="co">#&gt; [37] grid_4.5.2         digest_0.6.39      askpass_1.2.1      gert_2.3.1        </span></span>
+<span><span class="co">#&gt; [41] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        </span></span>
+<span><span class="co">#&gt; [45] farver_2.1.2       pkgbuild_1.4.8     rmarkdown_2.30     purrr_1.2.1       </span></span>
+<span><span class="co">#&gt; [49] pkgconfig_2.0.3    tools_4.5.2        usethis_3.2.1      htmltools_0.5.9</span></span></code></pre></div>
+</details>
+</div>
+</section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

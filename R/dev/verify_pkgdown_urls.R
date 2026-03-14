@@ -21,8 +21,9 @@ verify_pkgdown_urls <- function(
     "/",
     "/index.html",
 
-    # Articles (all 8 from _pkgdown.yml navbar)
+    # Articles (all 10 from _pkgdown.yml navbar)
     "/articles/architecture.html",
+    "/articles/telemetry.html",
     "/articles/introduction.html",
     "/articles/palatable_units.html",
     "/articles/regional_variation.html",

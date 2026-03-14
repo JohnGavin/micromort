@@ -587,6 +587,83 @@ plan_vignette_outputs <- list(
       ns_hash <- digest::digest(file = "NAMESPACE")
       generate_concept_diagram(simplified = TRUE, clickable = FALSE)
     }
+  ),
+
+
+  # ==========================================================================
+  # QUIZ DATA CONSISTENCY (Shinylive WebR limitation)
+  # ==========================================================================
+
+  # Canonical quiz pairs generated from quiz_pairs()
+  targets::tar_target(
+    vig_quiz_pairs,
+    {
+      easy <- quiz_pairs(difficulty = "easy", seed = 42)
+      medium <- quiz_pairs(difficulty = "medium", seed = 42)
+      hard <- quiz_pairs(difficulty = "hard", seed = 42)
+      rbind(easy, medium, hard)
+    }
+  ),
+
+  # Check embedded CSV in quiz_shinylive.qmd matches canonical pairs
+  targets::tar_target(
+    vig_quiz_csv_check,
+    {
+      # Read embedded CSV from the qmd file
+      qmd_lines <- readLines("vignettes/quiz_shinylive.qmd", warn = FALSE)
+
+      # Find the CSV block: starts after textConnection(, ends at line with ')
+      csv_start <- grep("textConnection\\(", qmd_lines)[1]
+      # The closing line contains '), stringsAsFactors or just ')
+      csv_end <- grep("'\\),\\s*stringsAsFactors|'\\)\\s*\\)", qmd_lines)
+      csv_end <- csv_end[csv_end > csv_start][1]
+
+      if (is.na(csv_start) || is.na(csv_end)) {
+        return(list(status = "ERROR", message = "Could not find CSV in qmd"))
+      }
+
+      # Extract CSV lines: from line after textConnection( to closing line
+      # The first CSV line starts with ' (quote), last line ends with ')
+      csv_text <- qmd_lines[(csv_start + 1):csv_end]
+      # First line starts with ' — remove leading quote
+      csv_text[1] <- sub("^'", "", csv_text[1])
+      # Last line ends with '), stringsAsFactors... — trim after closing quote
+      csv_text[length(csv_text)] <- sub("'\\).*$", "", csv_text[length(csv_text)])
+
+      embedded <- tryCatch(
+        utils::read.csv(textConnection(paste(csv_text, collapse = "\n")),
+                        stringsAsFactors = FALSE),
+        error = function(e) NULL
+      )
+
+      if (is.null(embedded)) {
+        return(list(status = "ERROR", message = "Failed to parse embedded CSV"))
+      }
+
+      # Compare — normalize to plain data.frame, round numerics for CSV round-trip tolerance
+      canonical <- as.data.frame(vig_quiz_pairs, stringsAsFactors = FALSE)
+      canonical <- canonical[order(canonical$activity_a, canonical$activity_b), ]
+      embedded <- embedded[order(embedded$activity_a, embedded$activity_b), ]
+      rownames(canonical) <- NULL
+      rownames(embedded) <- NULL
+      # Round numeric columns to handle CSV serialization precision loss
+      num_cols <- names(canonical)[vapply(canonical, is.numeric, logical(1))]
+      for (col in num_cols) {
+        canonical[[col]] <- round(canonical[[col]], 10)
+        embedded[[col]] <- round(embedded[[col]], 10)
+      }
+      hash_canonical <- digest::digest(canonical)
+      hash_embedded <- digest::digest(embedded)
+
+      list(
+        status = if (hash_canonical == hash_embedded) "OK" else "STALE",
+        canonical_rows = nrow(canonical),
+        embedded_rows = nrow(embedded),
+        canonical_hash = hash_canonical,
+        embedded_hash = hash_embedded
+      )
+    },
+    cue = targets::tar_cue(mode = "always")
   )
 
 )

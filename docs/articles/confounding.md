@@ -183,6 +183,16 @@ Geography is arguably the most powerful confounder in risk data. The
 same encounter — a snake bite — has vastly different outcomes depending
 on location:
 
+Show code
+
+``` r
+ar <- atomic_risks()
+ar |>
+  dplyr::filter(grepl("snake_bite", activity_id, ignore.case = TRUE)) |>
+  dplyr::select(activity, micromorts, condition_value, hedge_description, confidence) |>
+  knitr::kable(digits = 1)
+```
+
 | activity | micromorts | condition_value | hedge_description | confidence |
 |:---|---:|:---|:---|:---|
 | Snake bite (US, with antivenom) | 0.5 | high_income | Wear boots in snake habitat, carry pressure bandage | medium |
@@ -252,3 +262,45 @@ denominator and conditioning variables**.
 - Golden DB et al. (2015). “Stinging insect hypersensitivity.” *JACI*
   135(6):1429–35.
   [doi:10.1016/j.jaci.2015.07.017](https://doi.org/10.1016/j.jaci.2015.07.017)
+
+## Reproducibility
+
+Show code
+
+``` r
+sessionInfo()
+#> R version 4.5.2 (2025-10-31)
+#> Platform: aarch64-apple-darwin25.2.0
+#> Running under: macOS Tahoe 26.3
+#> 
+#> Matrix products: default
+#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+#> 
+#> locale:
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Belfast
+#> tzcode source: internal
+#> 
+#> attached base packages:
+#> [1] stats     graphics  grDevices utils     datasets  methods   base     
+#> 
+#> other attached packages:
+#> [1] micromort_0.1.0 testthat_3.3.2 
+#> 
+#> loaded via a namespace (and not attached):
+#>  [1] bit_4.6.0          gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4       
+#>  [5] compiler_4.5.2     brio_1.1.5         tidyselect_1.2.1   assertthat_0.2.1  
+#>  [9] scales_1.4.0       arrow_22.0.0       credentials_2.0.3  yaml_2.3.12       
+#> [13] fastmap_1.2.0      ggplot2_4.0.1      R6_2.6.1           generics_0.1.4    
+#> [17] knitr_1.51         backports_1.5.0    tibble_3.3.1       checkmate_2.3.3   
+#> [21] desc_1.4.3         rprojroot_2.1.1    openssl_2.3.4      RColorBrewer_1.1-3
+#> [25] pillar_1.11.1      rlang_1.1.7        xfun_0.56          S7_0.2.1          
+#> [29] fs_1.6.6           sys_3.4.3          bit64_4.6.0-1      pkgload_1.4.1     
+#> [33] otel_0.2.0         cli_3.6.5          withr_3.0.2        magrittr_2.0.4    
+#> [37] grid_4.5.2         digest_0.6.39      askpass_1.2.1      gert_2.3.1        
+#> [41] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        
+#> [45] farver_2.1.2       pkgbuild_1.4.8     rmarkdown_2.30     purrr_1.2.1       
+#> [49] pkgconfig_2.0.3    tools_4.5.2        usethis_3.2.1      htmltools_0.5.9
+```
