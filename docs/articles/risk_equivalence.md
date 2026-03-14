@@ -76,18 +76,28 @@ Show code
 ``` r
 flight_data <- safe_tar_read("vig_equiv_flight_duration")
 if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
+  # Order activities by total micromorts
+  totals <- flight_data |>
+    dplyr::group_by(activity) |>
+    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+    dplyr::arrange(total)
+  flight_data <- flight_data |>
+    dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
   plotly::plot_ly(
     flight_data,
-    x = ~activity,
-    y = ~micromorts,
+    y = ~activity,
+    x = ~micromorts,
     color = ~component_label,
-    type = "bar"
+    type = "scatter",
+    mode = "markers",
+    marker = list(size = 12)
   ) |>
     plotly::layout(
-      barmode = "stack",
       title = "Flight Risk by Duration and Component (Healthy Profile)",
-      xaxis = list(title = ""),
-      yaxis = list(title = "Micromorts"),
+      xaxis = list(title = "Micromorts"),
+      yaxis = list(title = "", categoryorder = "array",
+                   categoryarray = totals$activity),
       legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
                     bgcolor = "rgba(255,255,255,0.9)"),
       paper_bgcolor = "white",
@@ -98,8 +108,9 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
 }
 ```
 
-Stacked bar chart decomposing flight risk into crash, DVT, and cosmic
-radiation components across 2h, 5h, 8h, and 12h flights.
+Cleveland dotplot decomposing flight risk into crash, DVT, and cosmic
+radiation components across 2h, 5h, 8h, and 12h flights, ordered by
+total micromorts.
 
 Key observations:
 
@@ -281,19 +292,29 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
       hedge_status = ifelse(hedgeable, "Hedgeable", "Not hedgeable")
     )
 
+  # Order activities by total micromorts
+  totals <- flight_data |>
+    dplyr::group_by(activity) |>
+    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+    dplyr::arrange(total)
+  flight_data <- flight_data |>
+    dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
   plotly::plot_ly(
     flight_data,
-    x = ~activity,
-    y = ~micromorts,
+    y = ~activity,
+    x = ~micromorts,
     color = ~hedge_status,
     colors = c("Hedgeable" = "#2E7D32", "Not hedgeable" = "#C62828"),
-    type = "bar"
+    type = "scatter",
+    mode = "markers",
+    marker = list(size = 12)
   ) |>
     plotly::layout(
-      barmode = "stack",
       title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
-      xaxis = list(title = ""),
-      yaxis = list(title = "Micromorts"),
+      xaxis = list(title = "Micromorts"),
+      yaxis = list(title = "", categoryorder = "array",
+                   categoryarray = totals$activity),
       legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
                     bgcolor = "rgba(255,255,255,0.9)"),
       paper_bgcolor = "white",
@@ -305,7 +326,8 @@ if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
 ```
 
 Flight risk decomposition by hedgeability: DVT risk (green, hedgeable
-via compression socks) vs crash and radiation (red, not hedgeable).
+via compression socks) vs crash and radiation (red, not hedgeable),
+ordered by total micromorts.
 
 ## Radiation Exposure Profiles
 
@@ -371,11 +393,15 @@ Show code
 ``` r
 timeline <- safe_tar_read("vig_radiation_timeline_data")
 if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
+  n_activities <- length(unique(timeline$activity))
+  pal <- grDevices::hcl.colors(n_activities, palette = "Dark 3")
+
   plotly::plot_ly(
     timeline,
     x = ~year,
     y = ~cumulative_micromorts,
     color = ~activity,
+    colors = pal,
     type = "scatter",
     mode = "lines"
   ) |>
@@ -391,10 +417,6 @@ if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
     ) |>
     plotly::config(scrollZoom = TRUE)
 }
-#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-#> Returning the palette you asked for with that many colors
-#> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-#> Returning the palette you asked for with that many colors
 ```
 
 Cumulative radiation micromorts over a 40-year career for different

@@ -15,9 +15,9 @@ dep_graph <- safe_tar_read("vig_pipeline_dependency_graph")
 if (!is.null(dep_graph)) {
   # Render mermaid via htmltools
   htmltools::HTML(paste0(
-    '<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>',
-    '<script>mermaid.initialize({startOnLoad: true, securityLevel: "loose"});</script>',
-    '<div class="mermaid">\n', dep_graph, '\n</div>'
+    '<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>',
+    '<script>mermaid.initialize({startOnLoad: true, securityLevel: "loose", theme: "dark"});</script>',
+    '<div class="mermaid" style="background-color: #000000; padding: 1em;">\n', dep_graph, '\n</div>'
   ))
 } else {
   htmltools::p("Dependency graph not available. Run tar_make() first.")

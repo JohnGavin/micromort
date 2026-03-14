@@ -110,7 +110,7 @@ await mermaid.run({ querySelector: '.mermaid' });
 <span>             alt_text <span class="op">=</span> <span class="st">"Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage."</span><span class="op">)</span></span></code></pre></div>
 </details><figure role="figure"><pre class="mermaid" id="vigarchpipelinediagram" aria-label="Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage."></pre>
 <script type="text/plain" data-mermaid="vigarchpipelinediagram">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph LR
 
   subgraph S1["1. Data Acquisition"]
@@ -127,21 +127,21 @@ graph LR
 
   subgraph S4["4. Quality"]
     log["Logging: 1 targets"]
-    val["Validation: 2 targets"]
+    val["Validation: 0 targets"]
   end
 
   subgraph S5["5. Documentation"]
     doc["Docs: 4 targets"]
-    vig["Vignettes: 46 targets"]
+    vig["Vignettes: 48 targets"]
   end
 
   S1 --> S2 --> S3 --> S4 --> S5
 
-  style S1 fill:#1a3d1a,stroke:#2E7D32
-  style S2 fill:#1a2d4a,stroke:#1976D2
-  style S3 fill:#3d2d1a,stroke:#F57F17
-  style S4 fill:#3d1a2a,stroke:#C62828
-  style S5 fill:#2d1a3d,stroke:#7B1FA2
+  style S1 fill:#999999,stroke:#CC0000,color:#000000
+  style S2 fill:#999999,stroke:#CC0000,color:#000000
+  style S3 fill:#999999,stroke:#CC0000,color:#000000
+  style S4 fill:#999999,stroke:#CC0000,color:#000000
+  style S5 fill:#999999,stroke:#CC0000,color:#000000
 </script><figcaption>
 Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets.
 </figcaption></figure></section><section class="level2"><h2 id="function-hierarchy">2. Function Hierarchy<a class="anchor" aria-label="anchor" href="#function-hierarchy"></a>
@@ -154,7 +154,7 @@ Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, deco
 <span>             alt_text <span class="op">=</span> <span class="st">"Mermaid diagram showing all exported functions organised into five categories with links to their documentation pages."</span><span class="op">)</span></span></code></pre></div>
 </details><figure role="figure"><pre class="mermaid" id="vigarchconceptdiagram" aria-label="Mermaid diagram showing all exported functions organised into five categories with links to their documentation pages."></pre>
 <script type="text/plain" data-mermaid="vigarchconceptdiagram">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph TD
 
   subgraph Conversion["Unit Conversion"]
@@ -164,7 +164,7 @@ graph TD
     lle["lle()"]
     value_of_micromort["value_of_micromort()"]
   end
-  style Conversion fill:#1a2d4a,stroke:#1976D2
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Data["Risk Datasets"]
     atomic_risks["atomic_risks()"]
@@ -177,7 +177,7 @@ graph TD
     risk_data_sources["risk_data_sources()"]
     risk_for_duration["risk_for_duration()"]
   end
-  style Data fill:#1a3d1a,stroke:#2E7D32
+  style Data fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Regional["Regional"]
     laggard_regions["laggard_regions()"]
@@ -185,7 +185,7 @@ graph TD
     regional_mortality_multiplier["regional_mortality_multiplier()"]
     vanguard_regions["vanguard_regions()"]
   end
-  style Regional fill:#2d3d1a,stroke:#689F38
+  style Regional fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Conditional["Conditional Risk"]
     cancer_risks["cancer_risks()"]
@@ -195,13 +195,13 @@ graph TD
     hedged_portfolio["hedged_portfolio()"]
     vaccination_risks["vaccination_risks()"]
   end
-  style Conditional fill:#3d2d1a,stroke:#F57F17
+  style Conditional fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Radiation["Radiation"]
     patient_radiation_comparison["patient_radiation_comparison()"]
     radiation_profiles["radiation_profiles()"]
   end
-  style Radiation fill:#3d3d1a,stroke:#FBC02D
+  style Radiation fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Analysis["Risk Analysis"]
     annual_risk_budget["annual_risk_budget()"]
@@ -211,7 +211,7 @@ graph TD
     risk_equivalence["risk_equivalence()"]
     risk_exchange_matrix["risk_exchange_matrix()"]
   end
-  style Analysis fill:#3d1a2a,stroke:#C62828
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Visualization["Visualization"]
     plot_risk_components["plot_risk_components()"]
@@ -220,15 +220,17 @@ graph TD
     prepare_risks_plot["prepare_risks_plot()"]
     theme_micromort_dark["theme_micromort_dark()"]
   end
-  style Visualization fill:#2d1a3d,stroke:#7B1FA2
+  style Visualization fill:#999999,stroke:#CC0000,color:#000000
 
   subgraph Apps["Interactive Apps"]
+    activity_descriptions["activity_descriptions()"]
+    format_activity_name["format_activity_name()"]
     launch_api["launch_api()"]
     launch_dashboard["launch_dashboard()"]
     launch_quiz["launch_quiz()"]
     quiz_pairs["quiz_pairs()"]
   end
-  style Apps fill:#1a3d3d,stroke:#00897B
+  style Apps fill:#999999,stroke:#CC0000,color:#000000
 
   Conversion --> Data
   Data --> Regional
@@ -275,6 +277,8 @@ graph TD
   click plot_risks_interactive "../reference/plot_risks_interactive.html" "plot_risks_interactive"
   click prepare_risks_plot "../reference/prepare_risks_plot.html" "prepare_risks_plot"
   click theme_micromort_dark "../reference/theme_micromort_dark.html" "theme_micromort_dark"
+  click activity_descriptions "../reference/activity_descriptions.html" "activity_descriptions"
+  click format_activity_name "../reference/format_activity_name.html" "format_activity_name"
   click launch_api "../reference/launch_api.html" "launch_api"
   click launch_dashboard "../reference/launch_dashboard.html" "launch_dashboard"
   click launch_quiz "../reference/launch_quiz.html" "launch_quiz"
@@ -291,7 +295,7 @@ Figure 2: Exported functions grouped by category — risk data, conversion utili
 <span>             alt_text <span class="op">=</span> <span class="st">"Mermaid decision tree flowchart with three entry points — compare risks, explore regions, convert units — leading to specific package functions."</span><span class="op">)</span></span></code></pre></div>
 </details><figure role="figure"><pre class="mermaid" id="vigarchuserjourneydiagram" aria-label="Mermaid decision tree flowchart with three entry points — compare risks, explore regions, convert units — leading to specific package functions."></pre>
 <script type="text/plain" data-mermaid="vigarchuserjourneydiagram">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph TD
 
   start{{"What do you want to do?"}}
@@ -322,11 +326,11 @@ graph TD
   ci --> v_pal["Palatable Units vignette"]
   api --> v_api["REST API vignette"]
 
-  style start fill:#3d2d1a,stroke:#F57F17
-  style explore fill:#1a3d1a,stroke:#2E7D32
-  style compare fill:#1a2d4a,stroke:#1976D2
-  style analyse fill:#3d1a2a,stroke:#C62828
-  style build fill:#2d1a3d,stroke:#7B1FA2
+  style start fill:#999999,stroke:#CC0000,color:#000000
+  style explore fill:#999999,stroke:#CC0000,color:#000000
+  style compare fill:#999999,stroke:#CC0000,color:#000000
+  style analyse fill:#999999,stroke:#CC0000,color:#000000
+  style build fill:#999999,stroke:#CC0000,color:#000000
 
   click cr "../reference/common_risks.html" "common_risks"
   click lr "../reference/load_acute_risks.html" "load_acute_risks"
@@ -356,7 +360,7 @@ Figure 3: Decision tree guiding users from their question (compare risks, explor
 <span>             alt_text <span class="op">=</span> <span class="st">"Mermaid flowchart showing a nine-step development workflow: issue, branch, plan, RED test, GREEN implementation, refactor, document, check, and PR."</span><span class="op">)</span></span></code></pre></div>
 </details><figure role="figure"><pre class="mermaid" id="vigarchdeveloperdiagram" aria-label="Mermaid flowchart showing a nine-step development workflow: issue, branch, plan, RED test, GREEN implementation, refactor, document, check, and PR."></pre>
 <script type="text/plain" data-mermaid="vigarchdeveloperdiagram">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph LR
 
   s1["1. Plan<br>Architecture"]
@@ -374,15 +378,15 @@ graph LR
   s4 -.->|RED| s5
   s5 -.->|GREEN| s4
 
-  style s1 fill:#3d2d1a,stroke:#F57F17
-  style s2 fill:#1a2d4a,stroke:#1976D2
-  style s3 fill:#1a2d4a,stroke:#1976D2
-  style s4 fill:#3d1a2a,stroke:#C62828
-  style s5 fill:#1a3d1a,stroke:#2E7D32
-  style s6 fill:#2d1a3d,stroke:#7B1FA2
-  style s7 fill:#3d1a2a,stroke:#C62828
-  style s8 fill:#1a2d4a,stroke:#1976D2
-  style s9 fill:#1a3d1a,stroke:#2E7D32
+  style s1 fill:#999999,stroke:#CC0000,color:#000000
+  style s2 fill:#999999,stroke:#CC0000,color:#000000
+  style s3 fill:#999999,stroke:#CC0000,color:#000000
+  style s4 fill:#999999,stroke:#CC0000,color:#000000
+  style s5 fill:#999999,stroke:#CC0000,color:#000000
+  style s6 fill:#999999,stroke:#CC0000,color:#000000
+  style s7 fill:#999999,stroke:#CC0000,color:#000000
+  style s8 fill:#999999,stroke:#CC0000,color:#000000
+  style s9 fill:#999999,stroke:#CC0000,color:#000000
 </script><figcaption>
 Figure 4: Nine-step contributor workflow from issue creation through TDD (steps 4–5), documentation, CI checks, and PR merge.
 </figcaption></figure></section><section class="level2"><h2 id="targets-dag">5. Targets DAG<a class="anchor" aria-label="anchor" href="#targets-dag"></a>

@@ -95,9 +95,9 @@
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">dep_graph</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Render mermaid via htmltools</span></span>
 <span>  <span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/HTML.html" class="external-link">HTML</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
-<span>    <span class="st">'&lt;script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"&gt;&lt;/script&gt;'</span>,</span>
-<span>    <span class="st">'&lt;script&gt;mermaid.initialize({startOnLoad: true, securityLevel: "loose"});&lt;/script&gt;'</span>,</span>
-<span>    <span class="st">'&lt;div class="mermaid"&gt;\n'</span>, <span class="va">dep_graph</span>, <span class="st">'\n&lt;/div&gt;'</span></span>
+<span>    <span class="st">'&lt;script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"&gt;&lt;/script&gt;'</span>,</span>
+<span>    <span class="st">'&lt;script&gt;mermaid.initialize({startOnLoad: true, securityLevel: "loose", theme: "dark"});&lt;/script&gt;'</span>,</span>
+<span>    <span class="st">'&lt;div class="mermaid" style="background-color: #000000; padding: 1em;"&gt;\n'</span>, <span class="va">dep_graph</span>, <span class="st">'\n&lt;/div&gt;'</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html" class="external-link">p</a></span><span class="op">(</span><span class="st">"Dependency graph not available. Run tar_make() first."</span><span class="op">)</span></span>
@@ -124,8 +124,8 @@
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-01173b397396312092e1" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-01173b397396312092e1">{"x":{"filter":"none","vertical":false,"caption":"<caption>Target counts by plan file (77 total targets)<\/caption>","data":[["plan_data_acquisition.R","plan_documentation.R","plan_export.R","plan_logging.R","plan_normalization.R","plan_telemetry.R","plan_validation.R","plan_vignette_outputs.R"],[10,4,4,1,3,5,2,48]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>plan<\/th>\n      <th>n_targets<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"plan","targets":0},{"name":"n_targets","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-fb13d89e237e8015d8a7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-fb13d89e237e8015d8a7">{"x":{"filter":"none","vertical":false,"caption":"<caption>Target counts by plan file (77 total targets)<\/caption>","data":[["plan_data_acquisition.R","plan_documentation.R","plan_export.R","plan_logging.R","plan_normalization.R","plan_telemetry.R","plan_validation.R","plan_vignette_outputs.R"],[10,4,4,1,3,5,2,48]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>plan<\/th>\n      <th>n_targets<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"plan","targets":0},{"name":"n_targets","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section><section class="level3"><h3 id="top-5-targets-by-storage-size">Top 5 Targets by Storage Size<a class="anchor" aria-label="anchor" href="#top-5-targets-by-storage-size"></a>
@@ -198,8 +198,8 @@
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-72ce8d33d9544f83e6bb" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-72ce8d33d9544f83e6bb">{"x":{"filter":"none","vertical":false,"caption":"<caption>GitHub issues and pull requests summary<\/caption>","data":[["Issues open","Issues closed","PRs open","PRs merged"],[3,30,0,22]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>category<\/th>\n      <th>count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"category","targets":0},{"name":"count","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-3038f1d9ee015a650df3" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-3038f1d9ee015a650df3">{"x":{"filter":"none","vertical":false,"caption":"<caption>GitHub issues and pull requests summary<\/caption>","data":[["Issues open","Issues closed","PRs open","PRs merged"],[3,30,0,22]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>category<\/th>\n      <th>count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"category","targets":0},{"name":"count","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section></section><section class="level2"><h2 id="project-structure">3. Project Structure<a class="anchor" aria-label="anchor" href="#project-structure"></a>
@@ -216,8 +216,8 @@
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-8e6eaf879b4cd2cc1f54" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-8e6eaf879b4cd2cc1f54">{"x":{"filter":"none","vertical":false,"caption":"<caption>Codebase metrics snapshot<\/caption>","data":[["R source files","Test files","Exported functions","R source LOC","Test LOC","Package version"],["29","9","43","4484","1237","0.1.0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-734217665e0a7f80db87" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-734217665e0a7f80db87">{"x":{"filter":"none","vertical":false,"caption":"<caption>Codebase metrics snapshot<\/caption>","data":[["R source files","Test files","Exported functions","R source LOC","Test LOC","Package version"],["29","9","43","4484","1237","0.1.0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>

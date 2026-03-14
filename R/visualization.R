@@ -528,7 +528,7 @@ plot_risk_components <- function(activity_ids, profile = list(), risks = NULL) {
       values = c("Hedgeable" = 1.0, "Not hedgeable" = 0.6),
       name = "Mitigation"
     ) +
-    ggplot2::scale_fill_brewer(palette = "Set2", name = "Component") +
+    ggplot2::scale_fill_viridis_d(option = "D", name = "Component") +
     ggplot2::coord_flip() +
     ggplot2::labs(
       title = "Risk Component Breakdown",

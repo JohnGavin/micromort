@@ -4,27 +4,31 @@
 
 #' Shared dark theme header for mermaid diagrams
 #'
-#' Returns the `%%{init:...}%%` block matching the project's `#1a1a1a` dark
-#' background used by `theme_micromort_dark()`.
+#' Returns the `%%{init:...}%%` block with high-contrast dark theme:
+#' black background, gray-60 (`#999999`) box fill, black text, red arrows.
 #'
 #' @return Single character string.
 #' @noRd
 mermaid_dark_theme_header <- function() {
+
+  # High-contrast dark theme: black background, gray-60 boxes,
+
+  # black text, red arrows/connections.
   paste0(
     "%%{init: {'theme': 'dark', 'themeVariables': {",
-    "'primaryColor': '#2d5f8a', ",
-    "'primaryTextColor': '#e0e0e0', ",
-    "'primaryBorderColor': '#4a9eda', ",
-    "'lineColor': '#4a9eda', ",
-    "'secondaryColor': '#3d3d5c', ",
-    "'tertiaryColor': '#1a1a2e', ",
-    "'background': '#1a1a1a', ",
-    "'mainBkg': '#1a1a2e', ",
-    "'nodeBorder': '#4a9eda', ",
-    "'clusterBkg': '#2a2a3e', ",
-    "'clusterBorder': '#4a9eda', ",
-    "'titleColor': '#e0e0e0', ",
-    "'edgeLabelBackground': '#1a1a2e'",
+    "'primaryColor': '#999999', ",
+    "'primaryTextColor': '#000000', ",
+    "'primaryBorderColor': '#CC0000', ",
+    "'lineColor': '#CC0000', ",
+    "'secondaryColor': '#999999', ",
+    "'tertiaryColor': '#999999', ",
+    "'background': '#000000', ",
+    "'mainBkg': '#999999', ",
+    "'nodeBorder': '#CC0000', ",
+    "'clusterBkg': '#333333', ",
+    "'clusterBorder': '#CC0000', ",
+    "'titleColor': '#000000', ",
+    "'edgeLabelBackground': '#999999'",
     "}}}%%"
   )
 }
@@ -128,11 +132,11 @@ generate_pipeline_diagram <- function() {
     "",
     "  S1 --> S2 --> S3 --> S4 --> S5",
     "",
-    "  style S1 fill:#1a3d1a,stroke:#2E7D32",
-    "  style S2 fill:#1a2d4a,stroke:#1976D2",
-    "  style S3 fill:#3d2d1a,stroke:#F57F17",
-    "  style S4 fill:#3d1a2a,stroke:#C62828",
-    "  style S5 fill:#2d1a3d,stroke:#7B1FA2"
+    "  style S1 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style S2 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style S3 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style S4 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style S5 fill:#999999,stroke:#CC0000,color:#000000"
   )
 
   paste(lines, collapse = "\n")
@@ -175,11 +179,11 @@ generate_concept_diagram <- function(simplified = FALSE, clickable = TRUE) {
       "",
       "  Conversion --> Data --> Analysis --> Viz --> Apps",
       "",
-      "  style Conversion fill:#1a2d4a,stroke:#1976D2",
-      "  style Data fill:#1a3d1a,stroke:#2E7D32",
-      "  style Analysis fill:#3d1a2a,stroke:#C62828",
-      "  style Viz fill:#2d1a3d,stroke:#7B1FA2",
-      "  style Apps fill:#1a3d3d,stroke:#00897B"
+      "  style Conversion fill:#999999,stroke:#CC0000,color:#000000",
+      "  style Data fill:#999999,stroke:#CC0000,color:#000000",
+      "  style Analysis fill:#999999,stroke:#CC0000,color:#000000",
+      "  style Viz fill:#999999,stroke:#CC0000,color:#000000",
+      "  style Apps fill:#999999,stroke:#CC0000,color:#000000"
     )
 
     other_fns <- groups[["Other"]]
@@ -187,7 +191,7 @@ generate_concept_diagram <- function(simplified = FALSE, clickable = TRUE) {
       lines <- c(lines,
         "",
         sprintf("  Other[\"Other<br>%d functions\"]", length(other_fns)),
-        "  style Other fill:#2a2a2a,stroke:#757575"
+        "  style Other fill:#999999,stroke:#CC0000,color:#000000"
       )
     }
 
@@ -201,15 +205,15 @@ generate_concept_diagram <- function(simplified = FALSE, clickable = TRUE) {
                  "Radiation", "Analysis", "Visualization", "Apps", "Other")
 
   cat_meta <- list(
-    Conversion    = list(label = "Unit Conversion",  style = "fill:#1a2d4a,stroke:#1976D2"),
-    Data          = list(label = "Risk Datasets",    style = "fill:#1a3d1a,stroke:#2E7D32"),
-    Regional      = list(label = "Regional",         style = "fill:#2d3d1a,stroke:#689F38"),
-    Conditional   = list(label = "Conditional Risk", style = "fill:#3d2d1a,stroke:#F57F17"),
-    Radiation     = list(label = "Radiation",        style = "fill:#3d3d1a,stroke:#FBC02D"),
-    Analysis      = list(label = "Risk Analysis",    style = "fill:#3d1a2a,stroke:#C62828"),
-    Visualization = list(label = "Visualization",    style = "fill:#2d1a3d,stroke:#7B1FA2"),
-    Apps          = list(label = "Interactive Apps",  style = "fill:#1a3d3d,stroke:#00897B"),
-    Other         = list(label = "Other",            style = "fill:#2a2a2a,stroke:#757575")
+    Conversion    = list(label = "Unit Conversion",  style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Data          = list(label = "Risk Datasets",    style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Regional      = list(label = "Regional",         style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Conditional   = list(label = "Conditional Risk", style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Radiation     = list(label = "Radiation",        style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Analysis      = list(label = "Risk Analysis",    style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Visualization = list(label = "Visualization",    style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Apps          = list(label = "Interactive Apps",  style = "fill:#999999,stroke:#CC0000,color:#000000"),
+    Other         = list(label = "Other",            style = "fill:#999999,stroke:#CC0000,color:#000000")
   )
 
   lines <- c(mermaid_dark_theme_header(), "graph TD", "")
@@ -298,11 +302,11 @@ generate_user_journey_diagram <- function() {
     "  ci --> v_pal[\"Palatable Units vignette\"]",
     "  api --> v_api[\"REST API vignette\"]",
     "",
-    "  style start fill:#3d2d1a,stroke:#F57F17",
-    "  style explore fill:#1a3d1a,stroke:#2E7D32",
-    "  style compare fill:#1a2d4a,stroke:#1976D2",
-    "  style analyse fill:#3d1a2a,stroke:#C62828",
-    "  style build fill:#2d1a3d,stroke:#7B1FA2",
+    "  style start fill:#999999,stroke:#CC0000,color:#000000",
+    "  style explore fill:#999999,stroke:#CC0000,color:#000000",
+    "  style compare fill:#999999,stroke:#CC0000,color:#000000",
+    "  style analyse fill:#999999,stroke:#CC0000,color:#000000",
+    "  style build fill:#999999,stroke:#CC0000,color:#000000",
     "",
     "  click cr \"../reference/common_risks.html\" \"common_risks\"",
     "  click lr \"../reference/load_acute_risks.html\" \"load_acute_risks\"",
@@ -352,15 +356,15 @@ generate_developer_diagram <- function() {
     "  s4 -.->|RED| s5",
     "  s5 -.->|GREEN| s4",
     "",
-    "  style s1 fill:#3d2d1a,stroke:#F57F17",
-    "  style s2 fill:#1a2d4a,stroke:#1976D2",
-    "  style s3 fill:#1a2d4a,stroke:#1976D2",
-    "  style s4 fill:#3d1a2a,stroke:#C62828",
-    "  style s5 fill:#1a3d1a,stroke:#2E7D32",
-    "  style s6 fill:#2d1a3d,stroke:#7B1FA2",
-    "  style s7 fill:#3d1a2a,stroke:#C62828",
-    "  style s8 fill:#1a2d4a,stroke:#1976D2",
-    "  style s9 fill:#1a3d1a,stroke:#2E7D32"
+    "  style s1 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s2 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s3 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s4 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s5 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s6 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s7 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s8 fill:#999999,stroke:#CC0000,color:#000000",
+    "  style s9 fill:#999999,stroke:#CC0000,color:#000000"
   )
 
   paste(lines, collapse = "\n")

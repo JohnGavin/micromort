@@ -6,7 +6,7 @@ test_that("mermaid_dark_theme_header returns valid init block", {
   expect_length(header, 1)
   expect_match(header, "^%%\\{init:")
   expect_match(header, "theme.*dark")
-  expect_match(header, "#1a1a1a")
+  expect_match(header, "#000000")
   expect_match(header, "\\}\\}\\}%%$")
 })
 

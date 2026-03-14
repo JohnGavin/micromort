@@ -65,8 +65,8 @@ plan_telemetry <- list(
       edges <- net$edges
       if (nrow(edges) == 0) return(NULL)
 
-      # Build mermaid flowchart from edges
-      lines <- c("graph LR")
+      # Build mermaid flowchart from edges with project dark theme
+      lines <- c(mermaid_dark_theme_header(), "graph LR")
       for (i in seq_len(nrow(edges))) {
         lines <- c(lines, paste0("  ", edges$from[i], " --> ", edges$to[i]))
       }
