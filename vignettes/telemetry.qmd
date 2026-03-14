@@ -4,6 +4,10 @@ format:
   html:
     code-fold: true
     code-summary: "Show code"
+vignette: >
+  %\VignetteIndexEntry{Project Telemetry}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r telemetry-setup, include=FALSE}
