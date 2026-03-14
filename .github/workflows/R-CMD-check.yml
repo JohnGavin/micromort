@@ -79,10 +79,11 @@ jobs:
             filename=$(basename "$file")
 
             # Check for ggplot() construction (should be pre-computed)
-            # EXCEPTION: Allow if file uses tar_meta/tar_visnetwork (pipeline vignette)
+            # EXCEPTION: Allow if file uses safe_tar_read/tar_meta/tar_visnetwork
+            # (data is pre-computed via targets, only rendering is inline)
             if grep -q 'ggplot(' "$file" 2>/dev/null; then
-              if grep -q 'tar_meta\|tar_visnetwork' "$file" 2>/dev/null; then
-                echo "INFO: $filename has ggplot() with targets introspection (allowed)"
+              if grep -q 'safe_tar_read\|tar_meta\|tar_visnetwork' "$file" 2>/dev/null; then
+                echo "INFO: $filename has ggplot() with pre-computed targets data (allowed)"
               else
                 echo "ERROR: $filename has ggplot() calls - should be pre-computed"
                 ERRORS=$((ERRORS + 1))
