@@ -1,7 +1,14 @@
 ---
 title: "Which lifestyle event is more likely to kill you?"
-format: html
-image: ../man/figures/og-image.png
+description: "Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death."
+format:
+  html:
+    open-graph:
+      image: ../man/figures/og-image.png
+      description: "Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death."
+    twitter-card:
+      image: ../man/figures/og-image.png
+      card-style: summary_large_image
 filters:
   - shinylive
 ---
@@ -477,9 +484,10 @@ question_ui <- function(state) {
     )
   }
 
-  answered_so_far <- sum(!is.na(state$answers[seq_len(q - 1L)]) &
-    state$revealed[seq_len(q - 1L)])
-  correct_so_far <- sum(vapply(seq_len(q - 1L), function(i) {
+  up_to <- if (revealed) q else q - 1L
+  qs <- seq_len(up_to)
+  answered_so_far <- sum(!is.na(state$answers[qs]) & state$revealed[qs])
+  correct_so_far <- sum(vapply(qs, function(i) {
     !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
   }, logical(1)))
   tally_text <- sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)

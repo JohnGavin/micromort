@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta charset="UTF-8">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Risk Quiz</title>
+
+<meta name="description" content="Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death.">
+
+<title>Which lifestyle event is more likely to kill you?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -18,22 +22,45 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script><link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+
+
+<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script>
+<link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script><link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
-<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script><link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+
+
 </head>
+
 <body class="fullcontent quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Risk Quiz</h1>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Which lifestyle event is more likely to kill you?</h1>
 </div>
 
+<div>
+  <div class="description">
+    Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -45,7 +72,10 @@ ul.task-list li input[type="checkbox"] {
   
 
 
-</header><pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+</header>
+
+
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| standalone: true
@@ -54,64 +84,174 @@ ul.task-list li input[type="checkbox"] {
 library(shiny)
 library(bslib)
 
-# ---- Pre-computed quiz pairs from micromort::quiz_pairs(seed = 42, min_ratio = 1.1) ----
+# ---- Pre-computed quiz pairs from micromort::quiz_pairs(difficulty = ..., seed = 42) ----
+# 50 per difficulty tier (easy/medium/hard), 150 total
 # Embedded to avoid loading micromort (arrow dep unavailable in WebR)
 quiz_pool &lt;- read.csv(textConnection(
-'"activity_a","micromorts_a","category_a","hedgeable_pct_a","period_a","activity_b","micromorts_b","category_b","hedgeable_pct_b","period_b","ratio","answer"
-"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
-"Living (one day, age 50)",4,"Daily Life",0,"per day","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
-"General anesthesia (emergency)",10,"Medical",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
-"Himalayan mountaineering",12000,"Mountaineering",0,"per expedition","COVID-19 infection (unvaccinated)",10000,"COVID-19",0,"per infection",1.2,"a"
-"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
-"Mammogram (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
-"General anesthesia (emergency)",10,"Medical",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
-"Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year","Frequent executive flyer (annual cosmic)",0.15,"Travel",0,"per year",1.16666666666667,"a"
-"Skydiving (per jump, UK)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
-"Scuba diving (per dive, trained)",5,"Sport",0,"per event","COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)",1.25,"a"
-"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
-"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Commuting by car (30 min)",0.13,"Travel",0,"per trip",1.3,"b"
-"Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.16279069767442,"b"
-"Heroin use (per dose)",30,"Drugs",0,"per dose","US military in Afghanistan (2010)",25,"Military",0,"per day",1.2,"a"
-"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
-"US military in Afghanistan (2010)",25,"Military",0,"per day","American football (per game)",20,"Sport",0,"per game",1.25,"a"
-"Swimming (drowning risk)",12,"Sport",0,"per swim","General anesthesia (emergency)",10,"Medical",0,"per event",1.2,"a"
-"Living (one day, age 45)",6,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.2,"a"
-"COVID-19 bivalent booster (age 80+)",23,"COVID-19",0,"11 weeks (2022)","American football (per game)",20,"Sport",0,"per game",1.15,"a"
-"Skydiving (per jump, US)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
-"COVID-19 monovalent vaccine (all ages)",4,"COVID-19",0,"11 weeks (2022)","Flying (8h long-haul)",4.9,"Travel",51,"per 8h flight",1.225,"b"
-"Motorcycling (60 miles)",10,"Travel",0,"per trip","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",1.11111111111111,"a"
-"Swimming (drowning risk)",12,"Sport",0,"per swim","Motorcycling (60 miles)",10,"Travel",0,"per trip",1.2,"a"
-"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
-"Motorcycling (60 miles)",10,"Travel",0,"per trip","Skydiving (per jump, US)",8,"Sport",0,"per event",1.25,"a"
-"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","Business traveller (annual cosmic)",0.0375,"Travel",0,"per year",1.25,"b"
-"Living (one day, age 50)",4,"Daily Life",0,"per day","Coronary angiogram (radiation per scan)",5,"Medical",0,"per event",1.25,"b"
-"Hang gliding (per flight)",8,"Sport",0,"per event","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1.14285714285714,"a"
-"Commuting by car (30 min)",0.13,"Travel",0,"per trip","Airline pilot (annual radiation)",0.15,"Occupation",100,"per year",1.15384615384615,"b"
-"Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight","Drinking a glass of wine",0.5,"Daily Life",0,"per event",1.2,"a"
-"Vaginal birth (mother)",120,"Medical",0,"per event","Living (one day, age 75)",105,"Daily Life",0,"per day",1.14285714285714,"a"
-"Living (one day, age 45)",6,"Daily Life",0,"per day","Scuba diving (per dive, trained)",5,"Sport",0,"per event",1.2,"a"
-"Scuba diving (per dive, trained)",5,"Sport",0,"per event","Living (one day, age 50)",4,"Daily Life",0,"per day",1.25,"a"
-"Horseback riding",0.5,"Sport",0,"per ride","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.2,"b"
-"COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)","Interventional cardiologist (annual radiation)",0.175,"Occupation",100,"per year",1.14285714285714,"a"
-"Kangaroo encounter",0.1,"Wildlife",0,"per encounter","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
-"Skydiving (per jump, general)",10,"Sport",0,"per event","Flying (12h ultra-long-haul)",8.6,"Travel",58.1,"per 12h flight",1.16279069767442,"a"
-"Swimming (drowning risk)",12,"Sport",0,"per swim","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.2,"a"
-"Running a marathon",7,"Sport",0,"per event","Living (one day, age 45)",6,"Daily Life",0,"per day",1.16666666666667,"a"
-"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","First day of life (newborn)",430,"Daily Life",0,"per day",1.16279069767442,"a"
-"US military in Afghanistan (2010)",25,"Military",0,"per day","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",1.25,"a"
-"Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month","Base jumping (per jump)",430,"Sport",0,"per event",1.16279069767442,"a"
-"Skydiving (per jump, general)",10,"Sport",0,"per event","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",1.25,"a"
-"Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event","Normal background radiation",0.12,"Environment",0,"per year",1.2,"b"
-"Skiing (per day)",0.7,"Sport",0,"per day","Flying (2h short-haul)",0.6,"Travel",0,"per 2h flight",1.16666666666667,"a"
-"Working in an office (8 hours)",0.03,"Daily Life",0,"per day","High-altitude resident (annual cosmic)",0.035,"Environment",0,"per year",1.16666666666667,"b"
-"Skydiving (per jump, US)",8,"Sport",0,"per event","CT scan chest (radiation per scan)",7,"Medical",0,"per event",1.14285714285714,"a"
-"Living (one day, under age 1)",15,"Daily Life",0,"per day","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",1.15384615384615,"a"
-"Skydiving (per jump, UK)",8,"Sport",0,"per event","CT scan abdomen (radiation per scan)",10,"Medical",0,"per event",1.25,"b"
-"COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)","Running a marathon",7,"Sport",0,"per event",1.14285714285714,"a"'
-), stringsAsFactors = FALSE)
+'"activity_b","activity_a","micromorts_a","category_a","hedgeable_pct_a","period_a","micromorts_b","category_b","hedgeable_pct_b","period_b","ratio","difficulty","answer","description_a","help_url_a","description_b","help_url_b"
+"Airline pilot (annual radiation)","COVID-19 unvaccinated (age 18-49)",1,"COVID-19",0,"11 weeks (2022)",0.15,"Occupation",100,"per year",6.66666666666667,"easy","a","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Airline pilot (annual radiation)","Walking (20 miles)",1,"Travel",0,"per trip",0.15,"Occupation",100,"per year",6.66666666666667,"easy","a","Pedestrian fatality risk from traffic collisions over a 20-mile walk.","https://en.wikipedia.org/wiki/Pedestrian","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Airline pilot (annual radiation)","Living 2 months with a smoker",1,"Environment",0,"per 2 months",0.15,"Occupation",100,"per year",6.66666666666667,"easy","a","Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","https://en.wikipedia.org/wiki/Passive_smoking","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Barium enema (radiation per scan)","American football",20,"Sport",0,"per game",3,"Medical",0,"per event",6.66666666666667,"easy","a","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Barium enema (radiation per scan)","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",3,"Medical",0,"per event",6.66666666666667,"easy","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Base jumping","Spanish flu infection",3000,"Disease",0,"per infection",430,"Sport",0,"per event",6.97674418604651,"easy","a","The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","https://en.wikipedia.org/wiki/Spanish_flu","Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","https://en.wikipedia.org/wiki/BASE_jumping"
+"Base jumping","Matterhorn ascent",2840,"Mountaineering",0,"per ascent",430,"Sport",0,"per event",6.6046511627907,"easy","a","One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","https://en.wikipedia.org/wiki/Matterhorn","Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","https://en.wikipedia.org/wiki/BASE_jumping"
+"Chest X-ray (radiation per scan)","Skiing",0.7,"Sport",0,"per day",0.1,"Medical",0,"per event",7,"easy","a","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing","Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","https://en.wikipedia.org/wiki/Chest_radiograph"
+"COVID-19 bivalent booster (age 65-79)","American football",20,"Sport",0,"per game",3,"COVID-19",0,"11 weeks (2022)",6.66666666666667,"easy","a","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 bivalent booster (age 80+)","Caesarean birth (mother)",170,"Medical",0,"per event",23,"COVID-19",0,"11 weeks (2022)",7.39130434782609,"easy","a","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 bivalent booster (age 80+)","Scuba diving, trained (yearly)",164,"Sport",0,"per year",23,"COVID-19",0,"11 weeks (2022)",7.1304347826087,"easy","a","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 50-64)","Living (one day, under age 1)",15,"Daily Life",0,"per day",2,"COVID-19",0,"11 weeks (2022)",7.5,"easy","a","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (all ages)","Heroin use (per dose)",30,"Drugs",0,"per dose",4,"COVID-19",0,"11 weeks (2022)",7.5,"easy","a","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 unvaccinated (age 18-49)","Running a marathon",7,"Sport",0,"per event",1,"COVID-19",0,"11 weeks (2022)",7,"easy","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"CT scan chest (radiation per scan)","Driving (230 miles)",1,"Travel",0,"per trip",7,"Medical",0,"per event",7,"easy","b","Traffic fatality risk for a typical 230-mile car journey.","https://en.wikipedia.org/wiki/Traffic_collision","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan chest (radiation per scan)","Train (1000 miles)",1,"Travel",0,"per trip",7,"Medical",0,"per event",7,"easy","b","Rail travel is one of the safest transport modes per mile.","https://en.wikipedia.org/wiki/Rail_transport","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan chest (radiation per scan)","Eating 1000 bananas (radiation)",1,"Diet",0,"per event",7,"Medical",0,"per event",7,"easy","b","Cumulative potassium-40 radiation dose from 1000 bananas equals roughly 1 micromort.","https://en.wikipedia.org/wiki/Banana_equivalent_dose","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan head (radiation per scan)","Living (one day, under age 1)",15,"Daily Life",0,"per day",2,"Medical",0,"per event",7.5,"easy","a","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan"
+"Dental radiographer (annual radiation)","Taking a bath",0.07,"Daily Life",0,"per event",0.01,"Occupation",100,"per year",7,"easy","a","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography"
+"Driving (230 miles)","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1,"Travel",0,"per trip",7,"easy","a","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","Traffic fatality risk for a typical 230-mile car journey.","https://en.wikipedia.org/wiki/Traffic_collision"
+"First day of life (newborn)","Matterhorn ascent",2840,"Mountaineering",0,"per ascent",430,"Daily Life",0,"per day",6.6046511627907,"easy","a","One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","https://en.wikipedia.org/wiki/Matterhorn","The first 24 hours carry elevated risk from birth complications and congenital conditions.","https://en.wikipedia.org/wiki/Neonatal_death"
+"First day of life (newborn)","Spanish flu infection",3000,"Disease",0,"per infection",430,"Daily Life",0,"per day",6.97674418604651,"easy","a","The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","https://en.wikipedia.org/wiki/Spanish_flu","The first 24 hours carry elevated risk from birth complications and congenital conditions.","https://en.wikipedia.org/wiki/Neonatal_death"
+"Flying (12h ultra-long-haul)","Living in NYC COVID-19 (Mar-May 2020)",50,"COVID-19",0,"per 8 weeks",6.6,"Travel",75.8,"per 12h flight",7.57575757575758,"easy","a","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (2h short-haul)","Skydiving (US)",8,"Sport",0,"per event",1.1,"Travel",0,"per 2h flight",7.27272727272727,"easy","a","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (2h short-haul)","Skydiving (UK)",8,"Sport",0,"per event",1.1,"Travel",0,"per 2h flight",7.27272727272727,"easy","a","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (2h short-haul)","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",1.1,"Travel",0,"per 2h flight",7.27272727272727,"easy","a","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (5h medium-haul)","Swimming",12,"Sport",0,"per swim",1.75,"Travel",28.6,"per 5h flight",6.85714285714286,"easy","a","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (5h medium-haul)","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",1.75,"Travel",28.6,"per 5h flight",7.42857142857143,"easy","a","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Frequent executive flyer (annual cosmic)","Living 2 months with a smoker",1,"Environment",0,"per 2 months",0.15,"Travel",0,"per year",6.66666666666667,"easy","a","Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","https://en.wikipedia.org/wiki/Passive_smoking","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Frequent executive flyer (annual cosmic)","COVID-19 unvaccinated (age 18-49)",1,"COVID-19",0,"11 weeks (2022)",0.15,"Travel",0,"per year",6.66666666666667,"easy","a","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Frequent executive flyer (annual cosmic)","Eating 1000 bananas (radiation)",1,"Diet",0,"per event",0.15,"Travel",0,"per year",6.66666666666667,"easy","a","Cumulative potassium-40 radiation dose from 1000 bananas equals roughly 1 micromort.","https://en.wikipedia.org/wiki/Banana_equivalent_dose","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray"
+"General anesthesia (emergency)","COVID-19 unvaccinated (age 65-79)",76,"COVID-19",0,"11 weeks (2022)",10,"Medical",0,"per event",7.6,"easy","a","Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia"
+"Hang gliding","COVID-19 monovalent vaccine (age 80+)",55,"COVID-19",0,"11 weeks (2022)",8,"Sport",0,"per event",6.875,"easy","a","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Unpowered flight with risk from turbulence, structural failure, and pilot error.","https://en.wikipedia.org/wiki/Hang_gliding"
+"Kangaroo encounter","Skiing",0.7,"Sport",0,"per day",0.1,"Wildlife",0,"per encounter",7,"easy","a","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing","Vehicle collisions with kangaroos cause fatalities in rural Australia.","https://en.wikipedia.org/wiki/Kangaroo"
+"Living (one day, age 50)","Heroin use (per dose)",30,"Drugs",0,"per dose",4,"Daily Life",0,"per day",7.5,"easy","a","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living 2 months with a smoker","Running a marathon",7,"Sport",0,"per event",1,"Environment",0,"per 2 months",7,"easy","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","https://en.wikipedia.org/wiki/Passive_smoking"
+"Mammogram (radiation per scan)","Skiing",0.7,"Sport",0,"per day",0.1,"Medical",0,"per event",7,"easy","a","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing","Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","https://en.wikipedia.org/wiki/Mammography"
+"Motorcycling (60 miles)","Night in hospital",75,"Medical",0,"per night",10,"Travel",0,"per trip",7.5,"easy","a","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety"
+"Night in hospital","Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month",75,"Medical",0,"per night",6.66666666666667,"easy","a","Peak US COVID-19 mortality before vaccines were available.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection"
+"Rock climbing","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",3,"Sport",0,"per event",6.66666666666667,"easy","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing"
+"Skydiving","Night in hospital",75,"Medical",0,"per night",10,"Sport",0,"per event",7.5,"easy","a","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving"
+"Skydiving (UK)","COVID-19 monovalent vaccine (age 80+)",55,"COVID-19",0,"11 weeks (2022)",8,"Sport",0,"per event",6.875,"easy","a","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving"
+"Skydiving (US)","COVID-19 monovalent vaccine (age 80+)",55,"COVID-19",0,"11 weeks (2022)",8,"Sport",0,"per event",6.875,"easy","a","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving"
+"Taking a bath","Commuting by bicycle (30 min)",0.5,"Travel",0,"per trip",0.07,"Daily Life",0,"per event",7.14285714285714,"easy","a","Cycling commute with risk from traffic collisions and exertion-related events.","https://en.wikipedia.org/wiki/Bicycle_safety","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning"
+"Taking a bath","Horse riding",0.5,"Sport",0,"per ride",0.07,"Daily Life",0,"per event",7.14285714285714,"easy","a","Falls from horseback can cause traumatic brain and spinal injuries.","https://en.wikipedia.org/wiki/Equestrianism","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning"
+"Train (1000 miles)","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1,"Travel",0,"per trip",7,"easy","a","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","Rail travel is one of the safest transport modes per mile.","https://en.wikipedia.org/wiki/Rail_transport"
+"US military in Afghanistan (2010)","Caesarean birth (mother)",170,"Medical",0,"per event",25,"Military",0,"per day",6.8,"easy","a","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section","Daily risk during peak combat operations in Afghanistan's most dangerous year.","https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)"
+"Walking (20 miles)","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",1,"Travel",0,"per trip",7,"easy","a","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","Pedestrian fatality risk from traffic collisions over a 20-mile walk.","https://en.wikipedia.org/wiki/Pedestrian"
+"Walking (20 miles)","Running a marathon",7,"Sport",0,"per event",1,"Travel",0,"per trip",7,"easy","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Pedestrian fatality risk from traffic collisions over a 20-mile walk.","https://en.wikipedia.org/wiki/Pedestrian"
+"Working in an office (8 hours)","COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)",0.03,"Daily Life",0,"per day",6.66666666666667,"easy","a","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Airline pilot (annual radiation)","Commuting by bicycle (30 min)",0.5,"Travel",0,"per trip",0.15,"Occupation",100,"per year",3.33333333333333,"medium","a","Cycling commute with risk from traffic collisions and exertion-related events.","https://en.wikipedia.org/wiki/Bicycle_safety","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Airline pilot (annual radiation)","Drinking a glass of wine",0.5,"Daily Life",0,"per event",0.15,"Occupation",100,"per year",3.33333333333333,"medium","a","Acute alcohol effects including impaired judgment and cardiovascular stress.","https://en.wikipedia.org/wiki/Alcohol_(drug)","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Airline pilot (annual radiation)","Horse riding",0.5,"Sport",0,"per ride",0.15,"Occupation",100,"per year",3.33333333333333,"medium","a","Falls from horseback can cause traumatic brain and spinal injuries.","https://en.wikipedia.org/wiki/Equestrianism","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot"
+"Annual tourist flyer (annual cosmic)","Crossing a road",0.02,"Daily Life",0,"per event",0.006,"Travel",0,"per year",3.33333333333333,"medium","a","Pedestrian collision risk at a single road crossing.","https://en.wikipedia.org/wiki/Pedestrian","Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Barium enema (radiation per scan)","Motorcycling (60 miles)",10,"Travel",0,"per trip",3,"Medical",0,"per event",3.33333333333333,"medium","a","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Barium enema (radiation per scan)","Skydiving",10,"Sport",0,"per event",3,"Medical",0,"per event",3.33333333333333,"medium","a","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"COVID-19 bivalent booster (age 65-79)","General anesthesia (emergency)",10,"Medical",0,"per event",3,"COVID-19",0,"11 weeks (2022)",3.33333333333333,"medium","a","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 bivalent booster (age 65-79)","Skydiving",10,"Sport",0,"per event",3,"COVID-19",0,"11 weeks (2022)",3.33333333333333,"medium","a","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 bivalent booster (age 65-79)","Motorcycling (60 miles)",10,"Travel",0,"per trip",3,"COVID-19",0,"11 weeks (2022)",3.33333333333333,"medium","a","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 bivalent booster (age 80+)","Night in hospital",75,"Medical",0,"per night",23,"COVID-19",0,"11 weeks (2022)",3.26086956521739,"medium","a","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 18-49)","Skiing",0.7,"Sport",0,"per day",0.2,"COVID-19",0,"11 weeks (2022)",3.5,"medium","a","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 50-64)","Running a marathon",7,"Sport",0,"per event",2,"COVID-19",0,"11 weeks (2022)",3.5,"medium","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 65-79)","Heroin use (per dose)",30,"Drugs",0,"per dose",9,"COVID-19",0,"11 weeks (2022)",3.33333333333333,"medium","a","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin","Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 80+)","Caesarean birth (mother)",170,"Medical",0,"per event",55,"COVID-19",0,"11 weeks (2022)",3.09090909090909,"medium","a","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (all ages)","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",4,"COVID-19",0,"11 weeks (2022)",3.25,"medium","a","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"CT scan abdomen (radiation per scan)","Rock climbing",3,"Sport",0,"per event",10,"Medical",0,"per event",3.33333333333333,"medium","b","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing","Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan chest (radiation per scan)","COVID-19 monovalent vaccine (age 50-64)",2,"COVID-19",0,"11 weeks (2022)",7,"Medical",0,"per event",3.5,"medium","b","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan chest (radiation per scan)","COVID-19 bivalent booster (age 80+)",23,"COVID-19",0,"11 weeks (2022)",7,"Medical",0,"per event",3.28571428571429,"medium","a","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan head (radiation per scan)","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",2,"Medical",0,"per event",3.5,"medium","a","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan head (radiation per scan)","Running a marathon",7,"Sport",0,"per event",2,"Medical",0,"per event",3.5,"medium","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan"
+"Flying (12h ultra-long-haul)","American football",20,"Sport",0,"per game",6.6,"Travel",75.8,"per 12h flight",3.03030303030303,"medium","a","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (12h ultra-long-haul)","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",6.6,"Travel",75.8,"per 12h flight",3.03030303030303,"medium","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (12h ultra-long-haul)","COVID-19 monovalent vaccine (age 50-64)",2,"COVID-19",0,"11 weeks (2022)",6.6,"Travel",75.8,"per 12h flight",3.3,"medium","b","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (5h medium-haul)","Living (one day, age 45)",6,"Daily Life",0,"per day",1.75,"Travel",28.6,"per 5h flight",3.42857142857143,"medium","a","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (8h long-haul)","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",3.9,"Travel",64.1,"per 8h flight",3.33333333333333,"medium","a","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA","Long-haul flights have significant DVT risk, especially for those with risk factors.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (8h long-haul)","Swimming",12,"Sport",0,"per swim",3.9,"Travel",64.1,"per 8h flight",3.07692307692308,"medium","a","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning","Long-haul flights have significant DVT risk, especially for those with risk factors.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Frequent executive flyer (annual cosmic)","Horse riding",0.5,"Sport",0,"per ride",0.15,"Travel",0,"per year",3.33333333333333,"medium","a","Falls from horseback can cause traumatic brain and spinal injuries.","https://en.wikipedia.org/wiki/Equestrianism","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Frequent executive flyer (annual cosmic)","Drinking a glass of wine",0.5,"Daily Life",0,"per event",0.15,"Travel",0,"per year",3.33333333333333,"medium","a","Acute alcohol effects including impaired judgment and cardiovascular stress.","https://en.wikipedia.org/wiki/Alcohol_(drug)","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Heroin use (per dose)","Living (one day, age 75)",105,"Daily Life",0,"per day",30,"Drugs",0,"per dose",3.5,"medium","a","Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin"
+"Interventional cardiologist (annual radiation)","Dental X-ray (radiation per scan)",0.05,"Medical",0,"per event",0.175,"Occupation",100,"per year",3.5,"medium","b","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology"
+"Interventional cardiologist (annual radiation)","COVID-19 bivalent booster (age 18-49)",0.05,"COVID-19",0,"11 weeks (2022)",0.175,"Occupation",100,"per year",3.5,"medium","b","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology"
+"Living (one day, age 45)","American football",20,"Sport",0,"per game",6,"Daily Life",0,"per day",3.33333333333333,"medium","a","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 45)","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",6,"Daily Life",0,"per day",3.33333333333333,"medium","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 50)","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",4,"Daily Life",0,"per day",3.25,"medium","a","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, under age 1)","Living in NYC COVID-19 (Mar-May 2020)",50,"COVID-19",0,"per 8 weeks",15,"Daily Life",0,"per day",3.33333333333333,"medium","a","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality"
+"Living in NYC COVID-19 (Mar-May 2020)","Scuba diving, trained (yearly)",164,"Sport",0,"per year",50,"COVID-19",0,"per 8 weeks",3.28,"medium","a","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City"
+"Living in NYC COVID-19 (Mar-May 2020)","Caesarean birth (mother)",170,"Medical",0,"per event",50,"COVID-19",0,"per 8 weeks",3.4,"medium","a","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City"
+"Night in hospital","COVID-19 unvaccinated (age 80+)",234,"COVID-19",0,"11 weeks (2022)",75,"Medical",0,"per night",3.12,"medium","a","Unvaccinated elderly face the highest COVID-19 mortality rates.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection"
+"Normal background radiation","Business traveller (annual cosmic)",0.0375,"Travel",0,"per year",0.12,"Environment",0,"per year",3.2,"medium","b","Moderate annual cosmic radiation from ~40,000 miles of flying per year.","https://en.wikipedia.org/wiki/Cosmic_ray","Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","https://en.wikipedia.org/wiki/Background_radiation"
+"Rock climbing","Motorcycling (60 miles)",10,"Travel",0,"per trip",3,"Sport",0,"per event",3.33333333333333,"medium","a","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing"
+"Rock climbing","General anesthesia (emergency)",10,"Medical",0,"per event",3,"Sport",0,"per event",3.33333333333333,"medium","a","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing"
+"Running a marathon","COVID-19 bivalent booster (age 80+)",23,"COVID-19",0,"11 weeks (2022)",7,"Sport",0,"per event",3.28571428571429,"medium","a","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon"
+"Scuba diving, trained (yearly)","Living in US during COVID-19 (Jul 2020)",500,"COVID-19",0,"per month",164,"Sport",0,"per year",3.04878048780488,"medium","a","Peak US COVID-19 mortality before vaccines were available.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving"
+"Skydiving (UK)","US military in Afghanistan (2010)",25,"Military",0,"per day",8,"Sport",0,"per event",3.125,"medium","a","Daily risk during peak combat operations in Afghanistan's most dangerous year.","https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving"
+"Skydiving (US)","US military in Afghanistan (2010)",25,"Military",0,"per day",8,"Sport",0,"per event",3.125,"medium","a","Daily risk during peak combat operations in Afghanistan's most dangerous year.","https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving"
+"Spanish flu infection","COVID-19 infection (unvaccinated)",10000,"COVID-19",0,"per infection",3000,"Disease",0,"per infection",3.33333333333333,"medium","a","Unvaccinated COVID-19 infection carries substantial mortality risk, especially for older adults.","https://en.wikipedia.org/wiki/COVID-19","The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","https://en.wikipedia.org/wiki/Spanish_flu"
+"US military in Afghanistan (2010)","COVID-19 unvaccinated (age 65-79)",76,"COVID-19",0,"11 weeks (2022)",25,"Military",0,"per day",3.04,"medium","a","Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Daily risk during peak combat operations in Afghanistan's most dangerous year.","https://en.wikipedia.org/wiki/War_in_Afghanistan_(2001%E2%80%932021)"
+"Working in an office (8 hours)","Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event",0.03,"Daily Life",0,"per day",3.33333333333333,"medium","a","Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","https://en.wikipedia.org/wiki/Chest_radiograph","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Working in an office (8 hours)","Mammogram (radiation per scan)",0.1,"Medical",0,"per event",0.03,"Daily Life",0,"per day",3.33333333333333,"medium","a","Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","https://en.wikipedia.org/wiki/Mammography","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Working in an office (8 hours)","Kangaroo encounter",0.1,"Wildlife",0,"per encounter",0.03,"Daily Life",0,"per day",3.33333333333333,"medium","a","Vehicle collisions with kangaroos cause fatalities in rural Australia.","https://en.wikipedia.org/wiki/Kangaroo","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"American football","Heroin use (per dose)",30,"Drugs",0,"per dose",20,"Sport",0,"per game",1.5,"hard","a","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football"
+"Annual tourist flyer (annual cosmic)","Dental radiographer (annual radiation)",0.01,"Occupation",100,"per year",0.006,"Travel",0,"per year",1.66666666666667,"hard","a","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography","Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Annual tourist flyer (annual cosmic)","Cup of coffee",0.01,"Daily Life",0,"per event",0.006,"Travel",0,"per year",1.66666666666667,"hard","a","Extremely low acute risk; caffeine-related cardiac events are vanishingly rare.","https://en.wikipedia.org/wiki/Coffee","Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","https://en.wikipedia.org/wiki/Cosmic_ray"
+"Barium enema (radiation per scan)","Flying (5h medium-haul)",1.75,"Travel",28.6,"per 5h flight",3,"Medical",0,"per event",1.71428571428571,"hard","b","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Barium enema (radiation per scan)","Scuba diving, trained",5,"Sport",0,"per event",3,"Medical",0,"per event",1.66666666666667,"hard","a","Single-dive risk for trained divers from decompression sickness and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Barium enema (radiation per scan)","COVID-19 monovalent vaccine (age 50-64)",2,"COVID-19",0,"11 weeks (2022)",3,"Medical",0,"per event",1.5,"hard","b","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema"
+"Commuting by car (30 min)","COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)",0.13,"Travel",0,"per trip",1.53846153846154,"hard","a","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Short car commute with crash risk from traffic collisions.","https://en.wikipedia.org/wiki/Traffic_collision"
+"Coronary angiogram (radiation per scan)","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",5,"Medical",0,"per event",1.6,"hard","a","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","https://en.wikipedia.org/wiki/Coronary_catheterization"
+"Coronary angiogram (radiation per scan)","Skydiving (US)",8,"Sport",0,"per event",5,"Medical",0,"per event",1.6,"hard","a","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving","Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","https://en.wikipedia.org/wiki/Coronary_catheterization"
+"Coronary angiogram (radiation per scan)","Skydiving (UK)",8,"Sport",0,"per event",5,"Medical",0,"per event",1.6,"hard","a","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving","Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","https://en.wikipedia.org/wiki/Coronary_catheterization"
+"COVID-19 bivalent booster (age 65-79)","Scuba diving, trained",5,"Sport",0,"per event",3,"COVID-19",0,"11 weeks (2022)",1.66666666666667,"hard","a","Single-dive risk for trained divers from decompression sickness and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (age 50-64)","Rock climbing",3,"Sport",0,"per event",2,"COVID-19",0,"11 weeks (2022)",1.5,"hard","a","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (all ages)","Living (one day, age 45)",6,"Daily Life",0,"per day",4,"COVID-19",0,"11 weeks (2022)",1.5,"hard","a","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 monovalent vaccine (all ages)","Running a marathon",7,"Sport",0,"per event",4,"COVID-19",0,"11 weeks (2022)",1.75,"hard","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 unvaccinated (age 50-64)","Swimming",12,"Sport",0,"per swim",8,"COVID-19",0,"11 weeks (2022)",1.5,"hard","a","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 unvaccinated (age 65-79)","Vaginal birth (mother)",120,"Medical",0,"per event",76,"COVID-19",0,"11 weeks (2022)",1.57894736842105,"hard","a","Maternal mortality risk from hemorrhage, infection, and eclampsia during vaginal delivery.","https://en.wikipedia.org/wiki/Maternal_death","Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"COVID-19 unvaccinated (all ages)","Heroin use (per dose)",30,"Drugs",0,"per dose",20,"COVID-19",0,"11 weeks (2022)",1.5,"hard","a","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
+"CT scan abdomen (radiation per scan)","Flying (12h ultra-long-haul)",6.6,"Travel",75.8,"per 12h flight",10,"Medical",0,"per event",1.51515151515152,"hard","b","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome","Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan head (radiation per scan)","Rock climbing",3,"Sport",0,"per event",2,"Medical",0,"per event",1.5,"hard","a","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan"
+"CT scan head (radiation per scan)","COVID-19 bivalent booster (age 65-79)",3,"COVID-19",0,"11 weeks (2022)",2,"Medical",0,"per event",1.5,"hard","a","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan"
+"Ecstasy/MDMA (per dose)","American football",20,"Sport",0,"per game",13,"Drugs",0,"per dose",1.53846153846154,"hard","a","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA"
+"Ecstasy/MDMA (per dose)","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",13,"Drugs",0,"per dose",1.53846153846154,"hard","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA"
+"Flying (12h ultra-long-haul)","Skydiving",10,"Sport",0,"per event",6.6,"Travel",75.8,"per 12h flight",1.51515151515152,"hard","a","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (12h ultra-long-haul)","General anesthesia (emergency)",10,"Medical",0,"per event",6.6,"Travel",75.8,"per 12h flight",1.51515151515152,"hard","a","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"Flying (2h short-haul)","Skiing",0.7,"Sport",0,"per day",1.1,"Travel",0,"per 2h flight",1.57142857142857,"hard","b","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (5h medium-haul)","Rock climbing",3,"Sport",0,"per event",1.75,"Travel",28.6,"per 5h flight",1.71428571428571,"hard","a","Risk from falls, rockfall, and equipment failure on natural rock.","https://en.wikipedia.org/wiki/Rock_climbing","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (5h medium-haul)","COVID-19 bivalent booster (age 65-79)",3,"COVID-19",0,"11 weeks (2022)",1.75,"Travel",28.6,"per 5h flight",1.71428571428571,"hard","a","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety"
+"Flying (8h long-haul)","Living (one day, age 45)",6,"Daily Life",0,"per day",3.9,"Travel",64.1,"per 8h flight",1.53846153846154,"hard","a","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate","Long-haul flights have significant DVT risk, especially for those with risk factors.","https://en.wikipedia.org/wiki/Economy_class_syndrome"
+"General anesthesia (emergency)","Living (one day, under age 1)",15,"Daily Life",0,"per day",10,"Medical",0,"per event",1.5,"hard","a","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia"
+"Heroin use (per dose)","Living in NYC COVID-19 (Mar-May 2020)",50,"COVID-19",0,"per 8 weeks",30,"Drugs",0,"per dose",1.66666666666667,"hard","a","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City","Each dose carries risk of respiratory depression, overdose, and contaminated supply.","https://en.wikipedia.org/wiki/Heroin"
+"Interventional cardiologist (annual radiation)","Mammogram (radiation per scan)",0.1,"Medical",0,"per event",0.175,"Occupation",100,"per year",1.75,"hard","b","Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","https://en.wikipedia.org/wiki/Mammography","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology"
+"Interventional cardiologist (annual radiation)","Chest X-ray (radiation per scan)",0.1,"Medical",0,"per event",0.175,"Occupation",100,"per year",1.75,"hard","b","Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","https://en.wikipedia.org/wiki/Chest_radiograph","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology"
+"Interventional cardiologist (annual radiation)","Kangaroo encounter",0.1,"Wildlife",0,"per encounter",0.175,"Occupation",100,"per year",1.75,"hard","b","Vehicle collisions with kangaroos cause fatalities in rural Australia.","https://en.wikipedia.org/wiki/Kangaroo","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology"
+"Living (one day, age 45)","COVID-19 monovalent vaccine (age 65-79)",9,"COVID-19",0,"11 weeks (2022)",6,"Daily Life",0,"per day",1.5,"hard","a","Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 50)","Running a marathon",7,"Sport",0,"per event",4,"Daily Life",0,"per day",1.75,"hard","a","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 50)","Living in Maryland COVID-19 (Mar-May 2020)",7,"COVID-19",0,"per 8 weeks",4,"Daily Life",0,"per day",1.75,"hard","a","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 75)","Caesarean birth (mother)",170,"Medical",0,"per event",105,"Daily Life",0,"per day",1.61904761904762,"hard","a","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section","Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living (one day, age 75)","Scuba diving, trained (yearly)",164,"Sport",0,"per year",105,"Daily Life",0,"per day",1.56190476190476,"hard","a","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving","Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Living in Maryland COVID-19 (Mar-May 2020)","Swimming",12,"Sport",0,"per swim",7,"COVID-19",0,"per 8 weeks",1.71428571428571,"hard","a","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland"
+"Living in NYC COVID-19 (Mar-May 2020)","Night in hospital",75,"Medical",0,"per night",50,"COVID-19",0,"per 8 weeks",1.5,"hard","a","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City"
+"Motorcycling (60 miles)","Living (one day, under age 1)",15,"Daily Life",0,"per day",10,"Travel",0,"per trip",1.5,"hard","a","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety"
+"Normal background radiation","Taking a bath",0.07,"Daily Life",0,"per event",0.12,"Environment",0,"per year",1.71428571428571,"hard","b","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning","Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","https://en.wikipedia.org/wiki/Background_radiation"
+"Normal background radiation","COVID-19 monovalent vaccine (age 18-49)",0.2,"COVID-19",0,"11 weeks (2022)",0.12,"Environment",0,"per year",1.66666666666667,"hard","a","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","https://en.wikipedia.org/wiki/Background_radiation"
+"Scuba diving, trained","COVID-19 unvaccinated (age 50-64)",8,"COVID-19",0,"11 weeks (2022)",5,"Sport",0,"per event",1.6,"hard","a","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Single-dive risk for trained divers from decompression sickness and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving"
+"Skydiving","Living (one day, under age 1)",15,"Daily Life",0,"per day",10,"Sport",0,"per event",1.5,"hard","a","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving"
+"Skydiving (US)","Ecstasy/MDMA (per dose)",13,"Drugs",0,"per dose",8,"Sport",0,"per event",1.625,"hard","a","Risk from hyperthermia, serotonin syndrome, and contaminated supply.","https://en.wikipedia.org/wiki/MDMA","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving"
+"Swimming","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",12,"Sport",0,"per swim",1.66666666666667,"hard","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning"
+"Working in an office (8 hours)","COVID-19 bivalent booster (age 18-49)",0.05,"COVID-19",0,"11 weeks (2022)",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"Working in an office (8 hours)","Dental X-ray (radiation per scan)",0.05,"Medical",0,"per event",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
+"X-ray technician (annual radiation)","Working in an office (8 hours)",0.03,"Daily Life",0,"per day",0.05,"Occupation",100,"per year",1.66666666666667,"hard","b","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate","Occupational radiation exposure mitigated by lead shielding and ALARA protocols.","https://en.wikipedia.org/wiki/Radiographer"'), stringsAsFactors = FALSE)
+
+# ---- format_activity_name helper ----
+format_activity_name &lt;- function(name) {
+  formatted &lt;- sub("\\s*\\(", "&lt;br&gt;(", name)
+  HTML(formatted)
+}
 
 # ---- CSS ----
 quiz_css &lt;- "
+  .quiz-title {
+    white-space: nowrap;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
   .quiz-btn {
     min-height: 180px;
     width: 100%;
@@ -125,24 +265,75 @@ quiz_css &lt;- "
     font-size: 1rem;
     border: 2px solid #dee2e6;
     border-radius: 8px;
+    background-color: #2b3e50;
+    color: #ffffff;
     transition: border-color 0.3s, background-color 0.1s;
+    user-select: text;
+    -webkit-user-select: text;
   }
-  .quiz-btn:hover { border-color: #2c7be5; background-color: #f0f7ff; }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; color: #ffffff; }
   .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
   .quiz-btn .badge { font-size: 0.75em; }
   .quiz-btn-correct {
     border: 3px solid #198754 !important;
     background-color: #d1e7dd !important;
+    color: #0f5132 !important;
   }
   .quiz-btn-wrong {
     border: 3px solid #dc3545 !important;
     background-color: #f8d7da !important;
+    color: #842029 !important;
   }
   .quiz-btn-neutral {
     border: 3px solid #6c757d !important;
     background-color: #e9ecef !important;
+    color: #495057 !important;
   }
+  .quiz-btn .help-icon { font-size: 0.8rem; color: #adb5bd; cursor: help; margin-left: 4px; }
+  .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
+  .quiz-btn .help-link:hover { text-decoration: underline; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+"
+
+# ---- Leaderboard JS ----
+leaderboard_js &lt;- "
+var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+var scoreSubmitted = false;
+function submitScore(score, total) {
+  if (scoreSubmitted) return;
+  var btn = document.getElementById('submit_btn');
+  if (btn) btn.disabled = true;
+  var data = new URLSearchParams();
+  data.append('entry.335579146', score);
+  data.append('entry.2122920576', total);
+  data.append('entry.621716914', new Date().toISOString());
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
+    scoreSubmitted = true;
+    if (btn) btn.textContent = 'Submitted!';
+    getPercentile(score, total);
+  }).catch(function() {
+    if (btn) { btn.textContent = 'Score saved locally'; btn.disabled = true; }
+  });
+}
+function getPercentile(score, total) {
+  fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
+    var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
+    var rows = json.table.rows;
+    var pct = score / total * 100;
+    var below = 0;
+    for (var i = 0; i &lt; rows.length; i++) {
+      var s = rows[i].c[0] ? rows[i].c[0].v : 0;
+      var t = rows[i].c[1] ? rows[i].c[1].v : 10;
+      if ((s / t * 100) &lt; pct) below++;
+    }
+    var percentile = rows.length &gt; 0 ? Math.round(below / rows.length * 100) : 50;
+    var el = document.getElementById('percentile_text');
+    if (el) el.textContent = 'You scored better than ' + percentile + '% of players!';
+  }).catch(function() {});
+}
 "
 
 # ---- Fun result phrases ----
@@ -170,7 +361,7 @@ quiz_result_phrase &lt;- function(pct) {
          fact = "We tend to assume things will keep going as normal.",
          link = "https://en.wikipedia.org/wiki/Normalcy_bias"),
     list(min = -1, phrase = "Toss a coin \u2014 less risky!",
-         fact = "Past outcomes don't change future probabilities.",
+         fact = "Past outcomes don\'t change future probabilities.",
          link = "https://en.wikipedia.org/wiki/Gambler%27s_fallacy")
   )
   for (p in phrases) {
@@ -179,44 +370,59 @@ quiz_result_phrase &lt;- function(pct) {
   phrases[[length(phrases)]]
 }
 
+# ---- Encouragement lines ----
+quiz_encouragement_lines &lt;- function() {
+  c(
+    "Go on, your inner actuary is dying to play. (Not literally.)",
+    "Warning: may cause sudden urge to recalculate your commute.",
+    "Spoiler: everything is riskier than you think.",
+    "No micromorts were harmed in the making of this quiz.",
+    "Side effects may include newfound respect for seatbelts.",
+    "Think you know risk? Prove it.",
+    "Your overconfidence is showing. Let\'s test it.",
+    "Statistically, you\'ll enjoy this. Probably."
+  )
+}
+
+# ---- Persistent title ----
+quiz_title_ui &lt;- function() {
+  h3(
+    "Which lifestyle event is more likely to kill you?",
+    class = "text-center mb-3 quiz-title"
+  )
+}
+
 # ---- Instructions page ----
 instructions_ui &lt;- function() {
+  encouragement &lt;- sample(quiz_encouragement_lines(), 1L)
+
   tagList(
-    h2("Which Is Riskier?", class = "text-center mb-4"),
+    h4("Hints", class = "text-center mb-3"),
     card(
       card_body(
         tags$ul(
-          tags$li(
-            "A ", strong("micromort (mm)"), " is a one-in-a-million ",
-            "chance of death."
-          ),
-          tags$li(
-            "Each question shows two activities \u2014 ",
-            "tap the one you think is riskier."
-          ),
-          tags$li(
-            "You can ", strong("skip"), " questions or go ",
-            strong("back"), " and change answers."
-          )
+          tags$li("Each question shows two risky activities."),
+          tags$li("Tap the activity that you think is ", strong("riskier"), "."),
+          tags$li("You can ", strong("skip"), " questions or go ",
+                   strong("back"), " and review previous answers."),
+          tags$li("Skipped (unanswered) questions score zero."),
+          tags$li("A ", strong("micromort (mm)"), " is a one-in-a-million chance of death.")
         ),
-        radioButtons(
-          "n_questions", "Number of questions:",
-          choices = c("5" = 5, "10" = 10),
-          selected = 10, inline = TRUE
-        ),
-        div(
-          class = "text-center mt-3",
-          actionButton(
-            "start_quiz", "Start Quiz",
-            class = "btn-primary btn-lg"
-          )
-        )
+        div(class = "text-center mt-2 mb-3", tags$em(encouragement)),
+        radioButtons("difficulty", "Difficulty:",
+                     choices = c("Easy" = "easy", "Medium" = "medium",
+                                 "Hard" = "hard", "Mixed" = "mixed"),
+                     selected = "mixed", inline = TRUE),
+        radioButtons("n_questions", "Number of questions:",
+                     choices = c("5" = 5, "10" = 10), selected = 10, inline = TRUE),
+        div(class = "text-center mt-3",
+            actionButton("start_quiz", "Start Quiz", class = "btn-primary btn-lg"))
       )
     )
   )
 }
 
-# ---- Question page (merged single-row buttons) ----
+# ---- Question page ----
 question_ui &lt;- function(state) {
   q &lt;- state$current_q
   n &lt;- state$n_questions
@@ -233,13 +439,16 @@ question_ui &lt;- function(state) {
   left_category &lt;- pair[[paste0("category_", left_side)]]
   left_mm &lt;- pair[[paste0("micromorts_", left_side)]]
   left_period &lt;- pair[[paste0("period_", left_side)]]
+  left_desc &lt;- pair[[paste0("description_", left_side)]]
+  left_help &lt;- pair[[paste0("help_url_", left_side)]]
 
   right_activity &lt;- pair[[paste0("activity_", right_side)]]
   right_category &lt;- pair[[paste0("category_", right_side)]]
   right_mm &lt;- pair[[paste0("micromorts_", right_side)]]
   right_period &lt;- pair[[paste0("period_", right_side)]]
+  right_desc &lt;- pair[[paste0("description_", right_side)]]
+  right_help &lt;- pair[[paste0("help_url_", right_side)]]
 
-  # Button styling after reveal
   left_class &lt;- "btn quiz-btn"
   right_class &lt;- "btn quiz-btn"
   left_extra &lt;- ""
@@ -248,7 +457,6 @@ question_ui &lt;- function(state) {
   if (revealed) {
     is_left_riskier &lt;- left_mm &gt; right_mm
     is_right_riskier &lt;- right_mm &gt; left_mm
-
     if (!is.na(answer)) {
       chose_left &lt;- answer == left_side
       chose_right &lt;- answer == right_side
@@ -256,7 +464,6 @@ question_ui &lt;- function(state) {
       chose_left &lt;- FALSE
       chose_right &lt;- FALSE
     }
-
     if (is_left_riskier) {
       left_class &lt;- paste(left_class, "quiz-btn-correct")
       right_class &lt;- paste(right_class, if (chose_right) "quiz-btn-wrong" else "quiz-btn-neutral")
@@ -264,116 +471,134 @@ question_ui &lt;- function(state) {
       right_class &lt;- paste(right_class, "quiz-btn-correct")
       left_class &lt;- paste(left_class, if (chose_left) "quiz-btn-wrong" else "quiz-btn-neutral")
     } else {
-      # Equal (shouldn't happen with min_ratio=1.1, but be safe)
       left_class &lt;- paste(left_class, "quiz-btn-correct")
       right_class &lt;- paste(right_class, "quiz-btn-correct")
     }
-
     left_extra &lt;- sprintf("%.2f mm", left_mm)
     right_extra &lt;- sprintf("%.2f mm", right_mm)
   }
 
-  # Build button content
-  make_btn_content &lt;- function(activity, category, period, mm_text) {
-    parts &lt;- list(
-      span(class = "activity-name", activity),
-      div(
-        span(class = "badge bg-secondary me-1", category),
-        span(class = "badge bg-info", period)
-      )
-    )
+  make_btn_content &lt;- function(activity, category, period, mm_text,
+                               description = NULL, help_url = NULL) {
+    name_el &lt;- span(class = "activity-name", format_activity_name(activity))
+    if (!is.null(description) &amp;&amp; nzchar(description)) {
+      name_el &lt;- tagList(name_el,
+        tooltip(span(class = "help-icon", "\u24d8"), description))
+    }
+    parts &lt;- list(name_el,
+      div(span(class = "badge bg-secondary me-1", category),
+          span(class = "badge bg-info", period)))
     if (nzchar(mm_text)) {
       parts &lt;- c(parts, list(strong(mm_text, style = "font-size: 1.2rem; color: #333;")))
+    }
+    if (!is.null(help_url) &amp;&amp; nzchar(help_url)) {
+      parts &lt;- c(parts, list(tags$a(class = "help-link", href = help_url,
+        target = "_blank", onclick = "event.stopPropagation();", "Learn more \u2192")))
     }
     parts
   }
 
-  # Result text
   result_text &lt;- NULL
+  explanation_panel &lt;- NULL
   if (revealed) {
     user_correct &lt;- !is.na(answer) &amp;&amp; answer == correct_answer
     result_text &lt;- if (user_correct) {
-      div(
-        class = "alert alert-success text-center mt-2 py-2",
-        strong("Correct!")
-      )
+      div(class = "alert alert-success text-center mt-2 py-2", strong("Correct!"))
     } else {
       riskier &lt;- pair[[paste0("activity_", correct_answer)]]
-      div(
-        class = "alert alert-danger text-center mt-2 py-2",
-        if (is.na(answer)) "Skipped! " else tagList(strong("Incorrect! ")),
-        sprintf("%s is riskier.", riskier)
-      )
+      div(class = "alert alert-danger text-center mt-2 py-2",
+          if (is.na(answer)) "Skipped! " else tagList(strong("Incorrect! ")),
+          sprintf("%s is riskier.", riskier))
     }
+
+    ratio_text &lt;- sprintf("%.1f", pair$ratio)
+    riskier_side &lt;- pair$answer
+    safer_side &lt;- if (riskier_side == "a") "b" else "a"
+    hedge_a &lt;- pair$hedgeable_pct_a
+    hedge_b &lt;- pair$hedgeable_pct_b
+
+    explanation_panel &lt;- card(
+      class = "explanation-panel mt-2",
+      card_body(
+        tags$p(strong(pair[[paste0("activity_", riskier_side)]]),
+               sprintf(" has %.2f mm: ", pair[[paste0("micromorts_", riskier_side)]]),
+               pair[[paste0("description_", riskier_side)]]),
+        tags$p(strong(pair[[paste0("activity_", safer_side)]]),
+               sprintf(" has %.2f mm: ", pair[[paste0("micromorts_", safer_side)]]),
+               pair[[paste0("description_", safer_side)]]),
+        tags$p(sprintf("%s is %sx riskier than %s.",
+               pair[[paste0("activity_", riskier_side)]], ratio_text,
+               pair[[paste0("activity_", safer_side)]])),
+        if (hedge_a &gt; 0 || hedge_b &gt; 0) {
+          hedgeable_parts &lt;- character(0)
+          if (hedge_a &gt; 0) hedgeable_parts &lt;- c(hedgeable_parts,
+            sprintf("%s is %.0f%% hedgeable", pair$activity_a, hedge_a))
+          if (hedge_b &gt; 0) hedgeable_parts &lt;- c(hedgeable_parts,
+            sprintf("%s is %.0f%% hedgeable", pair$activity_b, hedge_b))
+          tags$p(tags$em(paste(hedgeable_parts, collapse = "; "),
+                         " \u2014 you can reduce this risk!"))
+        },
+        tags$p(class = "mb-0", "Learn more: ",
+          tags$a(href = pair[[paste0("help_url_", riskier_side)]],
+                 target = "_blank", pair[[paste0("activity_", riskier_side)]]),
+          " | ",
+          tags$a(href = pair[[paste0("help_url_", safer_side)]],
+                 target = "_blank", pair[[paste0("activity_", safer_side)]]))
+      )
+    )
   }
 
-  # Running tally (shown from question 2 onwards)
-  answered_so_far &lt;- sum(!is.na(state$answers[seq_len(q - 1L)]) &amp;
-    state$revealed[seq_len(q - 1L)])
-  correct_so_far &lt;- sum(vapply(seq_len(q - 1L), function(i) {
+  up_to &lt;- if (revealed) q else q - 1L
+  qs &lt;- seq_len(up_to)
+  answered_so_far &lt;- sum(!is.na(state$answers[qs]) &amp; state$revealed[qs])
+  correct_so_far &lt;- sum(vapply(qs, function(i) {
     !is.na(state$answers[i]) &amp;&amp; state$answers[i] == state$pairs$answer[i]
   }, logical(1)))
+  tally_text &lt;- sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
 
-  tally_ui &lt;- if (q &gt; 1L) {
-    div(class = "text-center mb-1",
-      tags$small(class = "text-muted",
-        sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
-      )
-    )
-  }
+  nav_ui &lt;- div(
+    class = "d-flex justify-content-between align-items-center mb-3",
+    actionButton("prev_q", "\u2190 Back", class = "btn-secondary"),
+    span(class = "text-muted",
+      if ("difficulty" %in% names(pair) &amp;&amp; !is.na(pair$difficulty)) {
+        diff_colors &lt;- c(easy = "success", medium = "warning", hard = "danger")
+        span(class = paste0("badge bg-", diff_colors[pair$difficulty], " me-2"),
+             pair$difficulty)
+      },
+      sprintf("%d of %d", q, n),
+      " \u00b7 ", tags$small(tally_text)),
+    actionButton("next_q", if (q == n) "Finish" else "Next \u2192", class = "btn-primary")
+  )
 
   tagList(
-    h4(
-      sprintf("Question %d of %d", q, n),
-      class = "text-center text-muted mb-1"
-    ),
-    tally_ui,
-    div(
-      class = "row align-items-center",
-      div(
-        class = "col-5",
+    nav_ui,
+    div(class = "row align-items-center",
+      div(class = "col-5",
         if (!revealed) {
-          actionButton(
-            "choose_left",
-            tagList(make_btn_content(left_activity, left_category, left_period, left_extra)),
-            class = left_class
-          )
+          actionButton("choose_left",
+            tagList(make_btn_content(left_activity, left_category, left_period,
+                                     left_extra, left_desc, left_help)),
+            class = left_class)
         } else {
           div(class = left_class,
-              make_btn_content(left_activity, left_category, left_period, left_extra))
-        }
-      ),
-      div(
-        class = "col-2 text-center",
-        h3("VS", class = "text-muted mb-0")
-      ),
-      div(
-        class = "col-5",
+              make_btn_content(left_activity, left_category, left_period,
+                               left_extra, left_desc, left_help))
+        }),
+      div(class = "col-2 text-center", h3("VS", class = "text-muted mb-0")),
+      div(class = "col-5",
         if (!revealed) {
-          actionButton(
-            "choose_right",
-            tagList(make_btn_content(right_activity, right_category, right_period, right_extra)),
-            class = right_class
-          )
+          actionButton("choose_right",
+            tagList(make_btn_content(right_activity, right_category, right_period,
+                                     right_extra, right_desc, right_help)),
+            class = right_class)
         } else {
           div(class = right_class,
-              make_btn_content(right_activity, right_category, right_period, right_extra))
-        }
-      )
+              make_btn_content(right_activity, right_category, right_period,
+                               right_extra, right_desc, right_help))
+        })
     ),
     result_text,
-    div(
-      class = "d-flex justify-content-between mt-3",
-      actionButton(
-        "prev_q", "\u2190 Back",
-        class = if (q == 1L) "btn-secondary disabled" else "btn-secondary"
-      ),
-      actionButton(
-        "next_q",
-        if (q == n) "Finish" else "Next \u2192",
-        class = "btn-primary"
-      )
-    )
+    explanation_panel
   )
 }
 
@@ -394,45 +619,43 @@ results_summary_ui &lt;- function(state) {
 
   tagList(
     h2("Results", class = "text-center mb-4"),
-    div(
-      class = "row mb-4",
-      div(
-        class = "col-6",
+    div(class = "row mb-4",
+      div(class = "col-6",
         div(class = "card text-white bg-primary mb-3",
           div(class = "card-body text-center",
-            tags$small("Your Score"),
-            h2(sprintf("%d / %d", score, n), class = "mb-0")
-          )
-        )
-      ),
-      div(
-        class = "col-6",
+            tags$small("Your Score"), h2(sprintf("%d / %d", score, n), class = "mb-0")))),
+      div(class = "col-6",
         div(class = "card text-white bg-secondary mb-3",
           div(class = "card-body text-center",
-            tags$small("Random Guessing"),
-            h2(sprintf("~%.1f / %d", baseline, n), class = "mb-0")
-          )
-        )
-      )
+            tags$small("Random Guessing"), h2(sprintf("~%.1f / %d", baseline, n), class = "mb-0"))))
     ),
-    div(
-      class = "text-center mb-4",
+    div(class = "text-center mb-4",
       h3(result_info$phrase),
-      tags$em(result_info$fact),
-      br(),
-      tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")
+      tags$em(result_info$fact), br(),
+      tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
+    div(class = "d-flex justify-content-center gap-3",
+      actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
+      actionButton("try_again", "Try Again", class = "btn-primary btn-lg"),
+      tags$button(id = "share_btn", class = "btn btn-success btn-lg",
+        onclick = sprintf(paste0(
+          "var text = \'I scored %d/%d on ",
+          "\"Which lifestyle event is more likely to kill you?\"\\n",
+          "Can you beat my score? Take the quiz:\\n",
+          "https://johngavin.github.io/micromort/articles/quiz_shinylive.html\';",
+          "navigator.clipboard.writeText(text).then(function(){",
+          "var btn=document.getElementById(\'share_btn\');",
+          "btn.textContent=\'Copied!\';",
+          "setTimeout(function(){btn.textContent=\'Share\';},2000);",
+          "});"), score, n),
+        "Share"),
+      tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
+        onclick = sprintf("submitScore(%d, %d)", score, n), "Submit Score")
     ),
-    div(
-      class = "d-flex justify-content-center gap-3",
-      actionButton(
-        "view_details", "View Details",
-        class = "btn-outline-primary btn-lg"
-      ),
-      actionButton(
-        "try_again", "Try Again",
-        class = "btn-primary btn-lg"
-      )
-    )
+    div(class = "text-center mt-2",
+      tags$small(id = "percentile_text", class = "text-muted"),
+      tags$br(),
+      tags$small(class = "text-muted",
+                 "Scores are recorded anonymously (score, total, timestamp only)."))
   )
 }
 
@@ -443,94 +666,54 @@ results_detail_ui &lt;- function(state) {
   n &lt;- state$n_questions
 
   detail_rows &lt;- lapply(seq_len(n), function(i) {
-    user_ans &lt;- if (is.na(answers[i])) {
-      "Skipped"
-    } else if (answers[i] == "a") {
-      pairs$activity_a[i]
-    } else {
-      pairs$activity_b[i]
-    }
-    correct_ans &lt;- if (pairs$answer[i] == "a") {
-      pairs$activity_a[i]
-    } else {
-      pairs$activity_b[i]
-    }
-    result &lt;- if (is.na(answers[i])) {
-      "\u2014"
-    } else if (answers[i] == pairs$answer[i]) {
-      "\u2713"
-    } else {
-      "\u2717"
-    }
-
-    tags$tr(
-      tags$td(i),
-      tags$td(pairs$activity_a[i]),
-      tags$td(sprintf("%.2f", pairs$micromorts_a[i])),
-      tags$td(pairs$activity_b[i]),
-      tags$td(sprintf("%.2f", pairs$micromorts_b[i])),
-      tags$td(user_ans),
-      tags$td(correct_ans),
-      tags$td(result)
-    )
+    user_ans &lt;- if (is.na(answers[i])) "Skipped"
+                else if (answers[i] == "a") pairs$activity_a[i] else pairs$activity_b[i]
+    correct_ans &lt;- if (pairs$answer[i] == "a") pairs$activity_a[i] else pairs$activity_b[i]
+    result &lt;- if (is.na(answers[i])) "\u2014"
+              else if (answers[i] == pairs$answer[i]) "\u2713" else "\u2717"
+    tags$tr(tags$td(i), tags$td(pairs$activity_a[i]),
+            tags$td(sprintf("%.2f", pairs$micromorts_a[i])),
+            tags$td(pairs$activity_b[i]),
+            tags$td(sprintf("%.2f", pairs$micromorts_b[i])),
+            tags$td(user_ans), tags$td(correct_ans), tags$td(result))
   })
 
   tagList(
-    h3("Question-by-Question Detail", class = "text-center mb-4"),
-    div(
-      class = "table-responsive",
-      tags$table(
-        class = "table table-striped table-hover",
-        tags$thead(
-          tags$tr(
-            tags$th("Q"),
-            tags$th("Activity A"),
-            tags$th("mm A"),
-            tags$th("Activity B"),
-            tags$th("mm B"),
-            tags$th("Your Answer"),
-            tags$th("Correct"),
-            tags$th("Result")
-          )
-        ),
-        tags$tbody(detail_rows)
-      )
-    ),
-    div(
-      class = "text-center mt-4",
-      actionButton(
-        "back_to_summary", "\u2190 Back to Summary",
-        class = "btn-secondary btn-lg"
-      )
-    )
+    div(class = "d-flex justify-content-between align-items-center mb-4",
+      actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
+      h3("Question-by-Question Detail", class = "mb-0"),
+      actionButton("try_again_detail", "Try Again", class = "btn-primary")),
+    div(class = "table-responsive",
+      tags$table(class = "table table-striped table-hover",
+        tags$thead(tags$tr(tags$th("Q"), tags$th("Activity A"), tags$th("mm A"),
+                           tags$th("Activity B"), tags$th("mm B"),
+                           tags$th("Your Answer"), tags$th("Correct"), tags$th("Result"))),
+        tags$tbody(detail_rows)))
   )
 }
 
 # ---- App ----
 ui &lt;- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
-  tags$head(tags$style(HTML(quiz_css))),
-  div(
-    class = "container",
-    style = "max-width: 800px; margin: auto; padding-top: 20px;",
-    uiOutput("main_ui")
-  )
+  tags$head(tags$style(HTML(quiz_css)), tags$script(HTML(leaderboard_js))),
+  div(class = "container",
+      style = "width: 95%; max-width: 100%; margin: auto; padding-top: 20px;",
+      quiz_title_ui(), uiOutput("main_ui"))
 )
 
 server &lt;- function(input, output, session) {
   state &lt;- reactiveValues(
-    phase = "instructions",
-    n_questions = 10L,
-    current_q = 1L,
-    pairs = NULL,
-    answers = NULL,
-    display_order = NULL,
-    revealed = NULL
-  )
+    phase = "instructions", n_questions = 10L, current_q = 1L,
+    pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL)
 
   observeEvent(input$start_quiz, {
     n &lt;- as.integer(input$n_questions %||% state$n_questions)
-    pool &lt;- quiz_pool
+    diff &lt;- input$difficulty
+    pool &lt;- if (!is.null(diff) &amp;&amp; diff != "mixed") {
+      quiz_pool[quiz_pool$difficulty == diff, ]
+    } else {
+      quiz_pool
+    }
     n &lt;- min(n, nrow(pool))
     state$n_questions &lt;- n
     state$pairs &lt;- pool[sample(nrow(pool), n), ]
@@ -546,52 +729,38 @@ server &lt;- function(input, output, session) {
     state$answers[q] &lt;- state$display_order[[q]][1]
     state$revealed[q] &lt;- TRUE
   })
-
   observeEvent(input$choose_right, {
     q &lt;- state$current_q
     state$answers[q] &lt;- state$display_order[[q]][2]
     state$revealed[q] &lt;- TRUE
   })
-
   observeEvent(input$next_q, {
-    if (state$current_q &lt; state$n_questions) {
-      state$current_q &lt;- state$current_q + 1L
-    } else {
-      state$phase &lt;- "results_summary"
-    }
+    if (state$current_q &lt; state$n_questions) state$current_q &lt;- state$current_q + 1L
+    else state$phase &lt;- "results_summary"
   })
-
   observeEvent(input$prev_q, {
-    if (state$current_q &gt; 1L) {
-      state$current_q &lt;- state$current_q - 1L
-    }
+    if (state$current_q &gt; 1L) state$current_q &lt;- state$current_q - 1L
+    else state$phase &lt;- "instructions"
   })
-
-  observeEvent(input$view_details, {
-    state$phase &lt;- "results_detail"
-  })
-
-  observeEvent(input$back_to_summary, {
-    state$phase &lt;- "results_summary"
-  })
-
-  observeEvent(input$try_again, {
-    state$phase &lt;- "instructions"
-  })
+  observeEvent(input$view_details, { state$phase &lt;- "results_detail" })
+  observeEvent(input$back_to_summary, { state$phase &lt;- "results_summary" })
+  observeEvent(input$try_again, { state$phase &lt;- "instructions" })
+  observeEvent(input$try_again_detail, { state$phase &lt;- "instructions" })
 
   output$main_ui &lt;- renderUI({
     switch(state$phase,
       instructions = instructions_ui(),
       question = question_ui(state),
       results_summary = results_summary_ui(state),
-      results_detail = results_detail_ui(state)
-    )
+      results_detail = results_detail_ui(state))
   })
 }
 
 shinyApp(ui, server)</code></pre>
 
-</main><!-- /main column --><script id="quarto-html-after-body" type="application/javascript">
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -996,5 +1165,4 @@ shinyApp(ui, server)</code></pre>
 
 
 
-</body>
-</html>
+</body></html>
