@@ -49,6 +49,8 @@ navbar:
       - text: "Interactive"
       - text: "Risk Quiz (play in browser)"
         href: articles/quiz_shinylive.html
+      - text: "Microlife Quiz (play in browser)"
+        href: articles/chronic_quiz_shinylive.html
 
 reference:
 - title: "Datasets"
@@ -142,6 +144,9 @@ reference:
   - launch_quiz
   - quiz_pairs
   - activity_descriptions
+  - launch_chronic_quiz
+  - chronic_quiz_pairs
+  - factor_descriptions
   - format_activity_name
 
 footer:

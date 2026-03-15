@@ -666,6 +666,80 @@ plan_vignette_outputs <- list(
       )
     },
     cue = targets::tar_cue(mode = "always")
+  ),
+
+
+  # ==========================================================================
+  # CHRONIC QUIZ DATA CONSISTENCY (Shinylive WebR limitation)
+  # ==========================================================================
+
+  # Canonical chronic quiz pairs generated from chronic_quiz_pairs()
+  targets::tar_target(
+    vig_chronic_pairs,
+    {
+      easy <- chronic_quiz_pairs(difficulty = "easy", seed = 42)
+      medium <- chronic_quiz_pairs(difficulty = "medium", seed = 42)
+      hard <- chronic_quiz_pairs(difficulty = "hard", seed = 42)
+      rbind(easy, medium, hard)
+    }
+  ),
+
+  # Check CSV in chronic_quiz_shinylive.qmd matches canonical pairs
+  targets::tar_target(
+    vig_chronic_csv_check,
+    {
+      qmd_lines <- readLines("vignettes/chronic_quiz_shinylive.qmd", warn = FALSE)
+
+      file_marker <- grep("^## file: chronic_pairs\\.csv", qmd_lines)[1]
+      if (is.na(file_marker)) {
+        return(list(status = "ERROR",
+                    message = "Could not find ## file: chronic_pairs.csv in qmd"))
+      }
+
+      csv_start <- file_marker + 1L
+      if (grepl("^## type:", qmd_lines[csv_start])) csv_start <- csv_start + 1L
+      fence_lines <- grep("^```$", qmd_lines)
+      csv_end <- fence_lines[fence_lines > file_marker][1] - 1L
+
+      if (is.na(csv_end) || csv_end < csv_start) {
+        return(list(status = "ERROR",
+                    message = "Could not find CSV boundaries in qmd"))
+      }
+
+      csv_text <- qmd_lines[csv_start:csv_end]
+
+      embedded <- tryCatch(
+        utils::read.csv(textConnection(paste(csv_text, collapse = "\n")),
+                        stringsAsFactors = FALSE),
+        error = function(e) NULL
+      )
+
+      if (is.null(embedded)) {
+        return(list(status = "ERROR", message = "Failed to parse embedded CSV"))
+      }
+
+      canonical <- as.data.frame(vig_chronic_pairs, stringsAsFactors = FALSE)
+      canonical <- canonical[order(canonical$factor_a, canonical$factor_b), ]
+      embedded <- embedded[order(embedded$factor_a, embedded$factor_b), ]
+      rownames(canonical) <- NULL
+      rownames(embedded) <- NULL
+      num_cols <- names(canonical)[vapply(canonical, is.numeric, logical(1))]
+      for (col in num_cols) {
+        canonical[[col]] <- round(canonical[[col]], 10)
+        embedded[[col]] <- round(embedded[[col]], 10)
+      }
+      hash_canonical <- digest::digest(canonical)
+      hash_embedded <- digest::digest(embedded)
+
+      list(
+        status = if (hash_canonical == hash_embedded) "OK" else "STALE",
+        canonical_rows = nrow(canonical),
+        embedded_rows = nrow(embedded),
+        canonical_hash = hash_canonical,
+        embedded_hash = hash_embedded
+      )
+    },
+    cue = targets::tar_cue(mode = "always")
   )
 
 )
