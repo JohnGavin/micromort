@@ -90,6 +90,17 @@ quiz_css <- "
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .option-btn {
+    padding: 8px 18px; border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff; font-size: 1rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    text-align: center; min-width: 60px;
+  }
+  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; }
 "
 
 # ---- Leaderboard JS ----
@@ -179,13 +190,7 @@ quiz_encouragement_lines <- function() {
   )
 }
 
-# ---- Persistent title ----
-quiz_title_ui <- function() {
-  h3(
-    "Which lifestyle event is more likely to kill you?",
-    class = "text-center mb-3 quiz-title"
-  )
-}
+# quiz_title_ui removed — title already in page header
 
 # ---- Instructions page ----
 instructions_ui <- function() {
@@ -204,12 +209,20 @@ instructions_ui <- function() {
           tags$li("A ", strong("micromort (mm)"), " is a one-in-a-million chance of death.")
         ),
         div(class = "text-center mt-2 mb-3", tags$em(encouragement)),
-        radioButtons("difficulty", "Difficulty:",
-                     choices = c("Easy" = "easy", "Medium" = "medium",
-                                 "Hard" = "hard", "Mixed" = "mixed"),
-                     selected = "mixed", inline = TRUE),
-        radioButtons("n_questions", "Number of questions:",
-                     choices = c("5" = 5, "10" = 10), selected = 10, inline = TRUE),
+        div(class = "option-row",
+          span(class = "option-label", "Difficulty:"),
+          div(class = "option-btn-group",
+            actionButton("diff_easy", "Easy", class = "option-btn"),
+            actionButton("diff_medium", "Medium", class = "option-btn"),
+            actionButton("diff_hard", "Hard", class = "option-btn"),
+            actionButton("diff_mixed", "Mixed", class = "option-btn selected"))
+        ),
+        div(class = "option-row",
+          span(class = "option-label", "Questions:"),
+          div(class = "option-btn-group",
+            actionButton("nq_5", "5", class = "option-btn"),
+            actionButton("nq_10", "10", class = "option-btn selected"))
+        ),
         div(class = "text-center mt-3",
             actionButton("start_quiz", "Start Quiz", class = "btn-primary btn-lg"))
       )
@@ -332,21 +345,15 @@ question_ui <- function(state) {
             sprintf("%s is %.0f%% hedgeable", pair$activity_b, hedge_b))
           tags$p(tags$em(paste(hedgeable_parts, collapse = "; "),
                          " \u2014 you can reduce this risk!"))
-        },
-        tags$p(class = "mb-0", "Learn more: ",
-          tags$a(href = pair[[paste0("help_url_", riskier_side)]],
-                 target = "_blank", pair[[paste0("activity_", riskier_side)]]),
-          " | ",
-          tags$a(href = pair[[paste0("help_url_", safer_side)]],
-                 target = "_blank", pair[[paste0("activity_", safer_side)]]))
+        }
       )
     )
   }
 
-  up_to <- if (revealed) q else q - 1L
-  qs <- seq_len(up_to)
-  answered_so_far <- sum(!is.na(state$answers[qs]) & state$revealed[qs])
-  correct_so_far <- sum(vapply(qs, function(i) {
+  # Global score: count ALL answered questions, not just up to current
+  all_qs <- seq_len(n)
+  answered_so_far <- sum(!is.na(state$answers[all_qs]) & state$revealed[all_qs])
+  correct_so_far <- sum(vapply(all_qs, function(i) {
     !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
   }, logical(1)))
   tally_text <- sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
@@ -490,20 +497,53 @@ results_detail_ui <- function(state) {
 # ---- App ----
 ui <- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
-  tags$head(tags$style(HTML(quiz_css)), tags$script(HTML(leaderboard_js))),
-  div(class = "container",
-      style = "width: 95%; max-width: 100%; margin: auto; padding-top: 20px;",
-      quiz_title_ui(), uiOutput("main_ui"))
+  tags$head(
+    tags$style(HTML(quiz_css)),
+    tags$script(HTML(leaderboard_js)),
+    tags$script(HTML("
+      Shiny.addCustomMessageHandler('updateBtnClass', function(msg) {
+        var el = document.getElementById(msg.id);
+        if (el) el.className = 'btn shiny-bound-input action-button ' + msg.cls;
+      });
+    "))
+  ),
+  div(class = "container-fluid",
+      style = "max-width: 100%; padding: 20px;",
+      uiOutput("main_ui"))
 )
 
 server <- function(input, output, session) {
   state <- reactiveValues(
     phase = "instructions", n_questions = 10L, current_q = 1L,
-    pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL)
+    pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
+    sel_difficulty = "mixed", sel_nq = 10L)
+
+  # Difficulty button handlers
+  observeEvent(input$diff_easy, { state$sel_difficulty <- "easy" })
+  observeEvent(input$diff_medium, { state$sel_difficulty <- "medium" })
+  observeEvent(input$diff_hard, { state$sel_difficulty <- "hard" })
+  observeEvent(input$diff_mixed, { state$sel_difficulty <- "mixed" })
+  # N questions button handlers
+  observeEvent(input$nq_5, { state$sel_nq <- 5L })
+  observeEvent(input$nq_10, { state$sel_nq <- 10L })
+
+  # Update button styling via JS
+  observe({
+    for (d in c("easy", "medium", "hard", "mixed")) {
+      btn_id <- paste0("diff_", d)
+      cls <- if (d == state$sel_difficulty) "option-btn selected" else "option-btn"
+      session$sendCustomMessage("updateBtnClass", list(id = btn_id, cls = cls))
+    }
+    for (nq in c(5, 10)) {
+      btn_id <- paste0("nq_", nq)
+      cls <- if (nq == state$sel_nq) "option-btn selected" else "option-btn"
+      session$sendCustomMessage("updateBtnClass", list(id = btn_id, cls = cls))
+    }
+  })
 
   observeEvent(input$start_quiz, {
-    n <- as.integer(input$n_questions %||% state$n_questions)
-    diff <- input$difficulty
+    n <- state$sel_nq
+    diff <- state$sel_difficulty
     pool <- if (!is.null(diff) && diff != "mixed") {
       quiz_pool[quiz_pool$difficulty == diff, ]
     } else {
