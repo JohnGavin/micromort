@@ -17,7 +17,7 @@ library(ggplot2)
 library(dplyr)
 ```
 
-# micromort
+# micromort <img src="man/figures/logo.png" align="right" height="139" alt="micromort logo: one bright dot among a million, representing a one-in-a-million chance of death" />
 
 A **data package** providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature.
 ## Features

@@ -5,6 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Micromort - Curated Risk Datasets • micromort</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -15,6 +20,7 @@
 ">
 <meta property="og:description" content="A data package providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources.
 ">
+<meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -66,8 +72,15 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="micromort">micromort<a class="anchor" aria-label="anchor" href="#micromort"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="micromort-curated-micromort-and-microlife-risk-datasets">micromort: Curated Micromort and Microlife Risk Datasets<a class="anchor" aria-label="anchor" href="#micromort-curated-micromort-and-microlife-risk-datasets"></a>
+</h1>
+</div>
+<!-- README.md is generated from README.qmd. Please edit that file -->
+</div>
+<div class="section level1">
+<h1 id="micromort-">micromort <a class="anchor" aria-label="anchor" href="#micromort-"></a>
+</h1>
 <p>A <strong>data package</strong> providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature. ## Features</p>
 <ul>
 <li>
@@ -88,22 +101,22 @@
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
 </h2>
-<pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+<pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph LR
 
   Conversion["Unit Conversion&lt;br&gt;5 functions"]
   Data["Risk Datasets&lt;br&gt;21 functions"]
   Analysis["Risk Analysis&lt;br&gt;6 functions"]
   Viz["Visualization&lt;br&gt;5 functions"]
-  Apps["Interactive Apps&lt;br&gt;4 functions"]
+  Apps["Interactive Apps&lt;br&gt;6 functions"]
 
   Conversion --&gt; Data --&gt; Analysis --&gt; Viz --&gt; Apps
 
-  style Conversion fill:#1a2d4a,stroke:#1976D2
-  style Data fill:#1a3d1a,stroke:#2E7D32
-  style Analysis fill:#3d1a2a,stroke:#C62828
-  style Viz fill:#2d1a3d,stroke:#7B1FA2
-  style Apps fill:#1a3d3d,stroke:#00897B</code></pre>
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
+  style Data fill:#999999,stroke:#CC0000,color:#000000
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
+  style Viz fill:#999999,stroke:#CC0000,color:#000000
+  style Apps fill:#999999,stroke:#CC0000,color:#000000</code></pre>
 <p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams of the data pipeline, function hierarchy, and user journey.</p>
 </div>
 <div class="section level2">
@@ -277,19 +290,19 @@ graph LR
 <span><span class="va">acute</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">activity</span>, <span class="va">micromorts</span>, <span class="va">category</span>, <span class="va">period</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># A tibble: 10 × 4</span></span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 4</span></span>
 <span><span class="co">#&gt;    activity                                micromorts category       period     </span></span>
-<span><span class="co">#&gt;    <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                                        <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 1</span> Mt. Everest ascent                           <span style="text-decoration: underline;">37</span>932 Mountaineering per ascent </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 2</span> Himalayan mountaineering                     <span style="text-decoration: underline;">12</span>000 Mountaineering per expedi…</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 3</span> COVID-19 infection (unvaccinated)            <span style="text-decoration: underline;">10</span>000 Disease        per infect…</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 4</span> Spanish flu infection                         <span style="text-decoration: underline;">3</span>000 Disease        per infect…</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 5</span> Matterhorn ascent                             <span style="text-decoration: underline;">2</span>840 Mountaineering per ascent </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 6</span> Living in US during COVID-19 (Jul 2020)        500 Disease        per month  </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 7</span> Living (one day, age 90)                       463 Daily Life     per day    </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 8</span> Base jumping (per jump)                        430 Sport          per event  </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 9</span> First day of life (newborn)                    430 Daily Life     per day    </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">10</span> COVID-19 unvaccinated (age 80+)                234 COVID-19       11 weeks (…</span></span></code></pre></div>
+<span><span class="co">#&gt;    &lt;chr&gt;                                        &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;      </span></span>
+<span><span class="co">#&gt;  1 Mt. Everest ascent                           37932 Mountaineering per ascent </span></span>
+<span><span class="co">#&gt;  2 Himalayan mountaineering                     12000 Mountaineering per expedi…</span></span>
+<span><span class="co">#&gt;  3 COVID-19 infection (unvaccinated)            10000 Disease        per infect…</span></span>
+<span><span class="co">#&gt;  4 Spanish flu infection                         3000 Disease        per infect…</span></span>
+<span><span class="co">#&gt;  5 Matterhorn ascent                             2840 Mountaineering per ascent </span></span>
+<span><span class="co">#&gt;  6 Living in US during COVID-19 (Jul 2020)        500 Disease        per month  </span></span>
+<span><span class="co">#&gt;  7 Living (one day, age 90)                       463 Daily Life     per day    </span></span>
+<span><span class="co">#&gt;  8 Base jumping (per jump)                        430 Sport          per event  </span></span>
+<span><span class="co">#&gt;  9 First day of life (newborn)                    430 Daily Life     per day    </span></span>
+<span><span class="co">#&gt; 10 COVID-19 unvaccinated (age 80+)                234 COVID-19       11 weeks (…</span></span></code></pre></div>
 <p><strong>Caption:</strong> Micromorts represent probability of death per event. Higher values = higher risk per occurrence.</p>
 </div>
 <div class="section level3">
@@ -301,19 +314,19 @@ graph LR
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">factor</span>, <span class="va">microlives_per_day</span>, <span class="va">category</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># A tibble: 10 × 3</span></span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 3</span></span>
 <span><span class="co">#&gt;    factor                   microlives_per_day category    </span></span>
-<span><span class="co">#&gt;    <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                                 <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>       </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 1</span> Smoking 20 cigarettes                   -<span style="color: #BB0000;">10</span> Smoking     </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 2</span> Smoking 10 cigarettes                    -<span style="color: #BB0000;">5</span> Smoking     </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 3</span> Being male (vs female)                   -<span style="color: #BB0000;">4</span> Demographics</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 4</span> Being 15 kg overweight                   -<span style="color: #BB0000;">3</span> Weight      </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 5</span> Being 10 kg overweight                   -<span style="color: #BB0000;">2</span> Weight      </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 6</span> 4th-5th alcoholic drink                  -<span style="color: #BB0000;">2</span> Alcohol     </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 7</span> Smoking 2 cigarettes                     -<span style="color: #BB0000;">1</span> Smoking     </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 8</span> Being 5 kg overweight                    -<span style="color: #BB0000;">1</span> Weight      </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"> 9</span> 2nd-3rd alcoholic drink                  -<span style="color: #BB0000;">1</span> Alcohol     </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">10</span> Red meat (1 portion/day)                 -<span style="color: #BB0000;">1</span> Diet</span></span></code></pre></div>
+<span><span class="co">#&gt;    &lt;chr&gt;                                 &lt;dbl&gt; &lt;chr&gt;       </span></span>
+<span><span class="co">#&gt;  1 Smoking 20 cigarettes                   -10 Smoking     </span></span>
+<span><span class="co">#&gt;  2 Smoking 10 cigarettes                    -5 Smoking     </span></span>
+<span><span class="co">#&gt;  3 Being male (vs female)                   -4 Demographics</span></span>
+<span><span class="co">#&gt;  4 Being 15 kg overweight                   -3 Weight      </span></span>
+<span><span class="co">#&gt;  5 Being 10 kg overweight                   -2 Weight      </span></span>
+<span><span class="co">#&gt;  6 4th-5th alcoholic drink                  -2 Alcohol     </span></span>
+<span><span class="co">#&gt;  7 Smoking 2 cigarettes                     -1 Smoking     </span></span>
+<span><span class="co">#&gt;  8 Being 5 kg overweight                    -1 Weight      </span></span>
+<span><span class="co">#&gt;  9 2nd-3rd alcoholic drink                  -1 Alcohol     </span></span>
+<span><span class="co">#&gt; 10 Red meat (1 portion/day)                 -1 Diet</span></span></code></pre></div>
 <p><strong>Caption:</strong> Microlives per day. Negative values = life expectancy loss; positive = gain. Effects accumulate daily.</p>
 </div>
 <div class="section level3">
@@ -322,23 +335,19 @@ graph LR
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter to show only activities with micromorts &gt;= 1 for clarity on log scale</span></span>
 <span><span class="fu"><a href="reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">log-10</span> transformation introduced infinite values.</span></span></code></pre></div>
-<div class="figure">
-<img src="reference/figures/README-plot-1.png" alt="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity." width="100%"><p class="caption">
-Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity.
-</p>
-</div>
+<span><span class="co">#&gt; Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span>
+<span><span class="co">#&gt; log-10 transformation introduced infinite values.</span></span></code></pre></div>
+<p><img src="reference/figures/README-plot-1.png" style="width:100.0%" alt="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity."></p>
 </div>
 </div>
 <div class="section level2">
@@ -353,12 +362,12 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <span>  <span class="st">"Quit 10 cigarettes/day"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Smoking 10 cigarettes"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
 <span>  <span class="st">"Lose 5kg"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Being 5 kg overweight"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># A tibble: 2 × 7</span></span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 7</span></span>
 <span><span class="co">#&gt;   intervention      factor original_ml_per_day change net_ml_per_day annual_days</span></span>
-<span><span class="co">#&gt;   <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">1</span> Quit 10 cigarett… Smoki…                  -<span style="color: #BB0000;">5</span>     -<span style="color: #BB0000;">1</span>             -<span style="color: #BB0000;">5</span>       -<span style="color: #BB0000;">38</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">2</span> Lose 5kg          Being…                  -<span style="color: #BB0000;">1</span>     -<span style="color: #BB0000;">1</span>             -<span style="color: #BB0000;">1</span>        -<span style="color: #BB0000;">7.6</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># ℹ 1 more variable: lifetime_years &lt;dbl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt;   &lt;chr&gt;             &lt;chr&gt;                &lt;dbl&gt;  &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Quit 10 cigarett… Smoki…                  -5     -1             -5       -38  </span></span>
+<span><span class="co">#&gt; 2 Lose 5kg          Being…                  -1     -1             -1        -7.6</span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: lifetime_years &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="calculate-baseline-risk-by-age">Calculate Baseline Risk by Age<a class="anchor" aria-label="anchor" href="#calculate-baseline-risk-by-age"></a>
@@ -366,10 +375,10 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Daily baseline mortality risk at age 35 (micromorts per day just from being alive)</span></span>
 <span><span class="fu"><a href="reference/daily_hazard_rate.html">daily_hazard_rate</a></span><span class="op">(</span><span class="fl">35</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># A tibble: 1 × 6</span></span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;     age sex   daily_prob micromorts microlives_consumed interpretation          </span></span>
-<span><span class="co">#&gt;   <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>               <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                   </span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">1</span>    35 male  0.000<span style="text-decoration: underline;">002</span>96          3                0.05 At age 35 (male): 3.0 m…</span></span></code></pre></div>
+<span><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;               &lt;dbl&gt; &lt;chr&gt;                   </span></span>
+<span><span class="co">#&gt; 1    35 male  0.00000296          3                0.05 At age 35 (male): 3.0 m…</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="lifestyle-tradeoffs">Lifestyle Tradeoffs<a class="anchor" aria-label="anchor" href="#lifestyle-tradeoffs"></a>
@@ -377,11 +386,11 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># How much exercise offsets smoking? (in microlives per day)</span></span>
 <span><span class="fu"><a href="reference/lifestyle_tradeoff.html">lifestyle_tradeoff</a></span><span class="op">(</span><span class="st">"Smoking 2 cigarettes"</span>, <span class="st">"20 min moderate exercise"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># A tibble: 1 × 6</span></span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;   bad_habit            bad_ml_per_day good_habit    good_ml_per_day units_needed</span></span>
-<span><span class="co">#&gt;   <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #555555; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #555555; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #555555;">1</span> Smoking 2 cigarettes             -<span style="color: #BB0000;">1</span> 20 min moder…               2          0.5</span></span>
-<span><span class="co">#&gt; <span style="color: #555555;"># ℹ 1 more variable: interpretation &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt;   &lt;chr&gt;                         &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;        &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Smoking 2 cigarettes             -1 20 min moder…               2          0.5</span></span>
+<span><span class="co">#&gt; # ℹ 1 more variable: interpretation &lt;chr&gt;</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -428,6 +437,11 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
 </h2>
 <table class="table">
+<colgroup>
+<col width="37%">
+<col width="20%">
+<col width="42%">
+</colgroup>
 <thead><tr>
 <th>Source</th>
 <th>Type</th>
@@ -472,325 +486,367 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </h2>
 <details><summary>
 Click to expand project tree
-</summary><pre><code><span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">.</span></span></span>
-<span><span class="co">#&gt; ├── DESCRIPTION</span></span>
-<span><span class="co">#&gt; ├── LICENSE</span></span>
-<span><span class="co">#&gt; ├── LICENSE.md</span></span>
-<span><span class="co">#&gt; ├── NAMESPACE</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">R</span></span></span>
-<span><span class="co">#&gt; │   ├── api.R</span></span>
-<span><span class="co">#&gt; │   ├── atomic_risks.R</span></span>
-<span><span class="co">#&gt; │   ├── dashboard.R</span></span>
-<span><span class="co">#&gt; │   ├── data.R</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">dev</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">issues</span></span></span>
-<span><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
-<span><span class="co">#&gt; │   ├── diagrams.R</span></span>
-<span><span class="co">#&gt; │   ├── micromort.R</span></span>
-<span><span class="co">#&gt; │   ├── models.R</span></span>
-<span><span class="co">#&gt; │   ├── quiz.R</span></span>
-<span><span class="co">#&gt; │   ├── radiation_profiles.R</span></span>
-<span><span class="co">#&gt; │   ├── regional.R</span></span>
-<span><span class="co">#&gt; │   ├── risk_equivalence.R</span></span>
-<span><span class="co">#&gt; │   ├── risks.R</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">tar_plans</span></span></span>
-<span><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_validation.R</span></span>
-<span><span class="co">#&gt; │   │   └── plan_vignette_outputs.R</span></span>
-<span><span class="co">#&gt; │   └── visualization.R</span></span>
-<span><span class="co">#&gt; ├── README.md</span></span>
-<span><span class="co">#&gt; ├── README.qmd</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">README_files</span></span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">libs</span></span></span>
-<span><span class="co">#&gt; │       ├── <span style="color: #00BBBB; font-weight: bold;">bootstrap</span></span></span>
-<span><span class="co">#&gt; │       ├── <span style="color: #00BBBB; font-weight: bold;">clipboard</span></span></span>
-<span><span class="co">#&gt; │       └── <span style="color: #00BBBB; font-weight: bold;">quarto-html</span></span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">box</span></span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">api</span></span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   └── endpoints.R</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">dashboard</span></span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   ├── server.R</span></span>
-<span><span class="co">#&gt; │   │   └── ui.R</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">data</span></span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   ├── loaders.R</span></span>
-<span><span class="co">#&gt; │   │   ├── parsers.R</span></span>
-<span><span class="co">#&gt; │   │   └── schemas.R</span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">models</span></span></span>
-<span><span class="co">#&gt; │       ├── __init__.R</span></span>
-<span><span class="co">#&gt; │       ├── compare.R</span></span>
-<span><span class="co">#&gt; │       └── hazard.R</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">data-raw</span></span></span>
-<span><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
-<span><span class="co">#&gt; │   ├── 02_regional_life_expectancy.R</span></span>
-<span><span class="co">#&gt; │   ├── 02_regional_life_expectancy_sample.R</span></span>
-<span><span class="co">#&gt; │   ├── README_regional_data.md</span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">sources</span></span></span>
-<span><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
-<span><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
-<span><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
-<span><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
-<span><span class="co">#&gt; │       └── risk_sources.csv</span></span>
-<span><span class="co">#&gt; ├── default.R</span></span>
-<span><span class="co">#&gt; ├── default.nix</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #BB0000;">default.sh</span></span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">docs</span></span></span>
-<span><span class="co">#&gt; │   ├── 404.html</span></span>
-<span><span class="co">#&gt; │   ├── 404.md</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE.html</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE.md</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">articles</span></span></span>
-<span><span class="co">#&gt; │   │   ├── architecture.html</span></span>
-<span><span class="co">#&gt; │   │   ├── architecture.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">architecture_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── confounding.html</span></span>
-<span><span class="co">#&gt; │   │   ├── confounding.md</span></span>
-<span><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   │   ├── introduction.html</span></span>
-<span><span class="co">#&gt; │   │   ├── introduction.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">introduction_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
-<span><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">palatable_units_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_shinylive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_shinylive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">quiz_shinylive_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── regional_variation.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_variation.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">regional_variation_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── rest_api.html</span></span>
-<span><span class="co">#&gt; │   │   ├── rest_api.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">rest_api_files</span></span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">risk_equivalence_files</span></span></span>
-<span><span class="co">#&gt; │   │   └── shinylive-sw.js</span></span>
-<span><span class="co">#&gt; │   ├── authors.html</span></span>
-<span><span class="co">#&gt; │   ├── authors.md</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">deps</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">bootstrap-5.3.1</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">bootstrap-toc-1.0.1</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">clipboard.js-2.0.11</span></span></span>
-<span><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">font-awesome-6.5.2</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">headroom-0.11.0</span></span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">jquery-3.6.0</span></span></span>
-<span><span class="co">#&gt; │   │   └── <span style="color: #00BBBB; font-weight: bold;">search-1.0.0</span></span></span>
-<span><span class="co">#&gt; │   ├── extra.css</span></span>
-<span><span class="co">#&gt; │   ├── extra.js</span></span>
-<span><span class="co">#&gt; │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   ├── katex-auto.js</span></span>
-<span><span class="co">#&gt; │   ├── lightswitch.js</span></span>
-<span><span class="co">#&gt; │   ├── link.svg</span></span>
-<span><span class="co">#&gt; │   ├── llms.txt</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">news</span></span></span>
-<span><span class="co">#&gt; │   ├── pkgdown.js</span></span>
-<span><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">reference</span></span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
-<span><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
-<span><span class="co">#&gt; │   │   ├── atomic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── atomic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
-<span><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
-<span><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
-<span><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
-<span><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
-<span><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
-<span><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
-<span><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">figures</span></span></span>
-<span><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
-<span><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
-<span><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   │   ├── laggard_regions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── laggard_regions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">libs</span></span></span>
-<span><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
-<span><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
-<span><span class="co">#&gt; │   │   ├── lle.html</span></span>
-<span><span class="co">#&gt; │   │   ├── lle.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── patient_radiation_comparison.html</span></span>
-<span><span class="co">#&gt; │   │   ├── patient_radiation_comparison.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-3.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-4.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-5.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot.html</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot.md</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_pairs.html</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_pairs.md</span></span>
-<span><span class="co">#&gt; │   │   ├── radiation_profiles.html</span></span>
-<span><span class="co">#&gt; │   │   ├── radiation_profiles.md</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.md</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_components.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_components.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_exchange_matrix.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_exchange_matrix.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_for_duration.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_for_duration.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark.html</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark.md</span></span>
-<span><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
-<span><span class="co">#&gt; │   │   ├── value_of_micromort.md</span></span>
-<span><span class="co">#&gt; │   │   ├── vanguard_regions.html</span></span>
-<span><span class="co">#&gt; │   │   └── vanguard_regions.md</span></span>
-<span><span class="co">#&gt; │   ├── search.json</span></span>
-<span><span class="co">#&gt; │   ├── sitemap.xml</span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">tutorials</span></span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">inst</span></span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">dashboard</span></span></span>
-<span><span class="co">#&gt; │   │   └── about.md</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">extdata</span></span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
-<span><span class="co">#&gt; │   │   ├── <span style="color: #00BBBB; font-weight: bold;">logs</span></span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.parquet</span></span>
-<span><span class="co">#&gt; │   │   └── risk_sources.parquet</span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">plumber</span></span></span>
-<span><span class="co">#&gt; │       └── api.R</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">man</span></span></span>
-<span><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
-<span><span class="co">#&gt; │   ├── atomic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
-<span><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
-<span><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
-<span><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
-<span><span class="co">#&gt; │   ├── <span style="color: #00BBBB; font-weight: bold;">figures</span></span></span>
-<span><span class="co">#&gt; │   │   └── README-plot-1.png</span></span>
-<span><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
-<span><span class="co">#&gt; │   ├── laggard_regions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_quiz.Rd</span></span>
-<span><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
-<span><span class="co">#&gt; │   ├── lle.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── patient_radiation_comparison.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risk_components.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
-<span><span class="co">#&gt; │   ├── prepare_risks_plot.Rd</span></span>
-<span><span class="co">#&gt; │   ├── quiz_pairs.Rd</span></span>
-<span><span class="co">#&gt; │   ├── radiation_profiles.Rd</span></span>
-<span><span class="co">#&gt; │   ├── regional_life_expectancy.Rd</span></span>
-<span><span class="co">#&gt; │   ├── regional_mortality_multiplier.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_components.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_equivalence.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_exchange_matrix.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_for_duration.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── theme_micromort_dark.Rd</span></span>
-<span><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── value_of_micromort.Rd</span></span>
-<span><span class="co">#&gt; │   └── vanguard_regions.Rd</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #BB00BB;">nix-shell-root</span></span></span>
-<span><span class="co">#&gt; ├── package.nix</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">pkgdown</span></span></span>
-<span><span class="co">#&gt; │   ├── extra.css</span></span>
-<span><span class="co">#&gt; │   └── extra.js</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">plans</span></span></span>
-<span><span class="co">#&gt; │   ├── PLAN_consistency_refactor.md</span></span>
-<span><span class="co">#&gt; │   ├── PLAN_regional_longevity.md</span></span>
-<span><span class="co">#&gt; │   ├── PLAN_risk_equivalence_dashboard.md</span></span>
-<span><span class="co">#&gt; │   └── PLAN_vignette_targets_refactor.md</span></span>
-<span><span class="co">#&gt; ├── <span style="color: #BB0000;">push_to_cachix.sh</span></span></span>
-<span><span class="co">#&gt; ├── <span style="color: #00BBBB; font-weight: bold;">tests</span></span></span>
-<span><span class="co">#&gt; │   └── <span style="color: #00BBBB; font-weight: bold;">testthat</span></span></span>
-<span><span class="co">#&gt; │       ├── <span style="color: #00BBBB; font-weight: bold;">_snaps</span></span></span>
-<span><span class="co">#&gt; │       ├── test-adversarial.R</span></span>
-<span><span class="co">#&gt; │       ├── test-api.R</span></span>
-<span><span class="co">#&gt; │       ├── test-atomic-risks.R</span></span>
-<span><span class="co">#&gt; │       ├── test-diagrams.R</span></span>
-<span><span class="co">#&gt; │       ├── test-quiz.R</span></span>
-<span><span class="co">#&gt; │       ├── test-radiation-profiles.R</span></span>
-<span><span class="co">#&gt; │       ├── test-risk-components.R</span></span>
-<span><span class="co">#&gt; │       ├── test-risk-equivalence.R</span></span>
-<span><span class="co">#&gt; │       └── test-visualization.R</span></span>
-<span><span class="co">#&gt; └── <span style="color: #00BBBB; font-weight: bold;">vignettes</span></span></span>
-<span><span class="co">#&gt;     ├── <span style="color: #00BBBB; font-weight: bold;">_extensions</span></span></span>
-<span><span class="co">#&gt;     │   └── <span style="color: #00BBBB; font-weight: bold;">quarto-ext</span></span></span>
-<span><span class="co">#&gt;     ├── architecture.qmd</span></span>
-<span><span class="co">#&gt;     ├── confounding.Rmd</span></span>
-<span><span class="co">#&gt;     ├── introduction.Rmd</span></span>
-<span><span class="co">#&gt;     ├── palatable_units.Rmd</span></span>
-<span><span class="co">#&gt;     ├── quiz_shinylive.qmd</span></span>
-<span><span class="co">#&gt;     ├── <span style="color: #00BBBB; font-weight: bold;">quiz_shinylive_files</span></span></span>
-<span><span class="co">#&gt;     ├── regional_variation.Rmd</span></span>
-<span><span class="co">#&gt;     ├── rest_api.Rmd</span></span>
-<span><span class="co">#&gt;     ├── risk_equivalence.Rmd</span></span>
-<span><span class="co">#&gt;     └── shinylive-sw.js</span></span></code></pre>
+</summary><div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#&gt; .</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; ├── DESCRIPTION</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; ├── LICENSE.md</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; ├── NAMESPACE</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; ├── R</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; │   ├── activity_descriptions.R</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; │   ├── api.R</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; │   ├── atomic_risks.R</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard.R</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; │   ├── data.R</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; │   ├── dev</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt; │   │   ├── issues</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt; │   ├── diagrams.R</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co">#&gt; │   ├── micromort.R</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co">#&gt; │   ├── models.R</span></span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a><span class="co">#&gt; │   ├── quiz.R</span></span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a><span class="co">#&gt; │   ├── radiation_profiles.R</span></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="co">#&gt; │   ├── regional.R</span></span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_equivalence.R</span></span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a><span class="co">#&gt; │   ├── risks.R</span></span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a><span class="co">#&gt; │   ├── tar_plans</span></span>
+<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
+<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
+<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
+<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
+<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
+<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_qa_gates.R</span></span>
+<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_telemetry.R</span></span>
+<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plan_validation.R</span></span>
+<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a><span class="co">#&gt; │   │   └── plan_vignette_outputs.R</span></span>
+<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a><span class="co">#&gt; │   └── visualization.R</span></span>
+<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a><span class="co">#&gt; ├── README.md</span></span>
+<span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a><span class="co">#&gt; ├── README.qmd</span></span>
+<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a><span class="co">#&gt; ├── README.rmarkdown</span></span>
+<span id="cb16-37"><a href="#cb16-37" tabindex="-1"></a><span class="co">#&gt; ├── README_files</span></span>
+<span id="cb16-38"><a href="#cb16-38" tabindex="-1"></a><span class="co">#&gt; │   └── libs</span></span>
+<span id="cb16-39"><a href="#cb16-39" tabindex="-1"></a><span class="co">#&gt; │       ├── bootstrap</span></span>
+<span id="cb16-40"><a href="#cb16-40" tabindex="-1"></a><span class="co">#&gt; │       ├── clipboard</span></span>
+<span id="cb16-41"><a href="#cb16-41" tabindex="-1"></a><span class="co">#&gt; │       └── quarto-html</span></span>
+<span id="cb16-42"><a href="#cb16-42" tabindex="-1"></a><span class="co">#&gt; ├── box</span></span>
+<span id="cb16-43"><a href="#cb16-43" tabindex="-1"></a><span class="co">#&gt; │   ├── api</span></span>
+<span id="cb16-44"><a href="#cb16-44" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb16-45"><a href="#cb16-45" tabindex="-1"></a><span class="co">#&gt; │   │   └── endpoints.R</span></span>
+<span id="cb16-46"><a href="#cb16-46" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb16-47"><a href="#cb16-47" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb16-48"><a href="#cb16-48" tabindex="-1"></a><span class="co">#&gt; │   │   ├── server.R</span></span>
+<span id="cb16-49"><a href="#cb16-49" tabindex="-1"></a><span class="co">#&gt; │   │   └── ui.R</span></span>
+<span id="cb16-50"><a href="#cb16-50" tabindex="-1"></a><span class="co">#&gt; │   ├── data</span></span>
+<span id="cb16-51"><a href="#cb16-51" tabindex="-1"></a><span class="co">#&gt; │   │   ├── __init__.R</span></span>
+<span id="cb16-52"><a href="#cb16-52" tabindex="-1"></a><span class="co">#&gt; │   │   ├── loaders.R</span></span>
+<span id="cb16-53"><a href="#cb16-53" tabindex="-1"></a><span class="co">#&gt; │   │   ├── parsers.R</span></span>
+<span id="cb16-54"><a href="#cb16-54" tabindex="-1"></a><span class="co">#&gt; │   │   └── schemas.R</span></span>
+<span id="cb16-55"><a href="#cb16-55" tabindex="-1"></a><span class="co">#&gt; │   └── models</span></span>
+<span id="cb16-56"><a href="#cb16-56" tabindex="-1"></a><span class="co">#&gt; │       ├── __init__.R</span></span>
+<span id="cb16-57"><a href="#cb16-57" tabindex="-1"></a><span class="co">#&gt; │       ├── compare.R</span></span>
+<span id="cb16-58"><a href="#cb16-58" tabindex="-1"></a><span class="co">#&gt; │       └── hazard.R</span></span>
+<span id="cb16-59"><a href="#cb16-59" tabindex="-1"></a><span class="co">#&gt; ├── check</span></span>
+<span id="cb16-60"><a href="#cb16-60" tabindex="-1"></a><span class="co">#&gt; │   ├── micromort.Rcheck</span></span>
+<span id="cb16-61"><a href="#cb16-61" tabindex="-1"></a><span class="co">#&gt; │   │   ├── 00_pkg_src</span></span>
+<span id="cb16-62"><a href="#cb16-62" tabindex="-1"></a><span class="co">#&gt; │   │   ├── 00check.log</span></span>
+<span id="cb16-63"><a href="#cb16-63" tabindex="-1"></a><span class="co">#&gt; │   │   ├── 00install.out</span></span>
+<span id="cb16-64"><a href="#cb16-64" tabindex="-1"></a><span class="co">#&gt; │   │   ├── R_check_bin</span></span>
+<span id="cb16-65"><a href="#cb16-65" tabindex="-1"></a><span class="co">#&gt; │   │   ├── micromort</span></span>
+<span id="cb16-66"><a href="#cb16-66" tabindex="-1"></a><span class="co">#&gt; │   │   ├── micromort-Ex.R</span></span>
+<span id="cb16-67"><a href="#cb16-67" tabindex="-1"></a><span class="co">#&gt; │   │   ├── micromort-Ex.Rout</span></span>
+<span id="cb16-68"><a href="#cb16-68" tabindex="-1"></a><span class="co">#&gt; │   │   ├── micromort-Ex.pdf</span></span>
+<span id="cb16-69"><a href="#cb16-69" tabindex="-1"></a><span class="co">#&gt; │   │   └── micromort-Ex.timings</span></span>
+<span id="cb16-70"><a href="#cb16-70" tabindex="-1"></a><span class="co">#&gt; │   └── micromort_0.1.0.tar.gz</span></span>
+<span id="cb16-71"><a href="#cb16-71" tabindex="-1"></a><span class="co">#&gt; ├── data-raw</span></span>
+<span id="cb16-72"><a href="#cb16-72" tabindex="-1"></a><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
+<span id="cb16-73"><a href="#cb16-73" tabindex="-1"></a><span class="co">#&gt; │   ├── 02_regional_life_expectancy.R</span></span>
+<span id="cb16-74"><a href="#cb16-74" tabindex="-1"></a><span class="co">#&gt; │   ├── 02_regional_life_expectancy_sample.R</span></span>
+<span id="cb16-75"><a href="#cb16-75" tabindex="-1"></a><span class="co">#&gt; │   ├── 03_osha_occupational_risks.R</span></span>
+<span id="cb16-76"><a href="#cb16-76" tabindex="-1"></a><span class="co">#&gt; │   ├── 04_road_traffic_mortality.R</span></span>
+<span id="cb16-77"><a href="#cb16-77" tabindex="-1"></a><span class="co">#&gt; │   ├── 05_global_homicide_rates.R</span></span>
+<span id="cb16-78"><a href="#cb16-78" tabindex="-1"></a><span class="co">#&gt; │   ├── README_regional_data.md</span></span>
+<span id="cb16-79"><a href="#cb16-79" tabindex="-1"></a><span class="co">#&gt; │   ├── generate_og_image.R</span></span>
+<span id="cb16-80"><a href="#cb16-80" tabindex="-1"></a><span class="co">#&gt; │   ├── generate_quiz_csv.R</span></span>
+<span id="cb16-81"><a href="#cb16-81" tabindex="-1"></a><span class="co">#&gt; │   └── sources</span></span>
+<span id="cb16-82"><a href="#cb16-82" tabindex="-1"></a><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
+<span id="cb16-83"><a href="#cb16-83" tabindex="-1"></a><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
+<span id="cb16-84"><a href="#cb16-84" tabindex="-1"></a><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
+<span id="cb16-85"><a href="#cb16-85" tabindex="-1"></a><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
+<span id="cb16-86"><a href="#cb16-86" tabindex="-1"></a><span class="co">#&gt; │       └── risk_sources.csv</span></span>
+<span id="cb16-87"><a href="#cb16-87" tabindex="-1"></a><span class="co">#&gt; ├── default.R</span></span>
+<span id="cb16-88"><a href="#cb16-88" tabindex="-1"></a><span class="co">#&gt; ├── default.nix</span></span>
+<span id="cb16-89"><a href="#cb16-89" tabindex="-1"></a><span class="co">#&gt; ├── default.sh</span></span>
+<span id="cb16-90"><a href="#cb16-90" tabindex="-1"></a><span class="co">#&gt; ├── docs</span></span>
+<span id="cb16-91"><a href="#cb16-91" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.html</span></span>
+<span id="cb16-92"><a href="#cb16-92" tabindex="-1"></a><span class="co">#&gt; │   ├── 404.md</span></span>
+<span id="cb16-93"><a href="#cb16-93" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
+<span id="cb16-94"><a href="#cb16-94" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
+<span id="cb16-95"><a href="#cb16-95" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.html</span></span>
+<span id="cb16-96"><a href="#cb16-96" tabindex="-1"></a><span class="co">#&gt; │   ├── LICENSE.md</span></span>
+<span id="cb16-97"><a href="#cb16-97" tabindex="-1"></a><span class="co">#&gt; │   ├── articles</span></span>
+<span id="cb16-98"><a href="#cb16-98" tabindex="-1"></a><span class="co">#&gt; │   │   ├── architecture.html</span></span>
+<span id="cb16-99"><a href="#cb16-99" tabindex="-1"></a><span class="co">#&gt; │   │   ├── architecture.md</span></span>
+<span id="cb16-100"><a href="#cb16-100" tabindex="-1"></a><span class="co">#&gt; │   │   ├── architecture_files</span></span>
+<span id="cb16-101"><a href="#cb16-101" tabindex="-1"></a><span class="co">#&gt; │   │   ├── confounding.html</span></span>
+<span id="cb16-102"><a href="#cb16-102" tabindex="-1"></a><span class="co">#&gt; │   │   ├── confounding.md</span></span>
+<span id="cb16-103"><a href="#cb16-103" tabindex="-1"></a><span class="co">#&gt; │   │   ├── confounding_files</span></span>
+<span id="cb16-104"><a href="#cb16-104" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data_reliability.html</span></span>
+<span id="cb16-105"><a href="#cb16-105" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data_reliability.md</span></span>
+<span id="cb16-106"><a href="#cb16-106" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data_reliability_files</span></span>
+<span id="cb16-107"><a href="#cb16-107" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb16-108"><a href="#cb16-108" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb16-109"><a href="#cb16-109" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.html</span></span>
+<span id="cb16-110"><a href="#cb16-110" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction.md</span></span>
+<span id="cb16-111"><a href="#cb16-111" tabindex="-1"></a><span class="co">#&gt; │   │   ├── introduction_files</span></span>
+<span id="cb16-112"><a href="#cb16-112" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
+<span id="cb16-113"><a href="#cb16-113" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
+<span id="cb16-114"><a href="#cb16-114" tabindex="-1"></a><span class="co">#&gt; │   │   ├── palatable_units_files</span></span>
+<span id="cb16-115"><a href="#cb16-115" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_shinylive.html</span></span>
+<span id="cb16-116"><a href="#cb16-116" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_shinylive_files</span></span>
+<span id="cb16-117"><a href="#cb16-117" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation.html</span></span>
+<span id="cb16-118"><a href="#cb16-118" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation.md</span></span>
+<span id="cb16-119"><a href="#cb16-119" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_variation_files</span></span>
+<span id="cb16-120"><a href="#cb16-120" tabindex="-1"></a><span class="co">#&gt; │   │   ├── rest_api.html</span></span>
+<span id="cb16-121"><a href="#cb16-121" tabindex="-1"></a><span class="co">#&gt; │   │   ├── rest_api.md</span></span>
+<span id="cb16-122"><a href="#cb16-122" tabindex="-1"></a><span class="co">#&gt; │   │   ├── rest_api_files</span></span>
+<span id="cb16-123"><a href="#cb16-123" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
+<span id="cb16-124"><a href="#cb16-124" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
+<span id="cb16-125"><a href="#cb16-125" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence_files</span></span>
+<span id="cb16-126"><a href="#cb16-126" tabindex="-1"></a><span class="co">#&gt; │   │   ├── shinylive-sw.js</span></span>
+<span id="cb16-127"><a href="#cb16-127" tabindex="-1"></a><span class="co">#&gt; │   │   ├── telemetry.html</span></span>
+<span id="cb16-128"><a href="#cb16-128" tabindex="-1"></a><span class="co">#&gt; │   │   ├── telemetry.md</span></span>
+<span id="cb16-129"><a href="#cb16-129" tabindex="-1"></a><span class="co">#&gt; │   │   └── telemetry_files</span></span>
+<span id="cb16-130"><a href="#cb16-130" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.html</span></span>
+<span id="cb16-131"><a href="#cb16-131" tabindex="-1"></a><span class="co">#&gt; │   ├── authors.md</span></span>
+<span id="cb16-132"><a href="#cb16-132" tabindex="-1"></a><span class="co">#&gt; │   ├── deps</span></span>
+<span id="cb16-133"><a href="#cb16-133" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-5.3.1</span></span>
+<span id="cb16-134"><a href="#cb16-134" tabindex="-1"></a><span class="co">#&gt; │   │   ├── bootstrap-toc-1.0.1</span></span>
+<span id="cb16-135"><a href="#cb16-135" tabindex="-1"></a><span class="co">#&gt; │   │   ├── clipboard.js-2.0.11</span></span>
+<span id="cb16-136"><a href="#cb16-136" tabindex="-1"></a><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
+<span id="cb16-137"><a href="#cb16-137" tabindex="-1"></a><span class="co">#&gt; │   │   ├── font-awesome-6.5.2</span></span>
+<span id="cb16-138"><a href="#cb16-138" tabindex="-1"></a><span class="co">#&gt; │   │   ├── headroom-0.11.0</span></span>
+<span id="cb16-139"><a href="#cb16-139" tabindex="-1"></a><span class="co">#&gt; │   │   ├── jquery-3.6.0</span></span>
+<span id="cb16-140"><a href="#cb16-140" tabindex="-1"></a><span class="co">#&gt; │   │   └── search-1.0.0</span></span>
+<span id="cb16-141"><a href="#cb16-141" tabindex="-1"></a><span class="co">#&gt; │   ├── extra.css</span></span>
+<span id="cb16-142"><a href="#cb16-142" tabindex="-1"></a><span class="co">#&gt; │   ├── extra.js</span></span>
+<span id="cb16-143"><a href="#cb16-143" tabindex="-1"></a><span class="co">#&gt; │   ├── index.html</span></span>
+<span id="cb16-144"><a href="#cb16-144" tabindex="-1"></a><span class="co">#&gt; │   ├── index.md</span></span>
+<span id="cb16-145"><a href="#cb16-145" tabindex="-1"></a><span class="co">#&gt; │   ├── katex-auto.js</span></span>
+<span id="cb16-146"><a href="#cb16-146" tabindex="-1"></a><span class="co">#&gt; │   ├── lightswitch.js</span></span>
+<span id="cb16-147"><a href="#cb16-147" tabindex="-1"></a><span class="co">#&gt; │   ├── link.svg</span></span>
+<span id="cb16-148"><a href="#cb16-148" tabindex="-1"></a><span class="co">#&gt; │   ├── llms.txt</span></span>
+<span id="cb16-149"><a href="#cb16-149" tabindex="-1"></a><span class="co">#&gt; │   ├── news</span></span>
+<span id="cb16-150"><a href="#cb16-150" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.js</span></span>
+<span id="cb16-151"><a href="#cb16-151" tabindex="-1"></a><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
+<span id="cb16-152"><a href="#cb16-152" tabindex="-1"></a><span class="co">#&gt; │   ├── reference</span></span>
+<span id="cb16-153"><a href="#cb16-153" tabindex="-1"></a><span class="co">#&gt; │   │   ├── activity_descriptions.html</span></span>
+<span id="cb16-154"><a href="#cb16-154" tabindex="-1"></a><span class="co">#&gt; │   │   ├── activity_descriptions.md</span></span>
+<span id="cb16-155"><a href="#cb16-155" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
+<span id="cb16-156"><a href="#cb16-156" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
+<span id="cb16-157"><a href="#cb16-157" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
+<span id="cb16-158"><a href="#cb16-158" tabindex="-1"></a><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
+<span id="cb16-159"><a href="#cb16-159" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
+<span id="cb16-160"><a href="#cb16-160" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
+<span id="cb16-161"><a href="#cb16-161" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
+<span id="cb16-162"><a href="#cb16-162" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
+<span id="cb16-163"><a href="#cb16-163" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
+<span id="cb16-164"><a href="#cb16-164" tabindex="-1"></a><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
+<span id="cb16-165"><a href="#cb16-165" tabindex="-1"></a><span class="co">#&gt; │   │   ├── atomic_risks.html</span></span>
+<span id="cb16-166"><a href="#cb16-166" tabindex="-1"></a><span class="co">#&gt; │   │   ├── atomic_risks.md</span></span>
+<span id="cb16-167"><a href="#cb16-167" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
+<span id="cb16-168"><a href="#cb16-168" tabindex="-1"></a><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
+<span id="cb16-169"><a href="#cb16-169" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
+<span id="cb16-170"><a href="#cb16-170" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
+<span id="cb16-171"><a href="#cb16-171" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
+<span id="cb16-172"><a href="#cb16-172" tabindex="-1"></a><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
+<span id="cb16-173"><a href="#cb16-173" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
+<span id="cb16-174"><a href="#cb16-174" tabindex="-1"></a><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
+<span id="cb16-175"><a href="#cb16-175" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
+<span id="cb16-176"><a href="#cb16-176" tabindex="-1"></a><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
+<span id="cb16-177"><a href="#cb16-177" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
+<span id="cb16-178"><a href="#cb16-178" tabindex="-1"></a><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
+<span id="cb16-179"><a href="#cb16-179" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
+<span id="cb16-180"><a href="#cb16-180" tabindex="-1"></a><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
+<span id="cb16-181"><a href="#cb16-181" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
+<span id="cb16-182"><a href="#cb16-182" tabindex="-1"></a><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
+<span id="cb16-183"><a href="#cb16-183" tabindex="-1"></a><span class="co">#&gt; │   │   ├── figures</span></span>
+<span id="cb16-184"><a href="#cb16-184" tabindex="-1"></a><span class="co">#&gt; │   │   ├── format_activity_name.html</span></span>
+<span id="cb16-185"><a href="#cb16-185" tabindex="-1"></a><span class="co">#&gt; │   │   ├── format_activity_name.md</span></span>
+<span id="cb16-186"><a href="#cb16-186" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
+<span id="cb16-187"><a href="#cb16-187" tabindex="-1"></a><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
+<span id="cb16-188"><a href="#cb16-188" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.html</span></span>
+<span id="cb16-189"><a href="#cb16-189" tabindex="-1"></a><span class="co">#&gt; │   │   ├── index.md</span></span>
+<span id="cb16-190"><a href="#cb16-190" tabindex="-1"></a><span class="co">#&gt; │   │   ├── laggard_regions.html</span></span>
+<span id="cb16-191"><a href="#cb16-191" tabindex="-1"></a><span class="co">#&gt; │   │   ├── laggard_regions.md</span></span>
+<span id="cb16-192"><a href="#cb16-192" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
+<span id="cb16-193"><a href="#cb16-193" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
+<span id="cb16-194"><a href="#cb16-194" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
+<span id="cb16-195"><a href="#cb16-195" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
+<span id="cb16-196"><a href="#cb16-196" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_quiz.html</span></span>
+<span id="cb16-197"><a href="#cb16-197" tabindex="-1"></a><span class="co">#&gt; │   │   ├── launch_quiz.md</span></span>
+<span id="cb16-198"><a href="#cb16-198" tabindex="-1"></a><span class="co">#&gt; │   │   ├── libs</span></span>
+<span id="cb16-199"><a href="#cb16-199" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
+<span id="cb16-200"><a href="#cb16-200" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
+<span id="cb16-201"><a href="#cb16-201" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.html</span></span>
+<span id="cb16-202"><a href="#cb16-202" tabindex="-1"></a><span class="co">#&gt; │   │   ├── lle.md</span></span>
+<span id="cb16-203"><a href="#cb16-203" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
+<span id="cb16-204"><a href="#cb16-204" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
+<span id="cb16-205"><a href="#cb16-205" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
+<span id="cb16-206"><a href="#cb16-206" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
+<span id="cb16-207"><a href="#cb16-207" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
+<span id="cb16-208"><a href="#cb16-208" tabindex="-1"></a><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
+<span id="cb16-209"><a href="#cb16-209" tabindex="-1"></a><span class="co">#&gt; │   │   ├── patient_radiation_comparison.html</span></span>
+<span id="cb16-210"><a href="#cb16-210" tabindex="-1"></a><span class="co">#&gt; │   │   ├── patient_radiation_comparison.md</span></span>
+<span id="cb16-211"><a href="#cb16-211" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components-1.png</span></span>
+<span id="cb16-212"><a href="#cb16-212" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components.html</span></span>
+<span id="cb16-213"><a href="#cb16-213" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risk_components.md</span></span>
+<span id="cb16-214"><a href="#cb16-214" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
+<span id="cb16-215"><a href="#cb16-215" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
+<span id="cb16-216"><a href="#cb16-216" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-3.png</span></span>
+<span id="cb16-217"><a href="#cb16-217" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-4.png</span></span>
+<span id="cb16-218"><a href="#cb16-218" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks-5.png</span></span>
+<span id="cb16-219"><a href="#cb16-219" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
+<span id="cb16-220"><a href="#cb16-220" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
+<span id="cb16-221"><a href="#cb16-221" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
+<span id="cb16-222"><a href="#cb16-222" tabindex="-1"></a><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
+<span id="cb16-223"><a href="#cb16-223" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot-1.png</span></span>
+<span id="cb16-224"><a href="#cb16-224" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot.html</span></span>
+<span id="cb16-225"><a href="#cb16-225" tabindex="-1"></a><span class="co">#&gt; │   │   ├── prepare_risks_plot.md</span></span>
+<span id="cb16-226"><a href="#cb16-226" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_pairs.html</span></span>
+<span id="cb16-227"><a href="#cb16-227" tabindex="-1"></a><span class="co">#&gt; │   │   ├── quiz_pairs.md</span></span>
+<span id="cb16-228"><a href="#cb16-228" tabindex="-1"></a><span class="co">#&gt; │   │   ├── radiation_profiles.html</span></span>
+<span id="cb16-229"><a href="#cb16-229" tabindex="-1"></a><span class="co">#&gt; │   │   ├── radiation_profiles.md</span></span>
+<span id="cb16-230"><a href="#cb16-230" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.html</span></span>
+<span id="cb16-231"><a href="#cb16-231" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.md</span></span>
+<span id="cb16-232"><a href="#cb16-232" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.html</span></span>
+<span id="cb16-233"><a href="#cb16-233" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.md</span></span>
+<span id="cb16-234"><a href="#cb16-234" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_components.html</span></span>
+<span id="cb16-235"><a href="#cb16-235" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_components.md</span></span>
+<span id="cb16-236"><a href="#cb16-236" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
+<span id="cb16-237"><a href="#cb16-237" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
+<span id="cb16-238"><a href="#cb16-238" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
+<span id="cb16-239"><a href="#cb16-239" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
+<span id="cb16-240"><a href="#cb16-240" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_exchange_matrix.html</span></span>
+<span id="cb16-241"><a href="#cb16-241" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_exchange_matrix.md</span></span>
+<span id="cb16-242"><a href="#cb16-242" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_for_duration.html</span></span>
+<span id="cb16-243"><a href="#cb16-243" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_for_duration.md</span></span>
+<span id="cb16-244"><a href="#cb16-244" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
+<span id="cb16-245"><a href="#cb16-245" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
+<span id="cb16-246"><a href="#cb16-246" tabindex="-1"></a><span class="co">#&gt; │   │   ├── theme_micromort_dark-1.png</span></span>
+<span id="cb16-247"><a href="#cb16-247" tabindex="-1"></a><span class="co">#&gt; │   │   ├── theme_micromort_dark.html</span></span>
+<span id="cb16-248"><a href="#cb16-248" tabindex="-1"></a><span class="co">#&gt; │   │   ├── theme_micromort_dark.md</span></span>
+<span id="cb16-249"><a href="#cb16-249" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
+<span id="cb16-250"><a href="#cb16-250" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
+<span id="cb16-251"><a href="#cb16-251" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
+<span id="cb16-252"><a href="#cb16-252" tabindex="-1"></a><span class="co">#&gt; │   │   ├── value_of_micromort.md</span></span>
+<span id="cb16-253"><a href="#cb16-253" tabindex="-1"></a><span class="co">#&gt; │   │   ├── vanguard_regions.html</span></span>
+<span id="cb16-254"><a href="#cb16-254" tabindex="-1"></a><span class="co">#&gt; │   │   └── vanguard_regions.md</span></span>
+<span id="cb16-255"><a href="#cb16-255" tabindex="-1"></a><span class="co">#&gt; │   ├── search.json</span></span>
+<span id="cb16-256"><a href="#cb16-256" tabindex="-1"></a><span class="co">#&gt; │   ├── sitemap.xml</span></span>
+<span id="cb16-257"><a href="#cb16-257" tabindex="-1"></a><span class="co">#&gt; │   └── tutorials</span></span>
+<span id="cb16-258"><a href="#cb16-258" tabindex="-1"></a><span class="co">#&gt; ├── inst</span></span>
+<span id="cb16-259"><a href="#cb16-259" tabindex="-1"></a><span class="co">#&gt; │   ├── dashboard</span></span>
+<span id="cb16-260"><a href="#cb16-260" tabindex="-1"></a><span class="co">#&gt; │   │   └── about.md</span></span>
+<span id="cb16-261"><a href="#cb16-261" tabindex="-1"></a><span class="co">#&gt; │   ├── extdata</span></span>
+<span id="cb16-262"><a href="#cb16-262" tabindex="-1"></a><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
+<span id="cb16-263"><a href="#cb16-263" tabindex="-1"></a><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
+<span id="cb16-264"><a href="#cb16-264" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logs</span></span>
+<span id="cb16-265"><a href="#cb16-265" tabindex="-1"></a><span class="co">#&gt; │   │   ├── regional_life_expectancy.parquet</span></span>
+<span id="cb16-266"><a href="#cb16-266" tabindex="-1"></a><span class="co">#&gt; │   │   ├── risk_sources.parquet</span></span>
+<span id="cb16-267"><a href="#cb16-267" tabindex="-1"></a><span class="co">#&gt; │   │   └── vignettes</span></span>
+<span id="cb16-268"><a href="#cb16-268" tabindex="-1"></a><span class="co">#&gt; │   └── plumber</span></span>
+<span id="cb16-269"><a href="#cb16-269" tabindex="-1"></a><span class="co">#&gt; │       └── api.R</span></span>
+<span id="cb16-270"><a href="#cb16-270" tabindex="-1"></a><span class="co">#&gt; ├── man</span></span>
+<span id="cb16-271"><a href="#cb16-271" tabindex="-1"></a><span class="co">#&gt; │   ├── activity_descriptions.Rd</span></span>
+<span id="cb16-272"><a href="#cb16-272" tabindex="-1"></a><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
+<span id="cb16-273"><a href="#cb16-273" tabindex="-1"></a><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
+<span id="cb16-274"><a href="#cb16-274" tabindex="-1"></a><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
+<span id="cb16-275"><a href="#cb16-275" tabindex="-1"></a><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
+<span id="cb16-276"><a href="#cb16-276" tabindex="-1"></a><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
+<span id="cb16-277"><a href="#cb16-277" tabindex="-1"></a><span class="co">#&gt; │   ├── atomic_risks.Rd</span></span>
+<span id="cb16-278"><a href="#cb16-278" tabindex="-1"></a><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
+<span id="cb16-279"><a href="#cb16-279" tabindex="-1"></a><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
+<span id="cb16-280"><a href="#cb16-280" tabindex="-1"></a><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
+<span id="cb16-281"><a href="#cb16-281" tabindex="-1"></a><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
+<span id="cb16-282"><a href="#cb16-282" tabindex="-1"></a><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
+<span id="cb16-283"><a href="#cb16-283" tabindex="-1"></a><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
+<span id="cb16-284"><a href="#cb16-284" tabindex="-1"></a><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
+<span id="cb16-285"><a href="#cb16-285" tabindex="-1"></a><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
+<span id="cb16-286"><a href="#cb16-286" tabindex="-1"></a><span class="co">#&gt; │   ├── figures</span></span>
+<span id="cb16-287"><a href="#cb16-287" tabindex="-1"></a><span class="co">#&gt; │   │   ├── README-plot-1.png</span></span>
+<span id="cb16-288"><a href="#cb16-288" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logo-candidates</span></span>
+<span id="cb16-289"><a href="#cb16-289" tabindex="-1"></a><span class="co">#&gt; │   │   ├── logo.png</span></span>
+<span id="cb16-290"><a href="#cb16-290" tabindex="-1"></a><span class="co">#&gt; │   │   └── og-image.png</span></span>
+<span id="cb16-291"><a href="#cb16-291" tabindex="-1"></a><span class="co">#&gt; │   ├── format_activity_name.Rd</span></span>
+<span id="cb16-292"><a href="#cb16-292" tabindex="-1"></a><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
+<span id="cb16-293"><a href="#cb16-293" tabindex="-1"></a><span class="co">#&gt; │   ├── laggard_regions.Rd</span></span>
+<span id="cb16-294"><a href="#cb16-294" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
+<span id="cb16-295"><a href="#cb16-295" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
+<span id="cb16-296"><a href="#cb16-296" tabindex="-1"></a><span class="co">#&gt; │   ├── launch_quiz.Rd</span></span>
+<span id="cb16-297"><a href="#cb16-297" tabindex="-1"></a><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
+<span id="cb16-298"><a href="#cb16-298" tabindex="-1"></a><span class="co">#&gt; │   ├── lle.Rd</span></span>
+<span id="cb16-299"><a href="#cb16-299" tabindex="-1"></a><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
+<span id="cb16-300"><a href="#cb16-300" tabindex="-1"></a><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
+<span id="cb16-301"><a href="#cb16-301" tabindex="-1"></a><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
+<span id="cb16-302"><a href="#cb16-302" tabindex="-1"></a><span class="co">#&gt; │   ├── patient_radiation_comparison.Rd</span></span>
+<span id="cb16-303"><a href="#cb16-303" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risk_components.Rd</span></span>
+<span id="cb16-304"><a href="#cb16-304" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
+<span id="cb16-305"><a href="#cb16-305" tabindex="-1"></a><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
+<span id="cb16-306"><a href="#cb16-306" tabindex="-1"></a><span class="co">#&gt; │   ├── prepare_risks_plot.Rd</span></span>
+<span id="cb16-307"><a href="#cb16-307" tabindex="-1"></a><span class="co">#&gt; │   ├── quiz_pairs.Rd</span></span>
+<span id="cb16-308"><a href="#cb16-308" tabindex="-1"></a><span class="co">#&gt; │   ├── radiation_profiles.Rd</span></span>
+<span id="cb16-309"><a href="#cb16-309" tabindex="-1"></a><span class="co">#&gt; │   ├── regional_life_expectancy.Rd</span></span>
+<span id="cb16-310"><a href="#cb16-310" tabindex="-1"></a><span class="co">#&gt; │   ├── regional_mortality_multiplier.Rd</span></span>
+<span id="cb16-311"><a href="#cb16-311" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_components.Rd</span></span>
+<span id="cb16-312"><a href="#cb16-312" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
+<span id="cb16-313"><a href="#cb16-313" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_equivalence.Rd</span></span>
+<span id="cb16-314"><a href="#cb16-314" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_exchange_matrix.Rd</span></span>
+<span id="cb16-315"><a href="#cb16-315" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_for_duration.Rd</span></span>
+<span id="cb16-316"><a href="#cb16-316" tabindex="-1"></a><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
+<span id="cb16-317"><a href="#cb16-317" tabindex="-1"></a><span class="co">#&gt; │   ├── theme_micromort_dark.Rd</span></span>
+<span id="cb16-318"><a href="#cb16-318" tabindex="-1"></a><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
+<span id="cb16-319"><a href="#cb16-319" tabindex="-1"></a><span class="co">#&gt; │   ├── value_of_micromort.Rd</span></span>
+<span id="cb16-320"><a href="#cb16-320" tabindex="-1"></a><span class="co">#&gt; │   └── vanguard_regions.Rd</span></span>
+<span id="cb16-321"><a href="#cb16-321" tabindex="-1"></a><span class="co">#&gt; ├── nix-shell-root</span></span>
+<span id="cb16-322"><a href="#cb16-322" tabindex="-1"></a><span class="co">#&gt; ├── package.nix</span></span>
+<span id="cb16-323"><a href="#cb16-323" tabindex="-1"></a><span class="co">#&gt; ├── pkgdown</span></span>
+<span id="cb16-324"><a href="#cb16-324" tabindex="-1"></a><span class="co">#&gt; │   ├── extra.css</span></span>
+<span id="cb16-325"><a href="#cb16-325" tabindex="-1"></a><span class="co">#&gt; │   └── extra.js</span></span>
+<span id="cb16-326"><a href="#cb16-326" tabindex="-1"></a><span class="co">#&gt; ├── plans</span></span>
+<span id="cb16-327"><a href="#cb16-327" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_consistency_refactor.md</span></span>
+<span id="cb16-328"><a href="#cb16-328" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_regional_longevity.md</span></span>
+<span id="cb16-329"><a href="#cb16-329" tabindex="-1"></a><span class="co">#&gt; │   ├── PLAN_risk_equivalence_dashboard.md</span></span>
+<span id="cb16-330"><a href="#cb16-330" tabindex="-1"></a><span class="co">#&gt; │   └── PLAN_vignette_targets_refactor.md</span></span>
+<span id="cb16-331"><a href="#cb16-331" tabindex="-1"></a><span class="co">#&gt; ├── push_to_cachix.sh</span></span>
+<span id="cb16-332"><a href="#cb16-332" tabindex="-1"></a><span class="co">#&gt; ├── tests</span></span>
+<span id="cb16-333"><a href="#cb16-333" tabindex="-1"></a><span class="co">#&gt; │   └── testthat</span></span>
+<span id="cb16-334"><a href="#cb16-334" tabindex="-1"></a><span class="co">#&gt; │       ├── test-adversarial.R</span></span>
+<span id="cb16-335"><a href="#cb16-335" tabindex="-1"></a><span class="co">#&gt; │       ├── test-api.R</span></span>
+<span id="cb16-336"><a href="#cb16-336" tabindex="-1"></a><span class="co">#&gt; │       ├── test-atomic-risks.R</span></span>
+<span id="cb16-337"><a href="#cb16-337" tabindex="-1"></a><span class="co">#&gt; │       ├── test-diagrams.R</span></span>
+<span id="cb16-338"><a href="#cb16-338" tabindex="-1"></a><span class="co">#&gt; │       ├── test-quiz.R</span></span>
+<span id="cb16-339"><a href="#cb16-339" tabindex="-1"></a><span class="co">#&gt; │       ├── test-radiation-profiles.R</span></span>
+<span id="cb16-340"><a href="#cb16-340" tabindex="-1"></a><span class="co">#&gt; │       ├── test-risk-components.R</span></span>
+<span id="cb16-341"><a href="#cb16-341" tabindex="-1"></a><span class="co">#&gt; │       ├── test-risk-equivalence.R</span></span>
+<span id="cb16-342"><a href="#cb16-342" tabindex="-1"></a><span class="co">#&gt; │       └── test-visualization.R</span></span>
+<span id="cb16-343"><a href="#cb16-343" tabindex="-1"></a><span class="co">#&gt; └── vignettes</span></span>
+<span id="cb16-344"><a href="#cb16-344" tabindex="-1"></a><span class="co">#&gt;     ├── _extensions</span></span>
+<span id="cb16-345"><a href="#cb16-345" tabindex="-1"></a><span class="co">#&gt;     │   └── quarto-ext</span></span>
+<span id="cb16-346"><a href="#cb16-346" tabindex="-1"></a><span class="co">#&gt;     ├── _quarto.yml</span></span>
+<span id="cb16-347"><a href="#cb16-347" tabindex="-1"></a><span class="co">#&gt;     ├── architecture.qmd</span></span>
+<span id="cb16-348"><a href="#cb16-348" tabindex="-1"></a><span class="co">#&gt;     ├── architecture_files</span></span>
+<span id="cb16-349"><a href="#cb16-349" tabindex="-1"></a><span class="co">#&gt;     ├── confounding.qmd</span></span>
+<span id="cb16-350"><a href="#cb16-350" tabindex="-1"></a><span class="co">#&gt;     ├── data_reliability.qmd</span></span>
+<span id="cb16-351"><a href="#cb16-351" tabindex="-1"></a><span class="co">#&gt;     ├── introduction.qmd</span></span>
+<span id="cb16-352"><a href="#cb16-352" tabindex="-1"></a><span class="co">#&gt;     ├── palatable_units.qmd</span></span>
+<span id="cb16-353"><a href="#cb16-353" tabindex="-1"></a><span class="co">#&gt;     ├── quiz_shinylive.qmd</span></span>
+<span id="cb16-354"><a href="#cb16-354" tabindex="-1"></a><span class="co">#&gt;     ├── quiz_shinylive_files</span></span>
+<span id="cb16-355"><a href="#cb16-355" tabindex="-1"></a><span class="co">#&gt;     │   └── libs</span></span>
+<span id="cb16-356"><a href="#cb16-356" tabindex="-1"></a><span class="co">#&gt;     ├── regional_variation.qmd</span></span>
+<span id="cb16-357"><a href="#cb16-357" tabindex="-1"></a><span class="co">#&gt;     ├── rest_api.qmd</span></span>
+<span id="cb16-358"><a href="#cb16-358" tabindex="-1"></a><span class="co">#&gt;     ├── risk_equivalence.qmd</span></span>
+<span id="cb16-359"><a href="#cb16-359" tabindex="-1"></a><span class="co">#&gt;     ├── risk_equivalence_files</span></span>
+<span id="cb16-360"><a href="#cb16-360" tabindex="-1"></a><span class="co">#&gt;     ├── shinylive-sw.js</span></span>
+<span id="cb16-361"><a href="#cb16-361" tabindex="-1"></a><span class="co">#&gt;     └── telemetry.qmd</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level2">
@@ -834,9 +890,9 @@ Click to expand project tree
 </h2>
 <table class="table">
 <colgroup>
-<col width="28%">
-<col width="34%">
-<col width="37%">
+<col width="33%">
+<col width="33%">
+<col width="33%">
 </colgroup>
 <thead><tr>
 <th>Acronym</th>
@@ -899,6 +955,7 @@ Click to expand project tree
 <p>See <a href="LICENSE">LICENSE</a> for details.</p>
 </div>
 </div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">

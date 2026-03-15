@@ -1,3 +1,5 @@
+# micromort: Curated Micromort and Microlife Risk Datasets
+
 # micromort
 
 A **data package** providing curated datasets of micromort (acute risk)
@@ -18,22 +20,22 @@ Wikipedia, CDC MMWR, and academic literature. \## Features
 ## Architecture
 
 ``` mermaid
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#2d5f8a', 'primaryTextColor': '#e0e0e0', 'primaryBorderColor': '#4a9eda', 'lineColor': '#4a9eda', 'secondaryColor': '#3d3d5c', 'tertiaryColor': '#1a1a2e', 'background': '#1a1a1a', 'mainBkg': '#1a1a2e', 'nodeBorder': '#4a9eda', 'clusterBkg': '#2a2a3e', 'clusterBorder': '#4a9eda', 'titleColor': '#e0e0e0', 'edgeLabelBackground': '#1a1a2e'}}}%%
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
 graph LR
 
   Conversion["Unit Conversion<br>5 functions"]
   Data["Risk Datasets<br>21 functions"]
   Analysis["Risk Analysis<br>6 functions"]
   Viz["Visualization<br>5 functions"]
-  Apps["Interactive Apps<br>4 functions"]
+  Apps["Interactive Apps<br>6 functions"]
 
   Conversion --> Data --> Analysis --> Viz --> Apps
 
-  style Conversion fill:#1a2d4a,stroke:#1976D2
-  style Data fill:#1a3d1a,stroke:#2E7D32
-  style Analysis fill:#3d1a2a,stroke:#C62828
-  style Viz fill:#2d1a3d,stroke:#7B1FA2
-  style Apps fill:#1a3d3d,stroke:#00897B
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
+  style Data fill:#999999,stroke:#CC0000,color:#000000
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
+  style Viz fill:#999999,stroke:#CC0000,color:#000000
+  style Apps fill:#999999,stroke:#CC0000,color:#000000
 ```
 
 See the [Architecture
@@ -256,10 +258,6 @@ plot_risks(common_risks() |> dplyr::filter(micromorts >= 1))
 per event. COVID-19 and other risks shown in separate panels for
 clarity.](reference/figures/README-plot-1.png)
 
-Risk comparison in micromorts (log scale). Bars show death probability
-per event. COVID-19 and other risks shown in separate panels for
-clarity.
-
 ## Analysis Functions
 
 ### Compare Lifestyle Interventions
@@ -356,325 +354,369 @@ micromort::launch_quiz()
 
 Click to expand project tree
 
-    #> .
-    #> ├── DESCRIPTION
-    #> ├── LICENSE
-    #> ├── LICENSE.md
-    #> ├── NAMESPACE
-    #> ├── R
-    #> │   ├── api.R
-    #> │   ├── atomic_risks.R
-    #> │   ├── dashboard.R
-    #> │   ├── data.R
-    #> │   ├── dev
-    #> │   │   ├── issues
-    #> │   │   └── verify_pkgdown_urls.R
-    #> │   ├── diagrams.R
-    #> │   ├── micromort.R
-    #> │   ├── models.R
-    #> │   ├── quiz.R
-    #> │   ├── radiation_profiles.R
-    #> │   ├── regional.R
-    #> │   ├── risk_equivalence.R
-    #> │   ├── risks.R
-    #> │   ├── tar_plans
-    #> │   │   ├── plan_data_acquisition.R
-    #> │   │   ├── plan_documentation.R
-    #> │   │   ├── plan_export.R
-    #> │   │   ├── plan_logging.R
-    #> │   │   ├── plan_normalization.R
-    #> │   │   ├── plan_validation.R
-    #> │   │   └── plan_vignette_outputs.R
-    #> │   └── visualization.R
-    #> ├── README.md
-    #> ├── README.qmd
-    #> ├── README_files
-    #> │   └── libs
-    #> │       ├── bootstrap
-    #> │       ├── clipboard
-    #> │       └── quarto-html
-    #> ├── box
-    #> │   ├── api
-    #> │   │   ├── __init__.R
-    #> │   │   └── endpoints.R
-    #> │   ├── dashboard
-    #> │   │   ├── __init__.R
-    #> │   │   ├── server.R
-    #> │   │   └── ui.R
-    #> │   ├── data
-    #> │   │   ├── __init__.R
-    #> │   │   ├── loaders.R
-    #> │   │   ├── parsers.R
-    #> │   │   └── schemas.R
-    #> │   └── models
-    #> │       ├── __init__.R
-    #> │       ├── compare.R
-    #> │       └── hazard.R
-    #> ├── data-raw
-    #> │   ├── 01_extract_current_data.R
-    #> │   ├── 02_regional_life_expectancy.R
-    #> │   ├── 02_regional_life_expectancy_sample.R
-    #> │   ├── README_regional_data.md
-    #> │   └── sources
-    #> │       ├── acute_risks_base.csv
-    #> │       ├── chronic_risks_base.csv
-    #> │       ├── covid_vaccine_rr.csv
-    #> │       ├── demographic_factors.csv
-    #> │       └── risk_sources.csv
-    #> ├── default.R
-    #> ├── default.nix
-    #> ├── default.sh
-    #> ├── docs
-    #> │   ├── 404.html
-    #> │   ├── 404.md
-    #> │   ├── LICENSE-text.html
-    #> │   ├── LICENSE-text.md
-    #> │   ├── LICENSE.html
-    #> │   ├── LICENSE.md
-    #> │   ├── articles
-    #> │   │   ├── architecture.html
-    #> │   │   ├── architecture.md
-    #> │   │   ├── architecture_files
-    #> │   │   ├── confounding.html
-    #> │   │   ├── confounding.md
-    #> │   │   ├── index.html
-    #> │   │   ├── index.md
-    #> │   │   ├── introduction.html
-    #> │   │   ├── introduction.md
-    #> │   │   ├── introduction_files
-    #> │   │   ├── palatable_units.html
-    #> │   │   ├── palatable_units.md
-    #> │   │   ├── palatable_units_files
-    #> │   │   ├── quiz_shinylive.html
-    #> │   │   ├── quiz_shinylive.md
-    #> │   │   ├── quiz_shinylive_files
-    #> │   │   ├── regional_variation.html
-    #> │   │   ├── regional_variation.md
-    #> │   │   ├── regional_variation_files
-    #> │   │   ├── rest_api.html
-    #> │   │   ├── rest_api.md
-    #> │   │   ├── rest_api_files
-    #> │   │   ├── risk_equivalence.html
-    #> │   │   ├── risk_equivalence.md
-    #> │   │   ├── risk_equivalence_files
-    #> │   │   └── shinylive-sw.js
-    #> │   ├── authors.html
-    #> │   ├── authors.md
-    #> │   ├── deps
-    #> │   │   ├── bootstrap-5.3.1
-    #> │   │   ├── bootstrap-toc-1.0.1
-    #> │   │   ├── clipboard.js-2.0.11
-    #> │   │   ├── data-deps.txt
-    #> │   │   ├── font-awesome-6.5.2
-    #> │   │   ├── headroom-0.11.0
-    #> │   │   ├── jquery-3.6.0
-    #> │   │   └── search-1.0.0
-    #> │   ├── extra.css
-    #> │   ├── extra.js
-    #> │   ├── index.html
-    #> │   ├── index.md
-    #> │   ├── katex-auto.js
-    #> │   ├── lightswitch.js
-    #> │   ├── link.svg
-    #> │   ├── llms.txt
-    #> │   ├── news
-    #> │   ├── pkgdown.js
-    #> │   ├── pkgdown.yml
-    #> │   ├── reference
-    #> │   │   ├── acute_risks.html
-    #> │   │   ├── acute_risks.md
-    #> │   │   ├── annual_risk_budget.html
-    #> │   │   ├── annual_risk_budget.md
-    #> │   │   ├── as_microlife.html
-    #> │   │   ├── as_microlife.md
-    #> │   │   ├── as_micromort.html
-    #> │   │   ├── as_micromort.md
-    #> │   │   ├── as_probability.html
-    #> │   │   ├── as_probability.md
-    #> │   │   ├── atomic_risks.html
-    #> │   │   ├── atomic_risks.md
-    #> │   │   ├── cancer_risks.html
-    #> │   │   ├── cancer_risks.md
-    #> │   │   ├── chronic_risks.html
-    #> │   │   ├── chronic_risks.md
-    #> │   │   ├── common_risks.html
-    #> │   │   ├── common_risks.md
-    #> │   │   ├── compare_interventions.html
-    #> │   │   ├── compare_interventions.md
-    #> │   │   ├── conditional_risk.html
-    #> │   │   ├── conditional_risk.md
-    #> │   │   ├── covid_vaccine_rr.html
-    #> │   │   ├── covid_vaccine_rr.md
-    #> │   │   ├── daily_hazard_rate.html
-    #> │   │   ├── daily_hazard_rate.md
-    #> │   │   ├── demographic_factors.html
-    #> │   │   ├── demographic_factors.md
-    #> │   │   ├── figures
-    #> │   │   ├── hedged_portfolio.html
-    #> │   │   ├── hedged_portfolio.md
-    #> │   │   ├── index.html
-    #> │   │   ├── index.md
-    #> │   │   ├── laggard_regions.html
-    #> │   │   ├── laggard_regions.md
-    #> │   │   ├── launch_api.html
-    #> │   │   ├── launch_api.md
-    #> │   │   ├── launch_dashboard.html
-    #> │   │   ├── launch_dashboard.md
-    #> │   │   ├── launch_quiz.html
-    #> │   │   ├── launch_quiz.md
-    #> │   │   ├── libs
-    #> │   │   ├── lifestyle_tradeoff.html
-    #> │   │   ├── lifestyle_tradeoff.md
-    #> │   │   ├── lle.html
-    #> │   │   ├── lle.md
-    #> │   │   ├── load_acute_risks.html
-    #> │   │   ├── load_acute_risks.md
-    #> │   │   ├── load_chronic_risks.html
-    #> │   │   ├── load_chronic_risks.md
-    #> │   │   ├── load_sources.html
-    #> │   │   ├── load_sources.md
-    #> │   │   ├── patient_radiation_comparison.html
-    #> │   │   ├── patient_radiation_comparison.md
-    #> │   │   ├── plot_risk_components-1.png
-    #> │   │   ├── plot_risk_components.html
-    #> │   │   ├── plot_risk_components.md
-    #> │   │   ├── plot_risks-1.png
-    #> │   │   ├── plot_risks-2.png
-    #> │   │   ├── plot_risks-3.png
-    #> │   │   ├── plot_risks-4.png
-    #> │   │   ├── plot_risks-5.png
-    #> │   │   ├── plot_risks.html
-    #> │   │   ├── plot_risks.md
-    #> │   │   ├── plot_risks_interactive.html
-    #> │   │   ├── plot_risks_interactive.md
-    #> │   │   ├── prepare_risks_plot-1.png
-    #> │   │   ├── prepare_risks_plot.html
-    #> │   │   ├── prepare_risks_plot.md
-    #> │   │   ├── quiz_pairs.html
-    #> │   │   ├── quiz_pairs.md
-    #> │   │   ├── radiation_profiles.html
-    #> │   │   ├── radiation_profiles.md
-    #> │   │   ├── regional_life_expectancy.html
-    #> │   │   ├── regional_life_expectancy.md
-    #> │   │   ├── regional_mortality_multiplier.html
-    #> │   │   ├── regional_mortality_multiplier.md
-    #> │   │   ├── risk_components.html
-    #> │   │   ├── risk_components.md
-    #> │   │   ├── risk_data_sources.html
-    #> │   │   ├── risk_data_sources.md
-    #> │   │   ├── risk_equivalence.html
-    #> │   │   ├── risk_equivalence.md
-    #> │   │   ├── risk_exchange_matrix.html
-    #> │   │   ├── risk_exchange_matrix.md
-    #> │   │   ├── risk_for_duration.html
-    #> │   │   ├── risk_for_duration.md
-    #> │   │   ├── risk_sources.html
-    #> │   │   ├── risk_sources.md
-    #> │   │   ├── theme_micromort_dark-1.png
-    #> │   │   ├── theme_micromort_dark.html
-    #> │   │   ├── theme_micromort_dark.md
-    #> │   │   ├── vaccination_risks.html
-    #> │   │   ├── vaccination_risks.md
-    #> │   │   ├── value_of_micromort.html
-    #> │   │   ├── value_of_micromort.md
-    #> │   │   ├── vanguard_regions.html
-    #> │   │   └── vanguard_regions.md
-    #> │   ├── search.json
-    #> │   ├── sitemap.xml
-    #> │   └── tutorials
-    #> ├── inst
-    #> │   ├── dashboard
-    #> │   │   └── about.md
-    #> │   ├── extdata
-    #> │   │   ├── acute_risks.parquet
-    #> │   │   ├── chronic_risks.parquet
-    #> │   │   ├── logs
-    #> │   │   ├── regional_life_expectancy.parquet
-    #> │   │   └── risk_sources.parquet
-    #> │   └── plumber
-    #> │       └── api.R
-    #> ├── man
-    #> │   ├── acute_risks.Rd
-    #> │   ├── annual_risk_budget.Rd
-    #> │   ├── as_microlife.Rd
-    #> │   ├── as_micromort.Rd
-    #> │   ├── as_probability.Rd
-    #> │   ├── atomic_risks.Rd
-    #> │   ├── cancer_risks.Rd
-    #> │   ├── chronic_risks.Rd
-    #> │   ├── common_risks.Rd
-    #> │   ├── compare_interventions.Rd
-    #> │   ├── conditional_risk.Rd
-    #> │   ├── covid_vaccine_rr.Rd
-    #> │   ├── daily_hazard_rate.Rd
-    #> │   ├── demographic_factors.Rd
-    #> │   ├── figures
-    #> │   │   └── README-plot-1.png
-    #> │   ├── hedged_portfolio.Rd
-    #> │   ├── laggard_regions.Rd
-    #> │   ├── launch_api.Rd
-    #> │   ├── launch_dashboard.Rd
-    #> │   ├── launch_quiz.Rd
-    #> │   ├── lifestyle_tradeoff.Rd
-    #> │   ├── lle.Rd
-    #> │   ├── load_acute_risks.Rd
-    #> │   ├── load_chronic_risks.Rd
-    #> │   ├── load_sources.Rd
-    #> │   ├── patient_radiation_comparison.Rd
-    #> │   ├── plot_risk_components.Rd
-    #> │   ├── plot_risks.Rd
-    #> │   ├── plot_risks_interactive.Rd
-    #> │   ├── prepare_risks_plot.Rd
-    #> │   ├── quiz_pairs.Rd
-    #> │   ├── radiation_profiles.Rd
-    #> │   ├── regional_life_expectancy.Rd
-    #> │   ├── regional_mortality_multiplier.Rd
-    #> │   ├── risk_components.Rd
-    #> │   ├── risk_data_sources.Rd
-    #> │   ├── risk_equivalence.Rd
-    #> │   ├── risk_exchange_matrix.Rd
-    #> │   ├── risk_for_duration.Rd
-    #> │   ├── risk_sources.Rd
-    #> │   ├── theme_micromort_dark.Rd
-    #> │   ├── vaccination_risks.Rd
-    #> │   ├── value_of_micromort.Rd
-    #> │   └── vanguard_regions.Rd
-    #> ├── nix-shell-root
-    #> ├── package.nix
-    #> ├── pkgdown
-    #> │   ├── extra.css
-    #> │   └── extra.js
-    #> ├── plans
-    #> │   ├── PLAN_consistency_refactor.md
-    #> │   ├── PLAN_regional_longevity.md
-    #> │   ├── PLAN_risk_equivalence_dashboard.md
-    #> │   └── PLAN_vignette_targets_refactor.md
-    #> ├── push_to_cachix.sh
-    #> ├── tests
-    #> │   └── testthat
-    #> │       ├── _snaps
-    #> │       ├── test-adversarial.R
-    #> │       ├── test-api.R
-    #> │       ├── test-atomic-risks.R
-    #> │       ├── test-diagrams.R
-    #> │       ├── test-quiz.R
-    #> │       ├── test-radiation-profiles.R
-    #> │       ├── test-risk-components.R
-    #> │       ├── test-risk-equivalence.R
-    #> │       └── test-visualization.R
-    #> └── vignettes
-    #>     ├── _extensions
-    #>     │   └── quarto-ext
-    #>     ├── architecture.qmd
-    #>     ├── confounding.Rmd
-    #>     ├── introduction.Rmd
-    #>     ├── palatable_units.Rmd
-    #>     ├── quiz_shinylive.qmd
-    #>     ├── quiz_shinylive_files
-    #>     ├── regional_variation.Rmd
-    #>     ├── rest_api.Rmd
-    #>     ├── risk_equivalence.Rmd
-    #>     └── shinylive-sw.js
+``` R
+#> .
+#> ├── DESCRIPTION
+#> ├── LICENSE
+#> ├── LICENSE.md
+#> ├── NAMESPACE
+#> ├── R
+#> │   ├── activity_descriptions.R
+#> │   ├── api.R
+#> │   ├── atomic_risks.R
+#> │   ├── dashboard.R
+#> │   ├── data.R
+#> │   ├── dev
+#> │   │   ├── issues
+#> │   │   └── verify_pkgdown_urls.R
+#> │   ├── diagrams.R
+#> │   ├── micromort.R
+#> │   ├── models.R
+#> │   ├── quiz.R
+#> │   ├── radiation_profiles.R
+#> │   ├── regional.R
+#> │   ├── risk_equivalence.R
+#> │   ├── risks.R
+#> │   ├── tar_plans
+#> │   │   ├── plan_data_acquisition.R
+#> │   │   ├── plan_documentation.R
+#> │   │   ├── plan_export.R
+#> │   │   ├── plan_logging.R
+#> │   │   ├── plan_normalization.R
+#> │   │   ├── plan_qa_gates.R
+#> │   │   ├── plan_telemetry.R
+#> │   │   ├── plan_validation.R
+#> │   │   └── plan_vignette_outputs.R
+#> │   └── visualization.R
+#> ├── README.md
+#> ├── README.qmd
+#> ├── README.rmarkdown
+#> ├── README_files
+#> │   └── libs
+#> │       ├── bootstrap
+#> │       ├── clipboard
+#> │       └── quarto-html
+#> ├── box
+#> │   ├── api
+#> │   │   ├── __init__.R
+#> │   │   └── endpoints.R
+#> │   ├── dashboard
+#> │   │   ├── __init__.R
+#> │   │   ├── server.R
+#> │   │   └── ui.R
+#> │   ├── data
+#> │   │   ├── __init__.R
+#> │   │   ├── loaders.R
+#> │   │   ├── parsers.R
+#> │   │   └── schemas.R
+#> │   └── models
+#> │       ├── __init__.R
+#> │       ├── compare.R
+#> │       └── hazard.R
+#> ├── check
+#> │   ├── micromort.Rcheck
+#> │   │   ├── 00_pkg_src
+#> │   │   ├── 00check.log
+#> │   │   ├── 00install.out
+#> │   │   ├── R_check_bin
+#> │   │   ├── micromort
+#> │   │   ├── micromort-Ex.R
+#> │   │   ├── micromort-Ex.Rout
+#> │   │   ├── micromort-Ex.pdf
+#> │   │   └── micromort-Ex.timings
+#> │   └── micromort_0.1.0.tar.gz
+#> ├── data-raw
+#> │   ├── 01_extract_current_data.R
+#> │   ├── 02_regional_life_expectancy.R
+#> │   ├── 02_regional_life_expectancy_sample.R
+#> │   ├── 03_osha_occupational_risks.R
+#> │   ├── 04_road_traffic_mortality.R
+#> │   ├── 05_global_homicide_rates.R
+#> │   ├── README_regional_data.md
+#> │   ├── generate_og_image.R
+#> │   ├── generate_quiz_csv.R
+#> │   └── sources
+#> │       ├── acute_risks_base.csv
+#> │       ├── chronic_risks_base.csv
+#> │       ├── covid_vaccine_rr.csv
+#> │       ├── demographic_factors.csv
+#> │       └── risk_sources.csv
+#> ├── default.R
+#> ├── default.nix
+#> ├── default.sh
+#> ├── docs
+#> │   ├── 404.html
+#> │   ├── 404.md
+#> │   ├── LICENSE-text.html
+#> │   ├── LICENSE-text.md
+#> │   ├── LICENSE.html
+#> │   ├── LICENSE.md
+#> │   ├── articles
+#> │   │   ├── architecture.html
+#> │   │   ├── architecture.md
+#> │   │   ├── architecture_files
+#> │   │   ├── confounding.html
+#> │   │   ├── confounding.md
+#> │   │   ├── confounding_files
+#> │   │   ├── data_reliability.html
+#> │   │   ├── data_reliability.md
+#> │   │   ├── data_reliability_files
+#> │   │   ├── index.html
+#> │   │   ├── index.md
+#> │   │   ├── introduction.html
+#> │   │   ├── introduction.md
+#> │   │   ├── introduction_files
+#> │   │   ├── palatable_units.html
+#> │   │   ├── palatable_units.md
+#> │   │   ├── palatable_units_files
+#> │   │   ├── quiz_shinylive.html
+#> │   │   ├── quiz_shinylive_files
+#> │   │   ├── regional_variation.html
+#> │   │   ├── regional_variation.md
+#> │   │   ├── regional_variation_files
+#> │   │   ├── rest_api.html
+#> │   │   ├── rest_api.md
+#> │   │   ├── rest_api_files
+#> │   │   ├── risk_equivalence.html
+#> │   │   ├── risk_equivalence.md
+#> │   │   ├── risk_equivalence_files
+#> │   │   ├── shinylive-sw.js
+#> │   │   ├── telemetry.html
+#> │   │   ├── telemetry.md
+#> │   │   └── telemetry_files
+#> │   ├── authors.html
+#> │   ├── authors.md
+#> │   ├── deps
+#> │   │   ├── bootstrap-5.3.1
+#> │   │   ├── bootstrap-toc-1.0.1
+#> │   │   ├── clipboard.js-2.0.11
+#> │   │   ├── data-deps.txt
+#> │   │   ├── font-awesome-6.5.2
+#> │   │   ├── headroom-0.11.0
+#> │   │   ├── jquery-3.6.0
+#> │   │   └── search-1.0.0
+#> │   ├── extra.css
+#> │   ├── extra.js
+#> │   ├── index.html
+#> │   ├── index.md
+#> │   ├── katex-auto.js
+#> │   ├── lightswitch.js
+#> │   ├── link.svg
+#> │   ├── llms.txt
+#> │   ├── news
+#> │   ├── pkgdown.js
+#> │   ├── pkgdown.yml
+#> │   ├── reference
+#> │   │   ├── activity_descriptions.html
+#> │   │   ├── activity_descriptions.md
+#> │   │   ├── acute_risks.html
+#> │   │   ├── acute_risks.md
+#> │   │   ├── annual_risk_budget.html
+#> │   │   ├── annual_risk_budget.md
+#> │   │   ├── as_microlife.html
+#> │   │   ├── as_microlife.md
+#> │   │   ├── as_micromort.html
+#> │   │   ├── as_micromort.md
+#> │   │   ├── as_probability.html
+#> │   │   ├── as_probability.md
+#> │   │   ├── atomic_risks.html
+#> │   │   ├── atomic_risks.md
+#> │   │   ├── cancer_risks.html
+#> │   │   ├── cancer_risks.md
+#> │   │   ├── chronic_risks.html
+#> │   │   ├── chronic_risks.md
+#> │   │   ├── common_risks.html
+#> │   │   ├── common_risks.md
+#> │   │   ├── compare_interventions.html
+#> │   │   ├── compare_interventions.md
+#> │   │   ├── conditional_risk.html
+#> │   │   ├── conditional_risk.md
+#> │   │   ├── covid_vaccine_rr.html
+#> │   │   ├── covid_vaccine_rr.md
+#> │   │   ├── daily_hazard_rate.html
+#> │   │   ├── daily_hazard_rate.md
+#> │   │   ├── demographic_factors.html
+#> │   │   ├── demographic_factors.md
+#> │   │   ├── figures
+#> │   │   ├── format_activity_name.html
+#> │   │   ├── format_activity_name.md
+#> │   │   ├── hedged_portfolio.html
+#> │   │   ├── hedged_portfolio.md
+#> │   │   ├── index.html
+#> │   │   ├── index.md
+#> │   │   ├── laggard_regions.html
+#> │   │   ├── laggard_regions.md
+#> │   │   ├── launch_api.html
+#> │   │   ├── launch_api.md
+#> │   │   ├── launch_dashboard.html
+#> │   │   ├── launch_dashboard.md
+#> │   │   ├── launch_quiz.html
+#> │   │   ├── launch_quiz.md
+#> │   │   ├── libs
+#> │   │   ├── lifestyle_tradeoff.html
+#> │   │   ├── lifestyle_tradeoff.md
+#> │   │   ├── lle.html
+#> │   │   ├── lle.md
+#> │   │   ├── load_acute_risks.html
+#> │   │   ├── load_acute_risks.md
+#> │   │   ├── load_chronic_risks.html
+#> │   │   ├── load_chronic_risks.md
+#> │   │   ├── load_sources.html
+#> │   │   ├── load_sources.md
+#> │   │   ├── patient_radiation_comparison.html
+#> │   │   ├── patient_radiation_comparison.md
+#> │   │   ├── plot_risk_components-1.png
+#> │   │   ├── plot_risk_components.html
+#> │   │   ├── plot_risk_components.md
+#> │   │   ├── plot_risks-1.png
+#> │   │   ├── plot_risks-2.png
+#> │   │   ├── plot_risks-3.png
+#> │   │   ├── plot_risks-4.png
+#> │   │   ├── plot_risks-5.png
+#> │   │   ├── plot_risks.html
+#> │   │   ├── plot_risks.md
+#> │   │   ├── plot_risks_interactive.html
+#> │   │   ├── plot_risks_interactive.md
+#> │   │   ├── prepare_risks_plot-1.png
+#> │   │   ├── prepare_risks_plot.html
+#> │   │   ├── prepare_risks_plot.md
+#> │   │   ├── quiz_pairs.html
+#> │   │   ├── quiz_pairs.md
+#> │   │   ├── radiation_profiles.html
+#> │   │   ├── radiation_profiles.md
+#> │   │   ├── regional_life_expectancy.html
+#> │   │   ├── regional_life_expectancy.md
+#> │   │   ├── regional_mortality_multiplier.html
+#> │   │   ├── regional_mortality_multiplier.md
+#> │   │   ├── risk_components.html
+#> │   │   ├── risk_components.md
+#> │   │   ├── risk_data_sources.html
+#> │   │   ├── risk_data_sources.md
+#> │   │   ├── risk_equivalence.html
+#> │   │   ├── risk_equivalence.md
+#> │   │   ├── risk_exchange_matrix.html
+#> │   │   ├── risk_exchange_matrix.md
+#> │   │   ├── risk_for_duration.html
+#> │   │   ├── risk_for_duration.md
+#> │   │   ├── risk_sources.html
+#> │   │   ├── risk_sources.md
+#> │   │   ├── theme_micromort_dark-1.png
+#> │   │   ├── theme_micromort_dark.html
+#> │   │   ├── theme_micromort_dark.md
+#> │   │   ├── vaccination_risks.html
+#> │   │   ├── vaccination_risks.md
+#> │   │   ├── value_of_micromort.html
+#> │   │   ├── value_of_micromort.md
+#> │   │   ├── vanguard_regions.html
+#> │   │   └── vanguard_regions.md
+#> │   ├── search.json
+#> │   ├── sitemap.xml
+#> │   └── tutorials
+#> ├── inst
+#> │   ├── dashboard
+#> │   │   └── about.md
+#> │   ├── extdata
+#> │   │   ├── acute_risks.parquet
+#> │   │   ├── chronic_risks.parquet
+#> │   │   ├── logs
+#> │   │   ├── regional_life_expectancy.parquet
+#> │   │   ├── risk_sources.parquet
+#> │   │   └── vignettes
+#> │   └── plumber
+#> │       └── api.R
+#> ├── man
+#> │   ├── activity_descriptions.Rd
+#> │   ├── acute_risks.Rd
+#> │   ├── annual_risk_budget.Rd
+#> │   ├── as_microlife.Rd
+#> │   ├── as_micromort.Rd
+#> │   ├── as_probability.Rd
+#> │   ├── atomic_risks.Rd
+#> │   ├── cancer_risks.Rd
+#> │   ├── chronic_risks.Rd
+#> │   ├── common_risks.Rd
+#> │   ├── compare_interventions.Rd
+#> │   ├── conditional_risk.Rd
+#> │   ├── covid_vaccine_rr.Rd
+#> │   ├── daily_hazard_rate.Rd
+#> │   ├── demographic_factors.Rd
+#> │   ├── figures
+#> │   │   ├── README-plot-1.png
+#> │   │   ├── logo-candidates
+#> │   │   ├── logo.png
+#> │   │   └── og-image.png
+#> │   ├── format_activity_name.Rd
+#> │   ├── hedged_portfolio.Rd
+#> │   ├── laggard_regions.Rd
+#> │   ├── launch_api.Rd
+#> │   ├── launch_dashboard.Rd
+#> │   ├── launch_quiz.Rd
+#> │   ├── lifestyle_tradeoff.Rd
+#> │   ├── lle.Rd
+#> │   ├── load_acute_risks.Rd
+#> │   ├── load_chronic_risks.Rd
+#> │   ├── load_sources.Rd
+#> │   ├── patient_radiation_comparison.Rd
+#> │   ├── plot_risk_components.Rd
+#> │   ├── plot_risks.Rd
+#> │   ├── plot_risks_interactive.Rd
+#> │   ├── prepare_risks_plot.Rd
+#> │   ├── quiz_pairs.Rd
+#> │   ├── radiation_profiles.Rd
+#> │   ├── regional_life_expectancy.Rd
+#> │   ├── regional_mortality_multiplier.Rd
+#> │   ├── risk_components.Rd
+#> │   ├── risk_data_sources.Rd
+#> │   ├── risk_equivalence.Rd
+#> │   ├── risk_exchange_matrix.Rd
+#> │   ├── risk_for_duration.Rd
+#> │   ├── risk_sources.Rd
+#> │   ├── theme_micromort_dark.Rd
+#> │   ├── vaccination_risks.Rd
+#> │   ├── value_of_micromort.Rd
+#> │   └── vanguard_regions.Rd
+#> ├── nix-shell-root
+#> ├── package.nix
+#> ├── pkgdown
+#> │   ├── extra.css
+#> │   └── extra.js
+#> ├── plans
+#> │   ├── PLAN_consistency_refactor.md
+#> │   ├── PLAN_regional_longevity.md
+#> │   ├── PLAN_risk_equivalence_dashboard.md
+#> │   └── PLAN_vignette_targets_refactor.md
+#> ├── push_to_cachix.sh
+#> ├── tests
+#> │   └── testthat
+#> │       ├── test-adversarial.R
+#> │       ├── test-api.R
+#> │       ├── test-atomic-risks.R
+#> │       ├── test-diagrams.R
+#> │       ├── test-quiz.R
+#> │       ├── test-radiation-profiles.R
+#> │       ├── test-risk-components.R
+#> │       ├── test-risk-equivalence.R
+#> │       └── test-visualization.R
+#> └── vignettes
+#>     ├── _extensions
+#>     │   └── quarto-ext
+#>     ├── _quarto.yml
+#>     ├── architecture.qmd
+#>     ├── architecture_files
+#>     ├── confounding.qmd
+#>     ├── data_reliability.qmd
+#>     ├── introduction.qmd
+#>     ├── palatable_units.qmd
+#>     ├── quiz_shinylive.qmd
+#>     ├── quiz_shinylive_files
+#>     │   └── libs
+#>     ├── regional_variation.qmd
+#>     ├── rest_api.qmd
+#>     ├── risk_equivalence.qmd
+#>     ├── risk_equivalence_files
+#>     ├── shinylive-sw.js
+#>     └── telemetry.qmd
+```
 
 ## Contributing
 
