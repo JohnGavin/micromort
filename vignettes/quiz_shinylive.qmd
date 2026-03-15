@@ -126,17 +126,28 @@ var scoreSubmitted = false;
 function submitScore(score, total) {
   if (scoreSubmitted) return;
   var btn = document.getElementById('submit_btn');
-  if (btn) btn.disabled = true;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.className = 'btn btn-secondary btn-lg';
+  }
   var data = new URLSearchParams();
   data.append('entry.335579146', score);
   data.append('entry.2122920576', total);
   data.append('entry.621716914', new Date().toISOString());
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
     scoreSubmitted = true;
-    if (btn) btn.textContent = 'Submitted!';
+    if (btn) {
+      btn.textContent = 'Submitted!';
+      btn.className = 'btn btn-success btn-lg';
+    }
     getPercentile(score, total);
   }).catch(function() {
-    if (btn) { btn.textContent = 'Score saved locally'; btn.disabled = true; }
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Score saved locally';
+      btn.className = 'btn btn-info btn-lg';
+    }
   });
 }
 function getPercentile(score, total) {
