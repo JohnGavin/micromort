@@ -1,15 +1,15 @@
 citation,primary_url,type,description,source_id,data_types,last_accessed
-Howard (1980),https://brieswax.substack.com/p/micromort-ronald-howard-1989-idea,Academic,Original micromort concept paper,howard_1980,acute,2026-02-25
-Spiegelhalter (2012) BMJ,https://pubmed.ncbi.nlm.nih.gov/23247978/,Academic,Introduced microlives; DOI: 10.1136/bmj.e8223,spiegelhalter_2012,chronic,2026-02-25
-The Norm Chronicles,https://www.penguin.co.uk/books/186892/the-norm-chronicles,Book,Comprehensive micromort/microlife tables by Blastland & Spiegelhalter,norm_chronicles,both,2026-02-25
-Wikipedia: Micromort,https://en.wikipedia.org/wiki/Micromort,Encyclopedia,Comprehensive overview with cited values,wikipedia_micromort,acute,2026-02-25
-Wikipedia: Microlife,https://en.wikipedia.org/wiki/Microlife,Encyclopedia,Chronic risk factors and examples,wikipedia_microlife,chronic,2026-02-25
-micromorts.rip,https://micromorts.rip/,Database,Crowdsourced database with 45+ activities,micromorts_rip,acute,2026-02-25
-Understanding Uncertainty,https://plus.maths.org/content/understanding-uncertainty-microlives,Educational,Cambridge University risk communication,understanding_uncertainty,both,2026-02-25
-CDC MMWR,https://www.cdc.gov/mmwr/,Government,US mortality and morbidity data,cdc_mmwr,acute,2026-02-25
-CDC Life Expectancy,https://cdc.gov/nchs/hus/data-finder.htm?subject=Life+expectancy,Government,US life expectancy statistics,cdc_life_expectancy,both,2026-02-25
-WHO Global Health Estimates,https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates,Government,Global mortality and life expectancy data,who_ghe,both,2026-02-25
-UK ONS,https://www.ons.gov.uk/,Government,UK death statistics,uk_ons,both,2026-02-25
-NHTSA,https://www.nhtsa.gov/,Government,US traffic fatality data,nhtsa,both,2026-02-25
-COVID-19 vs Overdose (PMC),https://pmc.ncbi.nlm.nih.gov/articles/PMC8461265/,Academic,Micromort analysis comparing COVID and overdose mortality,pmc_covid_overdose,both,2026-02-25
-CDC COVID Vaccine Efficacy,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,Government,Vaccinated vs unvaccinated death rates,cdc_vaccine_efficacy,both,2026-02-25
+Howard (1980),https://brieswax.substack.com/p/micromort-ronald-howard-1989-idea,Academic,Original micromort concept paper,howard_1980,acute,2026-03-15
+Spiegelhalter (2012) BMJ,https://pubmed.ncbi.nlm.nih.gov/23247978/,Academic,Introduced microlives; DOI: 10.1136/bmj.e8223,spiegelhalter_2012,chronic,2026-03-15
+The Norm Chronicles,https://www.penguin.co.uk/books/186892/the-norm-chronicles,Book,Comprehensive micromort/microlife tables by Blastland & Spiegelhalter,norm_chronicles,both,2026-03-15
+Wikipedia: Micromort,https://en.wikipedia.org/wiki/Micromort,Encyclopedia,Comprehensive overview with cited values,wikipedia_micromort,acute,2026-03-15
+Wikipedia: Microlife,https://en.wikipedia.org/wiki/Microlife,Encyclopedia,Chronic risk factors and examples,wikipedia_microlife,chronic,2026-03-15
+micromorts.rip,https://micromorts.rip/,Database,Crowdsourced database with 45+ activities,micromorts_rip,acute,2026-03-15
+Understanding Uncertainty,https://plus.maths.org/content/understanding-uncertainty-microlives,Educational,Cambridge University risk communication,understanding_uncertainty,both,2026-03-15
+CDC MMWR,https://www.cdc.gov/mmwr/,Government,US mortality and morbidity data,cdc_mmwr,acute,2026-03-15
+CDC Life Expectancy,https://cdc.gov/nchs/hus/data-finder.htm?subject=Life+expectancy,Government,US life expectancy statistics,cdc_life_expectancy,both,2026-03-15
+WHO Global Health Estimates,https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates,Government,Global mortality and life expectancy data,who_ghe,both,2026-03-15
+UK ONS,https://www.ons.gov.uk/,Government,UK death statistics,uk_ons,both,2026-03-15
+NHTSA,https://www.nhtsa.gov/,Government,US traffic fatality data,nhtsa,both,2026-03-15
+COVID-19 vs Overdose (PMC),https://pmc.ncbi.nlm.nih.gov/articles/PMC8461265/,Academic,Micromort analysis comparing COVID and overdose mortality,pmc_covid_overdose,both,2026-03-15
+CDC COVID Vaccine Efficacy,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,Government,Vaccinated vs unvaccinated death rates,cdc_vaccine_efficacy,both,2026-03-15

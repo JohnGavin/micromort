@@ -1,23 +1,39 @@
 factor,microlives_per_day,category,direction,description,annual_effect_days,source_url,source_id,confidence,last_accessed
-Smoking 20 cigarettes,-10,Smoking,loss,Heavy smoking accelerates aging to 29 hours/day,-76,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Smoking 10 cigarettes,-5,Smoking,loss,Moderate smoking,-38,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Smoking 2 cigarettes,-1,Smoking,loss,Each cigarette costs ~15 minutes,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Being 5 kg overweight,-1,Weight,loss,Per 5 kg above optimum BMI weight,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Being 10 kg overweight,-2,Weight,loss,Cumulative effect of excess weight,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Being 15 kg overweight,-3,Weight,loss,Cumulative effect of excess weight,-22.8,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-2nd-3rd alcoholic drink,-1,Alcohol,loss,"After first drink, additional drinks cost",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-4th-5th alcoholic drink,-2,Alcohol,loss,Heavy drinking costs more,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Red meat (1 portion/day),-1,Diet,loss,Daily red meat consumption,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Processed meat (1 portion/day),-1,Diet,loss,"Bacon, sausages, etc.",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-2 hours TV watching,-1,Sedentary,loss,Prolonged sitting/inactivity,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Living with a smoker,-1,Environment,loss,Second-hand smoke exposure,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-2-3 cups coffee (men),-1,Diet,loss,Heavy coffee consumption (men only),-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Air pollution (high),-1,Environment,loss,Living in polluted urban area,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Being male (vs female),-4,Demographics,loss,Male sex disadvantage,-30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-First alcoholic drink,1,Alcohol,gain,Moderate alcohol has protective effect,7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-20 min moderate exercise,2,Exercise,gain,Daily moderate physical activity,15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-5 servings fruit/veg,4,Diet,gain,Daily fruit and vegetable intake,30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Statin therapy (if indicated),1,Medical,gain,Cholesterol-lowering medication,7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Being female (vs male),4,Demographics,gain,Female sex advantage,30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Living in 2010 vs 1910,15,Historical,gain,Medical/social progress,114.1,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
-Living in Sweden vs Russia (male),21,Demographics,gain,Geographic health advantage,159.7,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-02-25
+Smoking 20 cigarettes,-10,Smoking,loss,Heavy smoking accelerates aging to 29 hours/day,-76,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Smoking 10 cigarettes,-5,Smoking,loss,Moderate smoking,-38,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Smoking 2 cigarettes,-1,Smoking,loss,Each cigarette costs ~15 minutes,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Being 5 kg overweight,-1,Weight,loss,Per 5 kg above optimum BMI weight,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Being 10 kg overweight,-2,Weight,loss,Cumulative effect of excess weight,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Being 15 kg overweight,-3,Weight,loss,Cumulative effect of excess weight,-22.8,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+2nd-3rd alcoholic drink,-1,Alcohol,loss,"After first drink, additional drinks cost",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+4th-5th alcoholic drink,-2,Alcohol,loss,Heavy drinking costs more,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Red meat (1 portion/day),-1,Diet,loss,Daily red meat consumption,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Processed meat (1 portion/day),-1,Diet,loss,"Bacon, sausages, etc. (cancer risk)",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Low fiber diet,-1,Diet,loss,Less than 25g fiber daily (colorectal cancer risk),-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+High sugar diet,-1,Diet,loss,"Excess refined sugar (diabetes, CVD risk)",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+2 hours TV watching,-1,Sedentary,loss,Prolonged sitting/inactivity,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Sitting 8+ hours/day,-2,Sedentary,loss,Office work without breaks (CVD risk),-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Living with a smoker,-1,Environment,loss,Second-hand smoke exposure,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Air pollution (high),-1,Environment,loss,Living in polluted urban area,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Untreated hypertension,-4,Cardiovascular,loss,Systolic BP >140 mmHg untreated,-30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Type 2 diabetes (poorly controlled),-3,Cardiovascular,loss,HbA1c >8% increases CVD risk,-22.8,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+High LDL cholesterol (untreated),-2,Cardiovascular,loss,LDL >160 mg/dL without statins,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Family history of heart disease,-2,Cardiovascular,loss,First-degree relative with CVD <55y,-15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Family history of cancer,-1,Cancer,loss,First-degree relative with cancer,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Low physical activity,-1,Cancer,loss,Less than 150 min exercise/week (cancer risk),-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Excessive alcohol (cancer),-1,Cancer,loss,More than 2 drinks/day increases cancer risk,-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+2-3 cups coffee (men),-1,Diet,loss,Heavy coffee consumption (men only),-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Being male (vs female),-4,Demographics,loss,Male sex disadvantage,-30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Chronic stress/poor sleep,-1,Mental Health,loss,"Cortisol elevation, inflammation",-7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+First alcoholic drink,1,Alcohol,gain,Moderate alcohol has protective effect,7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+20 min moderate exercise,2,Exercise,gain,Daily moderate physical activity,15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+150 min weekly exercise,3,Exercise,gain,Meeting WHO recommendations (CVD/cancer prevention),22.8,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+5 servings fruit/veg,4,Diet,gain,Daily fruit and vegetable intake,30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+High fiber diet,2,Diet,gain,25g+ fiber daily (colorectal cancer prevention),15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Mediterranean diet,2,Diet,gain,Reduces CVD and cancer risk,15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Statin therapy (if indicated),1,Medical,gain,Cholesterol-lowering medication,7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Blood pressure control,2,Medical,gain,Achieving target BP <130/80 mmHg,15.2,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Cancer screening (age-appropriate),1,Medical,gain,Early detection improves outcomes,7.6,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Being female (vs male),4,Demographics,gain,Female sex advantage,30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Living in 2010 vs 1910,15,Historical,gain,Medical/social progress,114.1,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Living in Sweden vs Russia (male),21,Demographics,gain,Geographic health advantage,159.7,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
