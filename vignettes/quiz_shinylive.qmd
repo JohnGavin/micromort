@@ -4,6 +4,7 @@ description: "Interactive quiz comparing everyday risks measured in micromorts â
 format:
   html:
     embed-resources: false
+    page-layout: full
     open-graph:
       image: ../man/figures/og-image.png
       description: "Interactive quiz comparing everyday risks measured in micromorts â€” a one-in-a-million chance of death."
@@ -13,6 +14,17 @@ format:
 filters:
   - shinylive
 ---
+
+```{=html}
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  .description { margin-bottom: 0 !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+  .shinylive-wrapper { width: 100% !important; }
+</style>
+```
 
 ```{shinylive-r}
 #| standalone: true
@@ -448,9 +460,9 @@ results_summary_ui <- function(state) {
       actionButton("try_again", "Try Again", class = "btn-primary btn-lg"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
-          "var text = \'I scored %d/%d on ",
-          "\"Which lifestyle event is more likely to kill you?\"\\n",
-          "Can you beat my score? Take the quiz:\\n",
+          "var text = \'\\u2620\\ufe0f Micromort Quiz: I scored %d/%d!\\n",
+          "Which lifestyle event is more likely to kill you?\\n",
+          "Can you beat my score? \\u2620\\ufe0f\\n",
           "https://johngavin.github.io/micromort/articles/quiz_shinylive.html\';",
           "navigator.clipboard.writeText(text).then(function(){",
           "var btn=document.getElementById(\'share_btn\');",
@@ -491,7 +503,7 @@ results_detail_ui <- function(state) {
   tagList(
     div(class = "d-flex justify-content-between align-items-center mb-4",
       actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
-      h3("Question-by-Question Detail", class = "mb-0"),
+      h3("Your quiz details", class = "mb-0"),
       actionButton("try_again_detail", "Try Again", class = "btn-primary")),
     div(class = "detail-scroll",
       tags$table(class = "table table-striped table-hover detail-table",

@@ -45,11 +45,11 @@ ul.task-list li input[type="checkbox"] {
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -63,7 +63,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
 
     
   
@@ -75,6 +75,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  .description { margin-bottom: 0 !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+  .shinylive-wrapper { width: 100% !important; }
+</style>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
@@ -511,9 +519,9 @@ results_summary_ui &lt;- function(state) {
       actionButton("try_again", "Try Again", class = "btn-primary btn-lg"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
-          "var text = \'I scored %d/%d on ",
-          "\"Which lifestyle event is more likely to kill you?\"\\n",
-          "Can you beat my score? Take the quiz:\\n",
+          "var text = \'\\u2620\\ufe0f Micromort Quiz: I scored %d/%d!\\n",
+          "Which lifestyle event is more likely to kill you?\\n",
+          "Can you beat my score? \\u2620\\ufe0f\\n",
           "https://johngavin.github.io/micromort/articles/quiz_shinylive.html\';",
           "navigator.clipboard.writeText(text).then(function(){",
           "var btn=document.getElementById(\'share_btn\');",
@@ -554,7 +562,7 @@ results_detail_ui &lt;- function(state) {
   tagList(
     div(class = "d-flex justify-content-between align-items-center mb-4",
       actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
-      h3("Question-by-Question Detail", class = "mb-0"),
+      h3("Your quiz details", class = "mb-0"),
       actionButton("try_again_detail", "Try Again", class = "btn-primary")),
     div(class = "detail-scroll",
       tags$table(class = "table table-striped table-hover detail-table",
