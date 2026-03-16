@@ -118,46 +118,47 @@ head(chronic)
 #> 2 spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…
 #> 3 spiegelhalter_… Smoki… smoking 20 cigar…                -10 loss      Smoking 
 #> 4 spiegelhalter_… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
-#> 5 spiegelhalter_… Being… being male                        -4 loss      Demogra…
-#> 6 spiegelhalter_… 5 ser… 5 servings fruit…                  4 gain      Diet    
+#> 5 spiegelhalter_… Untre… untreated hypert…                 -4 loss      Cardiov…
+#> 6 spiegelhalter_… Being… being male                        -4 loss      Demogra…
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 
 # Factors that reduce life expectancy
 chronic |> dplyr::filter(direction == "loss")
-#> # A tibble: 15 × 12
+#> # A tibble: 26 × 12
 #>    record_id      factor factor_normalized microlives_per_day direction category
 #>    <chr>          <chr>  <chr>                          <dbl> <chr>     <chr>   
 #>  1 spiegelhalter… Smoki… smoking 20 cigar…                -10 loss      Smoking 
 #>  2 spiegelhalter… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
-#>  3 spiegelhalter… Being… being male                        -4 loss      Demogra…
-#>  4 spiegelhalter… Being… being 15 kg over…                 -3 loss      Weight  
-#>  5 spiegelhalter… Being… being 10 kg over…                 -2 loss      Weight  
-#>  6 spiegelhalter… 4th-5… 4th-5th alcoholi…                 -2 loss      Alcohol 
-#>  7 spiegelhalter… Smoki… smoking 2 cigare…                 -1 loss      Smoking 
-#>  8 spiegelhalter… Being… being 5 kg overw…                 -1 loss      Weight  
-#>  9 spiegelhalter… 2nd-3… 2nd-3rd alcoholi…                 -1 loss      Alcohol 
-#> 10 spiegelhalter… Red m… red meat                          -1 loss      Diet    
-#> 11 spiegelhalter… Proce… processed meat                    -1 loss      Diet    
-#> 12 spiegelhalter… 2 hou… 2 hours tv watch…                 -1 loss      Sedenta…
-#> 13 spiegelhalter… Livin… living with a sm…                 -1 loss      Environ…
-#> 14 spiegelhalter… 2-3 c… 2-3 cups coffee                   -1 loss      Diet    
-#> 15 spiegelhalter… Air p… air pollution                     -1 loss      Environ…
+#>  3 spiegelhalter… Untre… untreated hypert…                 -4 loss      Cardiov…
+#>  4 spiegelhalter… Being… being male                        -4 loss      Demogra…
+#>  5 spiegelhalter… Being… being 15 kg over…                 -3 loss      Weight  
+#>  6 spiegelhalter… Type … type 2 diabetes                   -3 loss      Cardiov…
+#>  7 spiegelhalter… Being… being 10 kg over…                 -2 loss      Weight  
+#>  8 spiegelhalter… 4th-5… 4th-5th alcoholi…                 -2 loss      Alcohol 
+#>  9 spiegelhalter… Sitti… sitting 8+ hours…                 -2 loss      Sedenta…
+#> 10 spiegelhalter… High … high ldl cholest…                 -2 loss      Cardiov…
+#> # ℹ 16 more rows
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 
 # Factors that increase life expectancy
 chronic |> dplyr::filter(direction == "gain")
-#> # A tibble: 7 × 12
-#>   record_id       factor factor_normalized microlives_per_day direction category
-#>   <chr>           <chr>  <chr>                          <dbl> <chr>     <chr>   
-#> 1 spiegelhalter_… Livin… living in sweden…                 21 gain      Demogra…
-#> 2 spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…
-#> 3 spiegelhalter_… 5 ser… 5 servings fruit…                  4 gain      Diet    
-#> 4 spiegelhalter_… Being… being female                       4 gain      Demogra…
-#> 5 spiegelhalter_… 20 mi… 20 min moderate …                  2 gain      Exercise
-#> 6 spiegelhalter_… First… first alcoholic …                  1 gain      Alcohol 
-#> 7 spiegelhalter_… Stati… statin therapy                     1 gain      Medical 
+#> # A tibble: 12 × 12
+#>    record_id      factor factor_normalized microlives_per_day direction category
+#>    <chr>          <chr>  <chr>                          <dbl> <chr>     <chr>   
+#>  1 spiegelhalter… Livin… living in sweden…                 21 gain      Demogra…
+#>  2 spiegelhalter… Livin… living in 2010 v…                 15 gain      Histori…
+#>  3 spiegelhalter… 5 ser… 5 servings fruit…                  4 gain      Diet    
+#>  4 spiegelhalter… Being… being female                       4 gain      Demogra…
+#>  5 spiegelhalter… 150 m… 150 min weekly e…                  3 gain      Exercise
+#>  6 spiegelhalter… 20 mi… 20 min moderate …                  2 gain      Exercise
+#>  7 spiegelhalter… High … high fiber diet                    2 gain      Diet    
+#>  8 spiegelhalter… Medit… mediterranean di…                  2 gain      Diet    
+#>  9 spiegelhalter… Blood… blood pressure c…                  2 gain      Medical 
+#> 10 spiegelhalter… First… first alcoholic …                  1 gain      Alcohol 
+#> 11 spiegelhalter… Stati… statin therapy                     1 gain      Medical 
+#> 12 spiegelhalter… Cance… cancer screening                   1 gain      Medical 
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 chronic_risks()

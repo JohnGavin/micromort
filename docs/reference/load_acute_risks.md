@@ -17,5 +17,5 @@ A tibble with acute risk data
 ``` r
 acute <- load_acute_risks()
 nrow(acute)
-#> [1] 62
+#> [1] 104
 ```

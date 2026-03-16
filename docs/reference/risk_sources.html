@@ -22,8 +22,9 @@ acute_risks and chronic_risks."><meta property="og:image" content="https://johng
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
+    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
+    <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
@@ -33,8 +34,8 @@ acute_risks and chronic_risks."><meta property="og:image" content="https://johng
     <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
-    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
+    <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -98,29 +99,29 @@ Each source has a unique identifier that links to records in
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    source_id     citation primary_url type  description data_types last_accessed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> howard_1980   Howard … https://br… Acad… Original m… acute      2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> spiegelhalte… Spiegel… https://pu… Acad… Introduced… chronic    2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> norm_chronic… The Nor… https://ww… Book  Comprehens… both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> wikipedia_mi… Wikiped… https://en… Ency… Comprehens… acute      2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> wikipedia_mi… Wikiped… https://en… Ency… Chronic ri… chronic    2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> micromorts_r… micromo… https://mi… Data… Crowdsourc… acute      2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> understandin… Underst… https://pl… Educ… Cambridge … both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cdc_mmwr      CDC MMWR https://ww… Gove… US mortali… acute      2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cdc_life_exp… CDC Lif… https://cd… Gove… US life ex… both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> who_ghe       WHO Glo… https://ww… Gove… Global mor… both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> uk_ons        UK ONS   https://ww… Gove… UK death s… both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> nhtsa         NHTSA    https://ww… Gove… US traffic… both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> pmc_covid_ov… COVID-1… https://pm… Acad… Micromort … both       2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> cdc_vaccine_… CDC COV… https://ww… Gove… Vaccinated… both       2026-02-25   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> howard_1980   Howard … https://br… Acad… Original m… acute      2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> spiegelhalte… Spiegel… https://pu… Acad… Introduced… chronic    2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> norm_chronic… The Nor… https://ww… Book  Comprehens… both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> wikipedia_mi… Wikiped… https://en… Ency… Comprehens… acute      2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> wikipedia_mi… Wikiped… https://en… Ency… Chronic ri… chronic    2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> micromorts_r… micromo… https://mi… Data… Crowdsourc… acute      2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> understandin… Underst… https://pl… Educ… Cambridge … both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cdc_mmwr      CDC MMWR https://ww… Gove… US mortali… acute      2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cdc_life_exp… CDC Lif… https://cd… Gove… US life ex… both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> who_ghe       WHO Glo… https://ww… Gove… Global mor… both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> uk_ons        UK ONS   https://ww… Gove… UK death s… both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> nhtsa         NHTSA    https://ww… Gove… US traffic… both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> pmc_covid_ov… COVID-1… https://pm… Acad… Micromort … both       2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> cdc_vaccine_… CDC COV… https://ww… Gove… Vaccinated… both       2026-03-15   </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Academic sources</span></span></span>
 <span class="r-in"><span><span class="va">sources</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">"Academic"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   source_id      citation primary_url type  description data_types last_accessed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> howard_1980    Howard … https://br… Acad… Original m… acute      2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> spiegelhalter… Spiegel… https://pu… Acad… Introduced… chronic    2026-02-25   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> pmc_covid_ove… COVID-1… https://pm… Acad… Micromort … both       2026-02-25   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> howard_1980    Howard … https://br… Acad… Original m… acute      2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> spiegelhalter… Spiegel… https://pu… Acad… Introduced… chronic    2026-03-15   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> pmc_covid_ove… COVID-1… https://pm… Acad… Micromort … both       2026-03-15   </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

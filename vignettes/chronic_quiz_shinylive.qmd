@@ -192,7 +192,7 @@ instructions_ui <- function() {
                   " = 30 minutes of life expectancy.",
                   " Smoking 20/day costs 10 microlives: like aging 29 hours every 24.")
         ),
-        div(class = "text-center mb-1", tags$em(encouragement)),
+        div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
         div(class = "option-row",
           span(class = "option-label", "Difficulty:"),
           div(class = "option-btn-group", id = "grp_diff",
@@ -434,8 +434,6 @@ results_summary_ui <- function(state) {
       tags$em(result_info$fact), br(),
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
-      actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
-      actionButton("try_again", "Try Again", class = "btn-primary btn-lg"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
           "var text = '\\u23f3 Microlife Quiz: I scored %d/%d!\\n",
@@ -447,7 +445,9 @@ results_summary_ui <- function(state) {
           "btn.textContent='Copied!';",
           "setTimeout(function(){btn.textContent='Share';},2000);",
           "});"), score, n),
-        "Share")
+        "Share"),
+      actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
+      actionButton("try_again", "Try Again", class = "btn-primary btn-lg")
     )
   )
 }

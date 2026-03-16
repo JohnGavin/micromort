@@ -3,6 +3,7 @@
 <url><loc>https://johngavin.github.io/micromort/LICENSE-text.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/LICENSE.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/architecture.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/confounding.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/data_reliability.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/index.html</loc></url>
@@ -23,6 +24,7 @@
 <url><loc>https://johngavin.github.io/micromort/reference/as_probability.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/atomic_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/cancer_risks.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/chronic_quiz_pairs.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/chronic_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/common_risks.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/compare_interventions.html</loc></url>
@@ -30,11 +32,13 @@
 <url><loc>https://johngavin.github.io/micromort/reference/covid_vaccine_rr.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/daily_hazard_rate.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/demographic_factors.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/factor_descriptions.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/format_activity_name.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/hedged_portfolio.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/index.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/laggard_regions.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/launch_api.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/launch_chronic_quiz.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/launch_dashboard.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/launch_quiz.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.html</loc></url>

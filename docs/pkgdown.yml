@@ -3,6 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   architecture: architecture.html
+  chronic_quiz_shinylive: chronic_quiz_shinylive.html
   confounding: confounding.html
   data_reliability: data_reliability.html
   introduction: introduction.html
@@ -12,7 +13,7 @@ articles:
   rest_api: rest_api.html
   risk_equivalence: risk_equivalence.html
   telemetry: telemetry.html
-last_built: 2026-03-15T13:26Z
+last_built: 2026-03-16T11:46Z
 urls:
   reference: https://johngavin.github.io/micromort/reference
   article: https://johngavin.github.io/micromort/articles

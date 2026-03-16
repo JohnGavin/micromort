@@ -275,7 +275,7 @@ Show code
 sessionInfo()
 #> R version 4.5.2 (2025-10-31)
 #> Platform: aarch64-apple-darwin25.2.0
-#> Running under: macOS Tahoe 26.3
+#> Running under: macOS Tahoe 26.3.1
 #> 
 #> Matrix products: default
 #> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 

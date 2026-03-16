@@ -147,5 +147,12 @@ API, dashboard, and quiz
   : Generate Quiz Pairs for "Which Is Riskier?" Game
 - [`activity_descriptions()`](https://johngavin.github.io/micromort/reference/activity_descriptions.md)
   : Activity Descriptions and Help URLs
+- [`launch_chronic_quiz()`](https://johngavin.github.io/micromort/reference/launch_chronic_quiz.md)
+  : Launch Interactive "Which Daily Habit Has a Bigger Effect?" Quiz
+- [`chronic_quiz_pairs()`](https://johngavin.github.io/micromort/reference/chronic_quiz_pairs.md)
+  : Generate Quiz Pairs for "Which Daily Habit Has a Bigger Effect?"
+  Game
+- [`factor_descriptions()`](https://johngavin.github.io/micromort/reference/factor_descriptions.md)
+  : Chronic Factor Descriptions and Help URLs
 - [`format_activity_name()`](https://johngavin.github.io/micromort/reference/format_activity_name.md)
   : Format Activity Name with Line Break Before Parenthetical
