@@ -113,6 +113,62 @@ quiz_css <- "
   .detail-scroll { overflow-x: auto; width: 100%; }
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
   .detail-table th, .detail-table td { padding: 6px 10px; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+"
+
+# ---- Leaderboard (reuses acute quiz Google Form + Sheet) ----
+chronic_leaderboard_js <- "
+var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+var scoreSubmitted = false;
+function submitScore(score, total) {
+  if (scoreSubmitted) return;
+  var btn = document.getElementById('submit_btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.className = 'btn btn-secondary btn-lg';
+  }
+  var data = new URLSearchParams();
+  data.append('entry.335579146', score);
+  data.append('entry.2122920576', total);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.QUIZ_TYPE_ID', 'chronic');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Submitted!';
+      btn.className = 'btn btn-success btn-lg';
+    }
+    getPercentile(score, total);
+  }).catch(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Score saved locally';
+      btn.className = 'btn btn-info btn-lg';
+    }
+  });
+}
+function getPercentile(score, total) {
+  fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
+    var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
+    var rows = json.table.rows;
+    var pct = score / total * 100;
+    var below = 0;
+    var chronicCount = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var s = rows[i].c[0] ? rows[i].c[0].v : 0;
+      var t = rows[i].c[1] ? rows[i].c[1].v : 10;
+      var qt = rows[i].c[3] ? rows[i].c[3].v : 'acute';
+      if (qt !== 'chronic') continue;
+      chronicCount++;
+      if ((s / t * 100) < pct) below++;
+    }
+    var percentile = chronicCount > 0 ? Math.round(below / chronicCount * 100) : 50;
+    var el = document.getElementById('percentile_text');
+    if (el) el.textContent = 'You scored better than ' + percentile + '% of chronic quiz players!';
+  }).catch(function() {});
+}
 "
 
 # ---- Fun result phrases ----
@@ -435,6 +491,8 @@ results_summary_ui <- function(state) {
       tags$em(result_info$fact), br(),
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
+      tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
+        onclick = sprintf("submitScore(%d, %d)", score, n), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
           "var text = '\\u23f3 Microlife Quiz: I scored %d/%d!\\n",
@@ -449,7 +507,11 @@ results_summary_ui <- function(state) {
         "Share"),
       actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
       actionButton("try_again", "Try Again", class = "btn-primary btn-lg")
-    )
+    ),
+    div(class = "text-center mt-2",
+      tags$small(id = "percentile_text", class = "text-muted"),
+      tags$br(),
+      tags$small(class = "text-muted", "Scores are anonymous. No personal data is collected."))
   )
 }
 
@@ -467,9 +529,15 @@ results_detail_ui <- function(state) {
               else if (answers[i] == pairs$answer[i]) "\u2713" else "\u2717"
     dir_a <- if (pairs$direction_a[i] == "gain") "+" else "\u2212"
     dir_b <- if (pairs$direction_b[i] == "gain") "+" else "\u2212"
-    tags$tr(tags$td(i), tags$td(pairs$factor_a[i]),
+    link_a <- if (!is.na(pairs$help_url_a[i]) && nzchar(pairs$help_url_a[i]))
+      tags$a(href = pairs$help_url_a[i], target = "_blank", pairs$factor_a[i])
+    else pairs$factor_a[i]
+    link_b <- if (!is.na(pairs$help_url_b[i]) && nzchar(pairs$help_url_b[i]))
+      tags$a(href = pairs$help_url_b[i], target = "_blank", pairs$factor_b[i])
+    else pairs$factor_b[i]
+    tags$tr(tags$td(i), tags$td(link_a),
             tags$td(sprintf("%s%s", dir_a, abs(pairs$microlives_a[i]))),
-            tags$td(pairs$factor_b[i]),
+            tags$td(link_b),
             tags$td(sprintf("%s%s", dir_b, abs(pairs$microlives_b[i]))),
             tags$td(user_ans), tags$td(correct_ans), tags$td(result))
   })
@@ -493,6 +561,7 @@ ui <- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$style(HTML(quiz_css)),
+    tags$script(HTML(chronic_leaderboard_js)),
     tags$script(HTML("
       function selectInGroup(groupId, clicked) {
         var grp = document.getElementById(groupId);

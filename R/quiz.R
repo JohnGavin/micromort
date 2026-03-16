@@ -164,6 +164,11 @@ quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
 
   pairs <- pairs[selected, ]
 
+  # Deduplicate: ensure no pair appears as both A-vs-B and B-vs-A
+  pair_key <- paste(pmin(pairs$activity_a, pairs$activity_b),
+                    pmax(pairs$activity_a, pairs$activity_b), sep = "|||")
+  pairs <- pairs[!duplicated(pair_key), ]
+
   # Set answer
   pairs$answer <- ifelse(
     pairs$micromorts_a >= pairs$micromorts_b, "a", "b"
@@ -333,6 +338,11 @@ chronic_quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
   }
 
   pairs <- pairs[selected, ]
+
+  # Deduplicate: ensure no pair appears as both A-vs-B and B-vs-A
+  pair_key <- paste(pmin(pairs$factor_a, pairs$factor_b),
+                    pmax(pairs$factor_a, pairs$factor_b), sep = "|||")
+  pairs <- pairs[!duplicated(pair_key), ]
 
   # Answer: whichever factor has larger absolute microlife effect
   pairs$answer <- ifelse(

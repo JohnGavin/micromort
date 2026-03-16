@@ -194,6 +194,7 @@ function submitScore(score, total) {
   data.append('entry.335579146', score);
   data.append('entry.2122920576', total);
   data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.QUIZ_TYPE_ID', 'acute');
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
     scoreSubmitted = true;
     if (btn) {
@@ -563,9 +564,15 @@ results_detail_ui &lt;- function(state) {
     correct_ans &lt;- if (pairs$answer[i] == "a") pairs$activity_a[i] else pairs$activity_b[i]
     result &lt;- if (is.na(answers[i])) "\u2014"
               else if (answers[i] == pairs$answer[i]) "\u2713" else "\u2717"
-    tags$tr(tags$td(i), tags$td(pairs$activity_a[i]),
+    link_a &lt;- if (!is.na(pairs$help_url_a[i]) &amp;&amp; nzchar(pairs$help_url_a[i]))
+      tags$a(href = pairs$help_url_a[i], target = "_blank", pairs$activity_a[i])
+    else pairs$activity_a[i]
+    link_b &lt;- if (!is.na(pairs$help_url_b[i]) &amp;&amp; nzchar(pairs$help_url_b[i]))
+      tags$a(href = pairs$help_url_b[i], target = "_blank", pairs$activity_b[i])
+    else pairs$activity_b[i]
+    tags$tr(tags$td(i), tags$td(link_a),
             tags$td(sprintf("%.2f", pairs$micromorts_a[i])),
-            tags$td(pairs$activity_b[i]),
+            tags$td(link_b),
             tags$td(sprintf("%.2f", pairs$micromorts_b[i])),
             tags$td(user_ans), tags$td(correct_ans), tags$td(result))
   })
