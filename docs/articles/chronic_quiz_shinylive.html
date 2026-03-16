@@ -248,8 +248,9 @@ instructions_ui &lt;- function() {
           tags$li("You can ", tags$b(tags$em("skip")), " questions or go ",
                   tags$b(tags$em("back")), "."),
           tags$li("A ", tags$b(tags$em("microlife")),
-                  " = 30 minutes of life expectancy.",
-                  " Smoking 20/day costs 10 microlives: like aging 29 hours every 24.")
+                  " = 30 minutes of life expectancy.", br(),
+                  span(style = "padding-left: 1em;",
+                    "Smoking 20/day costs 10 microlives: like aging 29 hours every 24."))
         ),
         div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
         div(class = "option-row",
