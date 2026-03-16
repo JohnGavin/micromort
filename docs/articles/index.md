@@ -5,6 +5,12 @@
 - [Architecture
   Overview](https://johngavin.github.io/micromort/articles/architecture.md):
 
+- [Which daily habit affects your lifespan
+  more?](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.md):
+
+  Interactive quiz comparing chronic lifestyle factors measured in
+  microlives — 30 minutes of life expectancy per day.
+
 - [Confounding Variables in Risk
   Data](https://johngavin.github.io/micromort/articles/confounding.md):
 

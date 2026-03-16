@@ -53,27 +53,27 @@ sources
 #> # A tibble: 14 × 7
 #>    source_id     citation primary_url type  description data_types last_accessed
 #>    <chr>         <chr>    <chr>       <chr> <chr>       <chr>      <date>       
-#>  1 howard_1980   Howard … https://br… Acad… Original m… acute      2026-02-25   
-#>  2 spiegelhalte… Spiegel… https://pu… Acad… Introduced… chronic    2026-02-25   
-#>  3 norm_chronic… The Nor… https://ww… Book  Comprehens… both       2026-02-25   
-#>  4 wikipedia_mi… Wikiped… https://en… Ency… Comprehens… acute      2026-02-25   
-#>  5 wikipedia_mi… Wikiped… https://en… Ency… Chronic ri… chronic    2026-02-25   
-#>  6 micromorts_r… micromo… https://mi… Data… Crowdsourc… acute      2026-02-25   
-#>  7 understandin… Underst… https://pl… Educ… Cambridge … both       2026-02-25   
-#>  8 cdc_mmwr      CDC MMWR https://ww… Gove… US mortali… acute      2026-02-25   
-#>  9 cdc_life_exp… CDC Lif… https://cd… Gove… US life ex… both       2026-02-25   
-#> 10 who_ghe       WHO Glo… https://ww… Gove… Global mor… both       2026-02-25   
-#> 11 uk_ons        UK ONS   https://ww… Gove… UK death s… both       2026-02-25   
-#> 12 nhtsa         NHTSA    https://ww… Gove… US traffic… both       2026-02-25   
-#> 13 pmc_covid_ov… COVID-1… https://pm… Acad… Micromort … both       2026-02-25   
-#> 14 cdc_vaccine_… CDC COV… https://ww… Gove… Vaccinated… both       2026-02-25   
+#>  1 howard_1980   Howard … https://br… Acad… Original m… acute      2026-03-15   
+#>  2 spiegelhalte… Spiegel… https://pu… Acad… Introduced… chronic    2026-03-15   
+#>  3 norm_chronic… The Nor… https://ww… Book  Comprehens… both       2026-03-15   
+#>  4 wikipedia_mi… Wikiped… https://en… Ency… Comprehens… acute      2026-03-15   
+#>  5 wikipedia_mi… Wikiped… https://en… Ency… Chronic ri… chronic    2026-03-15   
+#>  6 micromorts_r… micromo… https://mi… Data… Crowdsourc… acute      2026-03-15   
+#>  7 understandin… Underst… https://pl… Educ… Cambridge … both       2026-03-15   
+#>  8 cdc_mmwr      CDC MMWR https://ww… Gove… US mortali… acute      2026-03-15   
+#>  9 cdc_life_exp… CDC Lif… https://cd… Gove… US life ex… both       2026-03-15   
+#> 10 who_ghe       WHO Glo… https://ww… Gove… Global mor… both       2026-03-15   
+#> 11 uk_ons        UK ONS   https://ww… Gove… UK death s… both       2026-03-15   
+#> 12 nhtsa         NHTSA    https://ww… Gove… US traffic… both       2026-03-15   
+#> 13 pmc_covid_ov… COVID-1… https://pm… Acad… Micromort … both       2026-03-15   
+#> 14 cdc_vaccine_… CDC COV… https://ww… Gove… Vaccinated… both       2026-03-15   
 
 # Academic sources
 sources |> dplyr::filter(type == "Academic")
 #> # A tibble: 3 × 7
 #>   source_id      citation primary_url type  description data_types last_accessed
 #>   <chr>          <chr>    <chr>       <chr> <chr>       <chr>      <date>       
-#> 1 howard_1980    Howard … https://br… Acad… Original m… acute      2026-02-25   
-#> 2 spiegelhalter… Spiegel… https://pu… Acad… Introduced… chronic    2026-02-25   
-#> 3 pmc_covid_ove… COVID-1… https://pm… Acad… Micromort … both       2026-02-25   
+#> 1 howard_1980    Howard … https://br… Acad… Original m… acute      2026-03-15   
+#> 2 spiegelhalter… Spiegel… https://pu… Acad… Introduced… chronic    2026-03-15   
+#> 3 pmc_covid_ove… COVID-1… https://pm… Acad… Micromort … both       2026-03-15   
 ```

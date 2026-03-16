@@ -24,8 +24,9 @@ measured in microlives (30 minutes of life expectancy per day)."><meta property=
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
+    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
+    <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
@@ -35,8 +36,8 @@ measured in microlives (30 minutes of life expectancy per day)."><meta property=
     <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
-    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
+    <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -151,46 +152,47 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> spiegelhalter_… Smoki… smoking 20 cigar…                -<span style="color: #BB0000;">10</span> loss      Smoking </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> spiegelhalter_… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> spiegelhalter_… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> spiegelhalter_… 5 ser… 5 servings fruit…                  4 gain      Diet    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> spiegelhalter_… Untre… untreated hypert…                 -<span style="color: #BB0000;">4</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> spiegelhalter_… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Factors that reduce life expectancy</span></span></span>
 <span class="r-in"><span><span class="va">chronic</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 26 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    record_id      factor factor_normalized microlives_per_day direction category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> spiegelhalter… Smoki… smoking 20 cigar…                -<span style="color: #BB0000;">10</span> loss      Smoking </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> spiegelhalter… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> spiegelhalter… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> spiegelhalter… Being… being 15 kg over…                 -<span style="color: #BB0000;">3</span> loss      Weight  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> spiegelhalter… Being… being 10 kg over…                 -<span style="color: #BB0000;">2</span> loss      Weight  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> spiegelhalter… 4th-5… 4th-5th alcoholi…                 -<span style="color: #BB0000;">2</span> loss      Alcohol </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> spiegelhalter… Smoki… smoking 2 cigare…                 -<span style="color: #BB0000;">1</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> spiegelhalter… Being… being 5 kg overw…                 -<span style="color: #BB0000;">1</span> loss      Weight  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> spiegelhalter… 2nd-3… 2nd-3rd alcoholi…                 -<span style="color: #BB0000;">1</span> loss      Alcohol </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> spiegelhalter… Red m… red meat                          -<span style="color: #BB0000;">1</span> loss      Diet    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> spiegelhalter… Proce… processed meat                    -<span style="color: #BB0000;">1</span> loss      Diet    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> spiegelhalter… 2 hou… 2 hours tv watch…                 -<span style="color: #BB0000;">1</span> loss      Sedenta…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> spiegelhalter… Livin… living with a sm…                 -<span style="color: #BB0000;">1</span> loss      Environ…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> spiegelhalter… 2-3 c… 2-3 cups coffee                   -<span style="color: #BB0000;">1</span> loss      Diet    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> spiegelhalter… Air p… air pollution                     -<span style="color: #BB0000;">1</span> loss      Environ…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> spiegelhalter… Untre… untreated hypert…                 -<span style="color: #BB0000;">4</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> spiegelhalter… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> spiegelhalter… Being… being 15 kg over…                 -<span style="color: #BB0000;">3</span> loss      Weight  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> spiegelhalter… Type … type 2 diabetes                   -<span style="color: #BB0000;">3</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> spiegelhalter… Being… being 10 kg over…                 -<span style="color: #BB0000;">2</span> loss      Weight  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> spiegelhalter… 4th-5… 4th-5th alcoholi…                 -<span style="color: #BB0000;">2</span> loss      Alcohol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> spiegelhalter… Sitti… sitting 8+ hours…                 -<span style="color: #BB0000;">2</span> loss      Sedenta…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> spiegelhalter… High … high ldl cholest…                 -<span style="color: #BB0000;">2</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Factors that increase life expectancy</span></span></span>
 <span class="r-in"><span><span class="va">chronic</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"gain"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   record_id       factor factor_normalized microlives_per_day direction category</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> spiegelhalter_… Livin… living in sweden…                 21 gain      Demogra…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> spiegelhalter_… 5 ser… 5 servings fruit…                  4 gain      Diet    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> spiegelhalter_… Being… being female                       4 gain      Demogra…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> spiegelhalter_… 20 mi… 20 min moderate …                  2 gain      Exercise</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> spiegelhalter_… First… first alcoholic …                  1 gain      Alcohol </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> spiegelhalter_… Stati… statin therapy                     1 gain      Medical </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 12 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    record_id      factor factor_normalized microlives_per_day direction category</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> spiegelhalter… Livin… living in sweden…                 21 gain      Demogra…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> spiegelhalter… Livin… living in 2010 v…                 15 gain      Histori…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> spiegelhalter… 5 ser… 5 servings fruit…                  4 gain      Diet    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> spiegelhalter… Being… being female                       4 gain      Demogra…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> spiegelhalter… 150 m… 150 min weekly e…                  3 gain      Exercise</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> spiegelhalter… 20 mi… 20 min moderate …                  2 gain      Exercise</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> spiegelhalter… High … high fiber diet                    2 gain      Diet    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> spiegelhalter… Medit… mediterranean di…                  2 gain      Diet    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> spiegelhalter… Blood… blood pressure c…                  2 gain      Medical </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> spiegelhalter… First… first alcoholic …                  1 gain      Alcohol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> spiegelhalter… Stati… statin therapy                     1 gain      Medical </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> spiegelhalter… Cance… cancer screening                   1 gain      Medical </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span><span class="fu">chronic_risks</span><span class="op">(</span><span class="op">)</span></span></span>

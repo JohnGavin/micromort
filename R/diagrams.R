@@ -72,7 +72,9 @@ mermaid_dark_theme_header <- function() {
     # Apps
     launch_api = "Apps", launch_dashboard = "Apps",
     launch_quiz = "Apps", quiz_pairs = "Apps",
-    activity_descriptions = "Apps", format_activity_name = "Apps"
+    activity_descriptions = "Apps", format_activity_name = "Apps",
+    launch_chronic_quiz = "Apps", chronic_quiz_pairs = "Apps",
+    factor_descriptions = "Apps"
   )
 }
 

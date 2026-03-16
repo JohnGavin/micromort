@@ -5,7 +5,7 @@ tar_option_set(
   packages = c(
     "testthat", "checkmate",
     "dplyr", "tibble", "readr",
-    "arrow", "digest", "cli"
+    "arrow", "digest", "cli", "fs"
   ),
   format = "rds"
 )
@@ -42,6 +42,9 @@ c(
 
   # QA gates: quality scoring, tests, coverage, vignette compliance
   plan_qa_gates,
+
+  # Site build: pkgdown + shinylive rendering + verification
+  plan_site_build,
 
   # Validation (existing)
   if (exists("plan_validation")) plan_validation else list()
