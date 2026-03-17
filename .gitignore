@@ -9,8 +9,26 @@ inst/extdata/logs/
 # Shinylive build artifacts (rendered output lives in docs/articles/)
 vignettes/quiz_shinylive.html
 vignettes/quiz_shinylive_files/
+vignettes/chronic_quiz_shinylive.html
+vignettes/chronic_quiz_shinylive_files/
 vignettes/shinylive-sw.js
+# Quarto render artifacts for non-shinylive vignettes
+vignettes/_quarto.yaml
+vignettes/introduction.html
+vignettes/introduction_files/
+vignettes/palatable_units.html
+vignettes/palatable_units_files/
+vignettes/rest_api.html
+vignettes/rest_api_files/
+vignettes/architecture_files/
+vignettes/confounding_files/
+vignettes/risk_equivalence_files/
+vignettes/telemetry_files/
 # Prevent pkgdown from re-rendering quiz as markdown article
 docs/articles/quiz_shinylive.md
+# R CMD check output
+check/
+# Logo candidates (design assets, not package content)
+man/figures/logo-candidates/
 /_extensions/
 .roborev.toml

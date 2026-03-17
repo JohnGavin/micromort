@@ -239,11 +239,14 @@ function getPercentile(score, total, difficulty, nQuestions) {
     msg += '! (' + data.overall.n + ' submissions)';
     var el = document.getElementById('percentile_text');
     if (el) el.textContent = msg;
-  }).catch(function() {
+  }).catch(function(err) {
+    console.log('Stats JSON fetch failed:', err, '— trying live Sheet');
     getPercentileLive(score, total);
   });
 }
 function getPercentileLive(score, total) {
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = 'Loading rankings...';
   fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
     var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
     var rows = json.table.rows;
@@ -255,9 +258,11 @@ function getPercentileLive(score, total) {
       if ((s / t * 100) &lt; pct) below++;
     }
     var percentile = rows.length &gt; 0 ? Math.round(below / rows.length * 100) : 50;
-    var el = document.getElementById('percentile_text');
-    if (el) el.textContent = 'You scored better than ' + percentile + '% of players!';
-  }).catch(function() {});
+    if (el) el.textContent = 'You scored better than ' + percentile + '% of players! (' + rows.length + ' submissions)';
+  }).catch(function(err2) {
+    console.log('Live Sheet fetch also failed:', err2);
+    if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
+  });
 }
 "
 
