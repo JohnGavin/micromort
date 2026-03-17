@@ -192,7 +192,7 @@ function submitScore(score, total) {
   data.append('entry.335579146', score);
   data.append('entry.2122920576', total);
   data.append('entry.621716914', new Date().toISOString());
-  data.append('entry.QUIZ_TYPE_ID', 'chronic');
+  data.append('entry.268026248', 'chronic');
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
     scoreSubmitted = true;
     if (btn) {
