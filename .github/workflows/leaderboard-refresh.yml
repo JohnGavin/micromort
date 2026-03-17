@@ -1,0 +1,116 @@
+name: Leaderboard Stats Refresh
+
+on:
+  schedule:
+    # Every Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          logger: pretty
+          log-directives: nix_installer=trace
+          backtrace: full
+
+      - name: Setup magic Nix cache
+        uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Setup Cachix (rstats-on-nix + johngavin)
+        uses: cachix/cachix-action@v15
+        with:
+          name: rstats-on-nix
+          extraPullNames: johngavin
+
+      - name: Build development environment
+        run: nix-build default.nix -A shell --no-out-link
+
+      - name: Refresh leaderboard stats
+        run: |
+          nix-shell default.nix -A shell --run "Rscript -e '
+            targets::tar_make(names = c(\"leaderboard_raw\", \"leaderboard_stats_json\"))
+          '"
+
+      - name: Generate email report
+        id: report
+        run: |
+          nix-shell default.nix -A shell --run "Rscript -e '
+            df <- targets::tar_read(leaderboard_raw)
+            if (nrow(df) == 0 || !\"timestamp\" %in% names(df)) {
+              cat(\"SEND_EMAIL=false\n\", file = Sys.getenv(\"GITHUB_OUTPUT\"))
+              quit(save = \"no\")
+            }
+
+            df\$ts <- as.POSIXct(df\$timestamp, format = \"%Y-%m-%dT%H:%M:%S\", tz = \"UTC\")
+            now <- Sys.time()
+            week_breaks <- now - as.difftime(c(0, 1, 2, 3, 4) * 7, units = \"days\")
+
+            week1 <- sum(df\$ts >= week_breaks[2] & df\$ts < week_breaks[1], na.rm = TRUE)
+            week2 <- sum(df\$ts >= week_breaks[3] & df\$ts < week_breaks[2], na.rm = TRUE)
+            week3 <- sum(df\$ts >= week_breaks[4] & df\$ts < week_breaks[3], na.rm = TRUE)
+            week4 <- sum(df\$ts >= week_breaks[5] & df\$ts < week_breaks[4], na.rm = TRUE)
+
+            if (week1 == 0) {
+              cat(\"SEND_EMAIL=false\n\", file = Sys.getenv(\"GITHUB_OUTPUT\"))
+              quit(save = \"no\")
+            }
+
+            # Count by quiz type this week
+            this_week <- df[df\$ts >= week_breaks[2] & df\$ts < week_breaks[1], ]
+            acute_n <- sum(this_week\$quiz_type == \"acute\", na.rm = TRUE)
+            chronic_n <- sum(this_week\$quiz_type == \"chronic\", na.rm = TRUE)
+
+            stats <- targets::tar_read(leaderboard_stats_json)
+
+            body <- paste0(
+              \"Micromort Quiz Leaderboard — Weekly Report\\n\",
+              \"==========================================\\n\\n\",
+              \"Total submissions: \", nrow(df), \"\\n\",
+              \"  Acute: \", stats\$acute_n, \" | Chronic: \", stats\$chronic_n, \"\\n\\n\",
+              \"Weekly submissions (last 4 weeks):\\n\",
+              \"  This week:  \", week1, \" (acute: \", acute_n, \", chronic: \", chronic_n, \")\\n\",
+              \"  1 week ago: \", week2, \"\\n\",
+              \"  2 weeks ago: \", week3, \"\\n\",
+              \"  3 weeks ago: \", week4, \"\\n\\n\",
+              \"Stats JSON updated at: \", format(now, \"%Y-%m-%d %H:%M UTC\"), \"\\n\"
+            )
+
+            cat(\"SEND_EMAIL=true\n\", file = Sys.getenv(\"GITHUB_OUTPUT\"))
+            writeLines(body, \"email_body.txt\")
+            cat(body)
+          '"
+
+      - name: Commit updated stats
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/api/quiz_stats.json
+          git diff --cached --quiet || git commit -m "chore: Refresh leaderboard stats [automated]"
+          git push
+
+      - name: Send email report
+        if: steps.report.outputs.SEND_EMAIL == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Micromort Quiz — Weekly Leaderboard Report"
+          to: ${{ secrets.EMAIL_RECIPIENT }}
+          from: "Micromort Bot <${{ secrets.EMAIL_USERNAME }}>"
+          body: file://email_body.txt
