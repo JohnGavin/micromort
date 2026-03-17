@@ -203,7 +203,7 @@ function submitScore(score, total, difficulty, nQuestions) {
       btn.textContent = 'Submitted!';
       btn.className = 'btn btn-success btn-lg';
     }
-    getPercentile(score, total);
+    getPercentile(score, total, difficulty, nQuestions);
   }).catch(function() {
     scoreSubmitted = true;
     if (btn) {
@@ -212,7 +212,38 @@ function submitScore(score, total, difficulty, nQuestions) {
     }
   });
 }
-function getPercentile(score, total) {
+var STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+function interpolatePercentile(scorePct, group) {
+  var p = group.percentiles;
+  var s = group.scores_pct;
+  for (var i = s.length - 1; i &gt;= 0; i--) {
+    if (scorePct &gt;= s[i]) return p[i];
+  }
+  return 0;
+}
+function getPercentile(score, total, difficulty, nQuestions) {
+  var pct = score / total * 100;
+  fetch(STATS_URL).then(function(r) {
+    if (!r.ok) throw new Error('stats unavailable');
+    return r.json();
+  }).then(function(stats) {
+    var data = stats.acute;
+    var overallPct = interpolatePercentile(pct, data.overall);
+    var msg = 'You scored better than ' + overallPct + '% of all players';
+    var configKey = (difficulty || 'mixed') + '_' + (nQuestions || 10);
+    var sub = data.by_config[configKey];
+    if (sub &amp;&amp; sub.n &gt;= 10) {
+      var subPct = interpolatePercentile(pct, sub);
+      msg += ' (' + subPct + '% of ' + difficulty + '/' + nQuestions + 'Q players)';
+    }
+    msg += '! (' + data.overall.n + ' submissions)';
+    var el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(function() {
+    getPercentileLive(score, total);
+  });
+}
+function getPercentileLive(score, total) {
   fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
     var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
     var rows = json.table.rows;

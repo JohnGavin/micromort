@@ -5,7 +5,7 @@ tar_option_set(
   packages = c(
     "testthat", "checkmate",
     "dplyr", "tibble", "readr",
-    "arrow", "digest", "cli", "fs"
+    "arrow", "digest", "cli", "fs", "jsonlite"
   ),
   format = "rds"
 )
@@ -42,6 +42,9 @@ c(
 
   # QA gates: quality scoring, tests, coverage, vignette compliance
   plan_qa_gates,
+
+  # Leaderboard: fetch Google Sheet, compute quantile stats as static JSON
+  plan_leaderboard_stats,
 
   # Site build: pkgdown + shinylive rendering + verification
   plan_site_build,

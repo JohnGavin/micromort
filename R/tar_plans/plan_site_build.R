@@ -164,8 +164,14 @@ plan_site_build <- list(
   targets::tar_target(
     site_verify,
     {
-      # Depend on deploy step
+      # Depend on deploy step and leaderboard stats
       force(site_deploy_shinylive)
+      force(leaderboard_stats_json)
+
+      # Check leaderboard stats JSON exists
+      if (!fs::file_exists("docs/api/quiz_stats.json")) {
+        cli::cli_warn("docs/api/quiz_stats.json missing — leaderboard stats not available")
+      }
 
       # Parse _pkgdown.yml for article hrefs
       yml_lines <- readLines("_pkgdown.yml", warn = FALSE)
