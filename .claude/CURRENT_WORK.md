@@ -1,29 +1,56 @@
 # Current Work
 
-## Session: 2026-03-14 (continued)
+## Session: 2026-03-17
 
-### Branch: feature/telemetry-quiz-deployment
-- PR #57 open against main
-- Issue #56: Telemetry vignette + quiz consistency + deployment lessons
+### Branch: main (post-merge from issue-60-chronic-quiz)
 
 ### Completed This Session
-1. **Workstream 1: Telemetry** — `plan_telemetry.R` (5 targets), `vignettes/telemetry.qmd`, registered in `_targets.R`, navbar entry in `_pkgdown.yml`
-2. **Workstream 2: Quiz Consistency** — `vig_quiz_pairs` + `vig_quiz_csv_check` targets, canonical CSV at `inst/extdata/vignettes/quiz_pairs.csv`, embedded CSV in `quiz_shinylive.qmd` regenerated (status: OK)
-3. **Workstream 3: Deployment Lessons** — memory/architecture.md updated
-4. **9-step workflow** — document, test (472 pass), check (0E/1W/0N), build telemetry article, commit, push, PR #57, cachix push
-5. **Self-audit** — found 10 violations in telemetry.qmd, fixed: VignetteIndexEntry removed, code-fold added, echo=FALSE removed, sessionInfo added, chunk labels fixed, fig-caps expanded
-6. **QA Gates** — `plan_qa_gates.R` created (7 targets, 6-component scoring + vignette compliance), registered in `_targets.R`, hook at `~/.claude/hooks/qa_gate_check.sh`
-7. **Rule clarifications** — VignetteIndexEntry exception, echo vs code-fold distinction, session log path, vig_git_changelog marked aspirational, post-publish validation noted as manual
-8. **Lessons learned** — documented 3 root causes (aspirational rules, R mechanics conflicts, scoring gap) in memory and rule files
+
+1. **Site build pipeline** — `R/tar_plans/plan_site_build.R` (5 targets: `site_pkgdown`, `site_quiz_shinylive`, `site_chronic_shinylive`, `site_deploy_shinylive`, `site_verify`). Zero manual steps: `tar_make()` builds everything.
+
+2. **Navbar reorder** — Interactive quizzes moved to top of Articles dropdown, Architecture/Telemetry moved to bottom.
+
+3. **Quiz button reorder** — Results page: Submit Score | Share | View Details | Try Again (both quizzes).
+
+4. **Encouragement text alignment** — Removed `text-center`, added `padding-left: 1.5em` for consistency with bullet list.
+
+5. **Chronic quiz intro text** — Split microlife definition into two lines with indented example.
+
+6. **Deduplicate quiz pairs** — Added canonical key dedup in `quiz_pairs()` and `chronic_quiz_pairs()` in `R/quiz.R`.
+
+7. **External reference links** — Detail results tables now hyperlink activity/factor names to `help_url` (Wikipedia, CDC, WHO). Both quizzes.
+
+8. **Chronic quiz Submit Score** — Added leaderboard JS (reuses acute quiz Google Form/Sheet), Submit button, percentile text.
+
+9. **quiz_type field** — Both quizzes send `quiz_type` ("acute"/"chronic") to Google Form (entry.268026248). Chronic percentile filters by type.
+
+10. **difficulty + n_questions fields** — Both quizzes send difficulty (entry.232879816) and n_questions (entry.2010782223) to Google Form.
+
+11. **Share button includes percentile** — Clipboard text dynamically includes percentile ranking if available.
+
+12. **Pre-computed leaderboard stats** — `R/tar_plans/plan_leaderboard_stats.R` (2 targets). Fetches Google Sheet, computes quantile summaries, writes `docs/api/quiz_stats.json`. JS two-tier fetch: static JSON first, live Sheet fallback.
+
+13. **Weekly GitHub Action** — `.github/workflows/leaderboard-refresh.yml`. Mondays 06:00 UTC: refresh stats, commit, conditional email report (only if submissions in past week). Tested successfully.
+
+### Google Form Fields (6 total)
+| Field | Entry ID | Values |
+|-------|----------|--------|
+| score | 335579146 | integer |
+| total | 2122920576 | integer |
+| timestamp | 621716914 | ISO 8601 |
+| quiz_type | 268026248 | "acute" / "chronic" |
+| difficulty | 232879816 | "easy"/"medium"/"hard"/"mixed" |
+| n_questions | 2010782223 | 5 / 10 |
+
+### Pipeline: 91 targets
+- `plan_leaderboard_stats` (2 targets) and `plan_site_build` (5 targets) added
+- All 548 tests pass
 
 ### Still Pending
-- Rebuild telemetry article with fixes (telemetry.qmd changed since last build)
-- Rebuild quiz_shinylive.html via `quarto render` (CSV updated)
-- Run `qa_quality_gate` target to compute actual score
-- Commit all changes and push to PR #57
-- Update `verify_pkgdown_urls.R` with telemetry URL
-- Add `light-switch: true` to `_pkgdown.yml` template section
+- Untracked build artifacts in `vignettes/` (quarto render outputs) — consider `.gitignore`
+- `check/` directory from R CMD check — should be in `.gitignore`
+- `man/figures/logo-candidates/` — decide if to commit or ignore
+- Subgroup percentile will activate once enough submissions accumulate (n >= 10 per config)
 
 ### Open Issues
-- #56: Telemetry + quiz + deployment (this PR)
-- #57: PR open
+- #60: Chronic quiz (merged via PR #62)
