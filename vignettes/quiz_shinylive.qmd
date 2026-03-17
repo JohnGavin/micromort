@@ -123,6 +123,13 @@ leaderboard_js <- "
 var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
 var scoreSubmitted = false;
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  var btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
 function submitScore(score, total, difficulty, nQuestions) {
   if (scoreSubmitted) return;
   var btn = document.getElementById('submit_btn');
@@ -524,7 +531,8 @@ results_summary_ui <- function(state) {
           "});"), score, n),
         "Share"),
       actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
-      actionButton("try_again", "Try Again", class = "btn-primary btn-lg")
+      actionButton("try_again", "Try Again", class = "btn-primary btn-lg",
+        onclick = "resetLeaderboard()")
     ),
     div(class = "text-center mt-2",
       tags$small(id = "percentile_text", class = "text-muted"),
@@ -563,7 +571,8 @@ results_detail_ui <- function(state) {
     div(class = "d-flex justify-content-between align-items-center mb-4",
       actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
       h3("Your quiz details", class = "mb-0"),
-      actionButton("try_again_detail", "Try Again", class = "btn-primary")),
+      actionButton("try_again_detail", "Try Again", class = "btn-primary",
+        onclick = "resetLeaderboard()")),
     div(class = "detail-scroll",
       tags$table(class = "table table-striped table-hover detail-table",
         tags$thead(tags$tr(tags$th("Q"), tags$th("Activity A"), tags$th("mm A"),
