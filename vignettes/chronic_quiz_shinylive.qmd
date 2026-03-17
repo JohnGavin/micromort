@@ -495,8 +495,10 @@ results_summary_ui <- function(state) {
         onclick = sprintf("submitScore(%d, %d)", score, n), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
-          "var text = '\\u23f3 Microlife Quiz: I scored %d/%d!\\n",
-          "Which daily habit affects your lifespan more?\\n",
+          "var pEl=document.getElementById('percentile_text');",
+          "var pLine=pEl&&pEl.textContent?'\\n'+pEl.textContent+'\\n':'\\n';",
+          "var text='\\u23f3 Microlife Quiz: I scored %d/%d!'+pLine+",
+          "'Which daily habit affects your lifespan more?\\n",
           "Can you beat my score? \\u23f3\\n",
           "https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html';",
           "navigator.clipboard.writeText(text).then(function(){",
