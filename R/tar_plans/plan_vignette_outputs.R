@@ -232,11 +232,11 @@ plan_vignette_outputs <- list(
         "Cup of coffee", "Crossing a road", "Chest X-ray (radiation per scan)",
         "Commuting by car (30 min)", "Drinking a glass of wine",
         "Skiing", "Driving (230 miles)", "Flying (8h long-haul)",
-        "CT scan head (radiation per scan)", "Scuba diving, trained",
+        "CT scan head (radiation per scan)", "Scuba diving, trained (per dive)",
         "Running a marathon", "Skydiving (US)",
         "CT scan abdomen (radiation per scan)", "General anesthesia (emergency)",
         "Night in hospital", "Vaginal birth (mother)",
-        "Base jumping", "Mt. Everest ascent"
+        "Base jumping (per jump)", "Mt. Everest ascent"
       )
       cr |>
         dplyr::filter(activity %in% landmarks) |>

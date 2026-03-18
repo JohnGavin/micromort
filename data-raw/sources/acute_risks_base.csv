@@ -6,7 +6,7 @@ Spanish flu infection,3000,2100,Disease,per infection,event,14,214.29,https://mi
 Matterhorn ascent,2840,1988,Mountaineering,per ascent,event,60,47.33,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 Living in US during COVID-19 (Jul 2020),500,350,COVID-19,per month,month,30,16.67,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 "Living (one day, age 90)",463,324.1,Daily Life,per day,day,1,463,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
-Base jumping,430,301,Sport,per event,event,1,430,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
+Base jumping (per jump),430,301,Sport,per jump,event,1,430,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 First day of life (newborn),430,301,Daily Life,per day,day,1,430,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 COVID-19 unvaccinated (age 80+),234,163.8,COVID-19,11 weeks (2022),period,77,3.04,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
 Caesarean birth (mother),170,119,Medical,per event,event,1,170,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
@@ -27,19 +27,19 @@ Ecstasy/MDMA (per dose),13,9.1,Drugs,per dose,event,0.01,1300,https://micromorts
 Swimming,12,8.4,Sport,per swim,event,0.04,300,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 General anesthesia (emergency),10,7,Medical,per event,event,1,10,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 Motorcycling (60 miles),10,7,Travel,per trip,event,0.17,58.82,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
-Skydiving,10,7,Sport,per event,event,1,10,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
+Skydiving (per jump),10,7,Sport,per jump,event,1,10,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 COVID-19 monovalent vaccine (age 65-79),9,6.3,COVID-19,11 weeks (2022),period,77,0.12,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
 Skydiving (US),8,5.6,Sport,per event,event,1,8,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 Skydiving (UK),8,5.6,Sport,per event,event,1,8,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 COVID-19 unvaccinated (age 50-64),8,5.6,COVID-19,11 weeks (2022),period,77,0.1,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
-Hang gliding,8,5.6,Sport,per event,event,1,8,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
+Hang gliding (per flight),8,5.6,Sport,per flight,event,1,8,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 Running a marathon,7,4.9,Sport,per event,event,1,7,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 Living in Maryland COVID-19 (Mar-May 2020),7,4.9,COVID-19,per 8 weeks,period,56,0.12,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 "Living (one day, age 45)",6,4.2,Daily Life,per day,day,1,6,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
-"Scuba diving, trained",5,3.5,Sport,per event,event,1,5,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
+"Scuba diving, trained (per dive)",5,3.5,Sport,per dive,event,1,5,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 "Living (one day, age 50)",4,2.8,Daily Life,per day,day,1,4,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 COVID-19 monovalent vaccine (all ages),4,2.8,COVID-19,11 weeks (2022),period,77,0.05,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
-Rock climbing,3,2.1,Sport,per event,event,1,3,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
+Rock climbing (per day),3,2.1,Sport,per day,event,1,3,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 COVID-19 bivalent booster (age 65-79),3,2.1,COVID-19,11 weeks (2022),period,77,0.04,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
 COVID-19 monovalent vaccine (age 50-64),2,1.4,COVID-19,11 weeks (2022),period,77,0.03,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15
 COVID-19 unvaccinated (age 18-49),1,0.7,COVID-19,11 weeks (2022),period,77,0.01,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15

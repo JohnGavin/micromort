@@ -692,7 +692,8 @@ server &lt;- function(input, output, session) {
   state &lt;- reactiveValues(
     phase = "instructions", n_questions = 10L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
-    sel_difficulty = "mixed", sel_nq = 10L)
+    sel_difficulty = "mixed", sel_nq = 10L,
+    seen_pairs = character())
 
   # Difficulty button handlers
   observeEvent(input$diff_easy, { state$sel_difficulty &lt;- "easy" })
@@ -711,9 +712,30 @@ server &lt;- function(input, output, session) {
     } else {
       quiz_pool
     }
+    # Exclude pairs seen in previous rounds
+    pair_keys &lt;- paste(pmin(pool$factor_a, pool$factor_b),
+                       pmax(pool$factor_a, pool$factor_b), sep = "|||")
+    unseen &lt;- !(pair_keys %in% state$seen_pairs)
+    if (sum(unseen) &gt;= n) {
+      pool &lt;- pool[unseen, ]
+    }
+    # If not enough unseen pairs, reset history
+    if (nrow(pool) &lt; n) {
+      state$seen_pairs &lt;- character()
+      pool &lt;- if (!is.null(diff) &amp;&amp; diff != "mixed") {
+        quiz_pool[quiz_pool$difficulty == diff, ]
+      } else {
+        quiz_pool
+      }
+    }
     n &lt;- min(n, nrow(pool))
     state$n_questions &lt;- n
-    state$pairs &lt;- pool[sample(nrow(pool), n), ]
+    selected &lt;- pool[sample(nrow(pool), n), ]
+    # Record these pairs as seen
+    new_keys &lt;- paste(pmin(selected$factor_a, selected$factor_b),
+                      pmax(selected$factor_a, selected$factor_b), sep = "|||")
+    state$seen_pairs &lt;- c(state$seen_pairs, new_keys)
+    state$pairs &lt;- selected
     state$answers &lt;- rep(NA_character_, n)
     state$display_order &lt;- lapply(seq_len(n), function(i) sample(c("a", "b")))
     state$revealed &lt;- rep(FALSE, n)

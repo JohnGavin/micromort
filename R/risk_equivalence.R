@@ -80,7 +80,7 @@ risk_exchange_matrix <- function(activities = NULL, risks = NULL) {
       "Driving (230 miles)",
       "Flying (8h long-haul)",
       "Skiing",
-      "Scuba diving, trained",
+      "Scuba diving, trained (per dive)",
       "Running a marathon",
       "Skydiving (US)",
       "General anesthesia (emergency)"

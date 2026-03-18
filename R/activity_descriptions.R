@@ -48,7 +48,7 @@ activity_descriptions <- function() {
     "Daily background mortality risk at age 90 reflects accumulated physiological decline.",
     "https://en.wikipedia.org/wiki/Mortality_rate",
 
-    "Base jumping",
+    "Base jumping (per jump)",
     "Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.",
     "https://en.wikipedia.org/wiki/BASE_jumping",
 
@@ -133,7 +133,7 @@ activity_descriptions <- function() {
     "Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.",
     "https://en.wikipedia.org/wiki/Motorcycle_safety",
 
-    "Skydiving",
+    "Skydiving (per jump)",
     "Risk from parachute malfunction, mid-air collision, and landing errors.",
     "https://en.wikipedia.org/wiki/Skydiving",
 
@@ -154,7 +154,7 @@ activity_descriptions <- function() {
     "Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.",
     "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",
 
-    "Hang gliding",
+    "Hang gliding (per flight)",
     "Unpowered flight with risk from turbulence, structural failure, and pilot error.",
     "https://en.wikipedia.org/wiki/Hang_gliding",
 
@@ -170,7 +170,7 @@ activity_descriptions <- function() {
     "Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.",
     "https://en.wikipedia.org/wiki/Mortality_rate",
 
-    "Scuba diving, trained",
+    "Scuba diving, trained (per dive)",
     "Single-dive risk for trained divers from decompression sickness and equipment failure.",
     "https://en.wikipedia.org/wiki/Scuba_diving",
 
@@ -182,8 +182,8 @@ activity_descriptions <- function() {
     "Population-average residual COVID-19 risk after monovalent vaccination.",
     "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",
 
-    "Rock climbing",
-    "Risk from falls, rockfall, and equipment failure on natural rock.",
+    "Rock climbing (per day)",
+    "Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.",
     "https://en.wikipedia.org/wiki/Rock_climbing",
 
     "COVID-19 bivalent booster (age 65-79)",
