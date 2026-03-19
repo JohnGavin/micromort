@@ -3,9 +3,11 @@ Title: Curated Micromort and Microlife Risk Datasets
 Version: 0.1.0
 Authors@R:
     person("John", "Gavin", , "john.b.gavin@gmail.com", role = c("aut", "cre"))
-Description: A data package providing curated datasets of micromort (acute risk)
-    and microlife (chronic risk) values from authoritative sources including
-    Wikipedia, CDC MMWR, and academic literature. Includes tools for risk
+Description: A data package providing curated, cross-sectional snapshots of
+    micromort (acute risk) and microlife (chronic risk) values from authoritative
+    sources including Wikipedia, CDC MMWR, and academic literature. Designed as a
+    reference dataset for risk comparison and communication, not a time-series
+    analysis tool or epidemiological modelling framework. Includes tools for risk
     comparison, lifestyle analysis, and a Plumber API for data distribution.
     All data normalized to unified schemas with full provenance tracking.
 License: MIT + file LICENSE
