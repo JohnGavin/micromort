@@ -86,28 +86,26 @@ if (!is.null(summary)) {
 ### Top 5 Targets by Storage Size
 
 ```{r telemetry-top-by-size}
-if (!is.null(summary) && !is.null(summary$top_by_size)) {
-  summary$top_by_size |>
-    dplyr::select(name, size_kb) |>
-    DT::datatable(
-      caption = "Largest targets by stored object size (KB)",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
+#| echo: false
+top_size <- safe_tar_read("vig_telemetry_top_by_size")
+if (!is.null(top_size)) {
+  DT::datatable(top_size,
+    caption = "Largest targets by stored object size (KB)",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE)
 }
 ```
 
 ### Top 5 Targets by Compute Time
 
 ```{r telemetry-top-by-time}
-if (!is.null(summary) && !is.null(summary$top_by_time)) {
-  summary$top_by_time |>
-    dplyr::select(name, seconds) |>
-    DT::datatable(
-      caption = "Slowest targets by computation time (seconds)",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
+#| echo: false
+top_time <- safe_tar_read("vig_telemetry_top_by_time")
+if (!is.null(top_time)) {
+  DT::datatable(top_time,
+    caption = "Slowest targets by computation time (seconds)",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE)
 }
 ```
 

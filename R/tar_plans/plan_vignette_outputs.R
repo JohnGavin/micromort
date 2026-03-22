@@ -684,6 +684,177 @@ plan_vignette_outputs <- list(
     }
   ),
 
+
+  # ==========================================================================
+  # DATA RELIABILITY VIGNETTE
+  # ==========================================================================
+
+  # Confidence tier definitions table
+  targets::tar_target(
+    vig_reliability_confidence_tiers,
+    tibble::tribble(
+      ~Tier, ~Criteria, ~Example, ~`Source type`,
+      "**high**", "Peer-reviewed, large-N studies with defined denominators",
+      "Medical radiation (NRC dosimetry)", "Regulatory agency",
+      "**medium**", "Reputable sources, reasonable denominators, some extrapolation",
+      "Wikipedia micromort list, CDC injury data", "Secondary compilation",
+      "**low**", "Limited sources, regional uncertainty, or extrapolated denominators",
+      "Snake bite in rural Africa (WHO estimate)", "Expert estimate",
+      "**estimated**", "Derived by calculation from a model (e.g., LNT for radiation)",
+      "Annual cosmic radiation from LNT model", "Model-derived"
+    )
+  ),
+
+  # Validation status definitions table
+  targets::tar_target(
+    vig_reliability_validation_defs,
+    tibble::tribble(
+      ~Status, ~Definition, ~`Source count`, ~Example,
+      "`single_source`", "One citation, no cross-check", "1",
+      "Most legacy entries from Wikipedia/micromorts.rip",
+      "`corroborated`", "2+ sources agree within 2x", "2+",
+      "Flight risks (Boeing + NCRP + medical literature)",
+      "`cross_validated`", "3+ sources, range documented, outliers explained", "3+",
+      "(Future: entries with systematic literature review)"
+    )
+  ),
+
+  # Validation status x confidence cross-tabulation
+  targets::tar_target(
+    vig_reliability_validation_summary,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::count(validation_status, confidence) |>
+        tidyr::pivot_wider(names_from = validation_status,
+                           values_from = n, values_fill = 0)
+    }
+  ),
+
+  # Geography-conditioned risks
+  targets::tar_target(
+    vig_reliability_geography,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::filter(condition_variable == "geography") |>
+        dplyr::select(activity, micromorts, condition_value, confidence, notes) |>
+        dplyr::arrange(activity, condition_value)
+    }
+  ),
+
+  # Health-conditioned risks (bee/wasp example)
+  targets::tar_target(
+    vig_reliability_health_conditioning,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::filter(condition_variable == "health_profile",
+                       grepl("bee|wasp", activity, ignore.case = TRUE)) |>
+        dplyr::select(activity, micromorts, condition_value,
+                       hedge_description, hedge_reduction_pct)
+    }
+  ),
+
+  # OWID animal encounter conversion table
+  targets::tar_target(
+    vig_reliability_owid_conversion,
+    tibble::tribble(
+      ~Animal, ~`Annual deaths (approx)`, ~`Encounters/yr (approx)`,
+      ~`Micromorts`, ~`Source for denominator`, ~`In dataset?`,
+      "Shark", "~6 (US)", "~100M ocean swims", "0.06", "ISAF", "Yes",
+      "Dog (US)", "~30", "~4.5M bites", "6.7", "CDC", "Yes",
+      "Bee/wasp (US)", "~62", "~2M stings", "0.03", "CDC", "Yes",
+      "Snake (US)", "~5", "~10,000 bites", "0.5", "CDC", "Yes",
+      "Snake (Africa)", "~100,000", "~5.4M bites", "18.5", "WHO/Lancet", "Yes",
+      "Mosquito", "~600,000+", "Unknown per-bite", "\u2014", "\u2014", "**No**",
+      "Crocodile", "~1,000", "Unknown", "\u2014", "\u2014", "**No**",
+      "Elephant", "~500", "Unknown", "\u2014", "\u2014", "**No**"
+    )
+  ),
+
+  # Wildlife estimate ranges
+  targets::tar_target(
+    vig_reliability_ranges,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::filter(category == "Wildlife", !is.na(estimate_range)) |>
+        dplyr::select(activity, micromorts, estimate_range,
+                       source_count, validation_status)
+    }
+  ),
+
+
+  # ==========================================================================
+  # CONFOUNDING VIGNETTE
+  # ==========================================================================
+
+  # Snake bite geography comparison
+  targets::tar_target(
+    vig_confounding_snake_geography,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::filter(grepl("snake_bite", activity_id, ignore.case = TRUE)) |>
+        dplyr::select(activity, micromorts, condition_value,
+                       hedge_description, confidence)
+    }
+  ),
+
+
+  # ==========================================================================
+  # TELEMETRY VIGNETTE (supplement existing targets)
+  # ==========================================================================
+
+  # Top targets by stored object size (extracted from vig_pipeline_summary)
+  targets::tar_target(
+    vig_telemetry_top_by_size,
+    {
+      if (!is.null(vig_pipeline_summary) && !is.null(vig_pipeline_summary$top_by_size)) {
+        vig_pipeline_summary$top_by_size |>
+          dplyr::select(name, size_kb) |>
+          utils::head(10)
+      } else {
+        tibble::tibble(name = character(), size_kb = numeric())
+      }
+    }
+  ),
+
+  # Top targets by computation time (extracted from vig_pipeline_summary)
+  targets::tar_target(
+    vig_telemetry_top_by_time,
+    {
+      if (!is.null(vig_pipeline_summary) && !is.null(vig_pipeline_summary$top_by_time)) {
+        vig_pipeline_summary$top_by_time |>
+          dplyr::select(name, seconds) |>
+          utils::head(10)
+      } else {
+        tibble::tibble(name = character(), seconds = numeric())
+      }
+    }
+  ),
+
+
+  # ==========================================================================
+  # INTRODUCTION VIGNETTE (supplement existing targets)
+  # ==========================================================================
+
+  # API demo values for inline display
+  targets::tar_target(
+    vig_intro_api_demos,
+    list(
+      micromort_from_prob = as.numeric(as_micromort(1/10000)),
+      microlife_smoker = as.numeric(as_microlife(-20 * 30)),
+      microlife_exercise = as.numeric(as_microlife(60)),
+      microlife_overweight = as.numeric(as_microlife(-30)),
+      vsl_us = as.numeric(value_of_micromort(vsl = 10000000)),
+      vsl_uk = as.numeric(value_of_micromort(vsl = 1600000)),
+      lle_one_micromort = as.numeric(lle(prob = 1/1e6, life_expectancy = 40))
+    )
+  ),
+
+
   # Check CSV in chronic_quiz_shinylive.qmd matches canonical pairs
   targets::tar_target(
     vig_chronic_csv_check,

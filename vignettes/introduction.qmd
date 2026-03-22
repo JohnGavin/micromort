@@ -81,8 +81,10 @@ These figures answer: "Given that someone completed this activity, what was thei
 ### Converting Probabilities to Micromorts
 
 ```{r introduction-chunk-1}
+#| echo: false
+demos <- safe_tar_read("vig_intro_api_demos")
 # 1 in 10,000 chance of death = 100 micromorts
-as_micromort(1/10000)
+demos$micromort_from_prob
 ```
 
 ### Common Risks Table
@@ -145,18 +147,12 @@ A smoker who smokes 20 cigarettes per day uses up an additional 10 microlives, w
 ### Converting Life Expectancy to Microlives
 
 ```{r introduction-chunk-5}
+#| echo: false
 # as_microlife() converts minutes of life expectancy change to microlives
 # Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
-# Sign: negative = loss, positive = gain
-
-# Heavy smoker: 20 cigarettes/day, each costs ~30 mins
-as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
-
-# Moderate exercise: 20 mins → ~60 mins life gained
-as_microlife(60)        # = +2 microlives/day (life gained)
-
-# Being 5kg overweight costs 30 mins per day
-as_microlife(-30)       # = -1 microlife/day (life lost)
+cat("Heavy smoker (20/day):", demos$microlife_smoker, "microlives/day (life lost)\n")
+cat("Moderate exercise:", demos$microlife_exercise, "microlives/day (life gained)\n")
+cat("5kg overweight:", demos$microlife_overweight, "microlife/day (life lost)\n")
 ```
 
 ## 3. Relationship Between Micromorts and Microlives
@@ -212,8 +208,9 @@ Cost per micromort saved = $50 / 10 = $5.
 If VSL = $10M, then 1 micromort = $10. Since $5 < $10, it is cost-effective.
 
 ```{r introduction-chunk-6}
+#| echo: false
 # Standard US VSL of $10M implies $10 per micromort
-value_of_micromort(vsl = 10000000)
+cat("$", demos$vsl_us, "per micromort\n")
 ```
 
 ### UK Valuation: Micromorts ≈ Microlives
@@ -228,8 +225,9 @@ Interestingly, two UK government agencies arrive at similar valuations for micro
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
 ```{r introduction-chunk-7}
+#| echo: false
 # UK Department of Transport VSL: £1.6M → £1.60 per micromort
-value_of_micromort(vsl = 1600000)
+cat("\u00a3", demos$vsl_uk, "per micromort\n")
 ```
 
 This consistency suggests that policy decisions affecting acute risks (transport safety) and chronic risks (healthcare interventions) can be compared on a common scale.
@@ -239,8 +237,9 @@ This consistency suggests that policy decisions affecting acute risks (transport
 **LLE** estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is approximately 21 minutes (assuming 40 years remaining life).
 
 ```{r introduction-chunk-8}
+#| echo: false
 # Loss of life expectancy from 1 micromort (assuming 40 years remaining)
-lle(prob = 1/1e6, life_expectancy = 40)
+cat(round(demos$lle_one_micromort, 1), "minutes\n")
 ```
 
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity

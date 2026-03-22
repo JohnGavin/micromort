@@ -21,6 +21,23 @@ if (requireNamespace("micromort", quietly = TRUE)) {
 } else {
   pkgload::load_all(quiet = TRUE)
 }
+
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
 ```
 
 Population-average risk statistics can be dangerously misleading when **confounding variables** — unmeasured or ignored factors that correlate with both exposure and outcome — drive most of the variation. This vignette illustrates how conditioning on the right variable can change a risk estimate by orders of magnitude.
@@ -148,12 +165,9 @@ When you encounter a population-average risk:
 Geography is arguably the most powerful confounder in risk data. The same encounter — a snake bite — has vastly different outcomes depending on location:
 
 ```{r snake-geography}
+#| echo: false
 #| tbl-cap: "Snake bite micromorts by geography"
-ar <- atomic_risks()
-ar |>
-  dplyr::filter(grepl("snake_bite", activity_id, ignore.case = TRUE)) |>
-  dplyr::select(activity, micromorts, condition_value, hedge_description, confidence) |>
-  knitr::kable(digits = 1)
+safe_tar_read("vig_confounding_snake_geography") |> knitr::kable(digits = 1)
 ```
 
 The 37x difference between the US and rural sub-Saharan Africa reflects differences in antivenom availability, hospital proximity, and emergency transport infrastructure — not differences in snake venom potency. A population-average snake bite risk that blends these geographies would be misleading for everyone: too high for Americans, too low for rural Africans.
