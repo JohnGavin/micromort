@@ -11,6 +11,10 @@ name: Deploy pkgdown to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - "docs/**"
+      - "_pkgdown.yml"
+      - "pkgdown/**"
   workflow_dispatch:
 
 permissions:
