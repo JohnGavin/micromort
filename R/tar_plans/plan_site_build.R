@@ -3,7 +3,10 @@
 #' Automates pkgdown site build and Shinylive article rendering.
 #' Eliminates manual steps — everything flows through tar_make().
 #'
+#' Rebuilds only when source files change (R/, vignettes/, config).
+#'
 #' Targets (in dependency order):
+#'   - site_source_hash: Hash of all source files that affect the site
 #'   - site_pkgdown: Build pkgdown site (docs/)
 #'   - site_quiz_shinylive: Render micromort quiz via quarto
 #'   - site_chronic_shinylive: Render microlife quiz via quarto
@@ -12,11 +15,32 @@
 
 plan_site_build <- list(
 
-  # Build pkgdown site — depends on CSV consistency checks passing
+  # Hash source files that affect the site — downstream targets
+  # only rebuild when this hash changes
+  targets::tar_target(
+    site_source_hash,
+    {
+      src_files <- c(
+        list.files("R", pattern = "\\.R$", full.names = TRUE, recursive = TRUE),
+        list.files("man", pattern = "\\.Rd$", full.names = TRUE),
+        list.files("vignettes", pattern = "\\.qmd$", full.names = TRUE),
+        "DESCRIPTION", "NAMESPACE", "_pkgdown.yml"
+      )
+      src_files <- src_files[file.exists(src_files)]
+      digest::digest(lapply(src_files, function(f) {
+        list(path = f, mtime = file.mtime(f), size = file.size(f))
+      }))
+    }
+  ),
+
+  # Build pkgdown site — depends on source hash + CSV consistency checks
 
   targets::tar_target(
     site_pkgdown,
     {
+      # Depend on source hash
+      force(site_source_hash)
+
       # Fail fast if quiz data is stale
       if (!identical(vig_quiz_csv_check$status, "OK")) {
         cli::cli_abort(c(
@@ -44,8 +68,7 @@ plan_site_build <- list(
         n_articles = length(fs::dir_ls("docs/articles", glob = "*.html")),
         timestamp = Sys.time()
       )
-    },
-    cue = targets::tar_cue(mode = "always")
+    }
   ),
 
   # Render micromort quiz (Shinylive article)
@@ -75,8 +98,7 @@ plan_site_build <- list(
 
       cli::cli_alert_success("Quiz shinylive rendered")
       list(qmd = qmd_path, output = result, timestamp = Sys.time())
-    },
-    cue = targets::tar_cue(mode = "always")
+    }
   ),
 
   # Render microlife quiz (Shinylive article)
@@ -106,8 +128,7 @@ plan_site_build <- list(
 
       cli::cli_alert_success("Chronic quiz shinylive rendered")
       list(qmd = qmd_path, output = result, timestamp = Sys.time())
-    },
-    cue = targets::tar_cue(mode = "always")
+    }
   ),
 
   # Copy shinylive outputs into docs/articles/
@@ -156,8 +177,7 @@ plan_site_build <- list(
 
       cli::cli_alert_success("Deployed shinylive assets: {paste(copied, collapse = ', ')}")
       list(copied = copied, timestamp = Sys.time())
-    },
-    cue = targets::tar_cue(mode = "always")
+    }
   ),
 
   # Verify all navbar articles exist in docs/
@@ -200,7 +220,6 @@ plan_site_build <- list(
         hrefs = hrefs,
         timestamp = Sys.time()
       )
-    },
-    cue = targets::tar_cue(mode = "always")
+    }
   )
 )
