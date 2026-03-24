@@ -183,16 +183,6 @@ Geography is arguably the most powerful confounder in risk data. The
 same encounter — a snake bite — has vastly different outcomes depending
 on location:
 
-Show code
-
-``` r
-ar <- atomic_risks()
-ar |>
-  dplyr::filter(grepl("snake_bite", activity_id, ignore.case = TRUE)) |>
-  dplyr::select(activity, micromorts, condition_value, hedge_description, confidence) |>
-  knitr::kable(digits = 1)
-```
-
 | activity | micromorts | condition_value | hedge_description | confidence |
 |:---|---:|:---|:---|:---|
 | Snake bite (US, with antivenom) | 0.5 | high_income | Wear boots in snake habitat, carry pressure bandage | medium |
@@ -290,17 +280,25 @@ sessionInfo()
 #> [1] micromort_0.1.0 testthat_3.3.2 
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] bit_4.6.0          gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4       
-#>  [5] compiler_4.5.2     brio_1.1.5         tidyselect_1.2.1   assertthat_0.2.1  
-#>  [9] scales_1.4.0       arrow_22.0.0       credentials_2.0.3  yaml_2.3.12       
-#> [13] fastmap_1.2.0      ggplot2_4.0.1      R6_2.6.1           generics_0.1.4    
-#> [17] knitr_1.51         backports_1.5.0    tibble_3.3.1       checkmate_2.3.3   
-#> [21] desc_1.4.3         rprojroot_2.1.1    openssl_2.3.4      RColorBrewer_1.1-3
-#> [25] pillar_1.11.1      rlang_1.1.7        xfun_0.56          S7_0.2.1          
-#> [29] fs_1.6.6           sys_3.4.3          bit64_4.6.0-1      pkgload_1.4.1     
-#> [33] otel_0.2.0         cli_3.6.5          withr_3.0.2        magrittr_2.0.4    
-#> [37] grid_4.5.2         digest_0.6.39      askpass_1.2.1      gert_2.3.1        
-#> [41] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        
-#> [45] farver_2.1.2       pkgbuild_1.4.8     rmarkdown_2.30     purrr_1.2.1       
-#> [49] pkgconfig_2.0.3    tools_4.5.2        usethis_3.2.1      htmltools_0.5.9
+#>  [1] generics_0.1.4      digest_0.6.39       magrittr_2.0.4     
+#>  [4] evaluate_1.0.5      grid_4.5.2          RColorBrewer_1.1-3 
+#>  [7] pkgload_1.4.1       fastmap_1.2.0       rprojroot_2.1.1    
+#> [10] jsonlite_2.0.0      processx_3.8.6      pkgbuild_1.4.8     
+#> [13] backports_1.5.0     brio_1.1.5          secretbase_1.1.1   
+#> [16] ps_1.9.1            purrr_1.2.1         scales_1.4.0       
+#> [19] codetools_0.2-20    cli_3.6.5           rlang_1.1.7        
+#> [22] bit64_4.6.0-1       withr_3.0.2         yaml_2.3.12        
+#> [25] otel_0.2.0          tools_4.5.2         checkmate_2.3.3    
+#> [28] dplyr_1.1.4         ggplot2_4.0.1       base64url_1.4      
+#> [31] credentials_2.0.3   assertthat_0.2.1    vctrs_0.7.1        
+#> [34] R6_2.6.1            lifecycle_1.0.5     fs_1.6.6           
+#> [37] bit_4.6.0           usethis_3.2.1       targets_1.11.4     
+#> [40] arrow_22.0.0        callr_3.7.6         pkgconfig_2.0.3    
+#> [43] desc_1.4.3          pillar_1.11.1       gtable_0.3.6       
+#> [46] data.table_1.18.2.1 glue_1.8.0          gert_2.3.1         
+#> [49] xfun_0.56           tibble_3.3.1        tidyselect_1.2.1   
+#> [52] sys_3.4.3           knitr_1.51          farver_2.1.2       
+#> [55] igraph_2.2.1        htmltools_0.5.9     rmarkdown_2.30     
+#> [58] compiler_4.5.2      prettyunits_1.2.0   S7_0.2.1           
+#> [61] askpass_1.2.1       openssl_2.3.4
 ```

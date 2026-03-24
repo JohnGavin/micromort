@@ -88,7 +88,7 @@ head(pairs)
 #> 1 Airline pilot (an… Commuting…        0.13  Travel                   0 per trip
 #> 2 All US workers ba… Commuting…        0.13  Travel                   0 per trip
 #> 3 American football  COVID-19 …       23     COVID-19                 0 11 week…
-#> 4 Base jumping       Living in…      500     COVID-19                 0 per mon…
+#> 4 Base jumping (per… Living in…      500     COVID-19                 0 per mon…
 #> 5 Bee/wasp sting (g… High-alti…        0.035 Environme…               0 per year
 #> 6 COVID-19 infectio… Himalayan…    12000     Mountaine…               0 per exp…
 #> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
@@ -105,8 +105,8 @@ head(easy)
 #> 1 Airline pilot (an… COVID-19 …            1 COVID-19                 0 11 week…
 #> 2 Airline pilot (an… Walking (…            1 Travel                   0 per trip
 #> 3 Airline pilot (an… Living 2 …            1 Environme…               0 per 2 m…
-#> 4 All US workers ba… Walking (…            1 Travel                   0 per trip
-#> 5 All US workers ba… Train (10…            1 Travel                   0 per trip
+#> 4 All US workers ba… Train (10…            1 Travel                   0 per trip
+#> 5 All US workers ba… Walking (…            1 Travel                   0 per trip
 #> 6 All US workers ba… Driving (…            1 Travel                   0 per trip
 #> # ℹ 11 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, difficulty <chr>,

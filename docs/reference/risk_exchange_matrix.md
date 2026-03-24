@@ -49,7 +49,7 @@ risk_exchange_matrix()
 #>  9 Cup of coffee                       0                0                    0  
 #> 10 Crossing a road                     0                0                    0  
 #> # ℹ abbreviated name: ¹​`General anesthesia (emergency)`
-#> # ℹ 7 more variables: `Scuba diving, trained` <dbl>,
+#> # ℹ 7 more variables: `Scuba diving, trained (per dive)` <dbl>,
 #> #   `Driving (230 miles)` <dbl>, Skiing <dbl>, `Flying (8h long-haul)` <dbl>,
 #> #   `Chest X-ray (radiation per scan)` <dbl>, `Cup of coffee` <dbl>,
 #> #   `Crossing a road` <dbl>

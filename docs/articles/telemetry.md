@@ -55,35 +55,7 @@ if (!is.null(summary)) {
 
 ### Top 5 Targets by Storage Size
 
-Show code
-
-``` r
-if (!is.null(summary) && !is.null(summary$top_by_size)) {
-  summary$top_by_size |>
-    dplyr::select(name, size_kb) |>
-    DT::datatable(
-      caption = "Largest targets by stored object size (KB)",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
-}
-```
-
 ### Top 5 Targets by Compute Time
-
-Show code
-
-``` r
-if (!is.null(summary) && !is.null(summary$top_by_time)) {
-  summary$top_by_time |>
-    dplyr::select(name, seconds) |>
-    DT::datatable(
-      caption = "Slowest targets by computation time (seconds)",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
-}
-```
 
 ## 2. GitHub Activity
 

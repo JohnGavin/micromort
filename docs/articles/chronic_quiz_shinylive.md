@@ -95,6 +95,107 @@ quiz_css <- "
   .detail-scroll { overflow-x: auto; width: 100%; }
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
   .detail-table th, .detail-table td { padding: 6px 10px; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+"
+
+# ---- Leaderboard (reuses acute quiz Google Form + Sheet) ----
+chronic_leaderboard_js <- "
+var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+var scoreSubmitted = false;
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  var btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
+function submitScore(score, total, difficulty, nQuestions) {
+  if (scoreSubmitted) return;
+  var btn = document.getElementById('submit_btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.className = 'btn btn-secondary btn-lg';
+  }
+  var data = new URLSearchParams();
+  data.append('entry.335579146', score);
+  data.append('entry.2122920576', total);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.268026248', 'chronic');
+  data.append('entry.232879816', difficulty || '');
+  data.append('entry.2010782223', nQuestions || '');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Submitted!';
+      btn.className = 'btn btn-success btn-lg';
+    }
+    getPercentile(score, total, difficulty, nQuestions);
+  }).catch(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Score saved locally';
+      btn.className = 'btn btn-info btn-lg';
+    }
+  });
+}
+var STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+function interpolatePercentile(scorePct, group) {
+  var p = group.percentiles;
+  var s = group.scores_pct;
+  for (var i = s.length - 1; i >= 0; i--) {
+    if (scorePct >= s[i]) return p[i];
+  }
+  return 0;
+}
+function getPercentile(score, total, difficulty, nQuestions) {
+  var pct = score / total * 100;
+  fetch(STATS_URL).then(function(r) {
+    if (!r.ok) throw new Error('stats unavailable');
+    return r.json();
+  }).then(function(stats) {
+    var data = stats.chronic;
+    var overallPct = interpolatePercentile(pct, data.overall);
+    var msg = 'You scored better than ' + overallPct + '% of all chronic quiz players';
+    var configKey = (difficulty || 'mixed') + '_' + (nQuestions || 10);
+    var sub = data.by_config[configKey];
+    if (sub && sub.n >= 10) {
+      var subPct = interpolatePercentile(pct, sub);
+      msg += ' (' + subPct + '% of ' + difficulty + '/' + nQuestions + 'Q players)';
+    }
+    msg += '! (' + data.overall.n + ' submissions)';
+    var el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(function(err) {
+    console.log('Stats JSON fetch failed:', err, '— trying live Sheet');
+    getPercentileLive(score, total);
+  });
+}
+function getPercentileLive(score, total) {
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = 'Loading rankings...';
+  fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
+    var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
+    var rows = json.table.rows;
+    var pct = score / total * 100;
+    var below = 0;
+    var chronicCount = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var s = rows[i].c[0] ? rows[i].c[0].v : 0;
+      var t = rows[i].c[1] ? rows[i].c[1].v : 10;
+      var qt = rows[i].c[3] ? rows[i].c[3].v : 'acute';
+      if (qt !== 'chronic') continue;
+      chronicCount++;
+      if ((s / t * 100) < pct) below++;
+    }
+    var percentile = chronicCount > 0 ? Math.round(below / chronicCount * 100) : 50;
+    if (el) el.textContent = 'You scored better than ' + percentile + '% of chronic quiz players! (' + chronicCount + ' submissions)';
+  }).catch(function(err2) {
+    console.log('Live Sheet fetch also failed:', err2);
+    if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
+  });
+}
 "
 
 # ---- Fun result phrases ----
@@ -171,10 +272,11 @@ instructions_ui <- function() {
           tags$li("You can ", tags$b(tags$em("skip")), " questions or go ",
                   tags$b(tags$em("back")), "."),
           tags$li("A ", tags$b(tags$em("microlife")),
-                  " = 30 minutes of life expectancy.",
-                  " Smoking 20/day costs 10 microlives: like aging 29 hours every 24.")
+                  " = 30 minutes of life expectancy.", br(),
+                  span(style = "padding-left: 1em;",
+                    "Smoking 20/day costs 10 microlives: like aging 29 hours every 24."))
         ),
-        div(class = "text-center mb-1", tags$em(encouragement)),
+        div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
         div(class = "option-row",
           span(class = "option-label", "Difficulty:"),
           div(class = "option-btn-group", id = "grp_diff",
@@ -416,10 +518,15 @@ results_summary_ui <- function(state) {
       tags$em(result_info$fact), br(),
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
+      tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
+        onclick = sprintf("submitScore(%d, %d, '%s', %d)", score, n,
+                          state$sel_difficulty, state$sel_nq), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
-          "var text = '\\u23f3 Microlife Quiz: I scored %d/%d!\\n",
-          "Which daily habit affects your lifespan more?\\n",
+          "var pEl=document.getElementById('percentile_text');",
+          "var pLine=pEl&&pEl.textContent?'\\n'+pEl.textContent+'\\n':'\\n';",
+          "var text='\\u23f3 Microlife Quiz: I scored %d/%d!'+pLine+",
+          "'Which daily habit affects your lifespan more?\\n",
           "Can you beat my score? \\u23f3\\n",
           "https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html';",
           "navigator.clipboard.writeText(text).then(function(){",
@@ -429,8 +536,13 @@ results_summary_ui <- function(state) {
           "});"), score, n),
         "Share"),
       actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
-      actionButton("try_again", "Try Again", class = "btn-primary btn-lg")
-    )
+      actionButton("try_again", "Try Again", class = "btn-primary btn-lg",
+        onclick = "resetLeaderboard()")
+    ),
+    div(class = "text-center mt-2",
+      tags$small(id = "percentile_text", class = "text-muted"),
+      tags$br(),
+      tags$small(class = "text-muted", "Scores are anonymous. No personal data is collected."))
   )
 }
 
@@ -448,9 +560,15 @@ results_detail_ui <- function(state) {
               else if (answers[i] == pairs$answer[i]) "\u2713" else "\u2717"
     dir_a <- if (pairs$direction_a[i] == "gain") "+" else "\u2212"
     dir_b <- if (pairs$direction_b[i] == "gain") "+" else "\u2212"
-    tags$tr(tags$td(i), tags$td(pairs$factor_a[i]),
+    link_a <- if (!is.na(pairs$help_url_a[i]) && nzchar(pairs$help_url_a[i]))
+      tags$a(href = pairs$help_url_a[i], target = "_blank", pairs$factor_a[i])
+    else pairs$factor_a[i]
+    link_b <- if (!is.na(pairs$help_url_b[i]) && nzchar(pairs$help_url_b[i]))
+      tags$a(href = pairs$help_url_b[i], target = "_blank", pairs$factor_b[i])
+    else pairs$factor_b[i]
+    tags$tr(tags$td(i), tags$td(link_a),
             tags$td(sprintf("%s%s", dir_a, abs(pairs$microlives_a[i]))),
-            tags$td(pairs$factor_b[i]),
+            tags$td(link_b),
             tags$td(sprintf("%s%s", dir_b, abs(pairs$microlives_b[i]))),
             tags$td(user_ans), tags$td(correct_ans), tags$td(result))
   })
@@ -459,7 +577,8 @@ results_detail_ui <- function(state) {
     div(class = "d-flex justify-content-between align-items-center mb-4",
       actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
       h3("Your quiz details", class = "mb-0"),
-      actionButton("try_again_detail", "Try Again", class = "btn-primary")),
+      actionButton("try_again_detail", "Try Again", class = "btn-primary",
+        onclick = "resetLeaderboard()")),
     div(class = "detail-scroll",
       tags$table(class = "table table-striped table-hover detail-table",
         tags$thead(tags$tr(tags$th("Q"), tags$th("Factor A"), tags$th("ml/day A"),
@@ -474,6 +593,7 @@ ui <- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$style(HTML(quiz_css)),
+    tags$script(HTML(chronic_leaderboard_js)),
     tags$script(HTML("
       function selectInGroup(groupId, clicked) {
         var grp = document.getElementById(groupId);
@@ -495,7 +615,8 @@ server <- function(input, output, session) {
   state <- reactiveValues(
     phase = "instructions", n_questions = 10L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
-    sel_difficulty = "mixed", sel_nq = 10L)
+    sel_difficulty = "mixed", sel_nq = 10L,
+    seen_pairs = character())
 
   # Difficulty button handlers
   observeEvent(input$diff_easy, { state$sel_difficulty <- "easy" })
@@ -514,9 +635,30 @@ server <- function(input, output, session) {
     } else {
       quiz_pool
     }
+    # Exclude pairs seen in previous rounds
+    pair_keys <- paste(pmin(pool$factor_a, pool$factor_b),
+                       pmax(pool$factor_a, pool$factor_b), sep = "|||")
+    unseen <- !(pair_keys %in% state$seen_pairs)
+    if (sum(unseen) >= n) {
+      pool <- pool[unseen, ]
+    }
+    # If not enough unseen pairs, reset history
+    if (nrow(pool) < n) {
+      state$seen_pairs <- character()
+      pool <- if (!is.null(diff) && diff != "mixed") {
+        quiz_pool[quiz_pool$difficulty == diff, ]
+      } else {
+        quiz_pool
+      }
+    }
     n <- min(n, nrow(pool))
     state$n_questions <- n
-    state$pairs <- pool[sample(nrow(pool), n), ]
+    selected <- pool[sample(nrow(pool), n), ]
+    # Record these pairs as seen
+    new_keys <- paste(pmin(selected$factor_a, selected$factor_b),
+                      pmax(selected$factor_a, selected$factor_b), sep = "|||")
+    state$seen_pairs <- c(state$seen_pairs, new_keys)
+    state$pairs <- selected
     state$answers <- rep(NA_character_, n)
     state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
     state$revealed <- rep(FALSE, n)

@@ -47,13 +47,7 @@ attempted this?”
 
 ### Converting Probabilities to Micromorts
 
-Show code
-
-``` r
-# 1 in 10,000 chance of death = 100 micromorts
-as_micromort(1/10000)
-#> [1] 100
-```
+    #> [1] 100
 
 ### Common Risks Table
 
@@ -139,25 +133,9 @@ death is moving away from us even as we age.
 
 ### Converting Life Expectancy to Microlives
 
-Show code
-
-``` r
-# as_microlife() converts minutes of life expectancy change to microlives
-# Unit: 1 microlife = 30 minutes of life expectancy change PER DAY
-# Sign: negative = loss, positive = gain
-
-# Heavy smoker: 20 cigarettes/day, each costs ~30 mins
-as_microlife(-20 * 30)  # = -20 microlives/day (life lost)
-#> [1] -20
-
-# Moderate exercise: 20 mins → ~60 mins life gained
-as_microlife(60)        # = +2 microlives/day (life gained)
-#> [1] 2
-
-# Being 5kg overweight costs 30 mins per day
-as_microlife(-30)       # = -1 microlife/day (life lost)
-#> [1] -1
-```
+    #> Heavy smoker (20/day): -20 microlives/day (life lost)
+    #> Moderate exercise: 2 microlives/day (life gained)
+    #> 5kg overweight: -1 microlife/day (life lost)
 
 ## 3. Relationship Between Micromorts and Microlives
 
@@ -228,13 +206,7 @@ people (10 micromorts), is it worth it? Cost per micromort saved = \$50
 / 10 = \$5. If VSL = \$10M, then 1 micromort = \$10. Since \$5 \< \$10,
 it is cost-effective.
 
-Show code
-
-``` r
-# Standard US VSL of $10M implies $10 per micromort
-value_of_micromort(vsl = 10000000)
-#> [1] 10
-```
+    #> $ 10 per micromort
 
 ### UK Valuation: Micromorts ≈ Microlives
 
@@ -249,13 +221,7 @@ for micromorts and microlives:
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the
 theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
-Show code
-
-``` r
-# UK Department of Transport VSL: £1.6M → £1.60 per micromort
-value_of_micromort(vsl = 1600000)
-#> [1] 1.6
-```
+    #> £ 1.6 per micromort
 
 This consistency suggests that policy decisions affecting acute risks
 (transport safety) and chronic risks (healthcare interventions) can be
@@ -267,17 +233,7 @@ compared on a common scale.
 specific risk. For a 1-in-a-million risk (1 micromort), the LLE is
 approximately 21 minutes (assuming 40 years remaining life).
 
-Show code
-
-``` r
-# Loss of life expectancy from 1 micromort (assuming 40 years remaining)
-lle(prob = 1/1e6, life_expectancy = 40)
-#> [1] 21.0384
-#> attr(,"class")
-#> [1] "micromort_lle" "numeric"      
-#> attr(,"units")
-#> [1] "minutes"
-```
+    #> 21 minutes
 
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
