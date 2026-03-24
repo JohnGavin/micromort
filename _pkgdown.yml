@@ -148,6 +148,9 @@ reference:
   - chronic_quiz_pairs
   - factor_descriptions
   - format_activity_name
+  - ranking_quiz_questions
+  - ranking_tag_mapping
+  - kendall_tau_score
 
 footer:
   structure:
