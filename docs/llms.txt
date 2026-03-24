@@ -935,6 +935,12 @@ API, dashboard, and quiz
   : Chronic Factor Descriptions and Help URLs
 - [`format_activity_name()`](https://johngavin.github.io/micromort/reference/format_activity_name.md)
   : Format Activity Name with Line Break Before Parenthetical
+- [`ranking_quiz_questions()`](https://johngavin.github.io/micromort/reference/ranking_quiz_questions.md)
+  : Generate Ranking Quiz Questions
+- [`ranking_tag_mapping()`](https://johngavin.github.io/micromort/reference/ranking_tag_mapping.md)
+  : Tag-to-Category Mapping for Ranking Quiz
+- [`kendall_tau_score()`](https://johngavin.github.io/micromort/reference/kendall_tau_score.md)
+  : Kendall Tau Score for Ranking Quiz
 
 # Articles
 
@@ -966,6 +972,13 @@ API, dashboard, and quiz
 
   Interactive quiz comparing everyday risks measured in micromorts — a
   one-in-a-million chance of death.
+
+- [Rank these risks from most to least
+  dangerous](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.md):
+
+  Interactive drag-and-drop quiz ranking everyday risks by their effect
+  on life expectancy — combining acute micromorts and chronic
+  microlives.
 
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):

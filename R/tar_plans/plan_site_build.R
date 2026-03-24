@@ -54,6 +54,12 @@ plan_site_build <- list(
           "i" = "Regenerate chronic_pairs.csv in vignettes/chronic_quiz_shinylive.qmd"
         ))
       }
+      if (!identical(vig_ranking_csv_check$status, "OK")) {
+        cli::cli_abort(c(
+          "x" = "Ranking quiz CSV is {vig_ranking_csv_check$status}",
+          "i" = "Regenerate ranking_questions.csv in vignettes/ranking_quiz_shinylive.qmd"
+        ))
+      }
 
       cli::cli_alert_info("Building pkgdown site...")
       pkgdown::build_site(preview = FALSE)
@@ -131,13 +137,44 @@ plan_site_build <- list(
     }
   ),
 
+  # Render ranking quiz (Shinylive article)
+  targets::tar_target(
+    site_ranking_shinylive,
+    {
+      force(site_pkgdown)
+
+      qmd_path <- "vignettes/ranking_quiz_shinylive.qmd"
+      if (!fs::file_exists(qmd_path)) {
+        cli::cli_alert_info("Ranking quiz qmd not found — skipping")
+        return(list(qmd = qmd_path, skipped = TRUE, timestamp = Sys.time()))
+      }
+
+      cli::cli_alert_info("Rendering {qmd_path} with quarto...")
+      result <- system2(
+        "quarto", c("render", qmd_path),
+        stdout = TRUE, stderr = TRUE
+      )
+      status <- attr(result, "status")
+      if (!is.null(status) && status != 0) {
+        cli::cli_abort(c(
+          "x" = "quarto render failed for {qmd_path}",
+          "i" = paste(utils::tail(result, 20), collapse = "\n")
+        ))
+      }
+
+      cli::cli_alert_success("Ranking quiz shinylive rendered")
+      list(qmd = qmd_path, output = result, timestamp = Sys.time())
+    }
+  ),
+
   # Copy shinylive outputs into docs/articles/
   targets::tar_target(
     site_deploy_shinylive,
     {
-      # Depend on both shinylive renders
+      # Depend on all shinylive renders
       force(site_quiz_shinylive)
       force(site_chronic_shinylive)
+      force(site_ranking_shinylive)
 
       articles_dir <- "docs/articles"
       if (!fs::dir_exists(articles_dir)) {
@@ -147,7 +184,7 @@ plan_site_build <- list(
       copied <- character()
 
       # Copy each shinylive article's HTML and _files/ directory
-      for (article in c("quiz_shinylive", "chronic_quiz_shinylive")) {
+      for (article in c("quiz_shinylive", "chronic_quiz_shinylive", "ranking_quiz_shinylive")) {
         html_src <- file.path("vignettes", paste0(article, ".html"))
         files_src <- file.path("vignettes", paste0(article, "_files"))
 

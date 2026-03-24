@@ -136,7 +136,8 @@ plan_leaderboard_stats <- list(
       stats <- list(
         generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
         acute = build_quiz_stats(df[df$quiz_type == "acute" | is.na(df$quiz_type), ]),
-        chronic = build_quiz_stats(df[df$quiz_type == "chronic", ])
+        chronic = build_quiz_stats(df[df$quiz_type == "chronic", ]),
+        ranking = build_quiz_stats(df[df$quiz_type == "ranking", ])
       )
 
       # Write to docs/api/
@@ -149,14 +150,15 @@ plan_leaderboard_stats <- list(
         "Leaderboard stats written to {json_path} ({round(fs::file_size(json_path) / 1024, 1)} KB)"
       )
       cli::cli_alert_info(
-        "Acute: {stats$acute$overall$n} submissions, Chronic: {stats$chronic$overall$n} submissions"
+        "Acute: {stats$acute$overall$n}, Chronic: {stats$chronic$overall$n}, Ranking: {stats$ranking$overall$n} submissions"
       )
 
       list(
         json_path = json_path,
         acute_n = stats$acute$overall$n,
         chronic_n = stats$chronic$overall$n,
-        n_configs = length(stats$acute$by_config) + length(stats$chronic$by_config),
+        ranking_n = stats$ranking$overall$n,
+        n_configs = length(stats$acute$by_config) + length(stats$chronic$by_config) + length(stats$ranking$by_config),
         timestamp = Sys.time()
       )
     },

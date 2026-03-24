@@ -21,6 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
     <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
     <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
+    <li><a class="dropdown-item" href="../articles/ranking_quiz_shinylive.html">Ranking Quiz (play in browser)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
@@ -106,14 +107,15 @@ Names should match activity names in <code><a href="load_acute_risks.html">load_
 <span class="r-in"><span>  <span class="st">"Scuba diving, trained"</span> <span class="op">=</span> <span class="fl">20</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"Running a marathon"</span> <span class="op">=</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="op">)</span>, age <span class="op">=</span> <span class="fl">35</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Activity not found: Scuba diving, trained</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 5</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   activity              frequency micromorts_per annual_micromorts pct_of_total</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Baseline (age 35)           365              3              <span style="text-decoration: underline;">1</span>095         84.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Skydiving (US)               10              8                80          6.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Scuba diving, trained        20              5               100          7.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Running a marathon            2              7                14          1.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> TOTAL                        <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="text-decoration: underline;">1</span>289        100  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Baseline (age 35)           365              3              <span style="text-decoration: underline;">1</span>095         92.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Skydiving (US)               10              8                80          6.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Scuba diving, trained        20             <span style="color: #BB0000;">NA</span>                <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Running a marathon            2              7                14          1.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> TOTAL                        <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="text-decoration: underline;">1</span>189        100  </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

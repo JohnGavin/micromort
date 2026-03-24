@@ -29,6 +29,13 @@
   Interactive quiz comparing everyday risks measured in micromorts — a
   one-in-a-million chance of death.
 
+- [Rank these risks from most to least
+  dangerous](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.md):
+
+  Interactive drag-and-drop quiz ranking everyday risks by their effect
+  on life expectancy — combining acute micromorts and chronic
+  microlives.
+
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):
 

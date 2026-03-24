@@ -31,6 +31,8 @@ navbar:
         href: articles/quiz_shinylive.html
       - text: "Microlife Quiz (play in browser)"
         href: articles/chronic_quiz_shinylive.html
+      - text: "Ranking Quiz (play in browser)"
+        href: articles/ranking_quiz_shinylive.html
       - text: "---"
       - text: "Introduction"
         href: articles/introduction.html

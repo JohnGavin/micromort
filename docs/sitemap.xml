@@ -10,6 +10,7 @@
 <url><loc>https://johngavin.github.io/micromort/articles/introduction.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/palatable_units.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/quiz_shinylive.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/regional_variation.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/rest_api.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/articles/risk_equivalence.html</loc></url>
@@ -36,6 +37,7 @@
 <url><loc>https://johngavin.github.io/micromort/reference/format_activity_name.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/hedged_portfolio.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/index.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/kendall_tau_score.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/laggard_regions.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/launch_api.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/launch_chronic_quiz.html</loc></url>
@@ -53,6 +55,8 @@
 <url><loc>https://johngavin.github.io/micromort/reference/prepare_risks_plot.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/quiz_pairs.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/radiation_profiles.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/ranking_quiz_questions.html</loc></url>
+<url><loc>https://johngavin.github.io/micromort/reference/ranking_tag_mapping.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/regional_life_expectancy.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/regional_mortality_multiplier.html</loc></url>
 <url><loc>https://johngavin.github.io/micromort/reference/risk_components.html</loc></url>

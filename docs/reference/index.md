@@ -156,3 +156,9 @@ API, dashboard, and quiz
   : Chronic Factor Descriptions and Help URLs
 - [`format_activity_name()`](https://johngavin.github.io/micromort/reference/format_activity_name.md)
   : Format Activity Name with Line Break Before Parenthetical
+- [`ranking_quiz_questions()`](https://johngavin.github.io/micromort/reference/ranking_quiz_questions.md)
+  : Generate Ranking Quiz Questions
+- [`ranking_tag_mapping()`](https://johngavin.github.io/micromort/reference/ranking_tag_mapping.md)
+  : Tag-to-Category Mapping for Ranking Quiz
+- [`kendall_tau_score()`](https://johngavin.github.io/micromort/reference/kendall_tau_score.md)
+  : Kendall Tau Score for Ranking Quiz

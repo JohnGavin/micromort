@@ -1,0 +1,1036 @@
+# Rank these risks from most to least dangerous
+
+``` shinylive-r
+#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 1200
+
+library(shiny)
+library(bslib)
+
+# ---- Quiz data loaded from separate file (## file: directive) ----
+# Data is pre-computed from micromort::ranking_quiz_questions(seed = 42)
+# 50 questions with 3 items + 30 questions with 4 items = 252 rows
+#
+# WHY SEPARATE FILE: Shinylive's JS preloader cannot parse CSV embedded in
+# R string literals (commas/quotes break the parser). The ## file: directive
+# puts the CSV in a virtual file that R reads normally.
+#
+# PIPELINE TRACKED: vig_ranking_csv_check target verifies this data matches
+# the canonical output of ranking_quiz_questions().
+quiz_pool <- read.csv("ranking_questions.csv", stringsAsFactors = FALSE)
+
+# ---- format_activity_name helper ----
+format_activity_name <- function(name) {
+  formatted <- sub("\\s*\\(", "<br>(", name)
+  HTML(formatted)
+}
+
+# ---- CSS ----
+quiz_css <- "
+  .quiz-title {
+    white-space: nowrap;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .option-btn {
+    padding: 8px 18px; border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff; font-size: 1rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    text-align: center; min-width: 60px;
+  }
+  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; }
+  .detail-scroll { overflow-x: auto; width: 100%; }
+  .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
+  .detail-table th, .detail-table td { padding: 6px 10px; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .gap-3 { gap: 1rem; }
+  .tag-btn {
+    padding: 6px 14px; border: 2px solid #dee2e6; border-radius: 20px;
+    background-color: #2b3e50; color: #ffffff; font-size: 0.9rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    display: inline-block; margin: 3px;
+  }
+  .tag-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .tag-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .rank-container {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .rank-item {
+    padding: 14px 16px; margin: 6px 0;
+    border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff;
+    cursor: grab; user-select: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: border-color 0.2s, transform 0.1s;
+  }
+  .rank-item:active { cursor: grabbing; transform: scale(1.02); }
+  .rank-item .drag-handle { font-size: 1.2rem; color: #adb5bd; }
+  .rank-item .item-name { font-weight: 600; font-size: 1.05rem; flex: 1; }
+  .rank-item .badge { font-size: 0.75em; }
+  .rank-item.sortable-ghost { opacity: 0.4; }
+  .rank-item.sortable-chosen { border-color: #2c7be5; }
+  .rank-label { font-weight: 700; font-size: 0.85rem; color: #adb5bd; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rank-item-correct {
+    border: 3px solid #198754 !important;
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+  }
+  .rank-item-wrong {
+    border: 3px solid #dc3545 !important;
+    background-color: #f8d7da !important;
+    color: #842029 !important;
+  }
+  .rank-item-correct .drag-handle,
+  .rank-item-correct .badge,
+  .rank-item-wrong .drag-handle,
+  .rank-item-wrong .badge { color: inherit !important; }
+  .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+"
+
+# ---- Leaderboard JS (reuses acute quiz Google Form + Sheet) ----
+ranking_leaderboard_js <- "
+var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+var scoreSubmitted = false;
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  var btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
+function submitScore(score, total, difficulty, nQuestions) {
+  if (scoreSubmitted) return;
+  var btn = document.getElementById('submit_btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    btn.className = 'btn btn-secondary btn-lg';
+  }
+  var data = new URLSearchParams();
+  data.append('entry.335579146', score);
+  data.append('entry.2122920576', total);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.268026248', 'ranking');
+  data.append('entry.232879816', difficulty || '');
+  data.append('entry.2010782223', nQuestions || '');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Submitted!';
+      btn.className = 'btn btn-success btn-lg';
+    }
+    getPercentile(score, total, difficulty, nQuestions);
+  }).catch(function() {
+    scoreSubmitted = true;
+    if (btn) {
+      btn.textContent = 'Score saved locally';
+      btn.className = 'btn btn-info btn-lg';
+    }
+  });
+}
+var STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+function interpolatePercentile(scorePct, group) {
+  var p = group.percentiles;
+  var s = group.scores_pct;
+  for (var i = s.length - 1; i >= 0; i--) {
+    if (scorePct >= s[i]) return p[i];
+  }
+  return 0;
+}
+function getPercentile(score, total, difficulty, nQuestions) {
+  var pct = score / total * 100;
+  fetch(STATS_URL).then(function(r) {
+    if (!r.ok) throw new Error('stats unavailable');
+    return r.json();
+  }).then(function(stats) {
+    var data = stats.ranking;
+    if (!data) throw new Error('no ranking stats yet');
+    var overallPct = interpolatePercentile(pct, data.overall);
+    var msg = 'You scored better than ' + overallPct + '% of all ranking quiz players';
+    var configKey = (difficulty || 'mixed') + '_' + (nQuestions || 10);
+    var sub = data.by_config ? data.by_config[configKey] : null;
+    if (sub && sub.n >= 10) {
+      var subPct = interpolatePercentile(pct, sub);
+      msg += ' (' + subPct + '% of ' + difficulty + '/' + nQuestions + 'Q players)';
+    }
+    msg += '! (' + data.overall.n + ' submissions)';
+    var el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(function(err) {
+    console.log('Stats JSON fetch failed:', err, '- trying live Sheet');
+    getPercentileLive(score, total);
+  });
+}
+function getPercentileLive(score, total) {
+  var el = document.getElementById('percentile_text');
+  if (el) el.textContent = 'Loading rankings...';
+  fetch(SHEET_URL).then(function(r) { return r.text(); }).then(function(text) {
+    var json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\\(/, '').replace(/\\);$/, ''));
+    var rows = json.table.rows;
+    var pct = score / total * 100;
+    var below = 0;
+    var rankingCount = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var s = rows[i].c[0] ? rows[i].c[0].v : 0;
+      var t = rows[i].c[1] ? rows[i].c[1].v : 10;
+      var qt = rows[i].c[3] ? rows[i].c[3].v : 'acute';
+      if (qt !== 'ranking') continue;
+      rankingCount++;
+      if ((s / t * 100) < pct) below++;
+    }
+    var percentile = rankingCount > 0 ? Math.round(below / rankingCount * 100) : 50;
+    if (el) el.textContent = 'You scored better than ' + percentile + '% of ranking quiz players! (' + rankingCount + ' submissions)';
+  }).catch(function(err2) {
+    console.log('Live Sheet fetch also failed:', err2);
+    if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
+  });
+}
+"
+
+# ---- SortableJS initialization ----
+sortable_init_js <- "
+function initSortable() {
+  var el = document.getElementById('sortable_list');
+  if (!el) return;
+  if (el._sortable) el._sortable.destroy();
+  el._sortable = new Sortable(el, {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    handle: '.rank-item',
+    onEnd: function() { updateShinyOrder(); }
+  });
+}
+function updateShinyOrder() {
+  var el = document.getElementById('sortable_list');
+  if (!el) return;
+  var items = el.querySelectorAll('.rank-item');
+  var order = [];
+  for (var i = 0; i < items.length; i++) {
+    order.push(parseInt(items[i].getAttribute('data-item-id')));
+  }
+  Shiny.setInputValue('user_order', order);
+}
+function readCurrentOrder() {
+  updateShinyOrder();
+}
+"
+
+# ---- Kendall tau scoring (pure R, no package dependency) ----
+kendall_tau_score <- function(user_order, correct_order) {
+  k <- length(user_order)
+  max_pairs <- k * (k - 1L) / 2L
+  user_rank <- setNames(seq_along(user_order), user_order)
+  correct_rank <- setNames(seq_along(correct_order), correct_order)
+  items <- as.character(user_order)
+  n_discordant <- 0L
+  for (i in seq_len(k - 1L)) {
+    for (j in (i + 1L):k) {
+      a <- items[i]
+      b <- items[j]
+      user_agrees <- (user_rank[a] < user_rank[b]) == (correct_rank[a] < correct_rank[b])
+      if (!user_agrees) n_discordant <- n_discordant + 1L
+    }
+  }
+  n_concordant <- max_pairs - n_discordant
+  pct <- round(100 * n_concordant / max(max_pairs, 1L), 1)
+  list(score = n_concordant, max_score = max_pairs,
+       n_concordant = n_concordant, n_discordant = n_discordant, pct = pct)
+}
+
+# ---- Fun result phrases ----
+ranking_result_phrase <- function(pct) {
+  phrases <- list(
+    list(min = 95, phrase = "Risk ranking master!",
+         fact = "Combining acute and chronic risks onto one scale is the key insight of micromort/microlife theory.",
+         link = "https://en.wikipedia.org/wiki/Micromort"),
+    list(min = 90, phrase = "Superb risk intuition!",
+         fact = "Loss of Life Expectancy (LLE) lets us compare one-off and daily risks on the same scale.",
+         link = "https://en.wikipedia.org/wiki/Micromort"),
+    list(min = 80, phrase = "Impressive ordering!",
+         fact = "People systematically overestimate rare dramatic risks and underestimate common ones.",
+         link = "https://en.wikipedia.org/wiki/Risk_perception"),
+    list(min = 70, phrase = "Better than most!",
+         fact = "The availability heuristic makes us judge risk by how easily we recall examples.",
+         link = "https://en.wikipedia.org/wiki/Availability_heuristic"),
+    list(min = 60, phrase = "Getting there!",
+         fact = "Ranking risks correctly requires calibrating both magnitude and frequency.",
+         link = "https://en.wikipedia.org/wiki/Risk_assessment"),
+    list(min = 50, phrase = "About average!",
+         fact = "Even experts disagree on relative risk rankings in many domains.",
+         link = "https://en.wikipedia.org/wiki/Risk_communication"),
+    list(min = 30, phrase = "Tricky comparisons!",
+         fact = "Chronic daily habits can dwarf one-off acute risks when measured over a lifetime.",
+         link = "https://en.wikipedia.org/wiki/Microlife"),
+    list(min = -1, phrase = "Lots to discover!",
+         fact = "Understanding relative risk helps you focus on what actually matters.",
+         link = "https://en.wikipedia.org/wiki/Relative_risk")
+  )
+  for (p in phrases) {
+    if (pct >= p$min) return(p)
+  }
+  phrases[[length(phrases)]]
+}
+
+# ---- Encouragement lines ----
+ranking_encouragement_lines <- function() {
+  c(
+    "Can you sort risks better than your gut instinct?",
+    "Drag and drop your way to risk literacy.",
+    "One-off dangers vs daily habits: which matters more?",
+    "Your inner actuary wants to play. Let it.",
+    "Warning: your risk rankings may surprise you.",
+    "Micromorts meet microlives. Let the sorting begin.",
+    "Think you know what's dangerous? Prove it.",
+    "Some risks hide in plain sight. Can you spot them?"
+  )
+}
+
+# ---- LLE label helper ----
+lle_label <- function(lle_min) {
+  if (lle_min >= 1440) {
+    sprintf("%.1f days", lle_min / 1440)
+  } else if (lle_min >= 60) {
+    sprintf("%.1f hrs", lle_min / 60)
+  } else {
+    sprintf("%.1f min", lle_min)
+  }
+}
+
+# ---- Instructions page ----
+instructions_ui <- function() {
+  encouragement <- sample(ranking_encouragement_lines(), 1L)
+
+  # Get available tags from data
+  all_tags <- sort(unique(quiz_pool$tag))
+
+  tag_buttons <- lapply(all_tags, function(tag) {
+    tags$span(
+      class = "tag-btn selected",
+      onclick = sprintf("toggleTag(this, '%s')", tag),
+      `data-tag` = tag,
+      tag
+    )
+  })
+
+  tagList(
+    card(
+      card_body(
+        tags$ul(class = "mb-1",
+          tags$li("Each question shows ", tags$b(tags$em("3 or 4 risky activities or habits")), "."),
+          tags$li(tags$b(tags$em("Drag and drop")), " to rank them from ",
+                  tags$b("most dangerous"), " (top) to ",
+                  tags$b("least dangerous"), " (bottom)."),
+          tags$li("Risk is measured as ", tags$b(tags$em("Loss of Life Expectancy (LLE)")),
+                  " in minutes, combining both acute (micromort) and chronic (microlife) risks."),
+          tags$li("You can ", tags$b(tags$em("skip")), " questions or go ",
+                  tags$b(tags$em("back")), " and re-order."),
+          tags$li("Scoring uses ", tags$b(tags$em("Kendall tau")),
+                  ": each correctly ordered pair of items scores a point.")
+        ),
+        div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
+        div(class = "option-row",
+          span(class = "option-label", "Tags:"),
+          div(id = "tag_group", style = "display: flex; flex-wrap: wrap; gap: 4px;",
+              tag_buttons)
+        ),
+        div(class = "option-row",
+          span(class = "option-label", "Items per Q:"),
+          div(class = "option-btn-group", id = "grp_items",
+            actionButton("items_3", "3", class = "option-btn selected",
+              onclick = "selectInGroup('grp_items', this)"),
+            actionButton("items_4", "4", class = "option-btn",
+              onclick = "selectInGroup('grp_items', this)"))
+        ),
+        div(class = "option-row",
+          span(class = "option-label", "Questions:"),
+          div(class = "option-btn-group", id = "grp_nq",
+            actionButton("nq_5", "5", class = "option-btn",
+              onclick = "selectInGroup('grp_nq', this)"),
+            actionButton("nq_10", "10", class = "option-btn selected",
+              onclick = "selectInGroup('grp_nq', this)"))
+        ),
+        div(class = "text-center mt-3",
+            actionButton("start_quiz", "Start Quiz", class = "btn-primary btn-lg"))
+      )
+    )
+  )
+}
+
+# ---- Question page ----
+question_ui <- function(state) {
+  q <- state$current_q
+  n <- state$n_questions
+  q_data <- state$questions[[q]]
+  revealed <- state$revealed[q]
+  user_order <- state$user_orders[[q]]
+  items_k <- nrow(q_data)
+
+  # Display items in shuffled order (or user's current order if they've reordered)
+  display_data <- if (!is.null(user_order)) {
+    q_data[match(user_order, seq_len(items_k)), ]
+  } else {
+    q_data[state$display_order[[q]], ]
+  }
+
+  # Build rank items
+  if (!revealed) {
+    rank_items <- lapply(seq_len(items_k), function(i) {
+      row <- display_data[i, ]
+      item_id <- which(q_data$item_name == row$item_name)
+      source_badge <- if (row$item_source == "acute") {
+        tags$span(class = "badge bg-danger", "acute")
+      } else {
+        tags$span(class = "badge bg-info", "chronic")
+      }
+      tags$div(
+        class = "rank-item",
+        `data-item-id` = item_id,
+        tags$span(class = "drag-handle", "\u2630"),
+        tags$span(class = "item-name", format_activity_name(row$item_name)),
+        source_badge,
+        tags$span(class = "badge bg-secondary", row$category)
+      )
+    })
+  } else {
+    # After reveal: show correct order with green/red
+    correct_data <- q_data[order(q_data$correct_rank), ]
+    rank_items <- lapply(seq_len(items_k), function(i) {
+      row <- correct_data[i, ]
+      item_id <- which(q_data$item_name == row$item_name)
+      # Check if user had this item at rank i
+      user_rank_of_item <- if (!is.null(user_order)) {
+        which(user_order == item_id)
+      } else {
+        which(state$display_order[[q]] == item_id)
+      }
+      is_correct_pos <- (user_rank_of_item == i)
+      item_class <- if (is_correct_pos) "rank-item rank-item-correct" else "rank-item rank-item-wrong"
+      source_badge <- if (row$item_source == "acute") {
+        tags$span(class = "badge bg-danger", "acute")
+      } else {
+        tags$span(class = "badge bg-info", "chronic")
+      }
+      lle_text <- lle_label(row$lle_minutes)
+      user_pos_text <- if (!is_correct_pos) {
+        sprintf(" (you: #%d)", user_rank_of_item)
+      } else {
+        ""
+      }
+      tags$div(
+        class = item_class,
+        tags$span(class = "drag-handle",
+                  if (is_correct_pos) "\u2713" else "\u2717"),
+        tags$span(class = "item-name", format_activity_name(row$item_name)),
+        source_badge,
+        tags$span(class = "badge bg-secondary", row$category),
+        tags$span(class = "lle-reveal", paste0("LLE: ", lle_text, user_pos_text))
+      )
+    })
+  }
+
+  # Score tally
+  all_qs <- seq_len(n)
+  answered <- sum(state$revealed[all_qs])
+  total_concordant <- 0L
+  total_pairs <- 0L
+  for (i in all_qs) {
+    if (state$revealed[i] && !is.null(state$user_orders[[i]])) {
+      qd <- state$questions[[i]]
+      k <- nrow(qd)
+      correct_order <- order(qd$correct_rank)
+      result <- kendall_tau_score(state$user_orders[[i]], correct_order)
+      total_concordant <- total_concordant + result$n_concordant
+      total_pairs <- total_pairs + result$max_score
+    }
+  }
+  tally_text <- sprintf("Score: %d/%d pairs", total_concordant, total_pairs)
+
+  # Submit / revealed status
+  action_btn <- if (!revealed) {
+    actionButton("submit_order", "Submit Order", class = "btn-warning btn-lg",
+      onclick = "readCurrentOrder()")
+  } else {
+    NULL
+  }
+
+  nav_ui <- div(
+    class = "d-flex justify-content-between align-items-center mb-3",
+    actionButton("prev_q", "\u2190 Back", class = "btn-secondary"),
+    span(class = "text-muted",
+      sprintf("%d of %d", q, n),
+      " \u00b7 ", tags$small(tally_text)),
+    actionButton("next_q", if (q == n) "Finish" else "Next \u2192", class = "btn-primary")
+  )
+
+  result_text <- NULL
+  if (revealed && !is.null(state$user_orders[[q]])) {
+    qd <- state$questions[[q]]
+    correct_order <- order(qd$correct_rank)
+    result <- kendall_tau_score(state$user_orders[[q]], correct_order)
+    if (result$pct >= 100) {
+      result_text <- div(class = "alert alert-success text-center mt-2 py-2",
+                         strong("Perfect order!"))
+    } else if (result$pct >= 50) {
+      result_text <- div(class = "alert alert-info text-center mt-2 py-2",
+                         sprintf("Kendall tau: %s%% (%d/%d pairs correct)",
+                                 result$pct, result$n_concordant, result$max_score))
+    } else {
+      result_text <- div(class = "alert alert-warning text-center mt-2 py-2",
+                         sprintf("Kendall tau: %s%% (%d/%d pairs correct)",
+                                 result$pct, result$n_concordant, result$max_score))
+    }
+  }
+
+  tagList(
+    nav_ui,
+    div(class = "rank-label mb-1", "\u2191 Most dangerous"),
+    if (!revealed) {
+      tags$div(id = "sortable_list", class = "rank-container", rank_items)
+    } else {
+      tags$div(class = "rank-container", rank_items)
+    },
+    div(class = "rank-label mt-1", "\u2193 Least dangerous"),
+    if (!is.null(action_btn)) div(class = "text-center mt-3", action_btn),
+    result_text,
+    if (!revealed) {
+      tags$script(HTML("setTimeout(initSortable, 100);"))
+    }
+  )
+}
+
+# ---- Results summary page ----
+results_summary_ui <- function(state) {
+  n <- state$n_questions
+
+  # Compute overall score
+  total_concordant <- 0L
+  total_pairs <- 0L
+  per_q_pcts <- numeric(n)
+  for (i in seq_len(n)) {
+    if (!is.null(state$user_orders[[i]])) {
+      qd <- state$questions[[i]]
+      correct_order <- order(qd$correct_rank)
+      result <- kendall_tau_score(state$user_orders[[i]], correct_order)
+      total_concordant <- total_concordant + result$n_concordant
+      total_pairs <- total_pairs + result$max_score
+      per_q_pcts[i] <- result$pct
+    } else {
+      per_q_pcts[i] <- 0
+    }
+  }
+
+  overall_pct <- if (total_pairs > 0) round(100 * total_concordant / total_pairs, 1) else 0
+  result_info <- ranking_result_phrase(overall_pct)
+
+  tagList(
+    h2("Results", class = "text-center mb-4"),
+    div(class = "row mb-4",
+      div(class = "col-6",
+        div(class = "card text-white bg-primary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Kendall Tau"), h2(sprintf("%.1f%%", overall_pct), class = "mb-0"),
+            tags$small(sprintf("%d/%d pairs", total_concordant, total_pairs))))),
+      div(class = "col-6",
+        div(class = "card text-white bg-secondary mb-3",
+          div(class = "card-body text-center",
+            tags$small("Random Guessing"), h2("~50%", class = "mb-0"),
+            tags$small("expected by chance"))))
+    ),
+    div(class = "text-center mb-4",
+      h3(result_info$phrase),
+      tags$em(result_info$fact), br(),
+      tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
+    div(class = "d-flex justify-content-center gap-3",
+      tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
+        onclick = sprintf("submitScore(%d, %d, '%s', %d)",
+                          total_concordant, total_pairs,
+                          state$sel_difficulty, state$sel_nq),
+        "Submit Score"),
+      tags$button(id = "share_btn", class = "btn btn-success btn-lg",
+        onclick = sprintf(paste0(
+          "var pEl=document.getElementById('percentile_text');",
+          "var pLine=pEl&&pEl.textContent?'\\n'+pEl.textContent+'\\n':'\\n';",
+          "var text='\\ud83c\\udfaf Ranking Quiz: Kendall tau %.1f%%!'+pLine+",
+          "'Rank risks from most to least dangerous.\\n",
+          "Can you beat my score? \\ud83c\\udfaf\\n",
+          "https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html';",
+          "navigator.clipboard.writeText(text).then(function(){",
+          "var btn=document.getElementById('share_btn');",
+          "btn.textContent='Copied!';",
+          "setTimeout(function(){btn.textContent='Share';},2000);",
+          "});"), overall_pct),
+        "Share"),
+      actionButton("view_details", "View Details", class = "btn-outline-primary btn-lg"),
+      actionButton("try_again", "Try Again", class = "btn-primary btn-lg",
+        onclick = "resetLeaderboard()")
+    ),
+    div(class = "text-center mt-2",
+      tags$small(id = "percentile_text", class = "text-muted"),
+      tags$br(),
+      tags$small(class = "text-muted", "Scores are anonymous. No personal data is collected."))
+  )
+}
+
+# ---- Results detail page ----
+results_detail_ui <- function(state) {
+  n <- state$n_questions
+
+  detail_rows <- lapply(seq_len(n), function(i) {
+    qd <- state$questions[[i]]
+    correct_order <- order(qd$correct_rank)
+    user_ord <- state$user_orders[[i]]
+    if (is.null(user_ord)) {
+      result <- list(pct = 0, n_concordant = 0, max_score = nrow(qd) * (nrow(qd) - 1) / 2)
+      user_names <- "Skipped"
+    } else {
+      result <- kendall_tau_score(user_ord, correct_order)
+      user_names <- paste(qd$item_name[user_ord], collapse = " > ")
+    }
+    correct_names <- paste(qd$item_name[correct_order], collapse = " > ")
+    lle_texts <- paste(sprintf("%s (%.0f min)", qd$item_name[correct_order],
+                               qd$lle_minutes[correct_order]), collapse = " > ")
+    tags$tr(
+      tags$td(i),
+      tags$td(style = "max-width: 300px; white-space: normal;", user_names),
+      tags$td(style = "max-width: 300px; white-space: normal;", correct_names),
+      tags$td(sprintf("%d/%d", result$n_concordant, result$max_score)),
+      tags$td(sprintf("%.0f%%", result$pct))
+    )
+  })
+
+  tagList(
+    div(class = "d-flex justify-content-between align-items-center mb-4",
+      actionButton("back_to_summary", "\u2190 Back to Results", class = "btn-secondary"),
+      h3("Your quiz details", class = "mb-0"),
+      actionButton("try_again_detail", "Try Again", class = "btn-primary",
+        onclick = "resetLeaderboard()")),
+    div(class = "detail-scroll",
+      tags$table(class = "table table-striped table-hover detail-table",
+        tags$thead(tags$tr(tags$th("Q"), tags$th("Your Order"),
+                           tags$th("Correct Order"),
+                           tags$th("Pairs"), tags$th("Score"))),
+        tags$tbody(detail_rows)))
+  )
+}
+
+# ---- App ----
+ui <- page_fluid(
+  theme = bs_theme(bootswatch = "flatly", version = 5),
+  tags$head(
+    tags$script(src = "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"),
+    tags$style(HTML(quiz_css)),
+    tags$script(HTML(ranking_leaderboard_js)),
+    tags$script(HTML(sortable_init_js)),
+    tags$script(HTML("
+      function selectInGroup(groupId, clicked) {
+        var grp = document.getElementById(groupId);
+        if (!grp) return;
+        var btns = grp.querySelectorAll('.option-btn');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].classList.remove('selected');
+        }
+        clicked.classList.add('selected');
+      }
+      var selectedTags = {};
+      function toggleTag(el, tag) {
+        if (el.classList.contains('selected')) {
+          el.classList.remove('selected');
+          delete selectedTags[tag];
+        } else {
+          el.classList.add('selected');
+          selectedTags[tag] = true;
+        }
+        Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+      }
+      // Initialize all tags as selected
+      document.addEventListener('DOMContentLoaded', function() {
+        var tagBtns = document.querySelectorAll('.tag-btn');
+        for (var i = 0; i < tagBtns.length; i++) {
+          selectedTags[tagBtns[i].getAttribute('data-tag')] = true;
+        }
+      });
+    "))
+  ),
+  div(class = "container-fluid",
+      style = "max-width: 100%; padding: 20px;",
+      uiOutput("main_ui"))
+)
+
+server <- function(input, output, session) {
+  state <- reactiveValues(
+    phase = "instructions", n_questions = 10L, current_q = 1L,
+    questions = NULL, user_orders = NULL, display_order = NULL,
+    revealed = NULL, sel_difficulty = "mixed", sel_nq = 10L,
+    sel_items_per_q = 3L, seen_questions = character())
+
+  # N questions button handlers
+  observeEvent(input$nq_5, { state$sel_nq <- 5L })
+  observeEvent(input$nq_10, { state$sel_nq <- 10L })
+  # Items per question
+  observeEvent(input$items_3, { state$sel_items_per_q <- 3L })
+  observeEvent(input$items_4, { state$sel_items_per_q <- 4L })
+
+  observeEvent(input$start_quiz, {
+    n <- state$sel_nq
+    items_k <- state$sel_items_per_q
+
+    # Filter pool by items_per_question (3 = q_ids 1-50, 4 = q_ids 51-80)
+    # Count items per question_id to determine k
+    q_sizes <- tapply(quiz_pool$item_name, quiz_pool$question_id, length)
+    valid_qids <- as.integer(names(q_sizes[q_sizes == items_k]))
+
+    # Filter by selected tags if any
+    sel_tags <- input$selected_tags
+    if (!is.null(sel_tags) && length(sel_tags) > 0) {
+      tagged_rows <- quiz_pool$tag %in% sel_tags
+      tagged_qids <- unique(quiz_pool$question_id[tagged_rows])
+      valid_qids <- intersect(valid_qids, tagged_qids)
+    }
+
+    pool_qids <- valid_qids
+
+    # Exclude previously seen questions
+    unseen <- !(pool_qids %in% state$seen_questions)
+    if (sum(unseen) >= n) {
+      pool_qids <- pool_qids[unseen]
+    } else {
+      state$seen_questions <- character()
+    }
+
+    n <- min(n, length(pool_qids))
+    if (n == 0) {
+      # Fallback: use all questions of this size
+      q_sizes <- tapply(quiz_pool$item_name, quiz_pool$question_id, length)
+      pool_qids <- as.integer(names(q_sizes[q_sizes == items_k]))
+      n <- min(state$sel_nq, length(pool_qids))
+    }
+
+    selected_qids <- sample(pool_qids, n)
+    state$seen_questions <- c(state$seen_questions, as.character(selected_qids))
+
+    state$n_questions <- n
+    state$questions <- lapply(selected_qids, function(qid) {
+      quiz_pool[quiz_pool$question_id == qid, ]
+    })
+    state$user_orders <- vector("list", n)
+    state$display_order <- lapply(seq_len(n), function(i) {
+      sample(seq_len(nrow(state$questions[[i]])))
+    })
+    state$revealed <- rep(FALSE, n)
+    state$current_q <- 1L
+    state$phase <- "question"
+  })
+
+  observeEvent(input$submit_order, {
+    q <- state$current_q
+    user_ord <- input$user_order
+    if (!is.null(user_ord) && length(user_ord) > 0) {
+      state$user_orders[[q]] <- as.integer(user_ord)
+      state$revealed[q] <- TRUE
+    }
+  })
+
+  observeEvent(input$next_q, {
+    q <- state$current_q
+    # Auto-submit if not revealed yet (user didn't click Submit)
+    if (!state$revealed[q]) {
+      user_ord <- input$user_order
+      if (!is.null(user_ord) && length(user_ord) > 0) {
+        state$user_orders[[q]] <- as.integer(user_ord)
+      } else {
+        # Use display order as default
+        state$user_orders[[q]] <- state$display_order[[q]]
+      }
+      state$revealed[q] <- TRUE
+    }
+    if (state$current_q < state$n_questions) {
+      state$current_q <- state$current_q + 1L
+    } else {
+      state$phase <- "results_summary"
+    }
+  })
+  observeEvent(input$prev_q, {
+    if (state$current_q > 1L) state$current_q <- state$current_q - 1L
+    else state$phase <- "instructions"
+  })
+  observeEvent(input$view_details, { state$phase <- "results_detail" })
+  observeEvent(input$back_to_summary, { state$phase <- "results_summary" })
+  observeEvent(input$try_again, { state$phase <- "instructions" })
+  observeEvent(input$try_again_detail, { state$phase <- "instructions" })
+
+  output$main_ui <- renderUI({
+    switch(state$phase,
+      instructions = instructions_ui(),
+      question = question_ui(state),
+      results_summary = results_summary_ui(state),
+      results_detail = results_detail_ui(state))
+  })
+}
+
+shinyApp(ui, server)
+
+## file: ranking_questions.csv
+## type: text
+"question_id","tag","item_name","item_source","lle_minutes","micromorts","microlives_per_day","category","description","help_url","correct_rank","difficulty"
+1,"Diet & Drink","5 servings fruit/veg","chronic",120,NA,4,"Diet","Daily fruit and vegetable intake reduces cardiovascular disease, cancer, and all-cause mortality. Largest benefit from 5+ servings.","https://en.wikipedia.org/wiki/Five_A_Day",1,"medium"
+1,"Diet & Drink","4th-5th alcoholic drink","chronic",60,NA,-2,"Alcohol","Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","https://en.wikipedia.org/wiki/Alcohol_and_health",2,"medium"
+1,"Disease","COVID-19 monovalent vaccine (age 18-49)","acute",4.20768,0.2,NA,"COVID-19","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"medium"
+2,"Travel","Motorcycling (60 miles)","acute",210.384,10,NA,"Travel","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety",1,"medium"
+2,"Sport & Adventure","Scuba diving, trained (per dive)","acute",105.192,5,NA,"Sport","Single-dive risk for trained divers from decompression sickness and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving",2,"medium"
+2,"Radiation","Airline pilot (annual radiation)","acute",3.15576,0.15,NA,"Occupation","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot",3,"medium"
+3,"Lifestyle","Living (one day, age 50)","acute",84.1536,4,NA,"Daily Life","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate",1,"medium"
+3,"Radiation","Barium enema (radiation per scan)","acute",63.1152,3,NA,"Medical","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema",2,"medium"
+3,"Radiation","High-altitude resident (annual cosmic)","acute",0.736344,0.035,NA,"Environment","Living above 2,000m increases cosmic radiation exposure compared to sea level.","https://en.wikipedia.org/wiki/Cosmic_ray",3,"medium"
+4,"Lifestyle","Living (one day, age 30)","acute",21.0384,1,NA,"Daily Life","Daily mortality at age 30 is similar to age 20 with slightly more disease contribution.","https://en.wikipedia.org/wiki/Mortality_rate",1,"medium"
+4,"Sport & Adventure","Horse riding","acute",10.5192,0.5,NA,"Sport","Falls from horseback can cause traumatic brain and spinal injuries.","https://en.wikipedia.org/wiki/Equestrianism",2,"medium"
+4,"Disease","Bee/wasp sting (general)","acute",0.631152,0.03,NA,"Wildlife","Bee or wasp sting fatality risk for non-allergic individuals.","https://en.wikipedia.org/wiki/Bee_sting",3,"medium"
+5,"Sport & Adventure","Mt. Everest ascent","acute",798028.5888,37932,NA,"Mountaineering","At 8,849m, extreme altitude, weather, and avalanche risk make Everest the deadliest common mountaineering objective.","https://en.wikipedia.org/wiki/Mount_Everest",1,"easy"
+5,"Lifestyle","Living (one day, age 75)","acute",2209.032,105,NA,"Daily Life","Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate",2,"easy"
+5,"Sport & Adventure","Skydiving (US)","acute",168.3072,8,NA,"Sport","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving",3,"easy"
+6,"Sport & Adventure","American football","acute",420.768,20,NA,"Sport","Contact sport risk from traumatic injury including spinal and head trauma.","https://en.wikipedia.org/wiki/American_football",1,"hard"
+6,"Disease","Living in Maryland COVID-19 (Mar-May 2020)","acute",147.2688,7,NA,"COVID-19","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland",2,"hard"
+6,"Travel","Flying (8h long-haul)","acute",82.04976,3.9,NA,"Travel","Long-haul flights have significant DVT risk, especially for those with risk factors.","https://en.wikipedia.org/wiki/Economy_class_syndrome",3,"hard"
+7,"Workplace","Mining (per work day)","acute",18.93456,0.9,NA,"Occupation","Roof collapse, gas explosion, and heavy equipment hazards in underground and surface mining.","https://www.bls.gov/iif/fatal-injuries-tables.htm",1,"hard"
+7,"Radiation","Dental X-ray (radiation per scan)","acute",1.05192,0.05,NA,"Medical","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography",2,"hard"
+7,"Radiation","X-ray technician (annual radiation)","acute",1.05192,0.05,NA,"Occupation","Occupational radiation exposure mitigated by lead shielding and ALARA protocols.","https://en.wikipedia.org/wiki/Radiographer",3,"hard"
+8,"Lifestyle","Living (one day, age 90)","acute",9740.7792,463,NA,"Daily Life","Daily background mortality risk at age 90 reflects accumulated physiological decline.","https://en.wikipedia.org/wiki/Mortality_rate",1,"easy"
+8,"Diet & Drink","Low fiber diet","chronic",30,NA,-1,"Diet","Less than 25 g fiber daily increases colorectal cancer risk and is associated with higher cardiovascular mortality.","https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects",2,"easy"
+8,"Sport & Adventure","2 hours TV watching","chronic",30,NA,-1,"Sedentary","Prolonged sedentary behaviour (sitting/lying) increases cardiovascular mortality independent of exercise. TV time is a proxy for total sitting.","https://en.wikipedia.org/wiki/Sedentary_lifestyle",3,"easy"
+9,"Medical","Caesarean birth (mother)","acute",3576.528,170,NA,"Medical","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section",1,"easy"
+9,"Disease","COVID-19 bivalent booster (all ages)","acute",21.0384,1,NA,"COVID-19","Population-average residual COVID-19 risk after bivalent booster vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"easy"
+9,"Radiation","Nuclear plant worker (annual radiation)","acute",2.10384,0.1,NA,"Occupation","Controlled occupational exposure within regulatory limits using dosimetry and shielding.","https://en.wikipedia.org/wiki/Nuclear_power_plant",3,"easy"
+10,"Sport & Adventure","Himalayan mountaineering","acute",252460.8,12000,NA,"Mountaineering","Expeditions to 8,000m+ peaks carry extreme risk from altitude sickness, avalanches, and exposure.","https://en.wikipedia.org/wiki/Eight-thousander",1,"easy"
+10,"Travel","Driving (230 miles)","acute",21.0384,1,NA,"Travel","Traffic fatality risk for a typical 230-mile car journey.","https://en.wikipedia.org/wiki/Traffic_collision",2,"easy"
+10,"Workplace","All US workers baseline (per work day)","acute",3.15576,0.15,NA,"Occupation","Average occupational fatality rate across all US industries; baseline for comparison.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"easy"
+11,"Sport & Adventure","Base jumping (per jump)","acute",9046.512,430,NA,"Sport","Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","https://en.wikipedia.org/wiki/BASE_jumping",1,"easy"
+11,"Disease","COVID-19 unvaccinated (all ages)","acute",420.768,20,NA,"COVID-19","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"easy"
+11,"Travel","Train (1000 miles)","acute",21.0384,1,NA,"Travel","Rail travel is one of the safest transport modes per mile.","https://en.wikipedia.org/wiki/Rail_transport",3,"easy"
+12,"Radiation","CT scan abdomen (radiation per scan)","acute",210.384,10,NA,"Medical","Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","https://en.wikipedia.org/wiki/CT_scan",1,"medium"
+12,"Diet & Drink","First alcoholic drink","chronic",30,NA,1,"Alcohol","Moderate alcohol intake (1 drink/day) shows a J-shaped mortality curve, with possible protective cardiovascular effects.","https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease",2,"medium"
+12,"Disease","Kangaroo encounter","acute",2.10384,0.1,NA,"Wildlife","Vehicle collisions with kangaroos cause fatalities in rural Australia.","https://en.wikipedia.org/wiki/Kangaroo",3,"medium"
+13,"Disease","COVID-19 infection (unvaccinated)","acute",210384,10000,NA,"COVID-19","Unvaccinated COVID-19 infection carries substantial mortality risk, especially for older adults.","https://en.wikipedia.org/wiki/COVID-19",1,"easy"
+13,"Lifestyle","First day of life (newborn)","acute",9046.512,430,NA,"Daily Life","The first 24 hours carry elevated risk from birth complications and congenital conditions.","https://en.wikipedia.org/wiki/Neonatal_death",2,"easy"
+13,"Diet & Drink","High fiber diet","chronic",60,NA,2,"Diet","25 g+ fiber daily from whole grains, fruit, and vegetables reduces colorectal cancer, cardiovascular disease, and type 2 diabetes.","https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects",3,"easy"
+14,"Disease","Living in US during COVID-19 (Jul 2020)","acute",10519.2,500,NA,"COVID-19","Peak US COVID-19 mortality before vaccines were available.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States",1,"easy"
+14,"Lifestyle","Taking a bath","acute",1.472688,0.07,NA,"Daily Life","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning",2,"easy"
+14,"Disease","Shark encounter (ocean swim)","acute",1.262304,0.06,NA,"Wildlife","Shark attack fatality risk per ocean swim, based on ISAF incident data.","https://www.floridamuseum.ufl.edu/shark-attacks/",3,"easy"
+15,"Radiation","CT scan chest (radiation per scan)","acute",147.2688,7,NA,"Medical","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan",1,"hard"
+15,"Lifestyle","Being 10 kg overweight","chronic",60,NA,-2,"Weight","Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",2,"hard"
+15,"Diet & Drink","Drinking a glass of wine","acute",10.5192,0.5,NA,"Daily Life","Acute alcohol effects including impaired judgment and cardiovascular stress.","https://en.wikipedia.org/wiki/Alcohol_(drug)",3,"hard"
+16,"Lifestyle","Smoking 20 cigarettes","chronic",300,NA,-10,"Smoking","A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",1,"hard"
+16,"Lifestyle","Being 15 kg overweight","chronic",90,NA,-3,"Weight","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",2,"hard"
+16,"Sport & Adventure","20 min moderate exercise","chronic",60,NA,2,"Exercise","Daily brisk walking or equivalent moderate activity reduces all-cause mortality by ~30%. The single most effective lifestyle intervention.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",3,"hard"
+17,"Sport & Adventure","Scuba diving, trained (yearly)","acute",3450.2976,164,NA,"Sport","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving",1,"medium"
+17,"Lifestyle","High LDL cholesterol (untreated)","chronic",60,NA,-2,"Cardiovascular","LDL > 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease",2,"medium"
+17,"Diet & Drink","2nd-3rd alcoholic drink","chronic",30,NA,-1,"Alcohol","After the first drink's potential protective effect, the second and third drinks increase liver disease and accident risk.","https://en.wikipedia.org/wiki/Alcohol_and_health",3,"medium"
+18,"Medical","Night in hospital","acute",1577.88,75,NA,"Medical","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection",1,"medium"
+18,"Lifestyle","Type 2 diabetes (poorly controlled)","chronic",90,NA,-3,"Cardiovascular","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes",2,"medium"
+18,"Lifestyle","Living 2 months with a smoker","acute",21.0384,1,NA,"Environment","Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","https://en.wikipedia.org/wiki/Passive_smoking",3,"medium"
+19,"Disease","Living in NYC COVID-19 (Mar-May 2020)","acute",1051.92,50,NA,"COVID-19","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City",1,"easy"
+19,"Lifestyle","Living (one day, age 20)","acute",21.0384,1,NA,"Daily Life","Daily background mortality at age 20 is dominated by accidents and violence.","https://en.wikipedia.org/wiki/Mortality_rate",2,"easy"
+19,"Radiation","Mammogram (radiation per scan)","acute",2.10384,0.1,NA,"Medical","Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","https://en.wikipedia.org/wiki/Mammography",3,"easy"
+20,"Disease","COVID-19 unvaccinated (age 80+)","acute",4922.9856,234,NA,"COVID-19","Unvaccinated elderly face the highest COVID-19 mortality rates.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"easy"
+20,"Sport & Adventure","Skydiving (UK)","acute",168.3072,8,NA,"Sport","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving",2,"easy"
+20,"Lifestyle","Being 5 kg overweight","chronic",30,NA,-1,"Weight","Each 5 kg above optimum BMI increases risk of type 2 diabetes, cardiovascular disease, and several cancers.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",3,"easy"
+21,"Lifestyle","Living (one day, under age 1)","acute",315.576,15,NA,"Daily Life","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality",1,"easy"
+21,"Lifestyle","Untreated hypertension","chronic",120,NA,-4,"Cardiovascular","Systolic BP > 140 mmHg left untreated is the leading modifiable risk factor for stroke, heart attack, and kidney disease.","https://en.wikipedia.org/wiki/Hypertension",2,"easy"
+21,"Lifestyle","Crossing a road","acute",0.420768,0.02,NA,"Daily Life","Pedestrian collision risk at a single road crossing.","https://en.wikipedia.org/wiki/Pedestrian",3,"easy"
+22,"Disease","COVID-19 monovalent vaccine (age 80+)","acute",1157.112,55,NA,"COVID-19","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"easy"
+22,"Workplace","Roofing (per work day)","acute",39.97296,1.9,NA,"Occupation","Falls from height are the primary cause of roofing fatalities.","https://www.bls.gov/iif/fatal-injuries-tables.htm",2,"easy"
+22,"Radiation","Dental radiographer (annual radiation)","acute",0.210384,0.01,NA,"Occupation","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography",3,"easy"
+23,"Lifestyle","Smoking 10 cigarettes","chronic",150,NA,-5,"Smoking","Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",1,"easy"
+23,"Diet & Drink","2-3 cups coffee (men)","chronic",30,NA,-1,"Diet","Heavy coffee consumption in men shows a small mortality association, though the evidence is mixed and coffee also has protective effects.","https://en.wikipedia.org/wiki/Health_effects_of_coffee",2,"easy"
+23,"Radiation","Annual tourist flyer (annual cosmic)","acute",0.1262304,0.006,NA,"Travel","Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","https://en.wikipedia.org/wiki/Cosmic_ray",3,"easy"
+24,"Medical","Vaginal birth (mother)","acute",2524.608,120,NA,"Medical","Maternal mortality risk from hemorrhage, infection, and eclampsia during vaginal delivery.","https://en.wikipedia.org/wiki/Maternal_death",1,"medium"
+24,"Disease","Low physical activity","chronic",30,NA,-1,"Cancer","Less than 150 minutes of moderate exercise per week increases cancer risk (colon, breast, endometrial) by 20-30%.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",2,"medium"
+24,"Disease","Excessive alcohol (cancer)","chronic",30,NA,-1,"Cancer","More than 2 drinks/day increases risk of mouth, throat, oesophageal, liver, breast, and colorectal cancers.","https://en.wikipedia.org/wiki/Alcohol_and_cancer",3,"medium"
+25,"Sport & Adventure","Matterhorn ascent","acute",59749.056,2840,NA,"Mountaineering","One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","https://en.wikipedia.org/wiki/Matterhorn",1,"easy"
+25,"Sport & Adventure","Sitting 8+ hours/day","chronic",60,NA,-2,"Sedentary","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle",2,"easy"
+25,"Disease","Snake bite (US, with antivenom)","acute",10.5192,0.5,NA,"Wildlife","Snake bite fatality risk in the US where antivenom is readily available.","https://en.wikipedia.org/wiki/Snakebite",3,"easy"
+26,"Sport & Adventure","Swimming","acute",252.4608,12,NA,"Sport","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning",1,"hard"
+26,"Disease","Dog bite (US)","acute",140.95728,6.7,NA,"Wildlife","Dog bite fatality risk in a high-income setting with rabies PEP available.","https://en.wikipedia.org/wiki/Dog_bite",2,"hard"
+26,"Disease","COVID-19 monovalent vaccine (age 50-64)","acute",42.0768,2,NA,"COVID-19","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"hard"
+27,"Sport & Adventure","Running a marathon","acute",147.2688,7,NA,"Sport","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon",1,"hard"
+27,"Diet & Drink","Red meat (1 portion/day)","chronic",30,NA,-1,"Diet","Daily red meat consumption is associated with increased colorectal cancer and cardiovascular disease risk.","https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat",2,"hard"
+27,"Sport & Adventure","Skiing","acute",14.72688,0.7,NA,"Sport","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing",3,"hard"
+28,"Sport & Adventure","Hang gliding (per flight)","acute",168.3072,8,NA,"Sport","Unpowered flight with risk from turbulence, structural failure, and pilot error.","https://en.wikipedia.org/wiki/Hang_gliding",1,"hard"
+28,"Travel","Flying (12h ultra-long-haul)","acute",138.85344,6.6,NA,"Travel","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome",2,"hard"
+28,"Diet & Drink","Eating 1000 bananas (radiation)","acute",21.0384,1,NA,"Diet","Cumulative potassium-40 radiation dose from 1000 bananas equals roughly 1 micromort.","https://en.wikipedia.org/wiki/Banana_equivalent_dose",3,"hard"
+29,"Travel","Flying (2h short-haul)","acute",23.14224,1.1,NA,"Travel","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety",1,"hard"
+29,"Disease","COVID-19 bivalent booster (age 50-64)","acute",21.0384,1,NA,"COVID-19","Bivalent-boosted 50-64 year-olds had very low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"hard"
+29,"Radiation","Frequent executive flyer (annual cosmic)","acute",3.15576,0.15,NA,"Travel","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray",3,"hard"
+30,"Disease","Spanish flu infection","acute",63115.2,3000,NA,"Disease","The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","https://en.wikipedia.org/wiki/Spanish_flu",1,"easy"
+30,"Travel","Commuting by bicycle (30 min)","acute",10.5192,0.5,NA,"Travel","Cycling commute with risk from traffic collisions and exertion-related events.","https://en.wikipedia.org/wiki/Bicycle_safety",2,"easy"
+30,"Diet & Drink","Cup of coffee","acute",0.210384,0.01,NA,"Daily Life","Extremely low acute risk; caffeine-related cardiac events are vanishingly rare.","https://en.wikipedia.org/wiki/Coffee",3,"easy"
+31,"Sport & Adventure","150 min weekly exercise","chronic",90,NA,3,"Exercise","Meeting WHO physical activity guidelines reduces cardiovascular, cancer, and all-cause mortality substantially.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",1,"medium"
+31,"Diet & Drink","Processed meat (1 portion/day)","chronic",30,NA,-1,"Diet","Bacon, sausages, ham, etc. classified as Group 1 carcinogens by IARC. Strongest evidence for colorectal cancer.","https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat",2,"medium"
+31,"Radiation","Interventional cardiologist (annual radiation)","acute",3.68172,0.175,NA,"Occupation","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology",3,"medium"
+32,"Medical","General anesthesia (emergency)","acute",210.384,10,NA,"Medical","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia",1,"hard"
+32,"Lifestyle","Family history of heart disease","chronic",60,NA,-2,"Cardiovascular","First-degree relative with CVD before age 55 roughly doubles your own cardiovascular risk.","https://en.wikipedia.org/wiki/Cardiovascular_disease#Risk_factors",2,"hard"
+32,"Workplace","Agriculture (per work day)","acute",14.72688,0.7,NA,"Occupation","Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"hard"
+33,"Sport & Adventure","Skydiving (per jump)","acute",210.384,10,NA,"Sport","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving",1,"hard"
+33,"Workplace","Logging (per work day)","acute",69.42672,3.3,NA,"Occupation","Highest US occupational fatality rate; hazards include falling trees, chainsaw injuries, and terrain.","https://www.bls.gov/iif/fatal-injuries-tables.htm",2,"hard"
+33,"Lifestyle","Smoking 2 cigarettes","chronic",30,NA,-1,"Smoking","Even light smoking (2 cigarettes/day) carries measurable cardiovascular and cancer risk. Each cigarette costs roughly 15 minutes of life.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",3,"hard"
+34,"Disease","COVID-19 unvaccinated (age 65-79)","acute",1598.9184,76,NA,"COVID-19","Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"medium"
+34,"Radiation","CT scan head (radiation per scan)","acute",42.0768,2,NA,"Medical","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan",2,"medium"
+34,"Workplace","Structural iron/steel work (per work day)","acute",31.5576,1.5,NA,"Occupation","Working at height on building frames with fall and struck-by hazards.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"medium"
+35,"Diet & Drink","Eating 100 charbroiled steaks","acute",21.0384,1,NA,"Diet","Polycyclic aromatic hydrocarbons from charring are carcinogenic at high cumulative doses.","https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon",1,"medium"
+35,"Radiation","Normal background radiation","acute",2.524608,0.12,NA,"Environment","Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","https://en.wikipedia.org/wiki/Background_radiation",2,"medium"
+35,"Lifestyle","Working in an office (8 hours)","acute",0.631152,0.03,NA,"Daily Life","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate",3,"medium"
+36,"Radiation","Coronary angiogram (radiation per scan)","acute",105.192,5,NA,"Medical","Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","https://en.wikipedia.org/wiki/Coronary_catheterization",1,"medium"
+36,"Travel","Flying (5h medium-haul)","acute",36.8172,1.75,NA,"Travel","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety",2,"medium"
+36,"Travel","Commuting by car (30 min)","acute",2.734992,0.13,NA,"Travel","Short car commute with crash risk from traffic collisions.","https://en.wikipedia.org/wiki/Traffic_collision",3,"medium"
+37,"Workplace","Commercial fishing (per work day)","acute",63.1152,3,NA,"Occupation","Extreme weather, vessel sinking, and deck machinery make fishing one of the deadliest occupations.","https://www.bls.gov/iif/fatal-injuries-tables.htm",1,"medium"
+37,"Radiation","Chest X-ray (radiation per scan)","acute",2.10384,0.1,NA,"Medical","Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","https://en.wikipedia.org/wiki/Chest_radiograph",2,"medium"
+37,"Radiation","Granite resident (annual radon)","acute",2.10384,0.1,NA,"Environment","Radon gas seeps from granite bedrock into homes; mitigable with ventilation.","https://en.wikipedia.org/wiki/Radon",3,"medium"
+38,"Disease","COVID-19 monovalent vaccine (age 65-79)","acute",189.3456,9,NA,"COVID-19","Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"hard"
+38,"Medical","Blood pressure control","chronic",60,NA,2,"Medical","Achieving target BP < 130/80 mmHg through medication and lifestyle reduces stroke risk by 35-40%.","https://en.wikipedia.org/wiki/Antihypertensive_drug",2,"hard"
+38,"Workplace","Truck driving (per work day)","acute",25.24608,1.2,NA,"Occupation","Long hours and highway driving make truck driving a high-fatality occupation by total deaths.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"hard"
+39,"Disease","COVID-19 unvaccinated (age 50-64)","acute",168.3072,8,NA,"COVID-19","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"hard"
+39,"Diet & Drink","Mediterranean diet","chronic",60,NA,2,"Diet","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet",2,"hard"
+39,"Travel","Walking (20 miles)","acute",21.0384,1,NA,"Travel","Pedestrian fatality risk from traffic collisions over a 20-mile walk.","https://en.wikipedia.org/wiki/Pedestrian",3,"hard"
+40,"Lifestyle","Chronic stress/poor sleep","chronic",30,NA,-1,"Mental Health","Chronic stress and sleep deprivation elevate cortisol, drive inflammation, and increase cardiovascular and metabolic disease risk.","https://en.wikipedia.org/wiki/Health_effects_of_chronic_stress",1,"medium"
+40,"Medical","Statin therapy (if indicated)","chronic",30,NA,1,"Medical","Cholesterol-lowering statins reduce major cardiovascular events by ~25% in high-risk patients.","https://en.wikipedia.org/wiki/Statin",2,"medium"
+40,"Disease","COVID-19 bivalent booster (age 18-49)","acute",1.05192,0.05,NA,"COVID-19","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"medium"
+41,"Disease","COVID-19 bivalent booster (age 65-79)","acute",63.1152,3,NA,"COVID-19","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"hard"
+41,"Sport & Adventure","Rock climbing (per day)","acute",63.1152,3,NA,"Sport","Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.","https://en.wikipedia.org/wiki/Rock_climbing",2,"hard"
+41,"Workplace","Construction (all, per work day)","acute",10.5192,0.5,NA,"Occupation","Falls, struck-by, electrocution, and caught-in hazards across all construction trades.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"hard"
+42,"Disease","COVID-19 bivalent booster (age 80+)","acute",483.8832,23,NA,"COVID-19","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"easy"
+42,"Diet & Drink","Eating 40 tbsp peanut butter (aflatoxin)","acute",21.0384,1,NA,"Diet","Aflatoxin B1 from mould contamination is a potent liver carcinogen.","https://en.wikipedia.org/wiki/Aflatoxin",2,"easy"
+42,"Radiation","Business traveller (annual cosmic)","acute",0.78894,0.0375,NA,"Travel","Moderate annual cosmic radiation from ~40,000 miles of flying per year.","https://en.wikipedia.org/wiki/Cosmic_ray",3,"easy"
+43,"Lifestyle","Living (one day, age 45)","acute",126.2304,6,NA,"Daily Life","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate",1,"hard"
+43,"Disease","COVID-19 monovalent vaccine (all ages)","acute",84.1536,4,NA,"COVID-19","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"hard"
+43,"Disease","COVID-19 unvaccinated (age 18-49)","acute",21.0384,1,NA,"COVID-19","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"hard"
+44,"Disease","Family history of cancer","chronic",30,NA,-1,"Cancer","First-degree relative with cancer increases your own risk, especially for breast, colorectal, and prostate cancers.","https://en.wikipedia.org/wiki/Cancer#Genetics",1,"hard"
+44,"Medical","Cancer screening (age-appropriate)","chronic",30,NA,1,"Medical","Age-appropriate screening (mammography, colonoscopy, cervical smears) detects cancer early when treatment is most effective.","https://en.wikipedia.org/wiki/Cancer_screening",2,"hard"
+44,"Workplace","1 hour in a coal mine","acute",21.0384,1,NA,"Occupation","Risk from roof collapse, gas explosion, and dust inhalation.","https://en.wikipedia.org/wiki/Coal_mining",3,"hard"
+1,"Diet & Drink","5 servings fruit/veg","chronic",120,NA,4,"Diet","Daily fruit and vegetable intake reduces cardiovascular disease, cancer, and all-cause mortality. Largest benefit from 5+ servings.","https://en.wikipedia.org/wiki/Five_A_Day",1,"medium"
+1,"Diet & Drink","4th-5th alcoholic drink","chronic",60,NA,-2,"Alcohol","Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","https://en.wikipedia.org/wiki/Alcohol_and_health",2,"medium"
+1,"Disease","COVID-19 monovalent vaccine (age 18-49)","acute",4.20768,0.2,NA,"COVID-19","Young adult monovalent-vaccinated COVID-19 mortality was very low.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"medium"
+1,"Disease","Bee/wasp sting (general)","acute",0.631152,0.03,NA,"Wildlife","Bee or wasp sting fatality risk for non-allergic individuals.","https://en.wikipedia.org/wiki/Bee_sting",4,"medium"
+2,"Sport & Adventure","Scuba diving, trained (per dive)","acute",105.192,5,NA,"Sport","Single-dive risk for trained divers from decompression sickness and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving",1,"hard"
+2,"Sport & Adventure","20 min moderate exercise","chronic",60,NA,2,"Exercise","Daily brisk walking or equivalent moderate activity reduces all-cause mortality by ~30%. The single most effective lifestyle intervention.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",2,"hard"
+2,"Workplace","Roofing (per work day)","acute",39.97296,1.9,NA,"Occupation","Falls from height are the primary cause of roofing fatalities.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"hard"
+2,"Radiation","Airline pilot (annual radiation)","acute",3.15576,0.15,NA,"Occupation","Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","https://en.wikipedia.org/wiki/Airline_pilot",4,"hard"
+3,"Sport & Adventure","Matterhorn ascent","acute",59749.056,2840,NA,"Mountaineering","One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","https://en.wikipedia.org/wiki/Matterhorn",1,"easy"
+3,"Lifestyle","First day of life (newborn)","acute",9046.512,430,NA,"Daily Life","The first 24 hours carry elevated risk from birth complications and congenital conditions.","https://en.wikipedia.org/wiki/Neonatal_death",2,"easy"
+3,"Travel","Motorcycling (60 miles)","acute",210.384,10,NA,"Travel","Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","https://en.wikipedia.org/wiki/Motorcycle_safety",3,"easy"
+3,"Sport & Adventure","Horse riding","acute",10.5192,0.5,NA,"Sport","Falls from horseback can cause traumatic brain and spinal injuries.","https://en.wikipedia.org/wiki/Equestrianism",4,"easy"
+4,"Disease","COVID-19 unvaccinated (age 50-64)","acute",168.3072,8,NA,"COVID-19","Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"hard"
+4,"Workplace","Commercial fishing (per work day)","acute",63.1152,3,NA,"Occupation","Extreme weather, vessel sinking, and deck machinery make fishing one of the deadliest occupations.","https://www.bls.gov/iif/fatal-injuries-tables.htm",2,"hard"
+4,"Lifestyle","Family history of heart disease","chronic",60,NA,-2,"Cardiovascular","First-degree relative with CVD before age 55 roughly doubles your own cardiovascular risk.","https://en.wikipedia.org/wiki/Cardiovascular_disease#Risk_factors",3,"hard"
+4,"Travel","Flying (2h short-haul)","acute",23.14224,1.1,NA,"Travel","Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","https://en.wikipedia.org/wiki/Aviation_safety",4,"hard"
+5,"Sport & Adventure","Mt. Everest ascent","acute",798028.5888,37932,NA,"Mountaineering","At 8,849m, extreme altitude, weather, and avalanche risk make Everest the deadliest common mountaineering objective.","https://en.wikipedia.org/wiki/Mount_Everest",1,"easy"
+5,"Sport & Adventure","Skydiving (US)","acute",168.3072,8,NA,"Sport","US skydiving fatality rate based on USPA incident reports.","https://en.wikipedia.org/wiki/Skydiving",2,"easy"
+5,"Radiation","Coronary angiogram (radiation per scan)","acute",105.192,5,NA,"Medical","Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","https://en.wikipedia.org/wiki/Coronary_catheterization",3,"easy"
+5,"Workplace","Agriculture (per work day)","acute",14.72688,0.7,NA,"Occupation","Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.","https://www.bls.gov/iif/fatal-injuries-tables.htm",4,"easy"
+6,"Disease","Living in Maryland COVID-19 (Mar-May 2020)","acute",147.2688,7,NA,"COVID-19","Maryland experienced moderate COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland",1,"medium"
+6,"Disease","COVID-19 unvaccinated (age 18-49)","acute",21.0384,1,NA,"COVID-19","Young adult unvaccinated COVID-19 mortality was low but non-negligible.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"medium"
+6,"Radiation","Frequent executive flyer (annual cosmic)","acute",3.15576,0.15,NA,"Travel","Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","https://en.wikipedia.org/wiki/Cosmic_ray",3,"medium"
+6,"Radiation","X-ray technician (annual radiation)","acute",1.05192,0.05,NA,"Occupation","Occupational radiation exposure mitigated by lead shielding and ALARA protocols.","https://en.wikipedia.org/wiki/Radiographer",4,"medium"
+7,"Medical","Caesarean birth (mother)","acute",3576.528,170,NA,"Medical","Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","https://en.wikipedia.org/wiki/Caesarean_section",1,"medium"
+7,"Disease","COVID-19 monovalent vaccine (all ages)","acute",84.1536,4,NA,"COVID-19","Population-average residual COVID-19 risk after monovalent vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"medium"
+7,"Radiation","Barium enema (radiation per scan)","acute",63.1152,3,NA,"Medical","Moderate radiation dose from fluoroscopic imaging of the large intestine.","https://en.wikipedia.org/wiki/Barium_enema",3,"medium"
+7,"Radiation","CT scan head (radiation per scan)","acute",42.0768,2,NA,"Medical","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan",4,"medium"
+8,"Lifestyle","Living (one day, under age 1)","acute",315.576,15,NA,"Daily Life","Infant mortality from congenital conditions, SIDS, and birth complications.","https://en.wikipedia.org/wiki/Infant_mortality",1,"hard"
+8,"Medical","Cancer screening (age-appropriate)","chronic",30,NA,1,"Medical","Age-appropriate screening (mammography, colonoscopy, cervical smears) detects cancer early when treatment is most effective.","https://en.wikipedia.org/wiki/Cancer_screening",2,"hard"
+8,"Diet & Drink","Red meat (1 portion/day)","chronic",30,NA,-1,"Diet","Daily red meat consumption is associated with increased colorectal cancer and cardiovascular disease risk.","https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat",3,"hard"
+8,"Lifestyle","Living 2 months with a smoker","acute",21.0384,1,NA,"Environment","Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","https://en.wikipedia.org/wiki/Passive_smoking",4,"hard"
+9,"Lifestyle","Smoking 10 cigarettes","chronic",150,NA,-5,"Smoking","Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",1,"hard"
+9,"Sport & Adventure","Running a marathon","acute",147.2688,7,NA,"Sport","Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","https://en.wikipedia.org/wiki/Marathon",2,"hard"
+9,"Lifestyle","Being 15 kg overweight","chronic",90,NA,-3,"Weight","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",3,"hard"
+9,"Diet & Drink","Drinking a glass of wine","acute",10.5192,0.5,NA,"Daily Life","Acute alcohol effects including impaired judgment and cardiovascular stress.","https://en.wikipedia.org/wiki/Alcohol_(drug)",4,"hard"
+10,"Diet & Drink","First alcoholic drink","chronic",30,NA,1,"Alcohol","Moderate alcohol intake (1 drink/day) shows a J-shaped mortality curve, with possible protective cardiovascular effects.","https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease",1,"hard"
+10,"Disease","COVID-19 bivalent booster (age 50-64)","acute",21.0384,1,NA,"COVID-19","Bivalent-boosted 50-64 year-olds had very low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"hard"
+10,"Workplace","Mining (per work day)","acute",18.93456,0.9,NA,"Occupation","Roof collapse, gas explosion, and heavy equipment hazards in underground and surface mining.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"hard"
+10,"Radiation","Normal background radiation","acute",2.524608,0.12,NA,"Environment","Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","https://en.wikipedia.org/wiki/Background_radiation",4,"hard"
+11,"Disease","COVID-19 monovalent vaccine (age 65-79)","acute",189.3456,9,NA,"COVID-19","Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"easy"
+11,"Diet & Drink","2-3 cups coffee (men)","chronic",30,NA,-1,"Diet","Heavy coffee consumption in men shows a small mortality association, though the evidence is mixed and coffee also has protective effects.","https://en.wikipedia.org/wiki/Health_effects_of_coffee",2,"easy"
+11,"Travel","Driving (230 miles)","acute",21.0384,1,NA,"Travel","Traffic fatality risk for a typical 230-mile car journey.","https://en.wikipedia.org/wiki/Traffic_collision",3,"easy"
+11,"Radiation","Dental radiographer (annual radiation)","acute",0.210384,0.01,NA,"Occupation","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography",4,"easy"
+12,"Medical","Night in hospital","acute",1577.88,75,NA,"Medical","Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","https://en.wikipedia.org/wiki/Hospital-acquired_infection",1,"easy"
+12,"Lifestyle","Chronic stress/poor sleep","chronic",30,NA,-1,"Mental Health","Chronic stress and sleep deprivation elevate cortisol, drive inflammation, and increase cardiovascular and metabolic disease risk.","https://en.wikipedia.org/wiki/Health_effects_of_chronic_stress",2,"easy"
+12,"Diet & Drink","Low fiber diet","chronic",30,NA,-1,"Diet","Less than 25 g fiber daily increases colorectal cancer risk and is associated with higher cardiovascular mortality.","https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects",3,"easy"
+12,"Travel","Commuting by car (30 min)","acute",2.734992,0.13,NA,"Travel","Short car commute with crash risk from traffic collisions.","https://en.wikipedia.org/wiki/Traffic_collision",4,"easy"
+13,"Sport & Adventure","Himalayan mountaineering","acute",252460.8,12000,NA,"Mountaineering","Expeditions to 8,000m+ peaks carry extreme risk from altitude sickness, avalanches, and exposure.","https://en.wikipedia.org/wiki/Eight-thousander",1,"easy"
+13,"Sport & Adventure","2 hours TV watching","chronic",30,NA,-1,"Sedentary","Prolonged sedentary behaviour (sitting/lying) increases cardiovascular mortality independent of exercise. TV time is a proxy for total sitting.","https://en.wikipedia.org/wiki/Sedentary_lifestyle",2,"easy"
+13,"Workplace","Truck driving (per work day)","acute",25.24608,1.2,NA,"Occupation","Long hours and highway driving make truck driving a high-fatality occupation by total deaths.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"easy"
+13,"Workplace","1 hour in a coal mine","acute",21.0384,1,NA,"Occupation","Risk from roof collapse, gas explosion, and dust inhalation.","https://en.wikipedia.org/wiki/Coal_mining",4,"easy"
+14,"Radiation","CT scan chest (radiation per scan)","acute",147.2688,7,NA,"Medical","Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","https://en.wikipedia.org/wiki/CT_scan",1,"hard"
+14,"Lifestyle","Untreated hypertension","chronic",120,NA,-4,"Cardiovascular","Systolic BP > 140 mmHg left untreated is the leading modifiable risk factor for stroke, heart attack, and kidney disease.","https://en.wikipedia.org/wiki/Hypertension",2,"hard"
+14,"Lifestyle","Living (one day, age 50)","acute",84.1536,4,NA,"Daily Life","Daily mortality at age 50 is roughly 4x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate",3,"hard"
+14,"Radiation","Nuclear plant worker (annual radiation)","acute",2.10384,0.1,NA,"Occupation","Controlled occupational exposure within regulatory limits using dosimetry and shielding.","https://en.wikipedia.org/wiki/Nuclear_power_plant",4,"hard"
+15,"Sport & Adventure","Scuba diving, trained (yearly)","acute",3450.2976,164,NA,"Sport","Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","https://en.wikipedia.org/wiki/Scuba_diving",1,"medium"
+15,"Lifestyle","High LDL cholesterol (untreated)","chronic",60,NA,-2,"Cardiovascular","LDL > 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease",2,"medium"
+15,"Medical","Statin therapy (if indicated)","chronic",30,NA,1,"Medical","Cholesterol-lowering statins reduce major cardiovascular events by ~25% in high-risk patients.","https://en.wikipedia.org/wiki/Statin",3,"medium"
+15,"Lifestyle","Living (one day, age 20)","acute",21.0384,1,NA,"Daily Life","Daily background mortality at age 20 is dominated by accidents and violence.","https://en.wikipedia.org/wiki/Mortality_rate",4,"medium"
+16,"Disease","COVID-19 bivalent booster (age 80+)","acute",483.8832,23,NA,"COVID-19","Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"medium"
+16,"Sport & Adventure","Hang gliding (per flight)","acute",168.3072,8,NA,"Sport","Unpowered flight with risk from turbulence, structural failure, and pilot error.","https://en.wikipedia.org/wiki/Hang_gliding",2,"medium"
+16,"Disease","COVID-19 bivalent booster (age 65-79)","acute",63.1152,3,NA,"COVID-19","Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"medium"
+16,"Radiation","Mammogram (radiation per scan)","acute",2.10384,0.1,NA,"Medical","Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","https://en.wikipedia.org/wiki/Mammography",4,"medium"
+17,"Sport & Adventure","Swimming","acute",252.4608,12,NA,"Sport","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning",1,"hard"
+17,"Radiation","CT scan abdomen (radiation per scan)","acute",210.384,10,NA,"Medical","Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","https://en.wikipedia.org/wiki/CT_scan",2,"hard"
+17,"Lifestyle","Living (one day, age 30)","acute",21.0384,1,NA,"Daily Life","Daily mortality at age 30 is similar to age 20 with slightly more disease contribution.","https://en.wikipedia.org/wiki/Mortality_rate",3,"hard"
+17,"Diet & Drink","Eating 40 tbsp peanut butter (aflatoxin)","acute",21.0384,1,NA,"Diet","Aflatoxin B1 from mould contamination is a potent liver carcinogen.","https://en.wikipedia.org/wiki/Aflatoxin",4,"hard"
+18,"Disease","Spanish flu infection","acute",63115.2,3000,NA,"Disease","The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","https://en.wikipedia.org/wiki/Spanish_flu",1,"easy"
+18,"Medical","Vaginal birth (mother)","acute",2524.608,120,NA,"Medical","Maternal mortality risk from hemorrhage, infection, and eclampsia during vaginal delivery.","https://en.wikipedia.org/wiki/Maternal_death",2,"easy"
+18,"Medical","Blood pressure control","chronic",60,NA,2,"Medical","Achieving target BP < 130/80 mmHg through medication and lifestyle reduces stroke risk by 35-40%.","https://en.wikipedia.org/wiki/Antihypertensive_drug",3,"easy"
+18,"Travel","Train (1000 miles)","acute",21.0384,1,NA,"Travel","Rail travel is one of the safest transport modes per mile.","https://en.wikipedia.org/wiki/Rail_transport",4,"easy"
+19,"Disease","COVID-19 infection (unvaccinated)","acute",210384,10000,NA,"COVID-19","Unvaccinated COVID-19 infection carries substantial mortality risk, especially for older adults.","https://en.wikipedia.org/wiki/COVID-19",1,"easy"
+19,"Lifestyle","Being 10 kg overweight","chronic",60,NA,-2,"Weight","Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",2,"easy"
+19,"Travel","Commuting by bicycle (30 min)","acute",10.5192,0.5,NA,"Travel","Cycling commute with risk from traffic collisions and exertion-related events.","https://en.wikipedia.org/wiki/Bicycle_safety",3,"easy"
+19,"Disease","Shark encounter (ocean swim)","acute",1.262304,0.06,NA,"Wildlife","Shark attack fatality risk per ocean swim, based on ISAF incident data.","https://www.floridamuseum.ufl.edu/shark-attacks/",4,"easy"
+20,"Lifestyle","Living (one day, age 45)","acute",126.2304,6,NA,"Daily Life","Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","https://en.wikipedia.org/wiki/Mortality_rate",1,"medium"
+20,"Disease","Excessive alcohol (cancer)","chronic",30,NA,-1,"Cancer","More than 2 drinks/day increases risk of mouth, throat, oesophageal, liver, breast, and colorectal cancers.","https://en.wikipedia.org/wiki/Alcohol_and_cancer",2,"medium"
+20,"Disease","COVID-19 bivalent booster (all ages)","acute",21.0384,1,NA,"COVID-19","Population-average residual COVID-19 risk after bivalent booster vaccination.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",3,"medium"
+20,"Lifestyle","Crossing a road","acute",0.420768,0.02,NA,"Daily Life","Pedestrian collision risk at a single road crossing.","https://en.wikipedia.org/wiki/Pedestrian",4,"medium"
+21,"Lifestyle","Smoking 20 cigarettes","chronic",300,NA,-10,"Smoking","A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",1,"medium"
+21,"Sport & Adventure","Skydiving (UK)","acute",168.3072,8,NA,"Sport","UK skydiving fatality rate based on British Parachute Association data.","https://en.wikipedia.org/wiki/Skydiving",2,"medium"
+21,"Diet & Drink","Eating 100 charbroiled steaks","acute",21.0384,1,NA,"Diet","Polycyclic aromatic hydrocarbons from charring are carcinogenic at high cumulative doses.","https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon",3,"medium"
+21,"Lifestyle","Working in an office (8 hours)","acute",0.631152,0.03,NA,"Daily Life","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate",4,"medium"
+22,"Lifestyle","Living (one day, age 75)","acute",2209.032,105,NA,"Daily Life","Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","https://en.wikipedia.org/wiki/Mortality_rate",1,"hard"
+22,"Disease","COVID-19 unvaccinated (all ages)","acute",420.768,20,NA,"COVID-19","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"hard"
+22,"Sport & Adventure","150 min weekly exercise","chronic",90,NA,3,"Exercise","Meeting WHO physical activity guidelines reduces cardiovascular, cancer, and all-cause mortality substantially.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",3,"hard"
+22,"Diet & Drink","High sugar diet","chronic",30,NA,-1,"Diet","Excess refined sugar intake drives insulin resistance, type 2 diabetes, obesity, and cardiovascular disease.","https://en.wikipedia.org/wiki/Sugar#Health_effects",4,"hard"
+23,"Disease","Living in NYC COVID-19 (Mar-May 2020)","acute",1051.92,50,NA,"COVID-19","New York City experienced extreme COVID-19 mortality during the initial wave.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City",1,"easy"
+23,"Travel","Flying (5h medium-haul)","acute",36.8172,1.75,NA,"Travel","Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","https://en.wikipedia.org/wiki/Aviation_safety",2,"easy"
+23,"Workplace","All US workers baseline (per work day)","acute",3.15576,0.15,NA,"Occupation","Average occupational fatality rate across all US industries; baseline for comparison.","https://www.bls.gov/iif/fatal-injuries-tables.htm",3,"easy"
+23,"Radiation","Dental X-ray (radiation per scan)","acute",1.05192,0.05,NA,"Medical","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography",4,"easy"
+24,"Disease","Living in US during COVID-19 (Jul 2020)","acute",10519.2,500,NA,"COVID-19","Peak US COVID-19 mortality before vaccines were available.","https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States",1,"easy"
+24,"Lifestyle","Smoking 2 cigarettes","chronic",30,NA,-1,"Smoking","Even light smoking (2 cigarettes/day) carries measurable cardiovascular and cancer risk. Each cigarette costs roughly 15 minutes of life.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",2,"easy"
+24,"Disease","Snake bite (US, with antivenom)","acute",10.5192,0.5,NA,"Wildlife","Snake bite fatality risk in the US where antivenom is readily available.","https://en.wikipedia.org/wiki/Snakebite",3,"easy"
+24,"Radiation","Interventional cardiologist (annual radiation)","acute",3.68172,0.175,NA,"Occupation","Highest occupational medical radiation dose from fluoroscopy-guided procedures.","https://en.wikipedia.org/wiki/Interventional_cardiology",4,"easy"
+25,"Disease","COVID-19 unvaccinated (age 65-79)","acute",1598.9184,76,NA,"COVID-19","Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"medium"
+25,"Sport & Adventure","Rock climbing (per day)","acute",63.1152,3,NA,"Sport","Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.","https://en.wikipedia.org/wiki/Rock_climbing",2,"medium"
+25,"Diet & Drink","2nd-3rd alcoholic drink","chronic",30,NA,-1,"Alcohol","After the first drink's potential protective effect, the second and third drinks increase liver disease and accident risk.","https://en.wikipedia.org/wiki/Alcohol_and_health",3,"medium"
+25,"Sport & Adventure","Skiing","acute",14.72688,0.7,NA,"Sport","Risk from collisions with trees/other skiers and avalanche in backcountry.","https://en.wikipedia.org/wiki/Skiing",4,"medium"
+26,"Lifestyle","Living (one day, age 90)","acute",9740.7792,463,NA,"Daily Life","Daily background mortality risk at age 90 reflects accumulated physiological decline.","https://en.wikipedia.org/wiki/Mortality_rate",1,"medium"
+26,"Disease","COVID-19 monovalent vaccine (age 80+)","acute",1157.112,55,NA,"COVID-19","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"medium"
+26,"Travel","Flying (12h ultra-long-haul)","acute",138.85344,6.6,NA,"Travel","Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","https://en.wikipedia.org/wiki/Economy_class_syndrome",3,"medium"
+26,"Disease","Low physical activity","chronic",30,NA,-1,"Cancer","Less than 150 minutes of moderate exercise per week increases cancer risk (colon, breast, endometrial) by 20-30%.","https://www.who.int/news-room/fact-sheets/detail/physical-activity",4,"medium"
+27,"Sport & Adventure","Sitting 8+ hours/day","chronic",60,NA,-2,"Sedentary","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle",1,"medium"
+27,"Disease","Kangaroo encounter","acute",2.10384,0.1,NA,"Wildlife","Vehicle collisions with kangaroos cause fatalities in rural Australia.","https://en.wikipedia.org/wiki/Kangaroo",2,"medium"
+27,"Lifestyle","Taking a bath","acute",1.472688,0.07,NA,"Daily Life","Drowning risk, particularly for elderly and those with medical conditions.","https://en.wikipedia.org/wiki/Drowning",3,"medium"
+27,"Radiation","High-altitude resident (annual cosmic)","acute",0.736344,0.035,NA,"Environment","Living above 2,000m increases cosmic radiation exposure compared to sea level.","https://en.wikipedia.org/wiki/Cosmic_ray",4,"medium"
+28,"Sport & Adventure","Base jumping (per jump)","acute",9046.512,430,NA,"Sport","Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","https://en.wikipedia.org/wiki/BASE_jumping",1,"easy"
+28,"Disease","COVID-19 unvaccinated (age 80+)","acute",4922.9856,234,NA,"COVID-19","Unvaccinated elderly face the highest COVID-19 mortality rates.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"easy"
+28,"Sport & Adventure","Skydiving (per jump)","acute",210.384,10,NA,"Sport","Risk from parachute malfunction, mid-air collision, and landing errors.","https://en.wikipedia.org/wiki/Skydiving",3,"easy"
+28,"Radiation","Chest X-ray (radiation per scan)","acute",2.10384,0.1,NA,"Medical","Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","https://en.wikipedia.org/wiki/Chest_radiograph",4,"easy"
+29,"Diet & Drink","Mediterranean diet","chronic",60,NA,2,"Diet","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet",1,"hard"
+29,"Disease","COVID-19 monovalent vaccine (age 50-64)","acute",42.0768,2,NA,"COVID-19","Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",2,"hard"
+29,"Diet & Drink","Processed meat (1 portion/day)","chronic",30,NA,-1,"Diet","Bacon, sausages, ham, etc. classified as Group 1 carcinogens by IARC. Strongest evidence for colorectal cancer.","https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat",3,"hard"
+29,"Disease","COVID-19 bivalent booster (age 18-49)","acute",1.05192,0.05,NA,"COVID-19","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",4,"hard"
+30,"Medical","General anesthesia (emergency)","acute",210.384,10,NA,"Medical","Emergency anesthesia carries higher risk than elective due to patient instability.","https://en.wikipedia.org/wiki/General_anaesthesia",1,"hard"
+30,"Travel","Flying (8h long-haul)","acute",82.04976,3.9,NA,"Travel","Long-haul flights have significant DVT risk, especially for those with risk factors.","https://en.wikipedia.org/wiki/Economy_class_syndrome",2,"hard"
+30,"Lifestyle","Being 5 kg overweight","chronic",30,NA,-1,"Weight","Each 5 kg above optimum BMI increases risk of type 2 diabetes, cardiovascular disease, and several cancers.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health",3,"hard"
+30,"Travel","Walking (20 miles)","acute",21.0384,1,NA,"Travel","Pedestrian fatality risk from traffic collisions over a 20-mile walk.","https://en.wikipedia.org/wiki/Pedestrian",4,"hard"
+```
