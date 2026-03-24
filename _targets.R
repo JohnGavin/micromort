@@ -50,5 +50,6 @@ c(
   plan_site_build,
 
   # Validation (existing)
-  if (exists("plan_validation")) plan_validation else list()
+  if (exists("plan_validation")) plan_validation else list(),
+  plan_pkgdown()       # pkgdown site build + stage docs/
 )
