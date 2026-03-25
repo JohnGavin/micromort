@@ -1,0 +1,460 @@
+---
+title: "Which lifestyle event is more likely to kill you?"
+description: "Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death."
+format:
+  html:
+    embed-resources: false
+    page-layout: full
+    open-graph:
+      image: ../man/figures/og-image.png
+      description: "Interactive quiz comparing everyday risks measured in micromorts."
+    twitter-card:
+      image: ../man/figures/og-image.png
+      card-style: summary_large_image
+---
+
+```{=html}
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  .description { margin-bottom: 0 !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+
+  #quiz-app { max-width: 100%; padding: 20px; font-family: inherit; }
+  .quiz-btn {
+    min-height: 180px; width: 100%; white-space: normal;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; padding: 16px 12px; font-size: 1rem;
+    border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff;
+    transition: border-color 0.3s, background-color 0.1s;
+    cursor: pointer; user-select: text; -webkit-user-select: text;
+  }
+  .quiz-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; color: #ffffff; }
+  .quiz-btn .activity-name { font-weight: 600; font-size: 1.1rem; line-height: 1.3; }
+  .quiz-btn .badge { font-size: 0.75em; }
+  .quiz-btn-correct { border: 3px solid #198754 !important; background-color: #d1e7dd !important; color: #0f5132 !important; cursor: default; }
+  .quiz-btn-wrong { border: 3px solid #dc3545 !important; background-color: #f8d7da !important; color: #842029 !important; cursor: default; }
+  .quiz-btn-neutral { border: 3px solid #6c757d !important; background-color: #e9ecef !important; color: #495057 !important; cursor: default; }
+  .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
+  .quiz-btn .help-link:hover { text-decoration: underline; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .gap-3 { gap: 1rem; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .option-btn {
+    padding: 8px 18px; border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff; font-size: 1rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    text-align: center; min-width: 60px;
+  }
+  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; }
+  .detail-scroll { overflow-x: auto; width: 100%; }
+  .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
+  .detail-table th, .detail-table td { padding: 6px 10px; }
+</style>
+
+<div id="quiz-app">Loading quiz data...</div>
+
+<script id="quiz-data" type="application/json">
+```
+
+```{r quiz-data-gen, echo=FALSE, results='asis'}
+# Generate JSON from targets pipeline data
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(targets::tar_read_raw(name, store = store),
+           error = function(e) NULL)
+}
+pairs <- safe_tar_read("vig_quiz_pairs")
+if (is.null(pairs)) {
+  # Fallback: generate directly
+  pairs <- rbind(
+    micromort::quiz_pairs(difficulty = "easy", seed = 42),
+    micromort::quiz_pairs(difficulty = "medium", seed = 42),
+    micromort::quiz_pairs(difficulty = "hard", seed = 42)
+  )
+}
+cat(jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE))
+```
+
+```{=html}
+</script>
+
+<script>
+// ---- State ----
+const S = {
+  phase: 'instructions', nQuestions: 5, currentQ: 0,
+  pairs: [], answers: [], displayOrder: [], revealed: [],
+  selDifficulty: 'mixed', selNq: 5, seenKeys: new Set()
+};
+let quizPool = [];
+
+// ---- Data ----
+function loadData() {
+  const el = document.getElementById('quiz-data');
+  if (!el) return;
+  quizPool = JSON.parse(el.textContent);
+}
+
+// ---- Helpers ----
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function formatName(name) { return name.replace(/\s*\(/, '<br>('); }
+function selectInGroup(grpId, clicked) {
+  const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  clicked.classList.add('selected');
+}
+
+// ---- Leaderboard (pure JS, same as before) ----
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+const STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+let scoreSubmitted = false;
+
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  const el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
+
+function submitScore(score, total, difficulty, nQuestions) {
+  if (scoreSubmitted) return;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; btn.className = 'btn btn-secondary btn-lg'; }
+  const data = new URLSearchParams();
+  data.append('entry.335579146', score);
+  data.append('entry.2122920576', total);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.268026248', 'acute');
+  data.append('entry.232879816', difficulty || '');
+  data.append('entry.2010782223', nQuestions || '');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
+    getPercentile(score, total, difficulty, nQuestions);
+  }).catch(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Score saved locally'; btn.className = 'btn btn-info btn-lg'; }
+  });
+}
+
+function interpolatePercentile(scorePct, group) {
+  const p = group.percentiles, s = group.scores_pct;
+  for (let i = s.length - 1; i >= 0; i--) { if (scorePct >= s[i]) return p[i]; }
+  return 0;
+}
+
+function getPercentile(score, total, difficulty, nQuestions) {
+  const pct = score / total * 100;
+  fetch(STATS_URL).then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(stats => {
+    const d = stats.acute;
+    let msg = 'You scored better than ' + interpolatePercentile(pct, d.overall) + '% of all players';
+    const key = (difficulty || 'mixed') + '_' + (nQuestions || 5);
+    const sub = d.by_config[key];
+    if (sub && sub.n >= 10) msg += ' (' + interpolatePercentile(pct, sub) + '% of ' + difficulty + '/' + nQuestions + 'Q players)';
+    msg += '! (' + d.overall.n + ' submissions)';
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(() => {
+    // Fallback to live Sheet
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = 'Loading rankings...';
+    fetch(SHEET_URL).then(r => r.text()).then(text => {
+      const json = JSON.parse(text.replace(/.*google\.visualization\.Query\.setResponse\(/, '').replace(/\);$/, ''));
+      let below = 0;
+      json.table.rows.forEach(row => {
+        const s = row.c[0] ? row.c[0].v : 0, t = row.c[1] ? row.c[1].v : 10;
+        if ((s / t * 100) < pct) below++;
+      });
+      const percentile = json.table.rows.length > 0 ? Math.round(below / json.table.rows.length * 100) : 50;
+      if (el) el.textContent = 'You scored better than ' + percentile + '% of players! (' + json.table.rows.length + ' submissions)';
+    }).catch(() => { if (el) el.textContent = 'Score submitted! Rankings unavailable right now.'; });
+  });
+}
+
+// ---- Result phrases ----
+const PHRASES = [
+  {min: 95, phrase: 'Actuarial genius!', fact: 'Actuaries quantify risk for a living.', link: 'https://en.wikipedia.org/wiki/Actuary'},
+  {min: 90, phrase: 'You think in micromorts!', fact: 'A micromort is a one-in-a-million chance of death.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 80, phrase: 'Sharp intuition!', fact: 'Humans tend to overestimate dramatic risks and underestimate common ones.', link: 'https://en.wikipedia.org/wiki/Risk_perception'},
+  {min: 70, phrase: 'Better than a coin toss!', fact: 'We judge risk by how easily examples come to mind.', link: 'https://en.wikipedia.org/wiki/Availability_heuristic'},
+  {min: 60, phrase: 'Getting there!', fact: 'Losses loom larger than gains in our risk calculus.', link: 'https://en.wikipedia.org/wiki/Prospect_theory'},
+  {min: 50, phrase: 'About average!', fact: 'Ignoring base rates is one of the most common reasoning errors.', link: 'https://en.wikipedia.org/wiki/Base_rate_fallacy'},
+  {min: 30, phrase: 'Surprises everywhere!', fact: 'We tend to assume things will keep going as normal.', link: 'https://en.wikipedia.org/wiki/Normalcy_bias'},
+  {min: -1, phrase: 'Toss a coin — less risky!', fact: "Past outcomes don't change future probabilities.", link: 'https://en.wikipedia.org/wiki/Gambler%27s_fallacy'}
+];
+function getPhrase(pct) { return PHRASES.find(p => pct >= p.min) || PHRASES[PHRASES.length - 1]; }
+
+const ENCOURAGEMENTS = [
+  "Go on, your inner actuary is dying to play. (Not literally.)",
+  "Warning: may cause sudden urge to recalculate your commute.",
+  "Spoiler: everything is riskier than you think.",
+  "No micromorts were harmed in the making of this quiz.",
+  "Side effects may include newfound respect for seatbelts.",
+  "Think you know risk? Prove it.",
+  "Your overconfidence is showing. Let's test it.",
+  "Statistically, you'll enjoy this. Probably."
+];
+
+// ---- Render functions ----
+function render() {
+  const app = document.getElementById('quiz-app');
+  switch (S.phase) {
+    case 'instructions': app.innerHTML = renderInstructions(); break;
+    case 'question': app.innerHTML = renderQuestion(); break;
+    case 'results_summary': app.innerHTML = renderResults(); break;
+    case 'results_detail': app.innerHTML = renderDetail(); break;
+  }
+}
+
+function renderInstructions() {
+  const enc = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+  return `
+    <div class="card"><div class="card-body">
+      <ul class="mb-1">
+        <li>Each question shows <b><em>two risky activities</em></b>.</li>
+        <li>Tap the activity that you think is <b><em>riskier</em></b>.</li>
+        <li>You can <b><em>skip</em></b> questions or go <b><em>back</em></b> and review previous answers.</li>
+        <li>Skipped (unanswered) questions score zero.</li>
+        <li>A <b><em>micromort (mm)</em></b> is a one-in-a-million chance of death.</li>
+      </ul>
+      <div class="mb-1" style="padding-left:1.5em;"><em>${enc}</em></div>
+      <div class="option-row">
+        <span class="option-label">Difficulty</span>
+        <div class="option-btn-group" id="grp_diff">
+          <button class="option-btn" onclick="S.selDifficulty='easy';selectInGroup('grp_diff',this)">Easy</button>
+          <button class="option-btn" onclick="S.selDifficulty='medium';selectInGroup('grp_diff',this)">Medium</button>
+          <button class="option-btn" onclick="S.selDifficulty='hard';selectInGroup('grp_diff',this)">Hard</button>
+          <button class="option-btn selected" onclick="S.selDifficulty='mixed';selectInGroup('grp_diff',this)">Mixed</button>
+        </div>
+      </div>
+      <div class="option-row">
+        <span class="option-label">Questions</span>
+        <div class="option-btn-group" id="grp_nq">
+          <button class="option-btn selected" onclick="S.selNq=5;selectInGroup('grp_nq',this)">5</button>
+          <button class="option-btn" onclick="S.selNq=10;selectInGroup('grp_nq',this)">10</button>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div></div>`;
+}
+
+function startQuiz() {
+  let pool = S.selDifficulty !== 'mixed'
+    ? quizPool.filter(p => p.difficulty === S.selDifficulty)
+    : [...quizPool];
+
+  // Exclude seen pairs
+  pool = pool.filter(p => {
+    const key = [p.activity_a, p.activity_b].sort().join('|||');
+    return !S.seenKeys.has(key);
+  });
+  if (pool.length < S.selNq) { S.seenKeys.clear(); pool = S.selDifficulty !== 'mixed' ? quizPool.filter(p => p.difficulty === S.selDifficulty) : [...quizPool]; }
+
+  const n = Math.min(S.selNq, pool.length);
+  S.nQuestions = n;
+  S.pairs = shuffle(pool).slice(0, n);
+  S.pairs.forEach(p => S.seenKeys.add([p.activity_a, p.activity_b].sort().join('|||')));
+  S.answers = new Array(n).fill(null);
+  S.displayOrder = S.pairs.map(() => Math.random() < 0.5 ? ['a','b'] : ['b','a']);
+  S.revealed = new Array(n).fill(false);
+  S.currentQ = 0;
+  S.phase = 'question';
+  render();
+}
+
+function renderQuestion() {
+  const q = S.currentQ, n = S.nQuestions, pair = S.pairs[q];
+  const ord = S.displayOrder[q], revealed = S.revealed[q], answer = S.answers[q];
+  const L = ord[0], R = ord[1];
+
+  function side(s) {
+    return {
+      activity: pair['activity_' + s], category: pair['category_' + s],
+      mm: pair['micromorts_' + s], period: pair['period_' + s],
+      desc: pair['description_' + s], help: pair['help_url_' + s]
+    };
+  }
+  const left = side(L), right = side(R);
+
+  function btnClass(s, isRiskier) {
+    if (!revealed) return 'quiz-btn';
+    if (isRiskier) return 'quiz-btn quiz-btn-correct';
+    if (answer === s) return 'quiz-btn quiz-btn-wrong';
+    return 'quiz-btn quiz-btn-neutral';
+  }
+  const leftRiskier = left.mm > right.mm, rightRiskier = right.mm > left.mm;
+
+  function btnContent(d, s, cls) {
+    const mmText = revealed ? `<strong style="font-size:1.2rem;color:#333;">${d.mm.toFixed(2)} mm</strong>` : '';
+    const helpLink = d.help ? `<a class="help-link" href="${d.help}" target="_blank" onclick="event.stopPropagation()">Learn more →</a>` : '';
+    const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
+    return `<div class="${cls}" ${clickAttr}>
+      <span class="activity-name">${formatName(d.activity)}</span>
+      <div><span class="badge bg-secondary me-1">${d.category}</span><span class="badge bg-info">${d.period}</span></div>
+      ${mmText}${helpLink}
+    </div>`;
+  }
+
+  // Result text
+  let resultHtml = '';
+  if (revealed) {
+    const correct = pair.answer;
+    const userCorrect = answer === correct;
+    if (answer === null) {
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2">Skipped! ${pair['activity_' + correct]} is riskier.</div>`;
+    } else if (userCorrect) {
+      resultHtml = `<div class="alert alert-success text-center mt-2 py-2"><strong>Correct!</strong></div>`;
+    } else {
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2"><strong>Incorrect!</strong> ${pair['activity_' + correct]} is riskier.</div>`;
+    }
+    // Explanation
+    const riskier = pair.answer, safer = riskier === 'a' ? 'b' : 'a';
+    resultHtml += `<div class="explanation-panel mt-2">
+      <p><strong>${pair['activity_' + riskier]}</strong> has ${pair['micromorts_' + riskier].toFixed(2)} mm: ${pair['description_' + riskier] || ''}</p>
+      <p><strong>${pair['activity_' + safer]}</strong> has ${pair['micromorts_' + safer].toFixed(2)} mm: ${pair['description_' + safer] || ''}</p>
+      <p>${pair['activity_' + riskier]} is ${pair.ratio.toFixed(1)}x riskier than ${pair['activity_' + safer]}.</p>
+    </div>`;
+  }
+
+  // Tally
+  let correctSoFar = 0;
+  for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
+  const answered = S.revealed.filter(Boolean).length;
+
+  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning' : 'danger'} me-2">${pair.difficulty}</span>` : '';
+
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <button class="btn btn-secondary" onclick="prevQ()">← Back</button>
+      <span class="text-muted">${diffBadge}${q+1} of ${n} · <small>Score: ${correctSoFar}/${answered} correct</small></span>
+      <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next →'}</button>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-5">${btnContent(left, L, btnClass(L, L === pair.answer))}</div>
+      <div class="col-2 text-center"><h3 class="text-muted mb-0">VS</h3></div>
+      <div class="col-5">${btnContent(right, R, btnClass(R, R === pair.answer))}</div>
+    </div>
+    ${resultHtml}`;
+}
+
+function choose(side) {
+  S.answers[S.currentQ] = side;
+  S.revealed[S.currentQ] = true;
+  render();
+}
+function nextQ() {
+  if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
+  else { S.phase = 'results_summary'; render(); }
+}
+function prevQ() {
+  if (S.currentQ > 0) { S.currentQ--; render(); }
+  else { S.phase = 'instructions'; render(); }
+}
+
+function renderResults() {
+  const n = S.nQuestions;
+  let score = 0;
+  for (let i = 0; i < n; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) score++; }
+  const pct = score / n * 100, baseline = (n / 2).toFixed(1);
+  const info = getPhrase(pct);
+
+  return `
+    <h2 class="text-center mb-4">Results</h2>
+    <div class="row mb-4">
+      <div class="col-6"><div class="card text-white bg-primary mb-3"><div class="card-body text-center">
+        <small>Your Score</small><h2 class="mb-0">${score} / ${n}</h2>
+      </div></div></div>
+      <div class="col-6"><div class="card text-white bg-secondary mb-3"><div class="card-body text-center">
+        <small>Random Guessing</small><h2 class="mb-0">~${baseline} / ${n}</h2>
+      </div></div></div>
+    </div>
+    <div class="text-center mb-4">
+      <h3>${info.phrase}</h3>
+      <em>${info.fact}</em><br>
+      <a href="${info.link}" target="_blank">Learn more →</a>
+    </div>
+    <div class="d-flex justify-content-center gap-3">
+      <button id="submit_btn" class="btn btn-warning btn-lg" onclick="submitScore(${score},${n},'${S.selDifficulty}',${S.selNq})">Submit Score</button>
+      <button id="share_btn" class="btn btn-success btn-lg" onclick="shareResult(${score},${n})">Share</button>
+      <button class="btn btn-outline-primary btn-lg" onclick="S.phase='results_detail';render()">View Details</button>
+      <button class="btn btn-primary btn-lg" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="text-center mt-2">
+      <small id="percentile_text" class="text-muted"></small><br>
+      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
+    </div>`;
+}
+
+function shareResult(score, n) {
+  const pEl = document.getElementById('percentile_text');
+  const pLine = pEl && pEl.textContent ? '\n' + pEl.textContent + '\n' : '\n';
+  const text = '☠️ Micromort Quiz: I scored ' + score + '/' + n + '!' + pLine +
+    'Which lifestyle event is more likely to kill you?\n' +
+    'Can you beat my score? ☠️\n' +
+    'https://johngavin.github.io/micromort/articles/quiz.html';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('share_btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+  });
+}
+
+function renderDetail() {
+  const n = S.nQuestions;
+  let rows = '';
+  for (let i = 0; i < n; i++) {
+    const p = S.pairs[i], ans = S.answers[i];
+    const userAns = ans === null ? 'Skipped' : p['activity_' + ans];
+    const correctAns = p['activity_' + p.answer];
+    const result = ans === null ? '—' : (ans === p.answer ? '✓' : '✗');
+    const linkA = p.help_url_a ? `<a href="${p.help_url_a}" target="_blank">${p.activity_a}</a>` : p.activity_a;
+    const linkB = p.help_url_b ? `<a href="${p.help_url_b}" target="_blank">${p.activity_b}</a>` : p.activity_b;
+    rows += `<tr><td>${i+1}</td><td>${linkA}</td><td>${p.micromorts_a.toFixed(2)}</td>
+      <td>${linkB}</td><td>${p.micromorts_b.toFixed(2)}</td>
+      <td>${userAns}</td><td>${correctAns}</td><td>${result}</td></tr>`;
+  }
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <button class="btn btn-secondary" onclick="S.phase='results_summary';render()">← Back to Results</button>
+      <h3 class="mb-0">Your quiz details</h3>
+      <button class="btn btn-primary" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="detail-scroll">
+      <table class="table table-striped table-hover detail-table">
+        <thead><tr><th>Q</th><th>Activity A</th><th>mm A</th><th>Activity B</th><th>mm B</th><th>Your Answer</th><th>Correct</th><th>Result</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
+  render();
+});
+</script>
+```

@@ -9,6 +9,10 @@ inst/extdata/logs/
 # Shinylive build artifacts (rendered output lives in docs/articles/)
 vignettes/quiz_shinylive.html
 vignettes/quiz_shinylive_files/
+# Pure JS quiz build artifacts
+vignettes/quiz.html
+vignettes/quiz_files/
+vignettes/quiz_pairs.json
 vignettes/chronic_quiz_shinylive.html
 vignettes/chronic_quiz_shinylive_files/
 vignettes/ranking_quiz_shinylive.html

@@ -28,7 +28,7 @@ navbar:
       menu:
       - text: "Interactive"
       - text: "Risk Quiz (play in browser)"
-        href: articles/quiz_shinylive.html
+        href: articles/quiz.html
       - text: "Microlife Quiz (play in browser)"
         href: articles/chronic_quiz_shinylive.html
       - text: "Ranking Quiz (play in browser)"
