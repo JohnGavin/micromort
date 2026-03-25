@@ -516,7 +516,7 @@ atomic_risks <- function() {
     "Truck driving (per work day)",            "truck_driving_work_day",    1.2,
     "Mining (per work day)",                   "mining_work_day",           0.9,
     "Agriculture (per work day)",              "agriculture_work_day",      0.7,
-    "Construction (all, per work day)",        "construction_work_day",     0.5,
+    "Construction (all trades, per work day)",  "construction_work_day",     0.5,
     "All US workers baseline (per work day)",  "all_workers_baseline",      0.15
   ) |>
     dplyr::mutate(

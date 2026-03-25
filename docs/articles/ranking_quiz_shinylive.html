@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy — combining acute micromorts and chronic microlives.">
+<meta name="description" content="Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives.">
 
 <title>Rank these risks by their effect on lifespan</title>
 <style>
@@ -58,7 +58,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy — combining acute micromorts and chronic microlives.
+    <p>Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives.</p>
   </div>
 </div>
 
@@ -376,7 +376,7 @@ ranking_encouragement_lines &lt;- function() {
   )
 }
 
-# ---- LLE label helper ----
+# ---- LLE helpers ----
 # Format LLE without spurious trailing .0
 fmt_lle &lt;- function(x) sub("\\.0$", "", sprintf("%.1f", x))
 lle_label &lt;- function(lle_min) {
@@ -387,6 +387,21 @@ lle_label &lt;- function(lle_min) {
   } else {
     paste0(fmt_lle(lle_min), " min")
   }
+}
+# Reusable LLE abbreviation tag with tooltip — use on every page
+lle_tooltip_text &lt;- paste0(
+  "Loss of Life Expectancy: the average time gained or lost per exposure. ",
+  "Ranges from &lt;1 min (cup of coffee) to 5+ hrs/day (smoking 20/day). ",
+  "Can be harmful (smoking = 5 hrs/day lost) or beneficial (exercise = 1-1.5 hrs/day gained). ",
+  "Shown as positive magnitude here.")
+lle_abbr_tag &lt;- function() {
+  tags$span(
+    `data-bs-toggle` = "tooltip",
+    `data-bs-placement` = "top",
+    `data-bs-delay` = '{"show": 100, "hide": 200}',
+    title = lle_tooltip_text,
+    style = "cursor: help; text-decoration: underline dotted;",
+    tags$b(tags$em("Loss of Life Expectancy (LLE)")))
 }
 
 # ---- Instructions page ----
@@ -411,22 +426,13 @@ instructions_ui &lt;- function() {
         tags$ul(class = "mb-1",
           tags$li(tags$b(tags$em("Select one or more tags")),
                   " below to choose which risk categories to quiz on."),
-          tags$li("Each question shows ", tags$b(tags$em("3 or 4 activities or habits")), "."),
-          tags$li(tags$b(tags$em("Drag and drop")), " to rank them by ",
-                  tags$b("biggest effect on lifespan"), " (top) to ",
-                  tags$b("smallest effect"), " (bottom)."),
-          tags$li("Both harmful and beneficial factors are included.",
-                  " Rank by ", tags$b("magnitude"), " of effect, regardless of direction."),
+          tags$li(tags$b(tags$em("Drag and drop")),
+                  " to rank by risk to lifespan, biggest (top) to smallest (bottom)."),
+          tags$li("Rank by magnitude of factor (can be harmful or beneficial)."),
           tags$li("Risk is measured as ",
-                  tags$abbr(title = paste0(
-                    "Loss of Life Expectancy: the average time gained or lost per exposure. ",
-                    "Ranges from &lt;1 min (cup of coffee) to years (Mt. Everest). ",
-                    "Harmful: smoking 20/day = 300 min/day lost. ",
-                    "Beneficial: exercise = 60-90 min/day gained. ",
-                    "LLE is always shown as a positive magnitude here."),
-                    tags$b(tags$em("LLE"))),
-                  " in minutes, combining acute (micromort) and chronic (microlife) risks."),
-          tags$li("Each correctly ordered pair of items scores a point (",
+                  lle_abbr_tag(),
+                  "."),
+          tags$li("Each correctly ordered pair scores a point (",
                   tags$a(href = "https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient",
                          target = "_blank",
                          tags$abbr(title = "Kendall rank correlation: counts how many pairs you ordered correctly vs incorrectly. Perfect = all pairs right.",
@@ -463,6 +469,7 @@ instructions_ui &lt;- function() {
             actionButton("nq_10", "10", class = "option-btn",
               onclick = "selectInGroup('grp_nq', this)"))
         ),
+        uiOutput("tag_error_msg"),
         div(class = "text-center mt-3",
             actionButton("start_quiz", "Start Quiz", class = "btn-primary btn-lg"))
       )
@@ -547,7 +554,14 @@ question_ui &lt;- function(state) {
         tags$span(class = "item-name", format_activity_name(row$item_name)),
         source_badge,
         tags$span(class = "badge bg-secondary", row$category),
-        tags$span(class = "lle-reveal", paste0("LLE: ", lle_text, user_pos_text))
+        tags$span(class = "lle-reveal",
+                  tags$span(`data-bs-toggle` = "tooltip",
+                            `data-bs-placement` = "top",
+                            `data-bs-delay` = '{"show": 100, "hide": 200}',
+                            title = lle_tooltip_text,
+                            style = "cursor: help; text-decoration: underline dotted;",
+                            "LLE"),
+                  paste0(": ", lle_text, user_pos_text))
       )
     })
   }
@@ -780,6 +794,16 @@ ui &lt;- page_fluid(
         }
         Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
       }
+      // Initialize Bootstrap tooltips (fast show)
+      var tooltipObserver = new MutationObserver(function() {
+        var els = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]');
+        for (var i = 0; i &lt; els.length; i++) {
+          if (!els[i]._bsTooltip) {
+            els[i]._bsTooltip = new bootstrap.Tooltip(els[i]);
+          }
+        }
+      });
+      tooltipObserver.observe(document.body, {childList: true, subtree: true});
     "))
   ),
   div(class = "container-fluid",
@@ -792,7 +816,16 @@ server &lt;- function(input, output, session) {
     phase = "instructions", n_questions = 5L, current_q = 1L,
     questions = NULL, user_orders = NULL, display_order = NULL,
     revealed = NULL, sel_difficulty = "mixed", sel_nq = 5L,
-    sel_items_per_q = 3L, seen_questions = character())
+    sel_items_per_q = 3L, seen_questions = character(),
+    tag_error = FALSE)
+
+  # Tag error message (inline, above Start button)
+  output$tag_error_msg &lt;- renderUI({
+    if (state$tag_error) {
+      div(class = "alert alert-danger text-center py-2 mt-2",
+          "Please select at least one tag before starting.")
+    }
+  })
 
   # N questions button handlers
   observeEvent(input$nq_5, { state$sel_nq &lt;- 5L })
@@ -808,10 +841,10 @@ server &lt;- function(input, output, session) {
     # Validate tag selection
     sel_tags &lt;- input$selected_tags
     if (is.null(sel_tags) || length(sel_tags) == 0) {
-      showNotification("Please select at least one tag before starting.",
-                       type = "error", duration = 4)
+      state$tag_error &lt;- TRUE
       return()
     }
+    state$tag_error &lt;- FALSE
 
     # Filter pool by items_per_question (3 = q_ids 1-50, 4 = q_ids 51-80)
     q_sizes &lt;- tapply(quiz_pool$item_name, quiz_pool$question_id, length)

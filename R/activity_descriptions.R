@@ -449,7 +449,7 @@ activity_descriptions <- function() {
     "Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.",
     "https://www.bls.gov/iif/fatal-injuries-tables.htm",
 
-    "Construction (all, per work day)",
+    "Construction (all trades, per work day)",
     "Falls, struck-by, electrocution, and caught-in hazards across all construction trades.",
     "https://www.bls.gov/iif/fatal-injuries-tables.htm",
 
