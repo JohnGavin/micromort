@@ -7,7 +7,7 @@
 ranking_quiz_questions(
   tags = NULL,
   items_per_question = 3L,
-  n_questions = 10L,
+  n_questions = 5L,
   seed = NULL,
   difficulty = NULL
 )
@@ -20,7 +20,7 @@ available tags.}
 \item{items_per_question}{Integer. Number of items per question (2, 3, or 4).
 Default 3.}
 
-\item{n_questions}{Integer. Number of questions to generate. Default 10.}
+\item{n_questions}{Integer. Number of questions to generate. Default 5.}
 
 \item{seed}{Optional integer seed for reproducibility.}
 

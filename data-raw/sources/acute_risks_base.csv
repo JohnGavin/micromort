@@ -50,7 +50,7 @@ Train (1000 miles),1,0.7,Travel,per trip,event,0.17,5.88,https://micromorts.rip/
 Eating 1000 bananas (radiation),1,0.7,Diet,per event,event,1,1,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 1 hour in a coal mine,1,0.7,Occupation,per hour,hour,0.041666666666666664,24,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 Eating 40 tbsp peanut butter (aflatoxin),1,0.7,Diet,per event,event,1,1,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
-Eating 100 charbroiled steaks,1,0.7,Diet,per event,event,1,1,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
+Eating 100 charbroiled steaks (cumulative benzopyrene),1,0.7,Diet,per 100 steaks,event,1,1,https://micromorts.rip/,1,0,micromorts_rip,medium,2025,global,all,2026-03-15
 "Living (one day, age 20)",1,0.7,Daily Life,per day,day,1,1,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 "Living (one day, age 30)",1,0.7,Daily Life,per day,day,1,1,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 COVID-19 bivalent booster (all ages),1,0.7,COVID-19,11 weeks (2022),period,77,0.01,https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm,1,0,cdc_mmwr,high,2025,global,all,2026-03-15

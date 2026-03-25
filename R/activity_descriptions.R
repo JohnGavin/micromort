@@ -226,8 +226,8 @@ activity_descriptions <- function() {
     "Aflatoxin B1 from mould contamination is a potent liver carcinogen.",
     "https://en.wikipedia.org/wiki/Aflatoxin",
 
-    "Eating 100 charbroiled steaks",
-    "Polycyclic aromatic hydrocarbons from charring are carcinogenic at high cumulative doses.",
+    "Eating 100 charbroiled steaks (cumulative benzopyrene)",
+    "Cumulative cancer risk from polycyclic aromatic hydrocarbons (benzopyrene) in charred meat across 100 servings.",
     "https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon",
 
     "Living (one day, age 20)",

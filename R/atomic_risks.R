@@ -121,7 +121,7 @@ atomic_risks <- function() {
     "Eating 1000 bananas (radiation)", 1, "Diet", "per event", mm_rip,
     "1 hour in a coal mine", 1, "Occupation", "per hour", mm_rip,
     "Eating 40 tbsp peanut butter (aflatoxin)", 1, "Diet", "per event", wiki_mm,
-    "Eating 100 charbroiled steaks", 1, "Diet", "per event", mm_rip,
+    "Eating 100 charbroiled steaks (cumulative benzopyrene)", 1, "Diet", "per 100 steaks", mm_rip,
     "Living (one day, age 20)", 1, "Daily Life", "per day", wiki_mm,
     "Living (one day, age 30)", 1, "Daily Life", "per day", wiki_mm,
     "COVID-19 bivalent booster (all ages)", 1, "COVID-19", "11 weeks (2022)", cdc_mmwr,
