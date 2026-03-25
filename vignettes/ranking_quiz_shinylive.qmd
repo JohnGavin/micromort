@@ -749,16 +749,22 @@ ui <- page_fluid(
         }
         Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
       }
-      // Initialize Bootstrap tooltips (fast show)
-      var tooltipObserver = new MutationObserver(function() {
+      // Initialize Bootstrap tooltips on dynamic content
+      function initTooltips() {
         var els = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]');
         for (var i = 0; i < els.length; i++) {
-          if (!els[i]._bsTooltip) {
-            els[i]._bsTooltip = new bootstrap.Tooltip(els[i]);
+          if (!els[i]._bsTooltip && typeof bootstrap !== 'undefined') {
+            els[i]._bsTooltip = new bootstrap.Tooltip(els[i], {delay: {show: 100, hide: 200}});
           }
         }
-      });
-      tooltipObserver.observe(document.body, {childList: true, subtree: true});
+      }
+      // Re-init tooltips whenever Shiny re-renders UI
+      if (typeof Shiny !== 'undefined') {
+        $(document).on('shiny:value', function() { setTimeout(initTooltips, 100); });
+      }
+      // Also init on page load
+      if (document.readyState === 'complete') { initTooltips(); }
+      else { window.addEventListener('load', initTooltips); }
     "))
   ),
   div(class = "container-fluid",
