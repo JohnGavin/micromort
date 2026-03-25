@@ -59,6 +59,7 @@ quiz_css <- "
     white-space: nowrap;
     font-size: clamp(1rem, 2.5vw, 1.5rem);
   }
+  .tooltip-inner { font-size: 1rem !important; max-width: 350px !important; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   .option-btn {
     padding: 8px 18px; border: 2px solid #dee2e6; border-radius: 8px;
@@ -356,7 +357,7 @@ instructions_ui <- function() {
 
   tag_buttons <- lapply(all_tags, function(tag) {
     tags$span(
-      class = "tag-btn",
+      class = "tag-btn selected",
       onclick = sprintf("toggleTag(this, '%s')", tag),
       `data-tag` = tag,
       tag
@@ -385,8 +386,11 @@ instructions_ui <- function() {
         div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
         div(class = "option-row",
           span(class = "option-label",
-               tags$abbr(title = "Select 1 or more risk categories. Click individual tags to toggle. Use Select All / Deselect All for bulk selection.",
-                         "Tags:")),
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "right",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Select 1 or more risk categories. Click individual tags to toggle. Use Select All / Deselect All for bulk selection.",
+                         style = "cursor: help; text-decoration: underline dotted; font-size: 1.1em;",
+                         "Tags")),
           div(style = "display: flex; flex-direction: column; gap: 4px;",
             div(style = "display: flex; gap: 4px; margin-bottom: 4px;",
               tags$button(class = "btn btn-sm btn-outline-secondary",
@@ -397,15 +401,24 @@ instructions_ui <- function() {
                 tag_buttons))
         ),
         div(class = "option-row",
-          span(class = "option-label", "Items per Q:"),
+          span(class = "option-label",
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "top",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Number of risk items to rank in each question. 3 is quicker, 4 is harder.",
+                         style = "cursor: help; text-decoration: underline dotted;",
+                         "Items per question")),
           div(class = "option-btn-group", id = "grp_items",
             actionButton("items_3", "3", class = "option-btn selected",
               onclick = "selectInGroup('grp_items', this)"),
             actionButton("items_4", "4", class = "option-btn",
-              onclick = "selectInGroup('grp_items', this)"))
-        ),
-        div(class = "option-row",
-          span(class = "option-label", "Questions:"),
+              onclick = "selectInGroup('grp_items', this)")),
+          span(style = "width: 24px;"),
+          span(class = "option-label",
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "top",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Total number of ranking questions in this round.",
+                         style = "cursor: help; text-decoration: underline dotted;",
+                         "Questions")),
           div(class = "option-btn-group", id = "grp_nq",
             actionButton("nq_5", "5", class = "option-btn selected",
               onclick = "selectInGroup('grp_nq', this)"),
@@ -749,6 +762,19 @@ ui <- page_fluid(
         }
         Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
       }
+      // Initialize all tags as selected on load
+      function initSelectedTags() {
+        var tagBtns = document.querySelectorAll('.tag-btn');
+        for (var i = 0; i < tagBtns.length; i++) {
+          selectedTags[tagBtns[i].getAttribute('data-tag')] = true;
+        }
+        if (typeof Shiny !== 'undefined') {
+          Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+        }
+      }
+      if (document.readyState === 'complete') { initSelectedTags(); }
+      else { window.addEventListener('load', initSelectedTags); }
+
       // Initialize Bootstrap tooltips on dynamic content
       function initTooltips() {
         var els = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]');
