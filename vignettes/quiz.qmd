@@ -59,12 +59,10 @@ format:
 </style>
 
 <div id="quiz-app">Loading quiz data...</div>
-
-<script id="quiz-data" type="application/json">
 ```
 
 ```{r quiz-data-gen, echo=FALSE, results='asis'}
-# Generate JSON from targets pipeline data
+# Generate JSON from targets pipeline data and embed in script tag
 safe_tar_read <- function(name) {
   store <- Sys.getenv("TARGETS_STORE", unset = NA)
   if (is.na(store)) {
@@ -78,18 +76,17 @@ safe_tar_read <- function(name) {
 }
 pairs <- safe_tar_read("vig_quiz_pairs")
 if (is.null(pairs)) {
-  # Fallback: generate directly
   pairs <- rbind(
     micromort::quiz_pairs(difficulty = "easy", seed = 42),
     micromort::quiz_pairs(difficulty = "medium", seed = 42),
     micromort::quiz_pairs(difficulty = "hard", seed = 42)
   )
 }
-cat(jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE))
+json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+cat(sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str))
 ```
 
 ```{=html}
-</script>
 
 <script>
 // ---- State ----
