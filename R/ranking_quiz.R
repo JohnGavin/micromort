@@ -131,7 +131,7 @@ kendall_tau_score <- function(user_order, correct_order) {
 #'   available tags.
 #' @param items_per_question Integer. Number of items per question (2, 3, or 4).
 #'   Default 3.
-#' @param n_questions Integer. Number of questions to generate. Default 10.
+#' @param n_questions Integer. Number of questions to generate. Default 5.
 #' @param seed Optional integer seed for reproducibility.
 #' @param difficulty Optional difficulty level: "easy", "medium", "hard",
 #'   or "mixed". Easy = large LLE spread within question, hard = small spread.
@@ -147,12 +147,15 @@ kendall_tau_score <- function(user_order, correct_order) {
 #' @export
 ranking_quiz_questions <- function(tags = NULL,
                                     items_per_question = 3L,
-                                    n_questions = 10L,
+                                    n_questions = 5L,
                                     seed = NULL,
                                     difficulty = NULL) {
   checkmate::assert_character(tags, null.ok = TRUE, min.len = 1)
   checkmate::assert_int(items_per_question, lower = 2L, upper = 4L)
   checkmate::assert_int(n_questions, lower = 1L)
+  # min_ratio: minimum LLE ratio between any adjacent pair in a question
+  # Prevents ties and near-ties that users cannot meaningfully rank
+  min_item_ratio <- 1.1
   checkmate::assert_int(seed, null.ok = TRUE)
   checkmate::assert_choice(difficulty, c("easy", "medium", "hard", "mixed"),
                            null.ok = TRUE)
@@ -244,20 +247,28 @@ ranking_quiz_questions <- function(tags = NULL,
     available <- pool[!(pool$item_name %in% used_items), ]
     if (nrow(available) < items_per_question) break
 
-    # Sample items with LLE spread for interesting questions
-    # Try up to 20 times to get a good spread
+    # Sample items with LLE spread and no ties
+    # Reject candidates where any adjacent pair has ratio < min_item_ratio
     best_items <- NULL
     best_spread <- 0
-    for (attempt in seq_len(20L)) {
+    for (attempt in seq_len(50L)) {
       idx <- sample(nrow(available), items_per_question)
       candidate <- available[idx, ]
-      spread <- max(candidate$lle_minutes) / max(min(candidate$lle_minutes), 0.01)
+      sorted_lle <- sort(candidate$lle_minutes, decreasing = TRUE)
+      # Check all adjacent pairs have sufficient ratio
+      adjacent_ratios <- sorted_lle[-length(sorted_lle)] /
+                         pmax(sorted_lle[-1], 0.001)
+      if (any(adjacent_ratios < min_item_ratio)) next  # ties or near-ties
+      spread <- max(sorted_lle) / max(min(sorted_lle), 0.01)
       if (spread > best_spread) {
         best_spread <- spread
         best_items <- candidate
       }
       if (spread >= 5) break  # good enough
     }
+
+    # If no valid candidate found (all had ties), skip this question
+    if (is.null(best_items)) next
 
     q_id <- q_id + 1L
     # Rank by LLE (highest = most dangerous = rank 1)

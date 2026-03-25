@@ -57,15 +57,15 @@ ranking_quiz_questions(tags = "Travel", n_questions = 3, seed = 42)
 #> # A tibble: 9 × 12
 #>   question_id tag    item_name                item_source lle_minutes micromorts
 #>         <int> <chr>  <chr>                    <chr>             <dbl>      <dbl>
-#> 1           1 Travel Flying (12h ultra-long-… acute            139.         6.6 
-#> 2           1 Travel Driving (230 miles)      acute             21.0        1   
-#> 3           1 Travel Walking (20 miles)       acute             21.0        1   
-#> 4           2 Travel Flying (2h short-haul)   acute             23.1        1.1 
-#> 5           2 Travel Commuting by bicycle (3… acute             10.5        0.5 
-#> 6           2 Travel Commuting by car (30 mi… acute              2.73       0.13
-#> 7           3 Travel Motorcycling (60 miles)  acute            210.        10   
-#> 8           3 Travel Flying (5h medium-haul)  acute             36.8        1.75
-#> 9           3 Travel Frequent executive flye… acute              3.16       0.15
+#> 1           1 Travel Train (1000 miles)       acute            21.0       1     
+#> 2           1 Travel Commuting by bicycle (3… acute            10.5       0.5   
+#> 3           1 Travel Frequent executive flye… acute             3.16      0.15  
+#> 4           2 Travel Flying (8h long-haul)    acute            82.0       3.9   
+#> 5           2 Travel Flying (5h medium-haul)  acute            36.8       1.75  
+#> 6           2 Travel Commuting by car (30 mi… acute             2.73      0.13  
+#> 7           3 Travel Motorcycling (60 miles)  acute           210.       10     
+#> 8           3 Travel Flying (2h short-haul)   acute            23.1       1.1   
+#> 9           3 Travel Business traveller (ann… acute             0.789     0.0375
 #> # ℹ 6 more variables: microlives_per_day <dbl>, category <chr>,
 #> #   description <chr>, help_url <chr>, correct_rank <int>, difficulty <chr>
 ```

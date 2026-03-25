@@ -310,9 +310,9 @@ instructions_ui <- function() {
         div(class = "option-row",
           span(class = "option-label", "Questions:"),
           div(class = "option-btn-group", id = "grp_nq",
-            actionButton("nq_5", "5", class = "option-btn",
+            actionButton("nq_5", "5", class = "option-btn selected",
               onclick = "selectInGroup('grp_nq', this)"),
-            actionButton("nq_10", "10", class = "option-btn selected",
+            actionButton("nq_10", "10", class = "option-btn",
               onclick = "selectInGroup('grp_nq', this)"))
         ),
         div(class = "text-center mt-3",
@@ -631,9 +631,9 @@ ui <- page_fluid(
 
 server <- function(input, output, session) {
   state <- reactiveValues(
-    phase = "instructions", n_questions = 10L, current_q = 1L,
+    phase = "instructions", n_questions = 5L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
-    sel_difficulty = "mixed", sel_nq = 10L,
+    sel_difficulty = "mixed", sel_nq = 5L,
     seen_pairs = character())
 
   # Difficulty button handlers

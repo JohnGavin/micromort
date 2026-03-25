@@ -1,5 +1,10 @@
 # Rank these risks from most to least dangerous
 
+# Rank these risks from most to least dangerous
+
+Interactive drag-and-drop quiz ranking everyday risks by their effect on
+life expectancy — combining acute micromorts and chronic microlives.
+
 ``` shinylive-r
 #| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
