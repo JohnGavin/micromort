@@ -278,6 +278,7 @@ For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like t
 
 *   Spiegelhalter D (2012). "Using speed of ageing and 'microlives'." BMJ 2012;345:e8223. [doi:10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
 *   Spiegelhalter D (2012). "Understanding uncertainty: Microlives." Plus Magazine. [plus.maths.org](https://plus.maths.org/content/understanding-uncertainty-microlives)
+*   Spiegelhalter D (2009). "Micromorts." Plus Magazine. [plus.maths.org](https://plus.maths.org/os/issue55/features/risk/index) — includes the additivity formula for combining independent risks.
 *   WHO Global Burden of Disease: [ghdx.healthdata.org](https://ghdx.healthdata.org/)
 *   NICE Methods Guide: [nice.org.uk](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case)
 
