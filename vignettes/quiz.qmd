@@ -18,10 +18,7 @@ format:
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
   .description { margin-bottom: 0 !important; }
-  main.content { max-width: 100% !important; padding: 0 10px; }
-  #quarto-content { padding: 0; }
-
-  #quiz-app { max-width: 100%; padding: 20px; font-family: inherit; font-size: 1.15rem; }
+  #quiz-app { max-width: 800px; margin: 0 auto; padding: 20px; font-family: inherit; font-size: 1.15rem; }
   #quiz-app .btn { font-size: 1.1rem; }
   #quiz-app .btn-lg { font-size: 1.25rem; }
   .quiz-row { display: flex; align-items: stretch; gap: 16px; }
@@ -45,6 +42,7 @@ format:
   .quiz-btn .help-link { font-size: 0.85rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
+  .explanation-panel p { margin-bottom: 0.25rem; }
   .gap-3 { gap: 1rem; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
