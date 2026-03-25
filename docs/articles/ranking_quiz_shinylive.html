@@ -481,7 +481,17 @@ instructions_ui &lt;- function() {
 question_ui &lt;- function(state) {
   q &lt;- state$current_q
   n &lt;- state$n_questions
+
+  # Guard against NULL/empty state during initial render
+  if (is.null(state$questions) || q &gt; length(state$questions)) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   q_data &lt;- state$questions[[q]]
+  if (is.null(q_data) || nrow(q_data) == 0) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   revealed &lt;- state$revealed[q]
   user_order &lt;- state$user_orders[[q]]
   items_k &lt;- nrow(q_data)
@@ -638,6 +648,7 @@ question_ui &lt;- function(state) {
 
 # ---- Results summary page ----
 results_summary_ui &lt;- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n &lt;- state$n_questions
 
   # Compute overall score
@@ -711,6 +722,7 @@ results_summary_ui &lt;- function(state) {
 
 # ---- Results detail page ----
 results_detail_ui &lt;- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n &lt;- state$n_questions
 
   detail_rows &lt;- lapply(seq_len(n), function(i) {

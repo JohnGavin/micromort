@@ -424,7 +424,17 @@ instructions_ui <- function() {
 question_ui <- function(state) {
   q <- state$current_q
   n <- state$n_questions
+
+  # Guard against NULL/empty state during initial render
+  if (is.null(state$questions) || q > length(state$questions)) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   q_data <- state$questions[[q]]
+  if (is.null(q_data) || nrow(q_data) == 0) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   revealed <- state$revealed[q]
   user_order <- state$user_orders[[q]]
   items_k <- nrow(q_data)
@@ -581,6 +591,7 @@ question_ui <- function(state) {
 
 # ---- Results summary page ----
 results_summary_ui <- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n <- state$n_questions
 
   # Compute overall score
@@ -654,6 +665,7 @@ results_summary_ui <- function(state) {
 
 # ---- Results detail page ----
 results_detail_ui <- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n <- state$n_questions
 
   detail_rows <- lapply(seq_len(n), function(i) {
