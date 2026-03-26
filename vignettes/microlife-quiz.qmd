@@ -60,8 +60,12 @@ format:
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
   .detail-table th, .detail-table td { padding: 8px 12px; }
   .alert { font-size: 1.1rem; }
+  .qr-section { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 8px 0; }
+  .qr-section canvas { border-radius: 4px; }
+  .qr-section .qr-url { font-size: 0.85rem; color: #6c757d; word-break: break-all; }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <div id="quiz-app">Loading quiz data...</div>
 ```
 
@@ -127,6 +131,15 @@ function fmtML(v) {
 function fmtMLabs(v) {
   if (v >= 10) return Math.round(v).toString();
   return parseFloat(v.toFixed(1)).toString();
+}
+function renderQR(containerId, size) {
+  const url = window.location.href.split('?')[0].split('#')[0];
+  const el = document.getElementById(containerId);
+  if (!el || typeof qrcode === 'undefined') return;
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  el.innerHTML = `<div class="qr-section">${qr.createImgTag(size || 3)}<span class="qr-url">${url}</span></div>`;
 }
 function selectInGroup(grpId, clicked) {
   const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
@@ -231,9 +244,9 @@ const ENCOURAGEMENTS = [
 function render() {
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
-    case 'instructions': app.innerHTML = renderInstructions(); break;
+    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 2); break;
     case 'question': app.innerHTML = renderQuestion(); break;
-    case 'results_summary': app.innerHTML = renderResults(); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }
@@ -270,6 +283,7 @@ function renderInstructions() {
       <div class="text-center mt-3">
         <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quiz</button>
       </div>
+      <div id="qr-instructions"></div>
     </div></div>`;
 }
 
@@ -426,7 +440,8 @@ function renderResults() {
     <div class="text-center mt-2">
       <small id="percentile_text" class="text-muted"></small><br>
       <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
-    </div>`;
+    </div>
+    <div id="qr-results"></div>`;
 }
 
 function shareResult(score, n) {
