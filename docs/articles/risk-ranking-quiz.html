@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives.">
+
+<title>Rank these risks by their effect on lifespan</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="risk-ranking-quiz_files/libs/clipboard/clipboard.min.js"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/popper.min.js"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="risk-ranking-quiz_files/libs/quarto-html/anchor.min.js"></script>
+<link href="risk-ranking-quiz_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="risk-ranking-quiz_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="risk-ranking-quiz_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="risk-ranking-quiz_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="risk-ranking-quiz_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Rank these risks by their effect on lifespan</h1>
+</div>
+
+<div>
+  <div class="description">
+    Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .description { margin-bottom: 0 !important; }
+  #quiz-app { max-width: 800px; margin: 0 auto; padding: 20px; font-family: inherit; font-size: 1.15rem; }
+  #quiz-app .btn { font-size: 1.1rem; }
+  #quiz-app .btn-lg { font-size: 1.25rem; }
+  .gap-3 { gap: 1rem; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .option-btn {
+    padding: 10px 20px; border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff; font-size: 1.1rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    text-align: center; min-width: 60px;
+  }
+  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; font-size: 1.1rem; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
+  .explanation-panel p { margin-bottom: 0.25rem; }
+  .detail-scroll { overflow-x: auto; width: 100%; }
+  .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
+  .detail-table th, .detail-table td { padding: 8px 12px; }
+  .alert { font-size: 1.1rem; }
+  .rank-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 2px solid #dee2e6; border-radius: 8px; background: #2b3e50; color: #fff; margin-bottom: 6px; cursor: grab; }
+  .rank-item .drag-handle { font-size: 1.2rem; color: #adb5bd; }
+  .rank-item-correct { border-color: #198754 !important; background: #d1e7dd !important; color: #0f5132 !important; }
+  .rank-item-wrong { border-color: #dc3545 !important; background: #f8d7da !important; color: #842029 !important; }
+  .rank-label { font-size: 0.9rem; color: #6c757d; text-align: center; }
+  .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+  .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
+  .tag-btn:hover { border-color: #2c7be5; }
+  .tag-btn.selected { border-color: #2c7be5; background: #2c7be5; }
+  .rank-item .badge { font-size: 0.8em; }
+  .rank-item .item-name { font-weight: 600; flex: 1; }
+</style>
+
+<div id="quiz-app">Loading quiz data...</div>
+<script id="quiz-data" type="application/json">[{"question_id":1,"tag":"Diet & Drink","item_name":"5 servings fruit/veg","item_source":"chronic","lle_minutes":120,"microlives_per_day":4,"category":"Diet","description":"Daily fruit and vegetable intake reduces cardiovascular disease, cancer, and all-cause mortality. Largest benefit from 5+ servings.","help_url":"https://en.wikipedia.org/wiki/Five_A_Day","correct_rank":1,"difficulty":"medium"},{"question_id":1,"tag":"Diet & Drink","item_name":"4th-5th alcoholic drink","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Alcohol","description":"Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_health","correct_rank":2,"difficulty":"medium"},{"question_id":1,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 18-49)","item_source":"acute","lle_minutes":4.2077,"micromorts":0.2,"category":"COVID-19","description":"Young adult monovalent-vaccinated COVID-19 mortality was very low.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"medium"},{"question_id":2,"tag":"Travel","item_name":"Motorcycling (60 miles)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Travel","description":"Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","help_url":"https://en.wikipedia.org/wiki/Motorcycle_safety","correct_rank":1,"difficulty":"medium"},{"question_id":2,"tag":"Sport & Adventure","item_name":"Scuba diving, trained (per dive)","item_source":"acute","lle_minutes":105.192,"micromorts":5,"category":"Sport","description":"Single-dive risk for trained divers from decompression sickness and equipment failure.","help_url":"https://en.wikipedia.org/wiki/Scuba_diving","correct_rank":2,"difficulty":"medium"},{"question_id":2,"tag":"Radiation","item_name":"Airline pilot (annual radiation)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Occupation","description":"Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","help_url":"https://en.wikipedia.org/wiki/Airline_pilot","correct_rank":3,"difficulty":"medium"},{"question_id":3,"tag":"Lifestyle","item_name":"Living (one day, age 50)","item_source":"acute","lle_minutes":84.1536,"micromorts":4,"category":"Daily Life","description":"Daily mortality at age 50 is roughly 4x that of a 20-year-old.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":1,"difficulty":"medium"},{"question_id":3,"tag":"Radiation","item_name":"Barium enema (radiation per scan)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"Medical","description":"Moderate radiation dose from fluoroscopic imaging of the large intestine.","help_url":"https://en.wikipedia.org/wiki/Barium_enema","correct_rank":2,"difficulty":"medium"},{"question_id":3,"tag":"Radiation","item_name":"High-altitude resident (annual cosmic)","item_source":"acute","lle_minutes":0.7363,"micromorts":0.035,"category":"Environment","description":"Living above 2,000m increases cosmic radiation exposure compared to sea level.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":3,"difficulty":"medium"},{"question_id":4,"tag":"Lifestyle","item_name":"Living (one day, age 30)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Daily Life","description":"Daily mortality at age 30 is similar to age 20 with slightly more disease contribution.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":1,"difficulty":"medium"},{"question_id":4,"tag":"Sport & Adventure","item_name":"Horse riding","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Sport","description":"Falls from horseback can cause traumatic brain and spinal injuries.","help_url":"https://en.wikipedia.org/wiki/Equestrianism","correct_rank":2,"difficulty":"medium"},{"question_id":4,"tag":"Disease","item_name":"Bee/wasp sting (general)","item_source":"acute","lle_minutes":0.6312,"micromorts":0.03,"category":"Wildlife","description":"Bee or wasp sting fatality risk for non-allergic individuals.","help_url":"https://en.wikipedia.org/wiki/Bee_sting","correct_rank":3,"difficulty":"medium"},{"question_id":5,"tag":"Sport & Adventure","item_name":"Mt. Everest ascent","item_source":"acute","lle_minutes":798028.5888,"micromorts":37932,"category":"Mountaineering","description":"At 8,849m, extreme altitude, weather, and avalanche risk make Everest the deadliest common mountaineering objective.","help_url":"https://en.wikipedia.org/wiki/Mount_Everest","correct_rank":1,"difficulty":"easy"},{"question_id":5,"tag":"Lifestyle","item_name":"Living (one day, age 75)","item_source":"acute","lle_minutes":2209.032,"micromorts":105,"category":"Daily Life","description":"Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":2,"difficulty":"easy"},{"question_id":5,"tag":"Sport & Adventure","item_name":"Skydiving (US)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"Sport","description":"US skydiving fatality rate based on USPA incident reports.","help_url":"https://en.wikipedia.org/wiki/Skydiving","correct_rank":3,"difficulty":"easy"},{"question_id":6,"tag":"Sport & Adventure","item_name":"American football","item_source":"acute","lle_minutes":420.768,"micromorts":20,"category":"Sport","description":"Contact sport risk from traumatic injury including spinal and head trauma.","help_url":"https://en.wikipedia.org/wiki/American_football","correct_rank":1,"difficulty":"hard"},{"question_id":6,"tag":"Disease","item_name":"Living in Maryland COVID-19 (Mar-May 2020)","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"COVID-19","description":"Maryland experienced moderate COVID-19 mortality during the initial wave.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","correct_rank":2,"difficulty":"hard"},{"question_id":6,"tag":"Travel","item_name":"Flying (8h long-haul)","item_source":"acute","lle_minutes":82.0498,"micromorts":3.9,"category":"Travel","description":"Long-haul flights have significant DVT risk, especially for those with risk factors.","help_url":"https://en.wikipedia.org/wiki/Economy_class_syndrome","correct_rank":3,"difficulty":"hard"},{"question_id":7,"tag":"Sport & Adventure","item_name":"Sitting 8+ hours/day","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Sedentary","description":"Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","help_url":"https://en.wikipedia.org/wiki/Sedentary_lifestyle","correct_rank":1,"difficulty":"medium"},{"question_id":7,"tag":"Diet & Drink","item_name":"Eating 40 tbsp peanut butter (aflatoxin)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Diet","description":"Aflatoxin B1 from mould contamination is a potent liver carcinogen.","help_url":"https://en.wikipedia.org/wiki/Aflatoxin","correct_rank":2,"difficulty":"medium"},{"question_id":7,"tag":"Disease","item_name":"Shark encounter (ocean swim)","item_source":"acute","lle_minutes":1.2623,"micromorts":0.06,"category":"Wildlife","description":"Shark attack fatality risk per ocean swim, based on ISAF incident data.","help_url":"https://www.floridamuseum.ufl.edu/shark-attacks/","correct_rank":3,"difficulty":"medium"},{"question_id":8,"tag":"Travel","item_name":"Train (1000 miles)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Travel","description":"Rail travel is one of the safest transport modes per mile.","help_url":"https://en.wikipedia.org/wiki/Rail_transport","correct_rank":1,"difficulty":"hard"},{"question_id":8,"tag":"Disease","item_name":"Snake bite (US, with antivenom)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Wildlife","description":"Snake bite fatality risk in the US where antivenom is readily available.","help_url":"https://en.wikipedia.org/wiki/Snakebite","correct_rank":2,"difficulty":"hard"},{"question_id":8,"tag":"Travel","item_name":"Commuting by car (30 min)","item_source":"acute","lle_minutes":2.735,"micromorts":0.13,"category":"Travel","description":"Short car commute with crash risk from traffic collisions.","help_url":"https://en.wikipedia.org/wiki/Traffic_collision","correct_rank":3,"difficulty":"hard"},{"question_id":9,"tag":"Sport & Adventure","item_name":"Skydiving (UK)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"Sport","description":"UK skydiving fatality rate based on British Parachute Association data.","help_url":"https://en.wikipedia.org/wiki/Skydiving","correct_rank":1,"difficulty":"hard"},{"question_id":9,"tag":"Diet & Drink","item_name":"High fiber diet","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Diet","description":"25 g+ fiber daily from whole grains, fruit, and vegetables reduces colorectal cancer, cardiovascular disease, and type 2 diabetes.","help_url":"https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects","correct_rank":2,"difficulty":"hard"},{"question_id":9,"tag":"Travel","item_name":"Walking (20 miles)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Travel","description":"Pedestrian fatality risk from traffic collisions over a 20-mile walk.","help_url":"https://en.wikipedia.org/wiki/Pedestrian","correct_rank":3,"difficulty":"hard"},{"question_id":10,"tag":"Medical","item_name":"Caesarean birth (mother)","item_source":"acute","lle_minutes":3576.528,"micromorts":170,"category":"Medical","description":"Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","help_url":"https://en.wikipedia.org/wiki/Caesarean_section","correct_rank":1,"difficulty":"easy"},{"question_id":10,"tag":"Disease","item_name":"COVID-19 bivalent booster (all ages)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"COVID-19","description":"Population-average residual COVID-19 risk after bivalent booster vaccination.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"easy"},{"question_id":10,"tag":"Radiation","item_name":"Nuclear plant worker (annual radiation)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Occupation","description":"Controlled occupational exposure within regulatory limits using dosimetry and shielding.","help_url":"https://en.wikipedia.org/wiki/Nuclear_power_plant","correct_rank":3,"difficulty":"easy"},{"question_id":11,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 65-79)","item_source":"acute","lle_minutes":189.3456,"micromorts":9,"category":"COVID-19","description":"Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"medium"},{"question_id":11,"tag":"Medical","item_name":"Cancer screening (age-appropriate)","item_source":"chronic","lle_minutes":30,"microlives_per_day":1,"category":"Medical","description":"Age-appropriate screening (mammography, colonoscopy, cervical smears) detects cancer early when treatment is most effective.","help_url":"https://en.wikipedia.org/wiki/Cancer_screening","correct_rank":2,"difficulty":"medium"},{"question_id":11,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 18-49)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"COVID-19","description":"Bivalent-boosted young adults had near-baseline COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"medium"},{"question_id":12,"tag":"Sport & Adventure","item_name":"Base jumping (per jump)","item_source":"acute","lle_minutes":9046.512,"micromorts":430,"category":"Sport","description":"Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","help_url":"https://en.wikipedia.org/wiki/BASE_jumping","correct_rank":1,"difficulty":"easy"},{"question_id":12,"tag":"Diet & Drink","item_name":"High sugar diet","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Excess refined sugar intake drives insulin resistance, type 2 diabetes, obesity, and cardiovascular disease.","help_url":"https://en.wikipedia.org/wiki/Sugar#Health_effects","correct_rank":2,"difficulty":"easy"},{"question_id":12,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 18-49)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"COVID-19","description":"Young adult unvaccinated COVID-19 mortality was low but non-negligible.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"easy"},{"question_id":13,"tag":"Disease","item_name":"Spanish flu infection","item_source":"acute","lle_minutes":63115.2,"micromorts":3000,"category":"Disease","description":"The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","help_url":"https://en.wikipedia.org/wiki/Spanish_flu","correct_rank":1,"difficulty":"easy"},{"question_id":13,"tag":"Disease","item_name":"Living in NYC COVID-19 (Mar-May 2020)","item_source":"acute","lle_minutes":1051.92,"micromorts":50,"category":"COVID-19","description":"New York City experienced extreme COVID-19 mortality during the initial wave.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City","correct_rank":2,"difficulty":"easy"},{"question_id":13,"tag":"Workplace","item_name":"Roofing (per work day)","item_source":"acute","lle_minutes":39.973,"micromorts":1.9,"category":"Occupation","description":"Falls from height are the primary cause of roofing fatalities.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"easy"},{"question_id":14,"tag":"Disease","item_name":"Living in US during COVID-19 (Jul 2020)","item_source":"acute","lle_minutes":10519.2,"micromorts":500,"category":"COVID-19","description":"Peak US COVID-19 mortality before vaccines were available.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States","correct_rank":1,"difficulty":"easy"},{"question_id":14,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 80+)","item_source":"acute","lle_minutes":4922.9856,"micromorts":234,"category":"COVID-19","description":"Unvaccinated elderly face the highest COVID-19 mortality rates.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"easy"},{"question_id":14,"tag":"Travel","item_name":"Commuting by bicycle (30 min)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Travel","description":"Cycling commute with risk from traffic collisions and exertion-related events.","help_url":"https://en.wikipedia.org/wiki/Bicycle_safety","correct_rank":3,"difficulty":"easy"},{"question_id":15,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 65-79)","item_source":"acute","lle_minutes":1598.9184,"micromorts":76,"category":"COVID-19","description":"Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"medium"},{"question_id":15,"tag":"Sport & Adventure","item_name":"Skydiving (per jump)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Sport","description":"Risk from parachute malfunction, mid-air collision, and landing errors.","help_url":"https://en.wikipedia.org/wiki/Skydiving","correct_rank":2,"difficulty":"medium"},{"question_id":15,"tag":"Diet & Drink","item_name":"Drinking a glass of wine","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Daily Life","description":"Acute alcohol effects including impaired judgment and cardiovascular stress.","help_url":"https://en.wikipedia.org/wiki/Alcohol_(drug)","correct_rank":3,"difficulty":"medium"},{"question_id":16,"tag":"Medical","item_name":"Night in hospital","item_source":"acute","lle_minutes":1577.88,"micromorts":75,"category":"Medical","description":"Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","help_url":"https://en.wikipedia.org/wiki/Hospital-acquired_infection","correct_rank":1,"difficulty":"hard"},{"question_id":16,"tag":"Medical","item_name":"General anesthesia (emergency)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Medical","description":"Emergency anesthesia carries higher risk than elective due to patient instability.","help_url":"https://en.wikipedia.org/wiki/General_anaesthesia","correct_rank":2,"difficulty":"hard"},{"question_id":16,"tag":"Radiation","item_name":"CT scan chest (radiation per scan)","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"Medical","description":"Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":3,"difficulty":"hard"},{"question_id":17,"tag":"Lifestyle","item_name":"High LDL cholesterol (untreated)","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Cardiovascular","description":"LDL > 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","help_url":"https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease","correct_rank":1,"difficulty":"hard"},{"question_id":17,"tag":"Diet & Drink","item_name":"2nd-3rd alcoholic drink","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Alcohol","description":"After the first drink's potential protective effect, the second and third drinks increase liver disease and accident risk.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_health","correct_rank":2,"difficulty":"hard"},{"question_id":17,"tag":"Radiation","item_name":"Frequent executive flyer (annual cosmic)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Travel","description":"Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":3,"difficulty":"hard"},{"question_id":18,"tag":"Sport & Adventure","item_name":"Scuba diving, trained (yearly)","item_source":"acute","lle_minutes":3450.2976,"micromorts":164,"category":"Sport","description":"Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","help_url":"https://en.wikipedia.org/wiki/Scuba_diving","correct_rank":1,"difficulty":"easy"},{"question_id":18,"tag":"Lifestyle","item_name":"Living (one day, age 45)","item_source":"acute","lle_minutes":126.2304,"micromorts":6,"category":"Daily Life","description":"Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":2,"difficulty":"easy"},{"question_id":18,"tag":"Radiation","item_name":"Dental X-ray (radiation per scan)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"Medical","description":"Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","help_url":"https://en.wikipedia.org/wiki/Dental_radiography","correct_rank":3,"difficulty":"easy"},{"question_id":19,"tag":"Disease","item_name":"COVID-19 infection (unvaccinated)","item_source":"acute","lle_minutes":210384,"micromorts":10000,"category":"COVID-19","description":"Unvaccinated COVID-19 infection carries substantial mortality risk, especially for older adults.","help_url":"https://en.wikipedia.org/wiki/COVID-19","correct_rank":1,"difficulty":"easy"},{"question_id":19,"tag":"Workplace","item_name":"Structural iron/steel work (per work day)","item_source":"acute","lle_minutes":31.5576,"micromorts":1.5,"category":"Occupation","description":"Working at height on building frames with fall and struck-by hazards.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":2,"difficulty":"easy"},{"question_id":19,"tag":"Radiation","item_name":"X-ray technician (annual radiation)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"Occupation","description":"Occupational radiation exposure mitigated by lead shielding and ALARA protocols.","help_url":"https://en.wikipedia.org/wiki/Radiographer","correct_rank":3,"difficulty":"easy"},{"question_id":20,"tag":"Lifestyle","item_name":"First day of life (newborn)","item_source":"acute","lle_minutes":9046.512,"micromorts":430,"category":"Daily Life","description":"The first 24 hours carry elevated risk from birth complications and congenital conditions.","help_url":"https://en.wikipedia.org/wiki/Neonatal_death","correct_rank":1,"difficulty":"easy"},{"question_id":20,"tag":"Travel","item_name":"Flying (5h medium-haul)","item_source":"acute","lle_minutes":36.8172,"micromorts":1.75,"category":"Travel","description":"Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","help_url":"https://en.wikipedia.org/wiki/Aviation_safety","correct_rank":2,"difficulty":"easy"},{"question_id":20,"tag":"Diet & Drink","item_name":"Eating 1000 bananas (radiation)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Diet","description":"Cumulative potassium-40 radiation dose from 1000 bananas equals roughly 1 micromort.","help_url":"https://en.wikipedia.org/wiki/Banana_equivalent_dose","correct_rank":3,"difficulty":"easy"},{"question_id":21,"tag":"Diet & Drink","item_name":"First alcoholic drink","item_source":"chronic","lle_minutes":30,"microlives_per_day":1,"category":"Alcohol","description":"Moderate alcohol intake (1 drink/day) shows a J-shaped mortality curve, with possible protective cardiovascular effects.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease","correct_rank":1,"difficulty":"medium"},{"question_id":21,"tag":"Travel","item_name":"Flying (2h short-haul)","item_source":"acute","lle_minutes":23.1422,"micromorts":1.1,"category":"Travel","description":"Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","help_url":"https://en.wikipedia.org/wiki/Aviation_safety","correct_rank":2,"difficulty":"medium"},{"question_id":21,"tag":"Lifestyle","item_name":"Working in an office (8 hours)","item_source":"acute","lle_minutes":0.6312,"micromorts":0.03,"category":"Daily Life","description":"Background mortality rate during sedentary office work.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":3,"difficulty":"medium"},{"question_id":22,"tag":"Radiation","item_name":"CT scan abdomen (radiation per scan)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Medical","description":"Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":1,"difficulty":"hard"},{"question_id":22,"tag":"Sport & Adventure","item_name":"150 min weekly exercise","item_source":"chronic","lle_minutes":90,"microlives_per_day":3,"category":"Exercise","description":"Meeting WHO physical activity guidelines reduces cardiovascular, cancer, and all-cause mortality substantially.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":2,"difficulty":"hard"},{"question_id":22,"tag":"Diet & Drink","item_name":"2-3 cups coffee (men)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Heavy coffee consumption in men shows a small mortality association, though the evidence is mixed and coffee also has protective effects.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_coffee","correct_rank":3,"difficulty":"hard"},{"question_id":23,"tag":"Lifestyle","item_name":"Chronic stress/poor sleep","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Mental Health","description":"Chronic stress and sleep deprivation elevate cortisol, drive inflammation, and increase cardiovascular and metabolic disease risk.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_chronic_stress","correct_rank":1,"difficulty":"medium"},{"question_id":23,"tag":"Workplace","item_name":"Mining (per work day)","item_source":"acute","lle_minutes":18.9346,"micromorts":0.9,"category":"Occupation","description":"Roof collapse, gas explosion, and heavy equipment hazards in underground and surface mining.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":2,"difficulty":"medium"},{"question_id":23,"tag":"Radiation","item_name":"Dental radiographer (annual radiation)","item_source":"acute","lle_minutes":0.2104,"micromorts":0.01,"category":"Occupation","description":"Very low annual occupational radiation dose with standard distance protocols.","help_url":"https://en.wikipedia.org/wiki/Dental_radiography","correct_rank":3,"difficulty":"medium"},{"question_id":24,"tag":"Lifestyle","item_name":"Living (one day, under age 1)","item_source":"acute","lle_minutes":315.576,"micromorts":15,"category":"Daily Life","description":"Infant mortality from congenital conditions, SIDS, and birth complications.","help_url":"https://en.wikipedia.org/wiki/Infant_mortality","correct_rank":1,"difficulty":"medium"},{"question_id":24,"tag":"Travel","item_name":"Driving (230 miles)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Travel","description":"Traffic fatality risk for a typical 230-mile car journey.","help_url":"https://en.wikipedia.org/wiki/Traffic_collision","correct_rank":2,"difficulty":"medium"},{"question_id":24,"tag":"Lifestyle","item_name":"Taking a bath","item_source":"acute","lle_minutes":1.4727,"micromorts":0.07,"category":"Daily Life","description":"Drowning risk, particularly for elderly and those with medical conditions.","help_url":"https://en.wikipedia.org/wiki/Drowning","correct_rank":3,"difficulty":"medium"},{"question_id":25,"tag":"Disease","item_name":"COVID-19 unvaccinated (all ages)","item_source":"acute","lle_minutes":420.768,"micromorts":20,"category":"COVID-19","description":"Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"easy"},{"question_id":25,"tag":"Lifestyle","item_name":"Being 15 kg overweight","item_source":"chronic","lle_minutes":90,"microlives_per_day":-3,"category":"Weight","description":"Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","help_url":"https://en.wikipedia.org/wiki/Obesity#Effects_on_health","correct_rank":2,"difficulty":"easy"},{"question_id":25,"tag":"Radiation","item_name":"Business traveller (annual cosmic)","item_source":"acute","lle_minutes":0.7889,"micromorts":0.0375,"category":"Travel","description":"Moderate annual cosmic radiation from ~40,000 miles of flying per year.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":3,"difficulty":"easy"},{"question_id":26,"tag":"Travel","item_name":"Flying (12h ultra-long-haul)","item_source":"acute","lle_minutes":138.8534,"micromorts":6.6,"category":"Travel","description":"Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","help_url":"https://en.wikipedia.org/wiki/Economy_class_syndrome","correct_rank":1,"difficulty":"hard"},{"question_id":26,"tag":"Workplace","item_name":"Logging (per work day)","item_source":"acute","lle_minutes":69.4267,"micromorts":3.3,"category":"Occupation","description":"Highest US occupational fatality rate; hazards include falling trees, chainsaw injuries, and terrain.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":2,"difficulty":"hard"},{"question_id":26,"tag":"Sport & Adventure","item_name":"Skiing","item_source":"acute","lle_minutes":14.7269,"micromorts":0.7,"category":"Sport","description":"Risk from collisions with trees/other skiers and avalanche in backcountry.","help_url":"https://en.wikipedia.org/wiki/Skiing","correct_rank":3,"difficulty":"hard"},{"question_id":27,"tag":"Sport & Adventure","item_name":"Matterhorn ascent","item_source":"acute","lle_minutes":59749.056,"micromorts":2840,"category":"Mountaineering","description":"One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","help_url":"https://en.wikipedia.org/wiki/Matterhorn","correct_rank":1,"difficulty":"easy"},{"question_id":27,"tag":"Sport & Adventure","item_name":"Hang gliding (per flight)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"Sport","description":"Unpowered flight with risk from turbulence, structural failure, and pilot error.","help_url":"https://en.wikipedia.org/wiki/Hang_gliding","correct_rank":2,"difficulty":"easy"},{"question_id":27,"tag":"Sport & Adventure","item_name":"20 min moderate exercise","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Exercise","description":"Daily brisk walking or equivalent moderate activity reduces all-cause mortality by ~30%. The single most effective lifestyle intervention.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":3,"difficulty":"easy"},{"question_id":28,"tag":"Sport & Adventure","item_name":"Swimming","item_source":"acute","lle_minutes":252.4608,"micromorts":12,"category":"Sport","description":"Drowning risk per swim session, higher for open water and unsupervised settings.","help_url":"https://en.wikipedia.org/wiki/Drowning","correct_rank":1,"difficulty":"hard"},{"question_id":28,"tag":"Radiation","item_name":"CT scan head (radiation per scan)","item_source":"acute","lle_minutes":42.0768,"micromorts":2,"category":"Medical","description":"Low-moderate radiation dose (~2 mSv) for neurological imaging.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":2,"difficulty":"hard"},{"question_id":28,"tag":"Lifestyle","item_name":"Smoking 2 cigarettes","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Smoking","description":"Even light smoking (2 cigarettes/day) carries measurable cardiovascular and cancer risk. Each cigarette costs roughly 15 minutes of life.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":3,"difficulty":"hard"},{"question_id":29,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 80+)","item_source":"acute","lle_minutes":1157.112,"micromorts":55,"category":"COVID-19","description":"Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"easy"},{"question_id":29,"tag":"Diet & Drink","item_name":"Eating 100 charbroiled steaks (cumulative benzopyrene)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Diet","description":"Cumulative cancer risk from polycyclic aromatic hydrocarbons (benzopyrene) in charred meat across 100 servings.","help_url":"https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon","correct_rank":2,"difficulty":"easy"},{"question_id":29,"tag":"Radiation","item_name":"Granite resident (annual radon)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Environment","description":"Radon gas seeps from granite bedrock into homes; mitigable with ventilation.","help_url":"https://en.wikipedia.org/wiki/Radon","correct_rank":3,"difficulty":"easy"},{"question_id":30,"tag":"Sport & Adventure","item_name":"Himalayan mountaineering","item_source":"acute","lle_minutes":252460.8,"micromorts":12000,"category":"Mountaineering","description":"Expeditions to 8,000m+ peaks carry extreme risk from altitude sickness, avalanches, and exposure.","help_url":"https://en.wikipedia.org/wiki/Eight-thousander","correct_rank":1,"difficulty":"easy"},{"question_id":30,"tag":"Sport & Adventure","item_name":"Rock climbing (per day)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"Sport","description":"Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.","help_url":"https://en.wikipedia.org/wiki/Rock_climbing","correct_rank":2,"difficulty":"easy"},{"question_id":30,"tag":"Workplace","item_name":"All US workers baseline (per work day)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Occupation","description":"Average occupational fatality rate across all US industries; baseline for comparison.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"easy"},{"question_id":31,"tag":"Workplace","item_name":"Construction (all, per work day)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Occupation","description":"Falls, struck-by, electrocution, and caught-in hazards across all construction trades.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":1,"difficulty":"hard"},{"question_id":31,"tag":"Radiation","item_name":"Interventional cardiologist (annual radiation)","item_source":"acute","lle_minutes":3.6817,"micromorts":0.175,"category":"Occupation","description":"Highest occupational medical radiation dose from fluoroscopy-guided procedures.","help_url":"https://en.wikipedia.org/wiki/Interventional_cardiology","correct_rank":2,"difficulty":"hard"},{"question_id":31,"tag":"Radiation","item_name":"Mammogram (radiation per scan)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Medical","description":"Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","help_url":"https://en.wikipedia.org/wiki/Mammography","correct_rank":3,"difficulty":"hard"},{"question_id":32,"tag":"Lifestyle","item_name":"Smoking 10 cigarettes","item_source":"chronic","lle_minutes":150,"microlives_per_day":-5,"category":"Smoking","description":"Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":1,"difficulty":"hard"},{"question_id":32,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 65-79)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"COVID-19","description":"Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"hard"},{"question_id":32,"tag":"Workplace","item_name":"Agriculture (per work day)","item_source":"acute","lle_minutes":14.7269,"micromorts":0.7,"category":"Occupation","description":"Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"hard"},{"question_id":33,"tag":"Radiation","item_name":"Coronary angiogram (radiation per scan)","item_source":"acute","lle_minutes":105.192,"micromorts":5,"category":"Medical","description":"Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","help_url":"https://en.wikipedia.org/wiki/Coronary_catheterization","correct_rank":1,"difficulty":"hard"},{"question_id":33,"tag":"Diet & Drink","item_name":"Processed meat (1 portion/day)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Bacon, sausages, ham, etc. classified as Group 1 carcinogens by IARC. Strongest evidence for colorectal cancer.","help_url":"https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat","correct_rank":2,"difficulty":"hard"},{"question_id":33,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 50-64)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"COVID-19","description":"Bivalent-boosted 50-64 year-olds had very low residual COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"hard"},{"question_id":34,"tag":"Lifestyle","item_name":"Untreated hypertension","item_source":"chronic","lle_minutes":120,"microlives_per_day":-4,"category":"Cardiovascular","description":"Systolic BP > 140 mmHg left untreated is the leading modifiable risk factor for stroke, heart attack, and kidney disease.","help_url":"https://en.wikipedia.org/wiki/Hypertension","correct_rank":1,"difficulty":"hard"},{"question_id":34,"tag":"Lifestyle","item_name":"Type 2 diabetes (poorly controlled)","item_source":"chronic","lle_minutes":90,"microlives_per_day":-3,"category":"Cardiovascular","description":"HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","help_url":"https://en.wikipedia.org/wiki/Type_2_diabetes","correct_rank":2,"difficulty":"hard"},{"question_id":34,"tag":"Workplace","item_name":"1 hour in a coal mine","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Occupation","description":"Risk from roof collapse, gas explosion, and dust inhalation.","help_url":"https://en.wikipedia.org/wiki/Coal_mining","correct_rank":3,"difficulty":"hard"},{"question_id":35,"tag":"Medical","item_name":"Vaginal birth (mother)","item_source":"acute","lle_minutes":2524.608,"micromorts":120,"category":"Medical","description":"Maternal mortality risk from hemorrhage, infection, and eclampsia during vaginal delivery.","help_url":"https://en.wikipedia.org/wiki/Maternal_death","correct_rank":1,"difficulty":"easy"},{"question_id":35,"tag":"Sport & Adventure","item_name":"Running a marathon","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"Sport","description":"Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","help_url":"https://en.wikipedia.org/wiki/Marathon","correct_rank":2,"difficulty":"easy"},{"question_id":35,"tag":"Disease","item_name":"Kangaroo encounter","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Wildlife","description":"Vehicle collisions with kangaroos cause fatalities in rural Australia.","help_url":"https://en.wikipedia.org/wiki/Kangaroo","correct_rank":3,"difficulty":"easy"},{"question_id":36,"tag":"Medical","item_name":"Blood pressure control","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Medical","description":"Achieving target BP < 130/80 mmHg through medication and lifestyle reduces stroke risk by 35-40%.","help_url":"https://en.wikipedia.org/wiki/Antihypertensive_drug","correct_rank":1,"difficulty":"medium"},{"question_id":36,"tag":"Diet & Drink","item_name":"Low fiber diet","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Less than 25 g fiber daily increases colorectal cancer risk and is associated with higher cardiovascular mortality.","help_url":"https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects","correct_rank":2,"difficulty":"medium"},{"question_id":36,"tag":"Diet & Drink","item_name":"Cup of coffee","item_source":"acute","lle_minutes":0.2104,"micromorts":0.01,"category":"Daily Life","description":"Extremely low acute risk; caffeine-related cardiac events are vanishingly rare.","help_url":"https://en.wikipedia.org/wiki/Coffee","correct_rank":3,"difficulty":"medium"},{"question_id":37,"tag":"Lifestyle","item_name":"Living (one day, age 90)","item_source":"acute","lle_minutes":9740.7792,"micromorts":463,"category":"Daily Life","description":"Daily background mortality risk at age 90 reflects accumulated physiological decline.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":1,"difficulty":"medium"},{"question_id":37,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 50-64)","item_source":"acute","lle_minutes":42.0768,"micromorts":2,"category":"COVID-19","description":"Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"medium"},{"question_id":37,"tag":"Workplace","item_name":"Truck driving (per work day)","item_source":"acute","lle_minutes":25.2461,"micromorts":1.2,"category":"Occupation","description":"Long hours and highway driving make truck driving a high-fatality occupation by total deaths.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"medium"},{"question_id":38,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 80+)","item_source":"acute","lle_minutes":483.8832,"micromorts":23,"category":"COVID-19","description":"Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":38,"tag":"Disease","item_name":"Dog bite (US)","item_source":"acute","lle_minutes":140.9573,"micromorts":6.7,"category":"Wildlife","description":"Dog bite fatality risk in a high-income setting with rabies PEP available.","help_url":"https://en.wikipedia.org/wiki/Dog_bite","correct_rank":2,"difficulty":"hard"},{"question_id":38,"tag":"Lifestyle","item_name":"Living (one day, age 20)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Daily Life","description":"Daily background mortality at age 20 is dominated by accidents and violence.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":3,"difficulty":"hard"},{"question_id":39,"tag":"Diet & Drink","item_name":"Red meat (1 portion/day)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Daily red meat consumption is associated with increased colorectal cancer and cardiovascular disease risk.","help_url":"https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat","correct_rank":1,"difficulty":"medium"},{"question_id":39,"tag":"Radiation","item_name":"Chest X-ray (radiation per scan)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Medical","description":"Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","help_url":"https://en.wikipedia.org/wiki/Chest_radiograph","correct_rank":2,"difficulty":"medium"},{"question_id":39,"tag":"Lifestyle","item_name":"Crossing a road","item_source":"acute","lle_minutes":0.4208,"micromorts":0.02,"category":"Daily Life","description":"Pedestrian collision risk at a single road crossing.","help_url":"https://en.wikipedia.org/wiki/Pedestrian","correct_rank":3,"difficulty":"medium"},{"question_id":40,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (all ages)","item_source":"acute","lle_minutes":84.1536,"micromorts":4,"category":"COVID-19","description":"Population-average residual COVID-19 risk after monovalent vaccination.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"easy"},{"question_id":40,"tag":"Disease","item_name":"Low physical activity","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Cancer","description":"Less than 150 minutes of moderate exercise per week increases cancer risk (colon, breast, endometrial) by 20-30%.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":2,"difficulty":"easy"},{"question_id":40,"tag":"Radiation","item_name":"Annual tourist flyer (annual cosmic)","item_source":"acute","lle_minutes":0.1262,"micromorts":0.006,"category":"Travel","description":"Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":3,"difficulty":"easy"},{"question_id":41,"tag":"Lifestyle","item_name":"Smoking 20 cigarettes","item_source":"chronic","lle_minutes":300,"microlives_per_day":-10,"category":"Smoking","description":"A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":1,"difficulty":"medium"},{"question_id":41,"tag":"Lifestyle","item_name":"Being 10 kg overweight","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Weight","description":"Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","help_url":"https://en.wikipedia.org/wiki/Obesity#Effects_on_health","correct_rank":2,"difficulty":"medium"},{"question_id":41,"tag":"Radiation","item_name":"Normal background radiation","item_source":"acute","lle_minutes":2.5246,"micromorts":0.12,"category":"Environment","description":"Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","help_url":"https://en.wikipedia.org/wiki/Background_radiation","correct_rank":3,"difficulty":"medium"},{"question_id":42,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 50-64)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"COVID-19","description":"Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":42,"tag":"Lifestyle","item_name":"Family history of heart disease","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Cardiovascular","description":"First-degree relative with CVD before age 55 roughly doubles your own cardiovascular risk.","help_url":"https://en.wikipedia.org/wiki/Cardiovascular_disease#Risk_factors","correct_rank":2,"difficulty":"hard"},{"question_id":42,"tag":"Lifestyle","item_name":"Living 2 months with a smoker","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Environment","description":"Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","help_url":"https://en.wikipedia.org/wiki/Passive_smoking","correct_rank":3,"difficulty":"hard"},{"question_id":1,"tag":"Diet & Drink","item_name":"5 servings fruit/veg","item_source":"chronic","lle_minutes":120,"microlives_per_day":4,"category":"Diet","description":"Daily fruit and vegetable intake reduces cardiovascular disease, cancer, and all-cause mortality. Largest benefit from 5+ servings.","help_url":"https://en.wikipedia.org/wiki/Five_A_Day","correct_rank":1,"difficulty":"medium"},{"question_id":1,"tag":"Diet & Drink","item_name":"4th-5th alcoholic drink","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Alcohol","description":"Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_health","correct_rank":2,"difficulty":"medium"},{"question_id":1,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 18-49)","item_source":"acute","lle_minutes":4.2077,"micromorts":0.2,"category":"COVID-19","description":"Young adult monovalent-vaccinated COVID-19 mortality was very low.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"medium"},{"question_id":1,"tag":"Disease","item_name":"Bee/wasp sting (general)","item_source":"acute","lle_minutes":0.6312,"micromorts":0.03,"category":"Wildlife","description":"Bee or wasp sting fatality risk for non-allergic individuals.","help_url":"https://en.wikipedia.org/wiki/Bee_sting","correct_rank":4,"difficulty":"medium"},{"question_id":2,"tag":"Sport & Adventure","item_name":"Scuba diving, trained (per dive)","item_source":"acute","lle_minutes":105.192,"micromorts":5,"category":"Sport","description":"Single-dive risk for trained divers from decompression sickness and equipment failure.","help_url":"https://en.wikipedia.org/wiki/Scuba_diving","correct_rank":1,"difficulty":"hard"},{"question_id":2,"tag":"Sport & Adventure","item_name":"20 min moderate exercise","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Exercise","description":"Daily brisk walking or equivalent moderate activity reduces all-cause mortality by ~30%. The single most effective lifestyle intervention.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":2,"difficulty":"hard"},{"question_id":2,"tag":"Workplace","item_name":"Roofing (per work day)","item_source":"acute","lle_minutes":39.973,"micromorts":1.9,"category":"Occupation","description":"Falls from height are the primary cause of roofing fatalities.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"hard"},{"question_id":2,"tag":"Radiation","item_name":"Airline pilot (annual radiation)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Occupation","description":"Cumulative cosmic radiation exposure from ~700 flight hours per year at altitude.","help_url":"https://en.wikipedia.org/wiki/Airline_pilot","correct_rank":4,"difficulty":"hard"},{"question_id":3,"tag":"Sport & Adventure","item_name":"Matterhorn ascent","item_source":"acute","lle_minutes":59749.056,"micromorts":2840,"category":"Mountaineering","description":"One of the Alps' deadliest peaks due to rockfall, exposure, and technical climbing difficulty.","help_url":"https://en.wikipedia.org/wiki/Matterhorn","correct_rank":1,"difficulty":"easy"},{"question_id":3,"tag":"Lifestyle","item_name":"First day of life (newborn)","item_source":"acute","lle_minutes":9046.512,"micromorts":430,"category":"Daily Life","description":"The first 24 hours carry elevated risk from birth complications and congenital conditions.","help_url":"https://en.wikipedia.org/wiki/Neonatal_death","correct_rank":2,"difficulty":"easy"},{"question_id":3,"tag":"Travel","item_name":"Motorcycling (60 miles)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Travel","description":"Per-mile fatality rate roughly 30x higher than car travel due to exposure and instability.","help_url":"https://en.wikipedia.org/wiki/Motorcycle_safety","correct_rank":3,"difficulty":"easy"},{"question_id":3,"tag":"Sport & Adventure","item_name":"Horse riding","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Sport","description":"Falls from horseback can cause traumatic brain and spinal injuries.","help_url":"https://en.wikipedia.org/wiki/Equestrianism","correct_rank":4,"difficulty":"easy"},{"question_id":4,"tag":"Sport & Adventure","item_name":"Mt. Everest ascent","item_source":"acute","lle_minutes":798028.5888,"micromorts":37932,"category":"Mountaineering","description":"At 8,849m, extreme altitude, weather, and avalanche risk make Everest the deadliest common mountaineering objective.","help_url":"https://en.wikipedia.org/wiki/Mount_Everest","correct_rank":1,"difficulty":"easy"},{"question_id":4,"tag":"Lifestyle","item_name":"Living (one day, age 75)","item_source":"acute","lle_minutes":2209.032,"micromorts":105,"category":"Daily Life","description":"Daily background mortality at age 75 is roughly 100x that of a 20-year-old.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":2,"difficulty":"easy"},{"question_id":4,"tag":"Diet & Drink","item_name":"Processed meat (1 portion/day)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Bacon, sausages, ham, etc. classified as Group 1 carcinogens by IARC. Strongest evidence for colorectal cancer.","help_url":"https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat","correct_rank":3,"difficulty":"easy"},{"question_id":4,"tag":"Travel","item_name":"Train (1000 miles)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Travel","description":"Rail travel is one of the safest transport modes per mile.","help_url":"https://en.wikipedia.org/wiki/Rail_transport","correct_rank":4,"difficulty":"easy"},{"question_id":5,"tag":"Lifestyle","item_name":"Living (one day, age 90)","item_source":"acute","lle_minutes":9740.7792,"micromorts":463,"category":"Daily Life","description":"Daily background mortality risk at age 90 reflects accumulated physiological decline.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":1,"difficulty":"medium"},{"question_id":5,"tag":"Lifestyle","item_name":"Living (one day, under age 1)","item_source":"acute","lle_minutes":315.576,"micromorts":15,"category":"Daily Life","description":"Infant mortality from congenital conditions, SIDS, and birth complications.","help_url":"https://en.wikipedia.org/wiki/Infant_mortality","correct_rank":2,"difficulty":"medium"},{"question_id":5,"tag":"Disease","item_name":"Living in Maryland COVID-19 (Mar-May 2020)","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"COVID-19","description":"Maryland experienced moderate COVID-19 mortality during the initial wave.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_Maryland","correct_rank":3,"difficulty":"medium"},{"question_id":5,"tag":"Diet & Drink","item_name":"Mediterranean diet","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Diet","description":"Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","help_url":"https://en.wikipedia.org/wiki/Mediterranean_diet","correct_rank":4,"difficulty":"medium"},{"question_id":6,"tag":"Sport & Adventure","item_name":"American football","item_source":"acute","lle_minutes":420.768,"micromorts":20,"category":"Sport","description":"Contact sport risk from traumatic injury including spinal and head trauma.","help_url":"https://en.wikipedia.org/wiki/American_football","correct_rank":1,"difficulty":"easy"},{"question_id":6,"tag":"Lifestyle","item_name":"Being 15 kg overweight","item_source":"chronic","lle_minutes":90,"microlives_per_day":-3,"category":"Weight","description":"Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","help_url":"https://en.wikipedia.org/wiki/Obesity#Effects_on_health","correct_rank":2,"difficulty":"easy"},{"question_id":6,"tag":"Workplace","item_name":"Truck driving (per work day)","item_source":"acute","lle_minutes":25.2461,"micromorts":1.2,"category":"Occupation","description":"Long hours and highway driving make truck driving a high-fatality occupation by total deaths.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"easy"},{"question_id":6,"tag":"Radiation","item_name":"X-ray technician (annual radiation)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"Occupation","description":"Occupational radiation exposure mitigated by lead shielding and ALARA protocols.","help_url":"https://en.wikipedia.org/wiki/Radiographer","correct_rank":4,"difficulty":"easy"},{"question_id":7,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 50-64)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"COVID-19","description":"Unvaccinated 50-64 year-olds had moderately elevated COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":7,"tag":"Lifestyle","item_name":"Smoking 10 cigarettes","item_source":"chronic","lle_minutes":150,"microlives_per_day":-5,"category":"Smoking","description":"Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":2,"difficulty":"hard"},{"question_id":7,"tag":"Sport & Adventure","item_name":"Rock climbing (per day)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"Sport","description":"Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.","help_url":"https://en.wikipedia.org/wiki/Rock_climbing","correct_rank":3,"difficulty":"hard"},{"question_id":7,"tag":"Sport & Adventure","item_name":"2 hours TV watching","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Sedentary","description":"Prolonged sedentary behaviour (sitting/lying) increases cardiovascular mortality independent of exercise. TV time is a proxy for total sitting.","help_url":"https://en.wikipedia.org/wiki/Sedentary_lifestyle","correct_rank":4,"difficulty":"hard"},{"question_id":8,"tag":"Medical","item_name":"Vaginal birth (mother)","item_source":"acute","lle_minutes":2524.608,"micromorts":120,"category":"Medical","description":"Maternal mortality risk from hemorrhage, infection, and eclampsia during vaginal delivery.","help_url":"https://en.wikipedia.org/wiki/Maternal_death","correct_rank":1,"difficulty":"medium"},{"question_id":8,"tag":"Travel","item_name":"Flying (8h long-haul)","item_source":"acute","lle_minutes":82.0498,"micromorts":3.9,"category":"Travel","description":"Long-haul flights have significant DVT risk, especially for those with risk factors.","help_url":"https://en.wikipedia.org/wiki/Economy_class_syndrome","correct_rank":2,"difficulty":"medium"},{"question_id":8,"tag":"Medical","item_name":"Cancer screening (age-appropriate)","item_source":"chronic","lle_minutes":30,"microlives_per_day":1,"category":"Medical","description":"Age-appropriate screening (mammography, colonoscopy, cervical smears) detects cancer early when treatment is most effective.","help_url":"https://en.wikipedia.org/wiki/Cancer_screening","correct_rank":3,"difficulty":"medium"},{"question_id":8,"tag":"Diet & Drink","item_name":"Drinking a glass of wine","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Daily Life","description":"Acute alcohol effects including impaired judgment and cardiovascular stress.","help_url":"https://en.wikipedia.org/wiki/Alcohol_(drug)","correct_rank":4,"difficulty":"medium"},{"question_id":9,"tag":"Sport & Adventure","item_name":"Base jumping (per jump)","item_source":"acute","lle_minutes":9046.512,"micromorts":430,"category":"Sport","description":"Parachuting from fixed objects (buildings, cliffs) with minimal altitude for recovery.","help_url":"https://en.wikipedia.org/wiki/BASE_jumping","correct_rank":1,"difficulty":"medium"},{"question_id":9,"tag":"Sport & Adventure","item_name":"Swimming","item_source":"acute","lle_minutes":252.4608,"micromorts":12,"category":"Sport","description":"Drowning risk per swim session, higher for open water and unsupervised settings.","help_url":"https://en.wikipedia.org/wiki/Drowning","correct_rank":2,"difficulty":"medium"},{"question_id":9,"tag":"Sport & Adventure","item_name":"Sitting 8+ hours/day","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Sedentary","description":"Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","help_url":"https://en.wikipedia.org/wiki/Sedentary_lifestyle","correct_rank":3,"difficulty":"medium"},{"question_id":9,"tag":"Diet & Drink","item_name":"High sugar diet","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Excess refined sugar intake drives insulin resistance, type 2 diabetes, obesity, and cardiovascular disease.","help_url":"https://en.wikipedia.org/wiki/Sugar#Health_effects","correct_rank":4,"difficulty":"medium"},{"question_id":10,"tag":"Disease","item_name":"Spanish flu infection","item_source":"acute","lle_minutes":63115.2,"micromorts":3000,"category":"Disease","description":"The 1918 influenza pandemic killed an estimated 50-100 million people worldwide.","help_url":"https://en.wikipedia.org/wiki/Spanish_flu","correct_rank":1,"difficulty":"easy"},{"question_id":10,"tag":"Radiation","item_name":"CT scan abdomen (radiation per scan)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Medical","description":"Higher radiation dose (~10 mSv) for abdominal imaging; benefits usually outweigh risks.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":2,"difficulty":"easy"},{"question_id":10,"tag":"Diet & Drink","item_name":"High fiber diet","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Diet","description":"25 g+ fiber daily from whole grains, fruit, and vegetables reduces colorectal cancer, cardiovascular disease, and type 2 diabetes.","help_url":"https://en.wikipedia.org/wiki/Dietary_fiber#Health_effects","correct_rank":3,"difficulty":"easy"},{"question_id":10,"tag":"Radiation","item_name":"High-altitude resident (annual cosmic)","item_source":"acute","lle_minutes":0.7363,"micromorts":0.035,"category":"Environment","description":"Living above 2,000m increases cosmic radiation exposure compared to sea level.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":4,"difficulty":"easy"},{"question_id":11,"tag":"Disease","item_name":"COVID-19 infection (unvaccinated)","item_source":"acute","lle_minutes":210384,"micromorts":10000,"category":"COVID-19","description":"Unvaccinated COVID-19 infection carries substantial mortality risk, especially for older adults.","help_url":"https://en.wikipedia.org/wiki/COVID-19","correct_rank":1,"difficulty":"easy"},{"question_id":11,"tag":"Lifestyle","item_name":"Being 10 kg overweight","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Weight","description":"Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","help_url":"https://en.wikipedia.org/wiki/Obesity#Effects_on_health","correct_rank":2,"difficulty":"easy"},{"question_id":11,"tag":"Lifestyle","item_name":"Taking a bath","item_source":"acute","lle_minutes":1.4727,"micromorts":0.07,"category":"Daily Life","description":"Drowning risk, particularly for elderly and those with medical conditions.","help_url":"https://en.wikipedia.org/wiki/Drowning","correct_rank":3,"difficulty":"easy"},{"question_id":11,"tag":"Disease","item_name":"Shark encounter (ocean swim)","item_source":"acute","lle_minutes":1.2623,"micromorts":0.06,"category":"Wildlife","description":"Shark attack fatality risk per ocean swim, based on ISAF incident data.","help_url":"https://www.floridamuseum.ufl.edu/shark-attacks/","correct_rank":4,"difficulty":"easy"},{"question_id":12,"tag":"Medical","item_name":"General anesthesia (emergency)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Medical","description":"Emergency anesthesia carries higher risk than elective due to patient instability.","help_url":"https://en.wikipedia.org/wiki/General_anaesthesia","correct_rank":1,"difficulty":"hard"},{"question_id":12,"tag":"Radiation","item_name":"CT scan chest (radiation per scan)","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"Medical","description":"Moderate radiation dose (~7 mSv) used for diagnosing pulmonary embolism, cancer, and trauma.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":2,"difficulty":"hard"},{"question_id":12,"tag":"Radiation","item_name":"Interventional cardiologist (annual radiation)","item_source":"acute","lle_minutes":3.6817,"micromorts":0.175,"category":"Occupation","description":"Highest occupational medical radiation dose from fluoroscopy-guided procedures.","help_url":"https://en.wikipedia.org/wiki/Interventional_cardiology","correct_rank":3,"difficulty":"hard"},{"question_id":12,"tag":"Radiation","item_name":"Mammogram (radiation per scan)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Medical","description":"Very low radiation dose used for breast cancer screening; net benefit is strongly positive.","help_url":"https://en.wikipedia.org/wiki/Mammography","correct_rank":4,"difficulty":"hard"},{"question_id":13,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (all ages)","item_source":"acute","lle_minutes":84.1536,"micromorts":4,"category":"COVID-19","description":"Population-average residual COVID-19 risk after monovalent vaccination.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"medium"},{"question_id":13,"tag":"Diet & Drink","item_name":"2nd-3rd alcoholic drink","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Alcohol","description":"After the first drink's potential protective effect, the second and third drinks increase liver disease and accident risk.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_health","correct_rank":2,"difficulty":"medium"},{"question_id":13,"tag":"Workplace","item_name":"All US workers baseline (per work day)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Occupation","description":"Average occupational fatality rate across all US industries; baseline for comparison.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"medium"},{"question_id":13,"tag":"Lifestyle","item_name":"Working in an office (8 hours)","item_source":"acute","lle_minutes":0.6312,"micromorts":0.03,"category":"Daily Life","description":"Background mortality rate during sedentary office work.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":4,"difficulty":"medium"},{"question_id":14,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 80+)","item_source":"acute","lle_minutes":483.8832,"micromorts":23,"category":"COVID-19","description":"Bivalent-boosted elderly still faced elevated COVID-19 risk due to immunosenescence.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":14,"tag":"Sport & Adventure","item_name":"Hang gliding (per flight)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"Sport","description":"Unpowered flight with risk from turbulence, structural failure, and pilot error.","help_url":"https://en.wikipedia.org/wiki/Hang_gliding","correct_rank":2,"difficulty":"hard"},{"question_id":14,"tag":"Workplace","item_name":"Commercial fishing (per work day)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"Occupation","description":"Extreme weather, vessel sinking, and deck machinery make fishing one of the deadliest occupations.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"hard"},{"question_id":14,"tag":"Disease","item_name":"Snake bite (US, with antivenom)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Wildlife","description":"Snake bite fatality risk in the US where antivenom is readily available.","help_url":"https://en.wikipedia.org/wiki/Snakebite","correct_rank":4,"difficulty":"hard"},{"question_id":15,"tag":"Sport & Adventure","item_name":"150 min weekly exercise","item_source":"chronic","lle_minutes":90,"microlives_per_day":3,"category":"Exercise","description":"Meeting WHO physical activity guidelines reduces cardiovascular, cancer, and all-cause mortality substantially.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":1,"difficulty":"easy"},{"question_id":15,"tag":"Diet & Drink","item_name":"Red meat (1 portion/day)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Daily red meat consumption is associated with increased colorectal cancer and cardiovascular disease risk.","help_url":"https://www.who.int/news-room/questions-and-answers/item/cancer-carcinogenicity-of-the-consumption-of-red-meat-and-processed-meat","correct_rank":2,"difficulty":"easy"},{"question_id":15,"tag":"Travel","item_name":"Flying (2h short-haul)","item_source":"acute","lle_minutes":23.1422,"micromorts":1.1,"category":"Travel","description":"Short-haul flight risk is dominated by takeoff/landing crash risk; DVT and radiation are minimal.","help_url":"https://en.wikipedia.org/wiki/Aviation_safety","correct_rank":3,"difficulty":"easy"},{"question_id":15,"tag":"Diet & Drink","item_name":"Cup of coffee","item_source":"acute","lle_minutes":0.2104,"micromorts":0.01,"category":"Daily Life","description":"Extremely low acute risk; caffeine-related cardiac events are vanishingly rare.","help_url":"https://en.wikipedia.org/wiki/Coffee","correct_rank":4,"difficulty":"easy"},{"question_id":16,"tag":"Lifestyle","item_name":"Smoking 20 cigarettes","item_source":"chronic","lle_minutes":300,"microlives_per_day":-10,"category":"Smoking","description":"A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":1,"difficulty":"medium"},{"question_id":16,"tag":"Workplace","item_name":"1 hour in a coal mine","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Occupation","description":"Risk from roof collapse, gas explosion, and dust inhalation.","help_url":"https://en.wikipedia.org/wiki/Coal_mining","correct_rank":2,"difficulty":"medium"},{"question_id":16,"tag":"Radiation","item_name":"Frequent executive flyer (annual cosmic)","item_source":"acute","lle_minutes":3.1558,"micromorts":0.15,"category":"Travel","description":"Heavy business travel (~150,000 miles/year) accumulates cosmic radiation dose.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":3,"difficulty":"medium"},{"question_id":16,"tag":"Radiation","item_name":"Dental X-ray (radiation per scan)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"Medical","description":"Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","help_url":"https://en.wikipedia.org/wiki/Dental_radiography","correct_rank":4,"difficulty":"medium"},{"question_id":17,"tag":"Medical","item_name":"Caesarean birth (mother)","item_source":"acute","lle_minutes":3576.528,"micromorts":170,"category":"Medical","description":"Major abdominal surgery carrying risks of hemorrhage, infection, and anesthesia complications.","help_url":"https://en.wikipedia.org/wiki/Caesarean_section","correct_rank":1,"difficulty":"easy"},{"question_id":17,"tag":"Lifestyle","item_name":"Smoking 2 cigarettes","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Smoking","description":"Even light smoking (2 cigarettes/day) carries measurable cardiovascular and cancer risk. Each cigarette costs roughly 15 minutes of life.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_tobacco","correct_rank":2,"difficulty":"easy"},{"question_id":17,"tag":"Travel","item_name":"Driving (230 miles)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Travel","description":"Traffic fatality risk for a typical 230-mile car journey.","help_url":"https://en.wikipedia.org/wiki/Traffic_collision","correct_rank":3,"difficulty":"easy"},{"question_id":17,"tag":"Radiation","item_name":"Business traveller (annual cosmic)","item_source":"acute","lle_minutes":0.7889,"micromorts":0.0375,"category":"Travel","description":"Moderate annual cosmic radiation from ~40,000 miles of flying per year.","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":4,"difficulty":"easy"},{"question_id":18,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 80+)","item_source":"acute","lle_minutes":4922.9856,"micromorts":234,"category":"COVID-19","description":"Unvaccinated elderly face the highest COVID-19 mortality rates.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"easy"},{"question_id":18,"tag":"Radiation","item_name":"CT scan head (radiation per scan)","item_source":"acute","lle_minutes":42.0768,"micromorts":2,"category":"Medical","description":"Low-moderate radiation dose (~2 mSv) for neurological imaging.","help_url":"https://en.wikipedia.org/wiki/CT_scan","correct_rank":2,"difficulty":"easy"},{"question_id":18,"tag":"Radiation","item_name":"Normal background radiation","item_source":"acute","lle_minutes":2.5246,"micromorts":0.12,"category":"Environment","description":"Average annual radiation dose from natural sources (radon, cosmic, internal, terrestrial).","help_url":"https://en.wikipedia.org/wiki/Background_radiation","correct_rank":3,"difficulty":"easy"},{"question_id":18,"tag":"Lifestyle","item_name":"Crossing a road","item_source":"acute","lle_minutes":0.4208,"micromorts":0.02,"category":"Daily Life","description":"Pedestrian collision risk at a single road crossing.","help_url":"https://en.wikipedia.org/wiki/Pedestrian","correct_rank":4,"difficulty":"easy"},{"question_id":19,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 65-79)","item_source":"acute","lle_minutes":1598.9184,"micromorts":76,"category":"COVID-19","description":"Unvaccinated 65-79 year-olds had substantially elevated COVID-19 mortality in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"easy"},{"question_id":19,"tag":"Sport & Adventure","item_name":"Skydiving (per jump)","item_source":"acute","lle_minutes":210.384,"micromorts":10,"category":"Sport","description":"Risk from parachute malfunction, mid-air collision, and landing errors.","help_url":"https://en.wikipedia.org/wiki/Skydiving","correct_rank":2,"difficulty":"easy"},{"question_id":19,"tag":"Lifestyle","item_name":"Living (one day, age 20)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Daily Life","description":"Daily background mortality at age 20 is dominated by accidents and violence.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":3,"difficulty":"easy"},{"question_id":19,"tag":"Radiation","item_name":"Annual tourist flyer (annual cosmic)","item_source":"acute","lle_minutes":0.1262,"micromorts":0.006,"category":"Travel","description":"Minimal cosmic radiation from occasional holiday flights (~6,000 miles/year).","help_url":"https://en.wikipedia.org/wiki/Cosmic_ray","correct_rank":4,"difficulty":"easy"},{"question_id":20,"tag":"Medical","item_name":"Night in hospital","item_source":"acute","lle_minutes":1577.88,"micromorts":75,"category":"Medical","description":"Hospital stays carry risk from medical errors, hospital-acquired infections, and underlying illness severity.","help_url":"https://en.wikipedia.org/wiki/Hospital-acquired_infection","correct_rank":1,"difficulty":"medium"},{"question_id":20,"tag":"Sport & Adventure","item_name":"Skydiving (UK)","item_source":"acute","lle_minutes":168.3072,"micromorts":8,"category":"Sport","description":"UK skydiving fatality rate based on British Parachute Association data.","help_url":"https://en.wikipedia.org/wiki/Skydiving","correct_rank":2,"difficulty":"medium"},{"question_id":20,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 50-64)","item_source":"acute","lle_minutes":42.0768,"micromorts":2,"category":"COVID-19","description":"Monovalent-vaccinated 50-64 year-olds had low residual COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":3,"difficulty":"medium"},{"question_id":20,"tag":"Workplace","item_name":"Construction (all, per work day)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Occupation","description":"Falls, struck-by, electrocution, and caught-in hazards across all construction trades.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":4,"difficulty":"medium"},{"question_id":21,"tag":"Disease","item_name":"Living in US during COVID-19 (Jul 2020)","item_source":"acute","lle_minutes":10519.2,"micromorts":500,"category":"COVID-19","description":"Peak US COVID-19 mortality before vaccines were available.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_the_United_States","correct_rank":1,"difficulty":"medium"},{"question_id":21,"tag":"Disease","item_name":"COVID-19 unvaccinated (all ages)","item_source":"acute","lle_minutes":420.768,"micromorts":20,"category":"COVID-19","description":"Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"medium"},{"question_id":21,"tag":"Lifestyle","item_name":"Living (one day, age 45)","item_source":"acute","lle_minutes":126.2304,"micromorts":6,"category":"Daily Life","description":"Daily background mortality at age 45 reflects middle-age cardiovascular and cancer risk.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":3,"difficulty":"medium"},{"question_id":21,"tag":"Disease","item_name":"Low physical activity","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Cancer","description":"Less than 150 minutes of moderate exercise per week increases cancer risk (colon, breast, endometrial) by 20-30%.","help_url":"https://www.who.int/news-room/fact-sheets/detail/physical-activity","correct_rank":4,"difficulty":"medium"},{"question_id":22,"tag":"Sport & Adventure","item_name":"Running a marathon","item_source":"acute","lle_minutes":147.2688,"micromorts":7,"category":"Sport","description":"Cardiac events during extreme endurance exercise, mainly in older or predisposed runners.","help_url":"https://en.wikipedia.org/wiki/Marathon","correct_rank":1,"difficulty":"hard"},{"question_id":22,"tag":"Travel","item_name":"Flying (5h medium-haul)","item_source":"acute","lle_minutes":36.8172,"micromorts":1.75,"category":"Travel","description":"Medium-haul flights add DVT risk as immobility exceeds the 4-hour threshold.","help_url":"https://en.wikipedia.org/wiki/Aviation_safety","correct_rank":2,"difficulty":"hard"},{"question_id":22,"tag":"Workplace","item_name":"Mining (per work day)","item_source":"acute","lle_minutes":18.9346,"micromorts":0.9,"category":"Occupation","description":"Roof collapse, gas explosion, and heavy equipment hazards in underground and surface mining.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"hard"},{"question_id":22,"tag":"Radiation","item_name":"Granite resident (annual radon)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Environment","description":"Radon gas seeps from granite bedrock into homes; mitigable with ventilation.","help_url":"https://en.wikipedia.org/wiki/Radon","correct_rank":4,"difficulty":"hard"},{"question_id":23,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 65-79)","item_source":"acute","lle_minutes":189.3456,"micromorts":9,"category":"COVID-19","description":"Monovalent-vaccinated 65-79 year-olds had reduced but still notable COVID-19 risk.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":23,"tag":"Diet & Drink","item_name":"2-3 cups coffee (men)","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Diet","description":"Heavy coffee consumption in men shows a small mortality association, though the evidence is mixed and coffee also has protective effects.","help_url":"https://en.wikipedia.org/wiki/Health_effects_of_coffee","correct_rank":2,"difficulty":"hard"},{"question_id":23,"tag":"Diet & Drink","item_name":"Eating 40 tbsp peanut butter (aflatoxin)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Diet","description":"Aflatoxin B1 from mould contamination is a potent liver carcinogen.","help_url":"https://en.wikipedia.org/wiki/Aflatoxin","correct_rank":3,"difficulty":"hard"},{"question_id":23,"tag":"Disease","item_name":"Kangaroo encounter","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Wildlife","description":"Vehicle collisions with kangaroos cause fatalities in rural Australia.","help_url":"https://en.wikipedia.org/wiki/Kangaroo","correct_rank":4,"difficulty":"hard"},{"question_id":24,"tag":"Workplace","item_name":"Logging (per work day)","item_source":"acute","lle_minutes":69.4267,"micromorts":3.3,"category":"Occupation","description":"Highest US occupational fatality rate; hazards include falling trees, chainsaw injuries, and terrain.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":1,"difficulty":"medium"},{"question_id":24,"tag":"Disease","item_name":"COVID-19 unvaccinated (age 18-49)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"COVID-19","description":"Young adult unvaccinated COVID-19 mortality was low but non-negligible.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"medium"},{"question_id":24,"tag":"Workplace","item_name":"Agriculture (per work day)","item_source":"acute","lle_minutes":14.7269,"micromorts":0.7,"category":"Occupation","description":"Tractor rollovers, machinery entanglement, and livestock injuries on farms and ranches.","help_url":"https://www.bls.gov/iif/fatal-injuries-tables.htm","correct_rank":3,"difficulty":"medium"},{"question_id":24,"tag":"Radiation","item_name":"Dental radiographer (annual radiation)","item_source":"acute","lle_minutes":0.2104,"micromorts":0.01,"category":"Occupation","description":"Very low annual occupational radiation dose with standard distance protocols.","help_url":"https://en.wikipedia.org/wiki/Dental_radiography","correct_rank":4,"difficulty":"medium"},{"question_id":25,"tag":"Sport & Adventure","item_name":"Himalayan mountaineering","item_source":"acute","lle_minutes":252460.8,"micromorts":12000,"category":"Mountaineering","description":"Expeditions to 8,000m+ peaks carry extreme risk from altitude sickness, avalanches, and exposure.","help_url":"https://en.wikipedia.org/wiki/Eight-thousander","correct_rank":1,"difficulty":"easy"},{"question_id":25,"tag":"Disease","item_name":"Living in NYC COVID-19 (Mar-May 2020)","item_source":"acute","lle_minutes":1051.92,"micromorts":50,"category":"COVID-19","description":"New York City experienced extreme COVID-19 mortality during the initial wave.","help_url":"https://en.wikipedia.org/wiki/COVID-19_pandemic_in_New_York_City","correct_rank":2,"difficulty":"easy"},{"question_id":25,"tag":"Medical","item_name":"Blood pressure control","item_source":"chronic","lle_minutes":60,"microlives_per_day":2,"category":"Medical","description":"Achieving target BP < 130/80 mmHg through medication and lifestyle reduces stroke risk by 35-40%.","help_url":"https://en.wikipedia.org/wiki/Antihypertensive_drug","correct_rank":3,"difficulty":"easy"},{"question_id":25,"tag":"Radiation","item_name":"Chest X-ray (radiation per scan)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Medical","description":"Very low radiation dose (~0.02 mSv), equivalent to a few hours of background radiation.","help_url":"https://en.wikipedia.org/wiki/Chest_radiograph","correct_rank":4,"difficulty":"easy"},{"question_id":26,"tag":"Lifestyle","item_name":"Family history of heart disease","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Cardiovascular","description":"First-degree relative with CVD before age 55 roughly doubles your own cardiovascular risk.","help_url":"https://en.wikipedia.org/wiki/Cardiovascular_disease#Risk_factors","correct_rank":1,"difficulty":"hard"},{"question_id":26,"tag":"Lifestyle","item_name":"Living 2 months with a smoker","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Environment","description":"Secondhand smoke exposure increases cardiovascular and respiratory disease risk.","help_url":"https://en.wikipedia.org/wiki/Passive_smoking","correct_rank":2,"difficulty":"hard"},{"question_id":26,"tag":"Travel","item_name":"Commuting by bicycle (30 min)","item_source":"acute","lle_minutes":10.5192,"micromorts":0.5,"category":"Travel","description":"Cycling commute with risk from traffic collisions and exertion-related events.","help_url":"https://en.wikipedia.org/wiki/Bicycle_safety","correct_rank":3,"difficulty":"hard"},{"question_id":26,"tag":"Radiation","item_name":"Nuclear plant worker (annual radiation)","item_source":"acute","lle_minutes":2.1038,"micromorts":0.1,"category":"Occupation","description":"Controlled occupational exposure within regulatory limits using dosimetry and shielding.","help_url":"https://en.wikipedia.org/wiki/Nuclear_power_plant","correct_rank":4,"difficulty":"hard"},{"question_id":27,"tag":"Lifestyle","item_name":"High LDL cholesterol (untreated)","item_source":"chronic","lle_minutes":60,"microlives_per_day":-2,"category":"Cardiovascular","description":"LDL > 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","help_url":"https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease","correct_rank":1,"difficulty":"hard"},{"question_id":27,"tag":"Medical","item_name":"Statin therapy (if indicated)","item_source":"chronic","lle_minutes":30,"microlives_per_day":1,"category":"Medical","description":"Cholesterol-lowering statins reduce major cardiovascular events by ~25% in high-risk patients.","help_url":"https://en.wikipedia.org/wiki/Statin","correct_rank":2,"difficulty":"hard"},{"question_id":27,"tag":"Lifestyle","item_name":"Living (one day, age 30)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"Daily Life","description":"Daily mortality at age 30 is similar to age 20 with slightly more disease contribution.","help_url":"https://en.wikipedia.org/wiki/Mortality_rate","correct_rank":3,"difficulty":"hard"},{"question_id":27,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 18-49)","item_source":"acute","lle_minutes":1.0519,"micromorts":0.05,"category":"COVID-19","description":"Bivalent-boosted young adults had near-baseline COVID-19 mortality.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":4,"difficulty":"hard"},{"question_id":28,"tag":"Travel","item_name":"Flying (12h ultra-long-haul)","item_source":"acute","lle_minutes":138.8534,"micromorts":6.6,"category":"Travel","description":"Ultra-long-haul flights carry the highest DVT risk; compression socks can reduce it ~65%.","help_url":"https://en.wikipedia.org/wiki/Economy_class_syndrome","correct_rank":1,"difficulty":"hard"},{"question_id":28,"tag":"Disease","item_name":"COVID-19 bivalent booster (age 65-79)","item_source":"acute","lle_minutes":63.1152,"micromorts":3,"category":"COVID-19","description":"Bivalent-boosted 65-79 year-olds had lowest but still measurable COVID-19 risk.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":2,"difficulty":"hard"},{"question_id":28,"tag":"Disease","item_name":"Family history of cancer","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Cancer","description":"First-degree relative with cancer increases your own risk, especially for breast, colorectal, and prostate cancers.","help_url":"https://en.wikipedia.org/wiki/Cancer#Genetics","correct_rank":3,"difficulty":"hard"},{"question_id":28,"tag":"Sport & Adventure","item_name":"Skiing","item_source":"acute","lle_minutes":14.7269,"micromorts":0.7,"category":"Sport","description":"Risk from collisions with trees/other skiers and avalanche in backcountry.","help_url":"https://en.wikipedia.org/wiki/Skiing","correct_rank":4,"difficulty":"hard"},{"question_id":29,"tag":"Disease","item_name":"COVID-19 monovalent vaccine (age 80+)","item_source":"acute","lle_minutes":1157.112,"micromorts":55,"category":"COVID-19","description":"Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":1,"difficulty":"hard"},{"question_id":29,"tag":"Radiation","item_name":"Coronary angiogram (radiation per scan)","item_source":"acute","lle_minutes":105.192,"micromorts":5,"category":"Medical","description":"Moderate radiation dose from fluoroscopy-guided cardiac catheterisation.","help_url":"https://en.wikipedia.org/wiki/Coronary_catheterization","correct_rank":2,"difficulty":"hard"},{"question_id":29,"tag":"Diet & Drink","item_name":"First alcoholic drink","item_source":"chronic","lle_minutes":30,"microlives_per_day":1,"category":"Alcohol","description":"Moderate alcohol intake (1 drink/day) shows a J-shaped mortality curve, with possible protective cardiovascular effects.","help_url":"https://en.wikipedia.org/wiki/Alcohol_and_cardiovascular_disease","correct_rank":3,"difficulty":"hard"},{"question_id":29,"tag":"Disease","item_name":"COVID-19 bivalent booster (all ages)","item_source":"acute","lle_minutes":21.0384,"micromorts":1,"category":"COVID-19","description":"Population-average residual COVID-19 risk after bivalent booster vaccination.","help_url":"https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","correct_rank":4,"difficulty":"hard"},{"question_id":30,"tag":"Sport & Adventure","item_name":"Scuba diving, trained (yearly)","item_source":"acute","lle_minutes":3450.2976,"micromorts":164,"category":"Sport","description":"Cumulative annual risk for trained divers from decompression sickness, drowning, and equipment failure.","help_url":"https://en.wikipedia.org/wiki/Scuba_diving","correct_rank":1,"difficulty":"medium"},{"question_id":30,"tag":"Lifestyle","item_name":"Untreated hypertension","item_source":"chronic","lle_minutes":120,"microlives_per_day":-4,"category":"Cardiovascular","description":"Systolic BP > 140 mmHg left untreated is the leading modifiable risk factor for stroke, heart attack, and kidney disease.","help_url":"https://en.wikipedia.org/wiki/Hypertension","correct_rank":2,"difficulty":"medium"},{"question_id":30,"tag":"Lifestyle","item_name":"Type 2 diabetes (poorly controlled)","item_source":"chronic","lle_minutes":90,"microlives_per_day":-3,"category":"Cardiovascular","description":"HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","help_url":"https://en.wikipedia.org/wiki/Type_2_diabetes","correct_rank":3,"difficulty":"medium"},{"question_id":30,"tag":"Lifestyle","item_name":"Being 5 kg overweight","item_source":"chronic","lle_minutes":30,"microlives_per_day":-1,"category":"Weight","description":"Each 5 kg above optimum BMI increases risk of type 2 diabetes, cardiovascular disease, and several cancers.","help_url":"https://en.wikipedia.org/wiki/Obesity#Effects_on_health","correct_rank":4,"difficulty":"medium"}]</script>
+
+<script>
+// ---- State ----
+const S = {
+  phase: 'instructions', nQuestions: 5, currentQ: 0,
+  questions: [], userOrders: [], revealed: [], scores: [],
+  selTags: new Set(), selItems: 3, selNq: 5, allTags: []
+};
+let quizPool = [];
+
+// ---- Data ----
+function loadData() {
+  const el = document.getElementById('quiz-data');
+  if (!el) return;
+  quizPool = JSON.parse(el.textContent);
+  // Extract unique tags
+  const tags = new Set();
+  quizPool.forEach(r => { if (r.tag) tags.add(r.tag); });
+  S.allTags = [...tags].sort();
+  S.allTags.forEach(t => S.selTags.add(t));
+}
+
+// ---- Helpers ----
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function formatName(name) { return name.replace(/\s*\(/, '<br>('); }
+function fmtMM(v) {
+  if (v >= 100) return Math.round(v).toLocaleString();
+  if (v >= 1) return parseFloat(v.toFixed(1)).toString();
+  if (v >= 0.01) return parseFloat(v.toFixed(2)).toString();
+  return parseFloat(v.toFixed(3)).toString();
+}
+function lleLabel(lle) {
+  const fmt = v => { const s = v.toFixed(1); return s.endsWith('.0') ? s.slice(0,-2) : s; };
+  if (lle >= 1440) return fmt(lle / 1440) + ' days';
+  if (lle >= 60) return fmt(lle / 60) + ' hrs';
+  return fmt(lle) + ' min';
+}
+function selectInGroup(grpId, clicked) {
+  const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  clicked.classList.add('selected');
+}
+function toggleTag(el) {
+  const tag = el.dataset.tag;
+  if (S.selTags.has(tag)) { S.selTags.delete(tag); el.classList.remove('selected'); }
+  else { S.selTags.add(tag); el.classList.add('selected'); }
+}
+function selectAllTags(select) {
+  const btns = document.getElementById('tag_group').querySelectorAll('.tag-btn');
+  btns.forEach(b => {
+    const tag = b.dataset.tag;
+    if (select) { S.selTags.add(tag); b.classList.add('selected'); }
+    else { S.selTags.delete(tag); b.classList.remove('selected'); }
+  });
+}
+
+// ---- Kendall tau scoring ----
+function kendallTau(userOrder, correctOrder) {
+  const k = userOrder.length;
+  const maxPairs = k * (k - 1) / 2;
+  let discordant = 0;
+  const userRank = {}, correctRank = {};
+  userOrder.forEach((v, i) => userRank[v] = i);
+  correctOrder.forEach((v, i) => correctRank[v] = i);
+  for (let i = 0; i < k - 1; i++) {
+    for (let j = i + 1; j < k; j++) {
+      const a = userOrder[i], b = userOrder[j];
+      if ((userRank[a] < userRank[b]) !== (correctRank[a] < correctRank[b])) discordant++;
+    }
+  }
+  return { score: maxPairs - discordant, maxScore: maxPairs, pct: Math.round((maxPairs - discordant) / maxPairs * 100) };
+}
+
+// ---- Leaderboard (pure JS) ----
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+const STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+let scoreSubmitted = false;
+
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  const el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
+
+function submitScore(scorePct, nQuestions) {
+  if (scoreSubmitted) return;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; btn.className = 'btn btn-secondary btn-lg'; }
+  const data = new URLSearchParams();
+  data.append('entry.335579146', scorePct);
+  data.append('entry.2122920576', 100);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.268026248', 'ranking');
+  data.append('entry.232879816', S.selItems + 'items');
+  data.append('entry.2010782223', nQuestions || '');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
+    getPercentile(scorePct);
+  }).catch(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Score saved locally'; btn.className = 'btn btn-info btn-lg'; }
+  });
+}
+
+function interpolatePercentile(scorePct, group) {
+  const p = group.percentiles, s = group.scores_pct;
+  for (let i = s.length - 1; i >= 0; i--) { if (scorePct >= s[i]) return p[i]; }
+  return 0;
+}
+
+function getPercentile(scorePct) {
+  fetch(STATS_URL).then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(stats => {
+    const d = stats.ranking;
+    if (!d) throw new Error('no ranking stats');
+    let msg = 'You scored better than ' + interpolatePercentile(scorePct, d.overall) + '% of all players';
+    msg += '! (' + d.overall.n + ' submissions)';
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(() => {
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
+  });
+}
+
+// ---- Result phrases ----
+const PHRASES = [
+  {min: 95, phrase: 'Risk ranking master!', fact: 'Combining acute and chronic risks onto one scale is the key insight of micromort/microlife theory.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 90, phrase: 'Superb risk intuition!', fact: 'Loss of Life Expectancy (LLE) lets us compare one-off and daily risks on the same scale.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 80, phrase: 'Impressive ordering!', fact: 'People systematically overestimate rare dramatic risks and underestimate common ones.', link: 'https://en.wikipedia.org/wiki/Risk_perception'},
+  {min: 70, phrase: 'Better than most!', fact: 'The availability heuristic makes us judge risk by how easily we recall examples.', link: 'https://en.wikipedia.org/wiki/Availability_heuristic'},
+  {min: 60, phrase: 'Getting there!', fact: 'Ranking risks correctly requires calibrating both magnitude and frequency.', link: 'https://en.wikipedia.org/wiki/Risk_assessment'},
+  {min: 50, phrase: 'About average!', fact: 'Even experts disagree on relative risk rankings in many domains.', link: 'https://en.wikipedia.org/wiki/Risk_communication'},
+  {min: 30, phrase: 'Tricky comparisons!', fact: 'Chronic daily habits can dwarf one-off acute risks when measured over a lifetime.', link: 'https://en.wikipedia.org/wiki/Microlife'},
+  {min: -1, phrase: 'Lots to discover!', fact: 'Understanding relative risk helps you focus on what actually matters.', link: 'https://en.wikipedia.org/wiki/Relative_risk'}
+];
+function getPhrase(pct) { return PHRASES.find(p => pct >= p.min) || PHRASES[PHRASES.length - 1]; }
+
+const ENCOURAGEMENTS = [
+  "Can you sort risks better than your gut instinct?",
+  "Drag and drop your way to risk literacy.",
+  "One-off dangers vs daily habits: which matters more?",
+  "Your inner actuary wants to play. Let it.",
+  "Warning: your risk rankings may surprise you.",
+  "Micromorts meet microlives. Let the sorting begin.",
+  "Think you know what's dangerous? Prove it.",
+  "Some risks hide in plain sight. Can you spot them?"
+];
+
+// ---- Render functions ----
+function render() {
+  const app = document.getElementById('quiz-app');
+  switch (S.phase) {
+    case 'instructions': app.innerHTML = renderInstructions(); break;
+    case 'question': app.innerHTML = renderQuestion(); initSortable(); break;
+    case 'results_summary': app.innerHTML = renderResults(); break;
+    case 'results_detail': app.innerHTML = renderDetail(); break;
+  }
+}
+
+function renderInstructions() {
+  const enc = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+  const tagBtns = S.allTags.map(t =>
+    `<span class="tag-btn${S.selTags.has(t) ? ' selected' : ''}" data-tag="${t}" onclick="toggleTag(this)">${t}</span>`
+  ).join('');
+
+  return `
+    <div class="card"><div class="card-body">
+      <ul class="mb-1">
+        <li><b><em>Select one or more tags</em></b> below to choose which risk categories to quiz on.</li>
+        <li><b><em>Drag and drop</em></b> to rank by risk to lifespan, biggest (top) to smallest (bottom).</li>
+        <li>Rank by magnitude of factor (can be harmful or beneficial).</li>
+        <li>Risk is measured as <abbr title="Loss of Life Expectancy: the average time gained or lost per exposure. Ranges from &lt;1 min (cup of coffee) to 5+ hrs/day (smoking 20/day). Can be harmful or beneficial. Shown as positive magnitude here." style="cursor:help;text-decoration:underline dotted;"><b><em>Loss of Life Expectancy (LLE)</em></b></abbr>.</li>
+        <li>Each correctly ordered pair scores a point (<a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank"><abbr title="Kendall rank correlation: counts how many pairs you ordered correctly vs incorrectly. Perfect = all pairs right.">Kendall's Tau</abbr></a>).</li>
+      </ul>
+      <div class="mb-1" style="padding-left:1.5em;"><em>${enc}</em></div>
+      <div class="option-row">
+        <span class="option-label" title="Select 1 or more risk categories. Click individual tags to toggle." style="cursor:help;text-decoration:underline dotted;">Tags</span>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <button class="btn btn-sm btn-outline-secondary" onclick="selectAllTags(true)">Select All</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="selectAllTags(false)">Deselect All</button>
+          </div>
+          <div id="tag_group" style="display:flex;flex-wrap:wrap;gap:4px;">${tagBtns}</div>
+        </div>
+      </div>
+      <div class="option-row">
+        <span class="option-label" title="Number of risk items to rank in each question. 3 is quicker, 4 is harder." style="cursor:help;text-decoration:underline dotted;">Items per question</span>
+        <div class="option-btn-group" id="grp_items">
+          <button class="option-btn selected" onclick="S.selItems=3;selectInGroup('grp_items',this)">3</button>
+          <button class="option-btn" onclick="S.selItems=4;selectInGroup('grp_items',this)">4</button>
+        </div>
+        <span style="width:24px;"></span>
+        <span class="option-label" title="Total number of ranking questions in this round." style="cursor:help;text-decoration:underline dotted;">Questions</span>
+        <div class="option-btn-group" id="grp_nq">
+          <button class="option-btn selected" onclick="S.selNq=5;selectInGroup('grp_nq',this)">5</button>
+          <button class="option-btn" onclick="S.selNq=10;selectInGroup('grp_nq',this)">10</button>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div></div>`;
+}
+
+function startQuiz() {
+  if (S.selTags.size === 0) {
+    alert('Please select at least one tag.');
+    return;
+  }
+
+  // Group pool rows by question_id
+  const byQ = {};
+  quizPool.forEach(r => {
+    if (!byQ[r.question_id]) byQ[r.question_id] = [];
+    byQ[r.question_id].push(r);
+  });
+
+  // Filter: matching tags, matching items_per_question
+  let candidates = Object.values(byQ).filter(items => {
+    if (items.length !== S.selItems) return false;
+    return items.some(item => S.selTags.has(item.tag));
+  });
+
+  if (candidates.length === 0) {
+    alert('No questions match your selection. Try different tags or item count.');
+    return;
+  }
+
+  // Shuffle and pick n questions
+  candidates = shuffle(candidates);
+  const n = Math.min(S.selNq, candidates.length);
+  S.nQuestions = n;
+  S.questions = candidates.slice(0, n);
+  S.userOrders = S.questions.map(items => shuffle(items.map((_, i) => i)));
+  S.revealed = new Array(n).fill(false);
+  S.scores = new Array(n).fill(null);
+  S.currentQ = 0;
+  S.phase = 'question';
+  render();
+}
+
+function renderQuestion() {
+  const q = S.currentQ, n = S.nQuestions;
+  const items = S.questions[q];
+  const revealed = S.revealed[q];
+  const userOrder = S.userOrders[q];
+
+  // Build rank items
+  let rankHtml = '';
+  if (!revealed) {
+    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect</strong></div>';
+    rankHtml += '<div id="sortable-list">';
+    userOrder.forEach(idx => {
+      const item = items[idx];
+      const srcBadge = item.item_source === 'acute'
+        ? '<span class="badge bg-danger">acute</span>'
+        : (item.microlives_per_day != null && item.microlives_per_day > 0
+          ? '<span class="badge bg-info">chronic +life</span>'
+          : '<span class="badge bg-info">chronic -life</span>');
+      rankHtml += `<div class="rank-item" data-idx="${idx}">
+        <span class="drag-handle">\u2630</span>
+        <span class="item-name">${formatName(item.item_name)}</span>
+        ${srcBadge}
+        <span class="badge bg-secondary">${item.category}</span>
+      </div>`;
+    });
+    rankHtml += '</div>';
+    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+    rankHtml += `<div class="text-center mt-3">
+      <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit Order</button>
+    </div>`;
+  } else {
+    // Show correct order with green/red
+    const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
+    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect (correct order)</strong></div>';
+    correctOrder.forEach((item, correctIdx) => {
+      const origIdx = items.indexOf(item);
+      const userRankOfItem = userOrder.indexOf(origIdx);
+      const isCorrectPos = (userRankOfItem === correctIdx);
+      const cls = isCorrectPos ? 'rank-item rank-item-correct' : 'rank-item rank-item-wrong';
+      const icon = isCorrectPos ? '\u2713' : '\u2717';
+      const srcBadge = item.item_source === 'acute'
+        ? '<span class="badge bg-danger">acute</span>'
+        : (item.microlives_per_day != null && item.microlives_per_day > 0
+          ? '<span class="badge bg-info">chronic +life</span>'
+          : '<span class="badge bg-info">chronic -life</span>');
+      const userPosText = !isCorrectPos ? ` (you: #${userRankOfItem + 1})` : '';
+      rankHtml += `<div class="${cls}">
+        <span class="drag-handle">${icon}</span>
+        <span class="item-name">${formatName(item.item_name)}</span>
+        ${srcBadge}
+        <span class="badge bg-secondary">${item.category}</span>
+        <span class="lle-reveal"><abbr title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</abbr>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
+      </div>`;
+    });
+    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+
+    // Score for this question
+    const sc = S.scores[q];
+    if (sc) {
+      rankHtml += `<div class="alert ${sc.pct >= 80 ? 'alert-success' : sc.pct >= 50 ? 'alert-warning' : 'alert-danger'} text-center mt-2 py-2">
+        <strong>${sc.pct}%</strong> &mdash; ${sc.score}/${sc.maxScore} pairs correct
+      </div>`;
+    }
+  }
+
+  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
+
+  // Tally
+  let totalPairs = 0, totalConc = 0;
+  S.scores.forEach(sc => { if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; } });
+  const answeredCount = S.revealed.filter(Boolean).length;
+
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
+      <span class="text-muted">${diffBadge}${q+1} of ${n} &middot; <small>${answeredCount > 0 ? Math.round(totalConc / totalPairs * 100) + '% so far' : ''}</small></span>
+      <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
+    </div>
+    ${rankHtml}`;
+}
+
+function initSortable() {
+  const el = document.getElementById('sortable-list');
+  if (!el) return;
+  Sortable.create(el, {
+    animation: 150,
+    handle: '.drag-handle',
+    ghostClass: 'sortable-ghost',
+    onEnd: function() {
+      // Update user order from DOM
+      const items = el.querySelectorAll('.rank-item');
+      S.userOrders[S.currentQ] = Array.from(items).map(item => parseInt(item.dataset.idx));
+    }
+  });
+}
+
+function submitOrder() {
+  const q = S.currentQ;
+  const items = S.questions[q];
+  const userOrder = S.userOrders[q];
+
+  // Correct order: sorted by correct_rank (1 = biggest effect)
+  const correctOrder = items.map((_, i) => i).sort((a, b) => items[a].correct_rank - items[b].correct_rank);
+
+  // Map to item names for scoring
+  const userNames = userOrder.map(i => items[i].item_name);
+  const correctNames = correctOrder.map(i => items[i].item_name);
+  S.scores[q] = kendallTau(userNames, correctNames);
+  S.revealed[q] = true;
+  render();
+}
+
+function nextQ() {
+  if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
+  else { S.phase = 'results_summary'; render(); }
+}
+function prevQ() {
+  if (S.currentQ > 0) { S.currentQ--; render(); }
+  else { S.phase = 'instructions'; render(); }
+}
+
+function renderResults() {
+  const n = S.nQuestions;
+  let totalPairs = 0, totalConc = 0;
+  S.scores.forEach(sc => {
+    if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; }
+  });
+  const overallPct = totalPairs > 0 ? Math.round(totalConc / totalPairs * 100) : 0;
+  const info = getPhrase(overallPct);
+
+  return `
+    <h2 class="text-center mb-4">Results</h2>
+    <div style="display:flex;gap:16px;margin-bottom:1rem;">
+      <div style="flex:1;"><div class="card text-white bg-primary"><div class="card-body text-center">
+        <small>Your Score</small><h2 class="mb-0">${overallPct}%</h2>
+        <small>${totalConc}/${totalPairs} pairs</small>
+      </div></div></div>
+      <div style="flex:1;"><div class="card text-white bg-secondary"><div class="card-body text-center">
+        <small>Random Ordering</small><h2 class="mb-0">~50%</h2>
+      </div></div></div>
+    </div>
+    <div class="text-center mb-4">
+      <h3>${info.phrase}</h3>
+      <em>${info.fact}</em><br>
+      <a href="${info.link}" target="_blank">Learn more &rarr;</a>
+    </div>
+    <div class="d-flex justify-content-center gap-3">
+      <button id="submit_btn" class="btn btn-warning btn-lg" onclick="submitScore(${overallPct},${n})">Submit Score</button>
+      <button id="share_btn" class="btn btn-success btn-lg" onclick="shareResult(${overallPct})">Share</button>
+      <button class="btn btn-outline-primary btn-lg" onclick="S.phase='results_detail';render()">View Details</button>
+      <button class="btn btn-primary btn-lg" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="text-center mt-2">
+      <small id="percentile_text" class="text-muted"></small><br>
+      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
+    </div>`;
+}
+
+function shareResult(pct) {
+  const pEl = document.getElementById('percentile_text');
+  const pLine = pEl && pEl.textContent ? '\n' + pEl.textContent + '\n' : '\n';
+  const text = '\ud83c\udfc6 Risk Ranking Quiz: I scored ' + pct + '%!' + pLine +
+    'Rank these risks by their effect on lifespan.\n' +
+    'Can you beat my score? \ud83c\udfc6\n' +
+    'https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('share_btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+  });
+}
+
+function renderDetail() {
+  const n = S.nQuestions;
+  let rows = '';
+  for (let i = 0; i < n; i++) {
+    const items = S.questions[i];
+    const sc = S.scores[i];
+    const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
+    const correctNames = correctOrder.map(it => it.item_name).join(' > ');
+    const userOrder = S.userOrders[i];
+    const userNames = userOrder.map(idx => items[idx].item_name).join(' > ');
+    const pct = sc ? sc.pct + '%' : '\u2014';
+    rows += `<tr><td>${i+1}</td><td style="white-space:normal;max-width:300px;">${correctNames}</td>
+      <td style="white-space:normal;max-width:300px;">${userNames}</td>
+      <td>${pct}</td></tr>`;
+  }
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <button class="btn btn-secondary" onclick="S.phase='results_summary';render()">&larr; Back to Results</button>
+      <h3 class="mb-0">Your quiz details</h3>
+      <button class="btn btn-primary" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="detail-scroll">
+      <table class="table table-striped table-hover detail-table">
+        <thead><tr><th>Q</th><th>Correct Order</th><th>Your Order</th><th>Score</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
+  render();
+});
+</script>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

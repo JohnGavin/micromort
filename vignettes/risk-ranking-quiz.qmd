@@ -1,0 +1,545 @@
+---
+title: "Rank these risks by their effect on lifespan"
+description: "Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives."
+format:
+  html:
+    embed-resources: false
+    page-layout: full
+    open-graph:
+      image: ../man/figures/og-image.png
+      description: "Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy."
+    twitter-card:
+      image: ../man/figures/og-image.png
+      card-style: summary_large_image
+---
+
+```{=html}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .description { margin-bottom: 0 !important; }
+  #quiz-app { max-width: 800px; margin: 0 auto; padding: 20px; font-family: inherit; font-size: 1.15rem; }
+  #quiz-app .btn { font-size: 1.1rem; }
+  #quiz-app .btn-lg { font-size: 1.25rem; }
+  .gap-3 { gap: 1rem; }
+  #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .option-btn {
+    padding: 10px 20px; border: 2px solid #dee2e6; border-radius: 8px;
+    background-color: #2b3e50; color: #ffffff; font-size: 1.1rem;
+    cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
+    text-align: center; min-width: 60px;
+  }
+  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; font-size: 1.1rem; }
+  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
+  .explanation-panel p { margin-bottom: 0.25rem; }
+  .detail-scroll { overflow-x: auto; width: 100%; }
+  .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
+  .detail-table th, .detail-table td { padding: 8px 12px; }
+  .alert { font-size: 1.1rem; }
+  .rank-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 2px solid #dee2e6; border-radius: 8px; background: #2b3e50; color: #fff; margin-bottom: 6px; cursor: grab; }
+  .rank-item .drag-handle { font-size: 1.2rem; color: #adb5bd; }
+  .rank-item-correct { border-color: #198754 !important; background: #d1e7dd !important; color: #0f5132 !important; }
+  .rank-item-wrong { border-color: #dc3545 !important; background: #f8d7da !important; color: #842029 !important; }
+  .rank-label { font-size: 0.9rem; color: #6c757d; text-align: center; }
+  .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+  .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
+  .tag-btn:hover { border-color: #2c7be5; }
+  .tag-btn.selected { border-color: #2c7be5; background: #2c7be5; }
+  .rank-item .badge { font-size: 0.8em; }
+  .rank-item .item-name { font-weight: 600; flex: 1; }
+</style>
+
+<div id="quiz-app">Loading quiz data...</div>
+```
+
+```{r quiz-data-gen, echo=FALSE, results='asis'}
+# Generate JSON from targets pipeline data and embed in script tag
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(targets::tar_read_raw(name, store = store),
+           error = function(e) NULL)
+}
+pairs <- safe_tar_read("vig_ranking_questions")
+if (is.null(pairs)) {
+  pairs <- rbind(
+    micromort::ranking_quiz_questions(n_questions = 50, items_per_question = 3, seed = 42),
+    micromort::ranking_quiz_questions(n_questions = 30, items_per_question = 4, seed = 42)
+  )
+}
+json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+cat(sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str))
+```
+
+```{=html}
+
+<script>
+// ---- State ----
+const S = {
+  phase: 'instructions', nQuestions: 5, currentQ: 0,
+  questions: [], userOrders: [], revealed: [], scores: [],
+  selTags: new Set(), selItems: 3, selNq: 5, allTags: []
+};
+let quizPool = [];
+
+// ---- Data ----
+function loadData() {
+  const el = document.getElementById('quiz-data');
+  if (!el) return;
+  quizPool = JSON.parse(el.textContent);
+  // Extract unique tags
+  const tags = new Set();
+  quizPool.forEach(r => { if (r.tag) tags.add(r.tag); });
+  S.allTags = [...tags].sort();
+  S.allTags.forEach(t => S.selTags.add(t));
+}
+
+// ---- Helpers ----
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function formatName(name) { return name.replace(/\s*\(/, '<br>('); }
+function fmtMM(v) {
+  if (v >= 100) return Math.round(v).toLocaleString();
+  if (v >= 1) return parseFloat(v.toFixed(1)).toString();
+  if (v >= 0.01) return parseFloat(v.toFixed(2)).toString();
+  return parseFloat(v.toFixed(3)).toString();
+}
+function lleLabel(lle) {
+  const fmt = v => { const s = v.toFixed(1); return s.endsWith('.0') ? s.slice(0,-2) : s; };
+  if (lle >= 1440) return fmt(lle / 1440) + ' days';
+  if (lle >= 60) return fmt(lle / 60) + ' hrs';
+  return fmt(lle) + ' min';
+}
+function selectInGroup(grpId, clicked) {
+  const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
+  btns.forEach(b => b.classList.remove('selected'));
+  clicked.classList.add('selected');
+}
+function toggleTag(el) {
+  const tag = el.dataset.tag;
+  if (S.selTags.has(tag)) { S.selTags.delete(tag); el.classList.remove('selected'); }
+  else { S.selTags.add(tag); el.classList.add('selected'); }
+}
+function selectAllTags(select) {
+  const btns = document.getElementById('tag_group').querySelectorAll('.tag-btn');
+  btns.forEach(b => {
+    const tag = b.dataset.tag;
+    if (select) { S.selTags.add(tag); b.classList.add('selected'); }
+    else { S.selTags.delete(tag); b.classList.remove('selected'); }
+  });
+}
+
+// ---- Kendall tau scoring ----
+function kendallTau(userOrder, correctOrder) {
+  const k = userOrder.length;
+  const maxPairs = k * (k - 1) / 2;
+  let discordant = 0;
+  const userRank = {}, correctRank = {};
+  userOrder.forEach((v, i) => userRank[v] = i);
+  correctOrder.forEach((v, i) => correctRank[v] = i);
+  for (let i = 0; i < k - 1; i++) {
+    for (let j = i + 1; j < k; j++) {
+      const a = userOrder[i], b = userOrder[j];
+      if ((userRank[a] < userRank[b]) !== (correctRank[a] < correctRank[b])) discordant++;
+    }
+  }
+  return { score: maxPairs - discordant, maxScore: maxPairs, pct: Math.round((maxPairs - discordant) / maxPairs * 100) };
+}
+
+// ---- Leaderboard (pure JS) ----
+const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
+const STATS_URL = 'https://johngavin.github.io/micromort/api/quiz_stats.json';
+let scoreSubmitted = false;
+
+function resetLeaderboard() {
+  scoreSubmitted = false;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  const el = document.getElementById('percentile_text');
+  if (el) el.textContent = '';
+}
+
+function submitScore(scorePct, nQuestions) {
+  if (scoreSubmitted) return;
+  const btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; btn.className = 'btn btn-secondary btn-lg'; }
+  const data = new URLSearchParams();
+  data.append('entry.335579146', scorePct);
+  data.append('entry.2122920576', 100);
+  data.append('entry.621716914', new Date().toISOString());
+  data.append('entry.268026248', 'ranking');
+  data.append('entry.232879816', S.selItems + 'items');
+  data.append('entry.2010782223', nQuestions || '');
+  fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
+    getPercentile(scorePct);
+  }).catch(() => {
+    scoreSubmitted = true;
+    if (btn) { btn.textContent = 'Score saved locally'; btn.className = 'btn btn-info btn-lg'; }
+  });
+}
+
+function interpolatePercentile(scorePct, group) {
+  const p = group.percentiles, s = group.scores_pct;
+  for (let i = s.length - 1; i >= 0; i--) { if (scorePct >= s[i]) return p[i]; }
+  return 0;
+}
+
+function getPercentile(scorePct) {
+  fetch(STATS_URL).then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(stats => {
+    const d = stats.ranking;
+    if (!d) throw new Error('no ranking stats');
+    let msg = 'You scored better than ' + interpolatePercentile(scorePct, d.overall) + '% of all players';
+    msg += '! (' + d.overall.n + ' submissions)';
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = msg;
+  }).catch(() => {
+    const el = document.getElementById('percentile_text');
+    if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
+  });
+}
+
+// ---- Result phrases ----
+const PHRASES = [
+  {min: 95, phrase: 'Risk ranking master!', fact: 'Combining acute and chronic risks onto one scale is the key insight of micromort/microlife theory.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 90, phrase: 'Superb risk intuition!', fact: 'Loss of Life Expectancy (LLE) lets us compare one-off and daily risks on the same scale.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 80, phrase: 'Impressive ordering!', fact: 'People systematically overestimate rare dramatic risks and underestimate common ones.', link: 'https://en.wikipedia.org/wiki/Risk_perception'},
+  {min: 70, phrase: 'Better than most!', fact: 'The availability heuristic makes us judge risk by how easily we recall examples.', link: 'https://en.wikipedia.org/wiki/Availability_heuristic'},
+  {min: 60, phrase: 'Getting there!', fact: 'Ranking risks correctly requires calibrating both magnitude and frequency.', link: 'https://en.wikipedia.org/wiki/Risk_assessment'},
+  {min: 50, phrase: 'About average!', fact: 'Even experts disagree on relative risk rankings in many domains.', link: 'https://en.wikipedia.org/wiki/Risk_communication'},
+  {min: 30, phrase: 'Tricky comparisons!', fact: 'Chronic daily habits can dwarf one-off acute risks when measured over a lifetime.', link: 'https://en.wikipedia.org/wiki/Microlife'},
+  {min: -1, phrase: 'Lots to discover!', fact: 'Understanding relative risk helps you focus on what actually matters.', link: 'https://en.wikipedia.org/wiki/Relative_risk'}
+];
+function getPhrase(pct) { return PHRASES.find(p => pct >= p.min) || PHRASES[PHRASES.length - 1]; }
+
+const ENCOURAGEMENTS = [
+  "Can you sort risks better than your gut instinct?",
+  "Drag and drop your way to risk literacy.",
+  "One-off dangers vs daily habits: which matters more?",
+  "Your inner actuary wants to play. Let it.",
+  "Warning: your risk rankings may surprise you.",
+  "Micromorts meet microlives. Let the sorting begin.",
+  "Think you know what's dangerous? Prove it.",
+  "Some risks hide in plain sight. Can you spot them?"
+];
+
+// ---- Render functions ----
+function render() {
+  const app = document.getElementById('quiz-app');
+  switch (S.phase) {
+    case 'instructions': app.innerHTML = renderInstructions(); break;
+    case 'question': app.innerHTML = renderQuestion(); initSortable(); break;
+    case 'results_summary': app.innerHTML = renderResults(); break;
+    case 'results_detail': app.innerHTML = renderDetail(); break;
+  }
+}
+
+function renderInstructions() {
+  const enc = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
+  const tagBtns = S.allTags.map(t =>
+    `<span class="tag-btn${S.selTags.has(t) ? ' selected' : ''}" data-tag="${t}" onclick="toggleTag(this)">${t}</span>`
+  ).join('');
+
+  return `
+    <div class="card"><div class="card-body">
+      <ul class="mb-1">
+        <li><b><em>Select one or more tags</em></b> below to choose which risk categories to quiz on.</li>
+        <li><b><em>Drag and drop</em></b> to rank by risk to lifespan, biggest (top) to smallest (bottom).</li>
+        <li>Rank by magnitude of factor (can be harmful or beneficial).</li>
+        <li>Risk is measured as <abbr title="Loss of Life Expectancy: the average time gained or lost per exposure. Ranges from &lt;1 min (cup of coffee) to 5+ hrs/day (smoking 20/day). Can be harmful or beneficial. Shown as positive magnitude here." style="cursor:help;text-decoration:underline dotted;"><b><em>Loss of Life Expectancy (LLE)</em></b></abbr>.</li>
+        <li>Each correctly ordered pair scores a point (<a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank"><abbr title="Kendall rank correlation: counts how many pairs you ordered correctly vs incorrectly. Perfect = all pairs right.">Kendall's Tau</abbr></a>).</li>
+      </ul>
+      <div class="mb-1" style="padding-left:1.5em;"><em>${enc}</em></div>
+      <div class="option-row">
+        <span class="option-label" title="Select 1 or more risk categories. Click individual tags to toggle." style="cursor:help;text-decoration:underline dotted;">Tags</span>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;gap:4px;margin-bottom:4px;">
+            <button class="btn btn-sm btn-outline-secondary" onclick="selectAllTags(true)">Select All</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="selectAllTags(false)">Deselect All</button>
+          </div>
+          <div id="tag_group" style="display:flex;flex-wrap:wrap;gap:4px;">${tagBtns}</div>
+        </div>
+      </div>
+      <div class="option-row">
+        <span class="option-label" title="Number of risk items to rank in each question. 3 is quicker, 4 is harder." style="cursor:help;text-decoration:underline dotted;">Items per question</span>
+        <div class="option-btn-group" id="grp_items">
+          <button class="option-btn selected" onclick="S.selItems=3;selectInGroup('grp_items',this)">3</button>
+          <button class="option-btn" onclick="S.selItems=4;selectInGroup('grp_items',this)">4</button>
+        </div>
+        <span style="width:24px;"></span>
+        <span class="option-label" title="Total number of ranking questions in this round." style="cursor:help;text-decoration:underline dotted;">Questions</span>
+        <div class="option-btn-group" id="grp_nq">
+          <button class="option-btn selected" onclick="S.selNq=5;selectInGroup('grp_nq',this)">5</button>
+          <button class="option-btn" onclick="S.selNq=10;selectInGroup('grp_nq',this)">10</button>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quiz</button>
+      </div>
+    </div></div>`;
+}
+
+function startQuiz() {
+  if (S.selTags.size === 0) {
+    alert('Please select at least one tag.');
+    return;
+  }
+
+  // Group pool rows by question_id
+  const byQ = {};
+  quizPool.forEach(r => {
+    if (!byQ[r.question_id]) byQ[r.question_id] = [];
+    byQ[r.question_id].push(r);
+  });
+
+  // Filter: matching tags, matching items_per_question
+  let candidates = Object.values(byQ).filter(items => {
+    if (items.length !== S.selItems) return false;
+    return items.some(item => S.selTags.has(item.tag));
+  });
+
+  if (candidates.length === 0) {
+    alert('No questions match your selection. Try different tags or item count.');
+    return;
+  }
+
+  // Shuffle and pick n questions
+  candidates = shuffle(candidates);
+  const n = Math.min(S.selNq, candidates.length);
+  S.nQuestions = n;
+  S.questions = candidates.slice(0, n);
+  S.userOrders = S.questions.map(items => shuffle(items.map((_, i) => i)));
+  S.revealed = new Array(n).fill(false);
+  S.scores = new Array(n).fill(null);
+  S.currentQ = 0;
+  S.phase = 'question';
+  render();
+}
+
+function renderQuestion() {
+  const q = S.currentQ, n = S.nQuestions;
+  const items = S.questions[q];
+  const revealed = S.revealed[q];
+  const userOrder = S.userOrders[q];
+
+  // Build rank items
+  let rankHtml = '';
+  if (!revealed) {
+    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect</strong></div>';
+    rankHtml += '<div id="sortable-list">';
+    userOrder.forEach(idx => {
+      const item = items[idx];
+      const srcBadge = item.item_source === 'acute'
+        ? '<span class="badge bg-danger">acute</span>'
+        : (item.microlives_per_day != null && item.microlives_per_day > 0
+          ? '<span class="badge bg-info">chronic +life</span>'
+          : '<span class="badge bg-info">chronic -life</span>');
+      rankHtml += `<div class="rank-item" data-idx="${idx}">
+        <span class="drag-handle">\u2630</span>
+        <span class="item-name">${formatName(item.item_name)}</span>
+        ${srcBadge}
+        <span class="badge bg-secondary">${item.category}</span>
+      </div>`;
+    });
+    rankHtml += '</div>';
+    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+    rankHtml += `<div class="text-center mt-3">
+      <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit Order</button>
+    </div>`;
+  } else {
+    // Show correct order with green/red
+    const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
+    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect (correct order)</strong></div>';
+    correctOrder.forEach((item, correctIdx) => {
+      const origIdx = items.indexOf(item);
+      const userRankOfItem = userOrder.indexOf(origIdx);
+      const isCorrectPos = (userRankOfItem === correctIdx);
+      const cls = isCorrectPos ? 'rank-item rank-item-correct' : 'rank-item rank-item-wrong';
+      const icon = isCorrectPos ? '\u2713' : '\u2717';
+      const srcBadge = item.item_source === 'acute'
+        ? '<span class="badge bg-danger">acute</span>'
+        : (item.microlives_per_day != null && item.microlives_per_day > 0
+          ? '<span class="badge bg-info">chronic +life</span>'
+          : '<span class="badge bg-info">chronic -life</span>');
+      const userPosText = !isCorrectPos ? ` (you: #${userRankOfItem + 1})` : '';
+      rankHtml += `<div class="${cls}">
+        <span class="drag-handle">${icon}</span>
+        <span class="item-name">${formatName(item.item_name)}</span>
+        ${srcBadge}
+        <span class="badge bg-secondary">${item.category}</span>
+        <span class="lle-reveal"><abbr title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</abbr>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
+      </div>`;
+    });
+    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+
+    // Score for this question
+    const sc = S.scores[q];
+    if (sc) {
+      rankHtml += `<div class="alert ${sc.pct >= 80 ? 'alert-success' : sc.pct >= 50 ? 'alert-warning' : 'alert-danger'} text-center mt-2 py-2">
+        <strong>${sc.pct}%</strong> &mdash; ${sc.score}/${sc.maxScore} pairs correct
+      </div>`;
+    }
+  }
+
+  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
+
+  // Tally
+  let totalPairs = 0, totalConc = 0;
+  S.scores.forEach(sc => { if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; } });
+  const answeredCount = S.revealed.filter(Boolean).length;
+
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
+      <span class="text-muted">${diffBadge}${q+1} of ${n} &middot; <small>${answeredCount > 0 ? Math.round(totalConc / totalPairs * 100) + '% so far' : ''}</small></span>
+      <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
+    </div>
+    ${rankHtml}`;
+}
+
+function initSortable() {
+  const el = document.getElementById('sortable-list');
+  if (!el) return;
+  Sortable.create(el, {
+    animation: 150,
+    handle: '.drag-handle',
+    ghostClass: 'sortable-ghost',
+    onEnd: function() {
+      // Update user order from DOM
+      const items = el.querySelectorAll('.rank-item');
+      S.userOrders[S.currentQ] = Array.from(items).map(item => parseInt(item.dataset.idx));
+    }
+  });
+}
+
+function submitOrder() {
+  const q = S.currentQ;
+  const items = S.questions[q];
+  const userOrder = S.userOrders[q];
+
+  // Correct order: sorted by correct_rank (1 = biggest effect)
+  const correctOrder = items.map((_, i) => i).sort((a, b) => items[a].correct_rank - items[b].correct_rank);
+
+  // Map to item names for scoring
+  const userNames = userOrder.map(i => items[i].item_name);
+  const correctNames = correctOrder.map(i => items[i].item_name);
+  S.scores[q] = kendallTau(userNames, correctNames);
+  S.revealed[q] = true;
+  render();
+}
+
+function nextQ() {
+  if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
+  else { S.phase = 'results_summary'; render(); }
+}
+function prevQ() {
+  if (S.currentQ > 0) { S.currentQ--; render(); }
+  else { S.phase = 'instructions'; render(); }
+}
+
+function renderResults() {
+  const n = S.nQuestions;
+  let totalPairs = 0, totalConc = 0;
+  S.scores.forEach(sc => {
+    if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; }
+  });
+  const overallPct = totalPairs > 0 ? Math.round(totalConc / totalPairs * 100) : 0;
+  const info = getPhrase(overallPct);
+
+  return `
+    <h2 class="text-center mb-4">Results</h2>
+    <div style="display:flex;gap:16px;margin-bottom:1rem;">
+      <div style="flex:1;"><div class="card text-white bg-primary"><div class="card-body text-center">
+        <small>Your Score</small><h2 class="mb-0">${overallPct}%</h2>
+        <small>${totalConc}/${totalPairs} pairs</small>
+      </div></div></div>
+      <div style="flex:1;"><div class="card text-white bg-secondary"><div class="card-body text-center">
+        <small>Random Ordering</small><h2 class="mb-0">~50%</h2>
+      </div></div></div>
+    </div>
+    <div class="text-center mb-4">
+      <h3>${info.phrase}</h3>
+      <em>${info.fact}</em><br>
+      <a href="${info.link}" target="_blank">Learn more &rarr;</a>
+    </div>
+    <div class="d-flex justify-content-center gap-3">
+      <button id="submit_btn" class="btn btn-warning btn-lg" onclick="submitScore(${overallPct},${n})">Submit Score</button>
+      <button id="share_btn" class="btn btn-success btn-lg" onclick="shareResult(${overallPct})">Share</button>
+      <button class="btn btn-outline-primary btn-lg" onclick="S.phase='results_detail';render()">View Details</button>
+      <button class="btn btn-primary btn-lg" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="text-center mt-2">
+      <small id="percentile_text" class="text-muted"></small><br>
+      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
+    </div>`;
+}
+
+function shareResult(pct) {
+  const pEl = document.getElementById('percentile_text');
+  const pLine = pEl && pEl.textContent ? '\n' + pEl.textContent + '\n' : '\n';
+  const text = '\ud83c\udfc6 Risk Ranking Quiz: I scored ' + pct + '%!' + pLine +
+    'Rank these risks by their effect on lifespan.\n' +
+    'Can you beat my score? \ud83c\udfc6\n' +
+    'https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html';
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('share_btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+  });
+}
+
+function renderDetail() {
+  const n = S.nQuestions;
+  let rows = '';
+  for (let i = 0; i < n; i++) {
+    const items = S.questions[i];
+    const sc = S.scores[i];
+    const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
+    const correctNames = correctOrder.map(it => it.item_name).join(' > ');
+    const userOrder = S.userOrders[i];
+    const userNames = userOrder.map(idx => items[idx].item_name).join(' > ');
+    const pct = sc ? sc.pct + '%' : '\u2014';
+    rows += `<tr><td>${i+1}</td><td style="white-space:normal;max-width:300px;">${correctNames}</td>
+      <td style="white-space:normal;max-width:300px;">${userNames}</td>
+      <td>${pct}</td></tr>`;
+  }
+  return `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <button class="btn btn-secondary" onclick="S.phase='results_summary';render()">&larr; Back to Results</button>
+      <h3 class="mb-0">Your quiz details</h3>
+      <button class="btn btn-primary" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
+    </div>
+    <div class="detail-scroll">
+      <table class="table table-striped table-hover detail-table">
+        <thead><tr><th>Q</th><th>Correct Order</th><th>Your Order</th><th>Score</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', function() {
+  loadData();
+  render();
+});
+</script>
+```

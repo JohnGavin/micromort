@@ -27,12 +27,12 @@ navbar:
       text: Articles
       menu:
       - text: "Interactive"
-      - text: "Risk Quiz (play in browser)"
-        href: articles/quiz.html
+      - text: "Micromort Quiz (play in browser)"
+        href: articles/micromort-quiz.html
       - text: "Microlife Quiz (play in browser)"
-        href: articles/chronic_quiz_shinylive.html
+        href: articles/microlife-quiz.html
       - text: "Ranking Quiz (play in browser)"
-        href: articles/ranking_quiz_shinylive.html
+        href: articles/risk-ranking-quiz.html
       - text: "---"
       - text: "Introduction"
         href: articles/introduction.html
