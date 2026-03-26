@@ -244,9 +244,9 @@ const ENCOURAGEMENTS = [
 function render() {
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
-    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 2); break;
+    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 4); break;
     case 'question': app.innerHTML = renderQuestion(); break;
-    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 5); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }
