@@ -147,6 +147,12 @@ function shuffle(arr) {
   return a;
 }
 function formatName(name) { return name.replace(/\s*\(/, '<br>('); }
+function fmtMM(v) {
+  if (v >= 100) return Math.round(v).toLocaleString();
+  if (v >= 1) return parseFloat(v.toFixed(1)).toString();
+  if (v >= 0.01) return parseFloat(v.toFixed(2)).toString();
+  return parseFloat(v.toFixed(3)).toString();
+}
 function selectInGroup(grpId, clicked) {
   const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
   btns.forEach(b => b.classList.remove('selected'));
@@ -339,7 +345,7 @@ function renderQuestion() {
   const leftRiskier = left.mm > right.mm, rightRiskier = right.mm > left.mm;
 
   function btnContent(d, s, cls) {
-    const mmText = revealed ? `<strong style="font-size:1.4rem;color:#333;">${d.mm.toFixed(2)} mm</strong>` : '';
+    const mmText = revealed ? `<strong style="font-size:1.4rem;color:#333;">${fmtMM(d.mm)} mm</strong>` : '';
     const helpLink = d.help ? `<a class="help-link" href="${d.help}" target="_blank" onclick="event.stopPropagation()">Learn more →</a>` : '';
     const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
     return `<div class="${cls}" ${clickAttr}>
@@ -364,8 +370,8 @@ function renderQuestion() {
     // Explanation
     const riskier = pair.answer, safer = riskier === 'a' ? 'b' : 'a';
     resultHtml += `<div class="explanation-panel mt-2">
-      <p><strong>${pair['activity_' + riskier]}</strong> has ${pair['micromorts_' + riskier].toFixed(2)} mm: ${pair['description_' + riskier] || ''}</p>
-      <p><strong>${pair['activity_' + safer]}</strong> has ${pair['micromorts_' + safer].toFixed(2)} mm: ${pair['description_' + safer] || ''}</p>
+      <p><strong>${pair['activity_' + riskier]}</strong> has ${fmtMM(pair['micromorts_' + riskier])} mm: ${pair['description_' + riskier] || ''}</p>
+      <p><strong>${pair['activity_' + safer]}</strong> has ${fmtMM(pair['micromorts_' + safer])} mm: ${pair['description_' + safer] || ''}</p>
       <p>${pair['activity_' + riskier]} is ${pair.ratio.toFixed(1)}x riskier than ${pair['activity_' + safer]}.</p>
     </div>`;
   }
@@ -463,8 +469,8 @@ function renderDetail() {
     const result = ans === null ? '—' : (ans === p.answer ? '✓' : '✗');
     const linkA = p.help_url_a ? `<a href="${p.help_url_a}" target="_blank">${p.activity_a}</a>` : p.activity_a;
     const linkB = p.help_url_b ? `<a href="${p.help_url_b}" target="_blank">${p.activity_b}</a>` : p.activity_b;
-    rows += `<tr><td>${i+1}</td><td>${linkA}</td><td>${p.micromorts_a.toFixed(2)}</td>
-      <td>${linkB}</td><td>${p.micromorts_b.toFixed(2)}</td>
+    rows += `<tr><td>${i+1}</td><td>${linkA}</td><td>${fmtMM(p.micromorts_a)}</td>
+      <td>${linkB}</td><td>${fmtMM(p.micromorts_b)}</td>
       <td>${userAns}</td><td>${correctAns}</td><td>${result}</td></tr>`;
   }
   return `
