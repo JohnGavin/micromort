@@ -101,7 +101,8 @@ ul.task-list li input[type="checkbox"] {
   .rank-item .drag-handle { font-size: 1.2rem; color: #adb5bd; }
   .rank-item-correct { border-color: #198754 !important; background: #d1e7dd !important; color: #0f5132 !important; }
   .rank-item-wrong { border-color: #dc3545 !important; background: #f8d7da !important; color: #842029 !important; }
-  .rank-label { font-size: 0.9rem; color: #6c757d; text-align: center; }
+  .rank-label { font-size: 1.1rem; color: #6c757d; text-align: center; }
+  .rank-badges { display: flex; gap: 4px; flex-wrap: wrap; }
   .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
   .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
   .tag-btn:hover { border-color: #2c7be5; }
@@ -124,7 +125,8 @@ ul.task-list li input[type="checkbox"] {
     .rank-item { padding: 8px 10px; font-size: 1rem; }
     .rank-item .item-name { font-size: 1rem; }
     .rank-item .badge { font-size: 0.7em; }
-    .rank-label { font-size: 0.8rem; }
+    .rank-badges { flex-direction: column; gap: 2px; }
+    .rank-label { font-size: 1rem; }
     .tag-btn { padding: 3px 8px; font-size: 0.8rem; }
     .qr-section { flex-direction: column; align-items: flex-start; }
     .detail-table { font-size: 0.9rem; }
@@ -142,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
 const S = {
   phase: 'instructions', nQuestions: 5, currentQ: 0,
   questions: [], userOrders: [], revealed: [], scores: [],
-  selTags: new Set(), selItems: 3, selNq: 5, allTags: []
+  selTags: new Set(), selItems: 4, selNq: 5, allTags: []
 };
 let quizPool = [];
 
@@ -343,12 +345,6 @@ function renderInstructions() {
         </div>
       </div>
       <div class="option-row">
-        <span class="option-label" title="Number of risk items to rank in each question. 3 is quicker, 4 is harder." style="cursor:help;text-decoration:underline dotted;">Items per question</span>
-        <div class="option-btn-group" id="grp_items">
-          <button class="option-btn selected" onclick="S.selItems=3;selectInGroup('grp_items',this)">3</button>
-          <button class="option-btn" onclick="S.selItems=4;selectInGroup('grp_items',this)">4</button>
-        </div>
-        <span style="width:24px;"></span>
         <span class="option-label" title="Total number of ranking questions in this round." style="cursor:help;text-decoration:underline dotted;">Questions</span>
         <div class="option-btn-group" id="grp_nq">
           <button class="option-btn selected" onclick="S.selNq=5;selectInGroup('grp_nq',this)">5</button>
@@ -375,14 +371,22 @@ function startQuiz() {
     byQ[r.question_id].push(r);
   });
 
-  // Filter: matching tags, matching items_per_question
+  // Filter: matching tags. Try 4 items first, fall back to 3.
   let candidates = Object.values(byQ).filter(items => {
-    if (items.length !== S.selItems) return false;
+    if (items.length !== 4) return false;
     return items.some(item => S.selTags.has(item.tag));
   });
+  if (candidates.length < S.selNq) {
+    // Not enough 4-item questions — also include 3-item
+    const extra = Object.values(byQ).filter(items => {
+      if (items.length !== 3) return false;
+      return items.some(item => S.selTags.has(item.tag));
+    });
+    candidates = candidates.concat(extra);
+  }
 
   if (candidates.length === 0) {
-    alert('No questions match your selection. Try different tags or item count.');
+    alert('No questions match your selection. Try different tags.');
     return;
   }
 
@@ -420,14 +424,13 @@ function renderQuestion() {
       rankHtml += `<div class="rank-item" data-idx="${idx}">
         <span class="drag-handle">\u2630</span>
         <span class="item-name">${formatName(item.item_name)}</span>
-        ${srcBadge}
-        <span class="badge bg-secondary">${item.category}</span>
+        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
       </div>`;
     });
     rankHtml += '</div>';
     rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
     rankHtml += `<div class="text-center mt-3">
-      <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit Order</button>
+      <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit</button>
     </div>`;
   } else {
     // Show correct order with green/red
@@ -448,8 +451,7 @@ function renderQuestion() {
       rankHtml += `<div class="${cls}">
         <span class="drag-handle">${icon}</span>
         <span class="item-name">${formatName(item.item_name)}</span>
-        ${srcBadge}
-        <span class="badge bg-secondary">${item.category}</span>
+        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
         <span class="lle-reveal"><abbr title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</abbr>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
       </div>`;
     });
