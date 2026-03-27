@@ -87,8 +87,8 @@ ul.task-list li input[type="checkbox"] {
     cursor: pointer; transition: border-color 0.3s, background-color 0.1s;
     text-align: center; min-width: 60px;
   }
-  .option-btn:hover { border-color: #2c7be5; background-color: #1a2a3a; }
-  .option-btn.selected { border-color: #2c7be5; background-color: #2c7be5; color: #fff; }
+  .option-btn:hover { border-color: #14549e; background-color: #1a2a3a; }
+  .option-btn.selected { border-color: #14549e; background-color: #14549e; color: #fff; }
   .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; font-size: 1.1rem; }
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
@@ -110,8 +110,8 @@ ul.task-list li input[type="checkbox"] {
   .lle-loss { color: #dc3545; }
   .lle-gain { color: #198754; }
   .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
-  .tag-btn:hover { border-color: #2c7be5; }
-  .tag-btn.selected { border-color: #2c7be5; background: #2c7be5; }
+  .tag-btn:hover { border-color: #14549e; }
+  .tag-btn.selected { border-color: #14549e; background: #14549e; }
   .rank-item .badge { font-size: 0.8em; }
   .rank-item .item-name { font-weight: 600; flex: 1; }
   .qr-section { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 8px 0; }
@@ -491,7 +491,7 @@ function renderQuestion() {
     }
   }
 
-  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
+  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning text-dark' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
 
   // Tally
   let totalPairs = 0, totalConc = 0;
