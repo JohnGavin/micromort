@@ -479,7 +479,7 @@ function renderQuestion() {
   return `
     <div class="d-flex justify-content-between align-items-center mb-3">
       <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
-      <span class="text-muted">${diffBadge}${q+1} of ${n} &middot; <small>${answeredCount > 0 ? Math.round(totalConc / totalPairs * 100) + '% so far' : ''}</small></span>
+      <span class="text-muted">${diffBadge}${q+1} of ${n} ${answeredCount > 0 ? '<small>' + Math.round(totalConc / totalPairs * 100) + '% so far</small>' : ''}</span>
       <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
     </div>
     ${rankHtml}`;
