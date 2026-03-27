@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Interactive drag-and-drop quiz. Rank everyday risks by their effect on life expectancy. Loss of Life Expectancy (LLE) is the average time gained or lost per exposure.">
+<meta name="description" content="Interactive drag-and-drop quiz. Rank everyday risks by their effect on life expectancy. Each risk shows how much life you gain or lose per exposure.">
 
 <title>Rank these risks by their effect on lifespan</title>
 <style>
@@ -53,7 +53,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    <p>Interactive drag-and-drop quiz. Rank everyday risks by their effect on life expectancy. Loss of Life Expectancy (LLE) is the average time gained or lost per exposure.</p>
+    <p>Interactive drag-and-drop quiz. Rank everyday risks by their effect on life expectancy. Each risk shows how much life you gain or lose per exposure.</p>
   </div>
 </div>
 
@@ -190,13 +190,12 @@ function lleLabel(lle) {
 }
 function lleDirLabel(item) {
   const mag = lleLabel(item.lle_minutes);
-  // Acute = always harmful (life lost). Chronic: check microlives sign.
   const isGain = item.item_source === 'chronic' &&
                  item.microlives_per_day != null && item.microlives_per_day > 0;
   if (isGain) {
-    return `<span class="lle-gain">▲ ${mag} gained</span>`;
+    return `<span class="lle-gain">▲ gain ${mag}</span>`;
   } else {
-    return `<span class="lle-loss">▼ ${mag} lost</span>`;
+    return `<span class="lle-loss">▼ lose ${mag}</span>`;
   }
 }
 function toggleLLEHelp(el) {
@@ -204,7 +203,7 @@ function toggleLLEHelp(el) {
   if (tip) { tip.remove(); return; }
   tip = document.createElement('div');
   tip.className = 'lle-help-tip';
-  tip.textContent = 'Loss of Life Expectancy: average time gained or lost per exposure. Ranges from <1 min to 5+ hrs/day.';
+  tip.innerHTML = '▲ gain = life added (e.g. exercise). ▼ lose = life shortened (e.g. smoking).<br><small style="color:#6c757d;">Based on Loss of Life Expectancy (LLE) — the standard metric for comparing risks.</small>';
   el.parentElement.appendChild(tip);
   setTimeout(() => tip.remove(), 5000);
 }
@@ -312,7 +311,7 @@ function getPercentile(scorePct) {
 // ---- Result phrases ----
 const PHRASES = [
   {min: 95, phrase: 'Risk ranking master!', fact: 'Combining acute and chronic risks onto one scale is the key insight of micromort/microlife theory.', link: 'https://en.wikipedia.org/wiki/Micromort'},
-  {min: 90, phrase: 'Superb risk intuition!', fact: 'Loss of Life Expectancy (LLE) lets us compare one-off and daily risks on the same scale.', link: 'https://en.wikipedia.org/wiki/Micromort'},
+  {min: 90, phrase: 'Superb risk intuition!', fact: 'Comparing how much life you gain or lose lets us rank one-off events against daily habits.', link: 'https://en.wikipedia.org/wiki/Micromort'},
   {min: 80, phrase: 'Impressive ordering!', fact: 'People systematically overestimate rare dramatic risks and underestimate common ones.', link: 'https://en.wikipedia.org/wiki/Risk_perception'},
   {min: 70, phrase: 'Better than most!', fact: 'The availability heuristic makes us judge risk by how easily we recall examples.', link: 'https://en.wikipedia.org/wiki/Availability_heuristic'},
   {min: 60, phrase: 'Getting there!', fact: 'Ranking risks correctly requires calibrating both magnitude and frequency.', link: 'https://en.wikipedia.org/wiki/Risk_assessment'},
@@ -356,7 +355,7 @@ function renderInstructions() {
         <li><b><em>Select one or more tags</em></b> below to choose which risk categories to quiz on.</li>
         <li><b><em>Drag and drop</em></b> to rank by risk to lifespan, biggest (top) to smallest (bottom).</li>
         <li>Rank by magnitude of factor (can be harmful or beneficial).</li>
-        <li>Risk is measured as <abbr title="Loss of Life Expectancy: the average time gained or lost per exposure. Ranges from &lt;1 min (cup of coffee) to 5+ hrs/day (smoking 20/day). Can be harmful or beneficial. Shown as positive magnitude here." style="cursor:help;text-decoration:underline dotted;"><b><em>Loss of Life Expectancy (LLE)</em></b></abbr>.</li>
+        <li>Each risk shows how much life you <span style="color:#198754;font-weight:bold;">gain ▲</span> or <span style="color:#dc3545;font-weight:bold;">lose ▼</span> per exposure.</li>
         <li>Each correctly ordered pair scores a point (<a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank"><abbr title="Kendall rank correlation: counts how many pairs you ordered correctly vs incorrectly. Perfect = all pairs right.">Kendall's Tau</abbr></a>).</li>
       </ul>
       <div class="mb-1" style="padding-left:1.5em;"><em>${enc}</em></div>
@@ -478,7 +477,7 @@ function renderQuestion() {
         <span class="drag-handle">${icon}</span>
         <span class="item-name">${formatName(item.item_name)}</span>
         <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
-        <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</span>: ${lleDirLabel(item)}${userPosText}</span>
+        <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Tap for details" style="cursor:help;">${lleDirLabel(item)}</span>${userPosText}</span>
       </div>`;
     });
     rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
