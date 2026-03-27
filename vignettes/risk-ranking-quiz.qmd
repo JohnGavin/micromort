@@ -464,7 +464,12 @@ function renderQuestion() {
     }
   }
 
-  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning" style="color:#212529!important' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
+  const diffBadge = (() => {
+    const d = items[0].difficulty;
+    if (!d) return '';
+    if (d === 'medium') return `<span class="badge bg-warning me-2" style="color:#212529!important">${d}</span>`;
+    return `<span class="badge bg-${d === 'easy' ? 'success' : 'danger'} me-2">${d}</span>`;
+  })();
 
   // Tally
   let totalPairs = 0, totalConc = 0;

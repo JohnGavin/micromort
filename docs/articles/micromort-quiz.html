@@ -417,7 +417,12 @@ function renderQuestion() {
   for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
   const answered = S.revealed.filter(Boolean).length;
 
-  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning" style="color:#212529!important' : 'danger'} me-2">${pair.difficulty}</span>` : '';
+  const diffBadge = (() => {
+    const d = pair.difficulty;
+    if (!d) return '';
+    if (d === 'medium') return `<span class="badge bg-warning me-2" style="color:#212529!important">${d}</span>`;
+    return `<span class="badge bg-${d === 'easy' ? 'success' : 'danger'} me-2">${d}</span>`;
+  })();
 
   return `
     <div class="d-flex justify-content-between align-items-center mb-3">
