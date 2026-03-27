@@ -400,8 +400,8 @@ function renderQuestion() {
   const diffBadge = (() => {
     const d = pair.difficulty;
     if (!d) return '';
-    if (d === 'medium') return `<span class="badge bg-warning me-2" style="color:#212529!important">${d}</span>`;
-    return `<span class="badge bg-${d === 'easy' ? 'success' : 'danger'} me-2">${d}</span>`;
+    const colors = {easy:'background:#198754;color:#fff', medium:'background:#ffc107;color:#000', hard:'background:#dc3545;color:#fff'};
+    return `<span class="badge me-2" style="${colors[d]}">${d}</span>`;
   })();
 
   return `
