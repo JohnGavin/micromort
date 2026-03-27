@@ -107,6 +107,8 @@ ul.task-list li input[type="checkbox"] {
   .lle-help-tip { font-size: 0.85rem; color: #6c757d; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px 8px; margin-top: 4px; }
   .rank-badges { display: flex; gap: 4px; flex-wrap: wrap; }
   .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
+  .lle-loss { color: #dc3545; }
+  .lle-gain { color: #198754; }
   .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
   .tag-btn:hover { border-color: #2c7be5; }
   .tag-btn.selected { border-color: #2c7be5; background: #2c7be5; }
@@ -185,6 +187,17 @@ function lleLabel(lle) {
   if (lle >= 1440) return fmt(lle / 1440) + ' days';
   if (lle >= 60) return fmt(lle / 60) + ' hrs';
   return fmt(lle) + ' min';
+}
+function lleDirLabel(item) {
+  const mag = lleLabel(item.lle_minutes);
+  // Acute = always harmful (life lost). Chronic: check microlives sign.
+  const isGain = item.item_source === 'chronic' &&
+                 item.microlives_per_day != null && item.microlives_per_day > 0;
+  if (isGain) {
+    return `<span class="lle-gain">▲ ${mag} gained</span>`;
+  } else {
+    return `<span class="lle-loss">▼ ${mag} lost</span>`;
+  }
 }
 function toggleLLEHelp(el) {
   let tip = el.parentElement.querySelector('.lle-help-tip');
@@ -465,7 +478,7 @@ function renderQuestion() {
         <span class="drag-handle">${icon}</span>
         <span class="item-name">${formatName(item.item_name)}</span>
         <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
-        <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</span>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
+        <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</span>: ${lleDirLabel(item)}${userPosText}</span>
       </div>`;
     });
     rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
@@ -594,7 +607,7 @@ function renderDetail() {
     const items = S.questions[i];
     const sc = S.scores[i];
     const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
-    const correctNames = correctOrder.map(it => it.item_name).join(' > ');
+    const correctNames = correctOrder.map(it => `${it.item_name} (${lleDirLabel(it)})`).join(' > ');
     const userOrder = S.userOrders[i];
     const userNames = userOrder.map(idx => items[idx].item_name).join(' > ');
     const pct = sc ? sc.pct + '%' : '\u2014';
