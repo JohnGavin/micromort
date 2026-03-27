@@ -101,7 +101,10 @@ ul.task-list li input[type="checkbox"] {
   .rank-item .drag-handle { font-size: 1.2rem; color: #adb5bd; }
   .rank-item-correct { border-color: #198754 !important; background: #d1e7dd !important; color: #0f5132 !important; }
   .rank-item-wrong { border-color: #dc3545 !important; background: #f8d7da !important; color: #842029 !important; }
-  .rank-label { font-size: 1.1rem; color: #6c757d; text-align: center; }
+  .rank-label { font-size: 1.2rem; color: #6c757d; text-align: center; }
+  .rank-arrow { font-size: 1.6rem; font-weight: bold; vertical-align: middle; }
+  .lle-tap { font-weight: bold; }
+  .lle-help-tip { font-size: 0.85rem; color: #6c757d; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px 8px; margin-top: 4px; }
   .rank-badges { display: flex; gap: 4px; flex-wrap: wrap; }
   .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
   .tag-btn { padding: 4px 12px; border: 2px solid #dee2e6; border-radius: 16px; background: #2b3e50; color: #fff; cursor: pointer; font-size: 0.9rem; }
@@ -126,7 +129,8 @@ ul.task-list li input[type="checkbox"] {
     .rank-item .item-name { font-size: 1rem; }
     .rank-item .badge { font-size: 0.7em; }
     .rank-badges { flex-direction: column; gap: 2px; }
-    .rank-label { font-size: 1rem; }
+    .rank-label { font-size: 1.1rem; }
+    .rank-arrow { font-size: 1.5rem; }
     .tag-btn { padding: 3px 8px; font-size: 0.8rem; }
     .qr-section { flex-direction: column; align-items: flex-start; }
     .detail-table { font-size: 0.9rem; }
@@ -181,6 +185,15 @@ function lleLabel(lle) {
   if (lle >= 1440) return fmt(lle / 1440) + ' days';
   if (lle >= 60) return fmt(lle / 60) + ' hrs';
   return fmt(lle) + ' min';
+}
+function toggleLLEHelp(el) {
+  let tip = el.parentElement.querySelector('.lle-help-tip');
+  if (tip) { tip.remove(); return; }
+  tip = document.createElement('div');
+  tip.className = 'lle-help-tip';
+  tip.textContent = 'Loss of Life Expectancy: average time gained or lost per exposure. Ranges from <1 min to 5+ hrs/day.';
+  el.parentElement.appendChild(tip);
+  setTimeout(() => tip.remove(), 5000);
 }
 function renderQR(containerId, size) {
   const url = window.location.href.split('?')[0].split('#')[0];
@@ -412,7 +425,7 @@ function renderQuestion() {
   // Build rank items
   let rankHtml = '';
   if (!revealed) {
-    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect</strong></div>';
+    rankHtml += '<div class="rank-label mb-1"><strong><span class="rank-arrow">&uarr;</span> Biggest effect</strong></div>';
     rankHtml += '<div id="sortable-list">';
     userOrder.forEach(idx => {
       const item = items[idx];
@@ -428,14 +441,14 @@ function renderQuestion() {
       </div>`;
     });
     rankHtml += '</div>';
-    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+    rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
     rankHtml += `<div class="text-center mt-3">
       <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit</button>
     </div>`;
   } else {
     // Show correct order with green/red
     const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
-    rankHtml += '<div class="rank-label mb-1"><strong>&uarr; Biggest effect (correct order)</strong></div>';
+    rankHtml += '<div class="rank-label mb-1"><strong><span class="rank-arrow">&uarr;</span> Biggest effect (correct order)</strong></div>';
     correctOrder.forEach((item, correctIdx) => {
       const origIdx = items.indexOf(item);
       const userRankOfItem = userOrder.indexOf(origIdx);
@@ -452,10 +465,10 @@ function renderQuestion() {
         <span class="drag-handle">${icon}</span>
         <span class="item-name">${formatName(item.item_name)}</span>
         <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
-        <span class="lle-reveal"><abbr title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</abbr>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
+        <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Loss of Life Expectancy" style="cursor:help;text-decoration:underline dotted;">LLE</span>: ${lleLabel(item.lle_minutes)}${userPosText}</span>
       </div>`;
     });
-    rankHtml += '<div class="rank-label mt-1"><strong>&darr; Smallest effect</strong></div>';
+    rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
 
     // Score for this question
     const sc = S.scores[q];
