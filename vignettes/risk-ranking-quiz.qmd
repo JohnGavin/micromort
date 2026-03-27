@@ -3,7 +3,7 @@ title: "Rank these risks by their effect on lifespan"
 description: |
     Interactive drag-and-drop quiz.
     Rank everyday risks by their effect on life expectancy.
-    Loss of Life Expectancy (LLE) is the average time gained or lost per activity.
+    Loss of Life Expectancy (LLE) is the average time gained or lost per exposure.
 format:
   html:
     embed-resources: false
