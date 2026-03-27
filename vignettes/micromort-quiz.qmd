@@ -357,7 +357,7 @@ function renderQuestion() {
     const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
     return `<div class="${cls}" ${clickAttr}>
       <span class="activity-name">${formatName(d.activity)}</span>
-      <div><span class="badge bg-secondary me-1">${d.category}</span><span class="badge bg-info text-dark">${d.period}</span></div>
+      <div><span class="badge bg-secondary me-1">${d.category}</span><span class="badge bg-info" style="color:#212529!important">${d.period}</span></div>
       ${mmText}${helpLink}
     </div>`;
   }
@@ -388,7 +388,7 @@ function renderQuestion() {
   for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
   const answered = S.revealed.filter(Boolean).length;
 
-  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning text-dark' : 'danger'} me-2">${pair.difficulty}</span>` : '';
+  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning" style="color:#212529!important' : 'danger'} me-2">${pair.difficulty}</span>` : '';
 
   return `
     <div class="d-flex justify-content-between align-items-center mb-3">

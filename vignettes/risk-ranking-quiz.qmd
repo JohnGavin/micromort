@@ -464,7 +464,7 @@ function renderQuestion() {
     }
   }
 
-  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning text-dark' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
+  const diffBadge = items[0].difficulty ? `<span class="badge bg-${items[0].difficulty === 'easy' ? 'success' : items[0].difficulty === 'medium' ? 'warning" style="color:#212529!important' : 'danger'} me-2">${items[0].difficulty}</span>` : '';
 
   // Tally
   let totalPairs = 0, totalConc = 0;

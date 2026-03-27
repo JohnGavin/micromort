@@ -426,7 +426,7 @@ function renderQuestion() {
   for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
   const answered = S.revealed.filter(Boolean).length;
 
-  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning text-dark' : 'danger'} me-2">${pair.difficulty}</span>` : '';
+  const diffBadge = pair.difficulty ? `<span class="badge bg-${pair.difficulty === 'easy' ? 'success' : pair.difficulty === 'medium' ? 'warning" style="color:#212529!important' : 'danger'} me-2">${pair.difficulty}</span>` : '';
 
   return `
     <div class="d-flex justify-content-between align-items-center mb-3">
