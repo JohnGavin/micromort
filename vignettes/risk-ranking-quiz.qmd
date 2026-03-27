@@ -1,6 +1,9 @@
 ---
 title: "Rank these risks by their effect on lifespan"
-description: "Interactive drag-and-drop quiz ranking everyday risks by their effect on life expectancy. Combining acute micromorts and chronic microlives."
+description: |
+    Interactive drag-and-drop quiz.
+    Rank everyday risks by their effect on life expectancy.
+    Loss of Life Expectancy (LLE) is the average time gained or lost per activity.
 format:
   html:
     embed-resources: false
