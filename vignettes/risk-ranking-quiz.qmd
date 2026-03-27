@@ -415,10 +415,10 @@ function renderQuestion() {
     userOrder.forEach(idx => {
       const item = items[idx];
       const srcBadge = item.item_source === 'acute'
-        ? '<span class="badge bg-danger">acute</span>'
+        ? '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>'
         : (item.microlives_per_day != null && item.microlives_per_day > 0
-          ? '<span class="badge bg-info">chronic +life</span>'
-          : '<span class="badge bg-info">chronic -life</span>');
+          ? '<span class="badge" style="background:#198754;color:#fff;">gain</span>'
+          : '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>');
       rankHtml += `<div class="rank-item" data-idx="${idx}">
         <span class="drag-handle">\u2630</span>
         <span class="item-name">${formatName(item.item_name)}</span>
@@ -441,10 +441,10 @@ function renderQuestion() {
       const cls = isCorrectPos ? 'rank-item rank-item-correct' : 'rank-item rank-item-wrong';
       const icon = isCorrectPos ? '\u2713' : '\u2717';
       const srcBadge = item.item_source === 'acute'
-        ? '<span class="badge bg-danger">acute</span>'
+        ? '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>'
         : (item.microlives_per_day != null && item.microlives_per_day > 0
-          ? '<span class="badge bg-info">chronic +life</span>'
-          : '<span class="badge bg-info">chronic -life</span>');
+          ? '<span class="badge" style="background:#198754;color:#fff;">gain</span>'
+          : '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>');
       const userPosText = !isCorrectPos ? ` (you: #${userRankOfItem + 1})` : '';
       rankHtml += `<div class="${cls}">
         <span class="drag-handle">${icon}</span>
