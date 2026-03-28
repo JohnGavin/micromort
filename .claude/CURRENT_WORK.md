@@ -1,55 +1,57 @@
 # Current Work
 
-## Session: 2026-03-17 / 2026-03-18
+## Session: 2026-03-24 to 2026-03-28
 
 ### Branch: main
 
-### Completed This Session (2 days)
+### Completed
 
-#### Site Build Pipeline
-1. `R/tar_plans/plan_site_build.R` — 5 targets automate pkgdown + shinylive rendering via `tar_make()`
-2. `R/tar_plans/plan_leaderboard_stats.R` — 2 targets fetch Google Sheet, write `docs/api/quiz_stats.json`
-3. `.github/workflows/leaderboard-refresh.yml` — weekly cron (Mon 06:00 UTC), conditional email report
+#### Ranking Quiz (Issue #65)
+1. R backend: `ranking_quiz_questions()`, `kendall_tau_score()`, `ranking_tag_mapping()` — 67 tests
+2. Shinylive version with SortableJS drag-and-drop
+3. Tie prevention: min 1.1x LLE ratio between adjacent items
+4. Tag selection: 8 tags, Select All/Deselect All, validation
+5. Direction labels: green "gain" / red "lose" badges + arrows on reveal
+6. Bootstrap tooltips for LLE, Kendall tau link to Wikipedia
+7. Tap-to-show LLE help for mobile (hover doesn't work on touch)
 
-#### Quiz UX Improvements
-4. Navbar reorder — interactive quizzes first, architecture/telemetry last
-5. Results button order: Submit Score | Share | View Details | Try Again
-6. Encouragement text left-aligned (removed text-center)
-7. Chronic quiz intro: microlife definition split into two lines
-8. Submit Score button resets on Try Again (was stuck after first submit)
+#### Pure JS Quiz Migration (98% size reduction)
+8. Ported all 3 quizzes from Shinylive (61MB each) to pure JS (<1MB each)
+   - `micromort-quiz.qmd` — acute pairwise A-vs-B
+   - `microlife-quiz.qmd` — chronic pairwise A-vs-B
+   - `risk-ranking-quiz.qmd` — cross-domain drag-and-drop ranking
+9. Same features: leaderboard, percentile, share, cross-round dedup, QR codes
 
-#### Quiz Data Quality
-9. Deduplicate pairs in `quiz_pairs()` / `chronic_quiz_pairs()` — canonical key dedup
-10. Cross-round dedup — `seen_pairs` tracked in Shiny state, no repeats across rounds
-11. Unit standardisation — Rock climbing (per day), Base jumping (per jump), Skydiving (per jump), Hang gliding (per flight), Scuba diving (per dive)
+#### UX Improvements (all quizzes)
+10. Default 5 questions (was 10)
+11. Human-readable numbers: `fmtMM()` — 2,840 not 2840.00
+12. Side-by-side layout with flexbox, 800px max-width centered
+13. Mobile-responsive CSS (stack vertically below 600px)
+14. QR codes on instructions + results pages
+15. WCAG contrast audit: fixed 3 failing combinations (medium badge, period badge, selected button)
+16. Flatly theme workaround: fully inline styles bypass theme `!important` overrides
 
-#### Leaderboard & Analytics
-12. Chronic quiz Submit Score button + percentile (reuses Google Form)
-13. `quiz_type` field distinguishes acute vs chronic submissions
-14. `difficulty` + `n_questions` fields added to Google Form
-15. Share button clipboard includes percentile ranking
-16. Two-tier percentile fetch: static JSON first, live Sheet fallback
-17. Pre-computed quantile stats at `docs/api/quiz_stats.json`
+#### Data Quality
+17. Activity unit standardisation: Rock climbing (per day), Base jumping (per jump), etc.
+18. Construction (all trades, per work day) clarified
+19. Charbroiled steaks (cumulative benzopyrene) clarified
+20. Cross-round dedup: no repeat questions across Try Again rounds
 
-#### External References
-18. Detail results tables hyperlink activity/factor names to help_url (Wikipedia, CDC, WHO)
+#### Config & Infrastructure
+21. Shiny module data-sharing rule + skill added to global config
+22. WCAG contrast audit methodology documented
+23. Plus Maths references added to introduction + data_reliability vignettes
+24. Vignette chunks migrated to targets: 76% → 93% coverage
 
-#### Housekeeping
-19. `.gitignore` updated for build artifacts (check/, vignettes/*_files/, etc.)
+### Pipeline
+- 116 targets, 615 tests, all pass
 
-### Google Form Fields (6 total)
-| Field | Entry ID |
-|-------|----------|
-| score | 335579146 |
-| total | 2122920576 |
-| timestamp | 621716914 |
-| quiz_type | 268026248 |
-| difficulty | 232879816 |
-| n_questions | 2010782223 |
-
-### Pipeline: 91 targets, 548 tests pass
+### Quiz URLs (pure JS — instant load)
+- https://johngavin.github.io/micromort/articles/micromort-quiz.html
+- https://johngavin.github.io/micromort/articles/microlife-quiz.html
+- https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html
 
 ### Next Session
-- Monitor leaderboard submissions — subgroup rankings activate at n >= 10
-- Weekly email confirmed working (workflow run #23198177040 succeeded)
-- Consider renaming Google Sheet column A from "Timestamp" to "form_timestamp" (duplicate header warning)
+- Shinylive versions can be removed once pure JS versions are stable
+- Monitor leaderboard (quiz_type: acute/chronic/ranking)
+- Weekly email runs Mondays 06:00 UTC
