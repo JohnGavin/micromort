@@ -51,5 +51,6 @@ c(
 
   # Validation (existing)
   if (exists("plan_validation")) plan_validation else list(),
-  plan_pkgdown()       # pkgdown site build + stage docs/
+  plan_pkgdown()       # pkgdown site build + stage docs/,
+  plan_pkgctx()        # ctx.yaml cache audit + refresh
 )
