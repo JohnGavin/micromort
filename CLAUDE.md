@@ -1,23 +1,32 @@
 # micromort — Medical Risk Metrics Package
 
-## ctx.yaml Package Context
+## CRITICAL: Package Context (ctx.yaml)
 
 **Central cache:** `~/docs_gh/proj/data/llm/content/inst/ctx/external/`
 
-All ctx.yaml files are version-stamped (`{pkg}@{version}.ctx.yaml`) and stored centrally. To check coverage:
+This cache has 70+ version-stamped ctx files shared across all projects.
 
+**To check ctx coverage, ALWAYS run:**
 ```r
 source("~/docs_gh/llm/R/tar_plans/plan_pkgctx.R")
-ctx_audit("DESCRIPTION")   # report gaps
-ctx_sync("DESCRIPTION")    # generate missing
+ctx_audit("DESCRIPTION")
 ```
 
-To read a package's API before using it:
-```bash
-cat ~/docs_gh/proj/data/llm/content/inst/ctx/external/{pkg}@{version}.ctx.yaml
+**To fix missing ctx:**
+```r
+source("~/docs_gh/llm/R/tar_plans/plan_pkgctx.R")
+ctx_sync("DESCRIPTION")
 ```
 
-**DO NOT** look for ctx files in `.claude/context/` or `inst/ctx/` — they don't exist there. Use the central cache only.
+**NEVER** write your own ctx checking code. NEVER look in `.claude/context/` or `inst/ctx/` — those don't exist. ALWAYS use `ctx_audit()` from `plan_pkgctx.R`.
+
+**To read a package API before using it:**
+```r
+# Find the file
+list.files("~/docs_gh/proj/data/llm/content/inst/ctx/external", pattern = "^dplyr@")
+# Read it
+readLines("~/docs_gh/proj/data/llm/content/inst/ctx/external/dplyr@1.1.4.ctx.yaml")
+```
 
 ## Project Rules
 
@@ -25,8 +34,6 @@ cat ~/docs_gh/proj/data/llm/content/inst/ctx/external/{pkg}@{version}.ctx.yaml
 - DuckDB: use `connect_duckdb_secure()` pattern (see `duckdb-security` global rule)
 - Risk values: must come from data/targets, never hardcoded
 - Vignettes: zero inline computation, all via `safe_tar_read()`
-
-## Key Packages
-
-Imports: checkmate, cli, DBI, dplyr, duckdb, htmltools, rlang
-Suggests: 28 packages (see DESCRIPTION)
+- DBI::dbGetQuery forbidden — use duckplyr instead
+- suppressWarnings(as.*) forbidden — see `suppress-warnings-antipattern` rule
+- cli::cli_abort() not stop() for errors
