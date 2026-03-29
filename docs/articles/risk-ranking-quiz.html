@@ -261,7 +261,7 @@ let scoreSubmitted = false;
 function resetLeaderboard() {
   scoreSubmitted = false;
   const btn = document.getElementById('submit_btn');
-  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-lg'; btn.style.cssText = 'background:#ffc107;color:#000'; }
   const el = document.getElementById('percentile_text');
   if (el) el.textContent = '';
 }
@@ -454,9 +454,6 @@ function renderQuestion() {
     });
     rankHtml += '</div>';
     rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
-    rankHtml += `<div class="text-center mt-3">
-      <button class="btn btn-primary btn-lg" onclick="submitOrder()">Submit</button>
-    </div>`;
   } else {
     // Show correct order with green/red
     const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
@@ -507,7 +504,10 @@ function renderQuestion() {
     <div class="d-flex justify-content-between align-items-center mb-3">
       <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
       <span class="text-muted">${diffBadge}${q+1} of ${n} ${answeredCount > 0 ? '<small>' + Math.round(totalConc / totalPairs * 100) + '% so far</small>' : ''}</span>
-      <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
+      <div style="display:flex;gap:8px;">
+        ${!revealed ? '<button class="btn" style="background:#ffc107;color:#000" onclick="submitOrder()">Submit</button>' : ''}
+        <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
+      </div>
     </div>
     ${rankHtml}`;
 }
@@ -578,7 +578,7 @@ function renderResults() {
       <a href="${info.link}" target="_blank">Learn more &rarr;</a>
     </div>
     <div class="d-flex justify-content-center gap-3">
-      <button id="submit_btn" class="btn btn-warning btn-lg" onclick="submitScore(${overallPct},${n})">Submit Score</button>
+      <button id="submit_btn" class="btn btn-lg" style="background:#ffc107;color:#000" onclick="submitScore(${overallPct},${n})">Submit Score</button>
       <button id="share_btn" class="btn btn-success btn-lg" onclick="shareResult(${overallPct})">Share</button>
       <button class="btn btn-outline-primary btn-lg" onclick="S.phase='results_detail';render()">View Details</button>
       <button class="btn btn-primary btn-lg" onclick="resetLeaderboard();S.phase='instructions';render()">Try Again</button>
