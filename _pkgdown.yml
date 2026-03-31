@@ -27,6 +27,8 @@ navbar:
       text: Articles
       menu:
       - text: "Interactive"
+      - text: "Risk Scrollytelling"
+        href: articles/scrollytelling.html
       - text: "Micromort Quiz (play in browser)"
         href: articles/micromort-quiz.html
       - text: "Microlife Quiz (play in browser)"

@@ -1,0 +1,213 @@
+---
+title: "The Risk Landscape"
+format:
+  closeread-html:
+    code-fold: true
+    code-summary: "Show code"
+    remove-header-space: true
+vignette: >
+  %\VignetteIndexEntry{The Risk Landscape: A Scrollytelling Guide}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, comment = "#>", echo = FALSE,
+  fig.width = 8, fig.height = 5, dpi = 150
+)
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+library(ggplot2)
+library(dplyr)
+
+dark_theme <- theme_minimal(base_size = 14) +
+  theme(
+    plot.background = element_rect(fill = "#1a1a2e", colour = NA),
+    panel.background = element_rect(fill = "#1a1a2e", colour = NA),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(colour = "#333355"),
+    text = element_text(colour = "#e0e0e0"),
+    axis.text = element_text(colour = "#e0e0e0"),
+    plot.caption = element_text(colour = "#888888", size = 10),
+    legend.background = element_rect(fill = "#1a1a2e"),
+    legend.text = element_text(colour = "#e0e0e0"),
+    legend.title = element_text(colour = "#e0e0e0")
+  )
+```
+
+:::{.cr-section}
+
+### How dangerous is your morning?
+
+Every morning you make dozens of tiny gambles with your life. Brewing coffee. Crossing the road. Driving to work.
+
+Each carries a **micromort** — a one-in-a-million chance of death.[@cr-mundane]{focus-on="cr-mundane"}
+
+Your cup of coffee? **0.01 micromorts.** The ride to work by car? **0.13 micromorts.** By bicycle? **0.5 micromorts** — roughly four times riskier than driving.
+
+These numbers are vanishingly small. But they are not zero — and they are not equal.
+
+:::{#cr-mundane}
+```{r mundane-plot}
+cr <- common_risks()
+mundane <- cr |>
+  filter(activity %in% c(
+    "Cup of coffee", "Crossing a road",
+    "Commuting by car (30 min)", "Commuting by bicycle (30 min)",
+    "Taking a bath", "Working in an office (8 hours)",
+    "Drinking a glass of wine")) |>
+  arrange(micromorts) |>
+  mutate(activity = factor(activity, levels = activity))
+
+ggplot(mundane, aes(x = micromorts, y = activity)) +
+  geom_col(fill = "#2c7be5", alpha = 0.9) +
+  geom_text(aes(label = sprintf("%.2f mm", micromorts)),
+            hjust = -0.1, size = 4, colour = "#e0e0e0") +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.3))) +
+  labs(x = "Micromorts", y = NULL,
+       caption = "1 micromort = one-in-a-million chance of death") +
+  dark_theme
+```
+:::
+
+:::
+
+
+:::{.cr-section}
+
+### The full spectrum
+
+Now zoom out.[@cr-spectrum]{focus-on="cr-spectrum"}
+
+The micromort scale spans **six orders of magnitude** — from 0.01 (a dental X-ray) to nearly 40,000 (summiting Everest).
+
+At the bottom: the invisible risks of daily life. A cup of coffee, a bath, a road crossing. Each below 0.1 micromorts.
+
+In the middle: the risks we weigh consciously. A hospital stay (75 mm). Surgery under general anaesthesia (10 mm). A long-haul flight (4 mm).
+
+At the top: risks that make headlines. Base jumping (430 mm per jump). **Everest: 37,932 micromorts per ascent** — a 1-in-26 chance of death.
+
+The logarithmic scale is not an aesthetic choice. It is the only honest way to show data that ranges from coffee to Everest.
+
+:::{#cr-spectrum}
+```{r spectrum-plot}
+cr_top <- cr |>
+  filter(micromorts > 0) |>
+  arrange(desc(micromorts)) |>
+  slice_head(n = 30) |>
+  mutate(activity = factor(activity, levels = rev(activity)))
+
+ggplot(cr_top, aes(x = micromorts, y = activity)) +
+  geom_point(aes(colour = category), size = 3) +
+  scale_x_log10(labels = scales::label_comma()) +
+  scale_colour_brewer(palette = "Set2") +
+  labs(x = "Micromorts (log scale)", y = NULL, colour = "Category",
+       caption = "Source: micromorts.rip, Wikipedia, CDC MMWR") +
+  dark_theme +
+  theme(axis.text.y = element_text(size = 10))
+```
+:::
+
+:::
+
+
+:::{.cr-section}
+
+### The slow burn
+
+Not all risks kill you in an instant.[@cr-chronic]{focus-on="cr-chronic"}
+
+Some shorten your life by half an hour, every single day. David Spiegelhalter called these **microlives** — each one worth 30 minutes of life expectancy.
+
+**Smoking 20 cigarettes a day costs 10 microlives.** That is 5 hours of life, lost every 24 hours. A heavy smoker lives as though the day were only 19 hours long.
+
+But the scale works in reverse too. **150 minutes of weekly exercise gains 3 microlives per day.** Five servings of fruit and vegetables: +4 microlives. A Mediterranean diet: +2.
+
+The slow burn is not all loss. Some of it is gain.
+
+:::{#cr-chronic}
+```{r chronic-plot}
+ch <- chronic_risks()
+ch <- ch |>
+  arrange(microlives_per_day) |>
+  mutate(
+    factor = factor(factor, levels = factor),
+    fill_colour = ifelse(direction == "gain", "#198754", "#dc3545")
+  )
+
+ggplot(ch, aes(x = microlives_per_day, y = factor)) +
+  geom_col(aes(fill = fill_colour), alpha = 0.9) +
+  scale_fill_identity() +
+  geom_vline(xintercept = 0, colour = "#e0e0e0", linewidth = 0.5) +
+  labs(x = "Microlives per day", y = NULL,
+       caption = "1 microlife = 30 minutes of life expectancy. Red = lose, Green = gain.") +
+  dark_theme +
+  theme(axis.text.y = element_text(size = 9))
+```
+:::
+
+:::
+
+
+:::{.cr-section}
+
+### The bridge
+
+How do you compare a skydive to a cigarette? One kills instantly (rarely). The other kills slowly (certainly, at scale).[@cr-bridge]{focus-on="cr-bridge"}
+
+The answer is **Loss of Life Expectancy** — the average time lost or gained per exposure.
+
+One micromort costs roughly **21 minutes** of life expectancy. One microlife is **30 minutes**. So 1 micromort ≈ 0.7 microlives.
+
+The UK Department for Transport values a micromort at **£1.60**. NICE values a microlife at **£1.70**. Two independent government agencies, nearly the same price for a unit of risk.
+
+:::{#cr-bridge}
+
+| Unit | Definition | Example |
+|------|-----------|---------|
+| **Micromort** | 1-in-a-million death probability | Skydiving (per jump) = 10 mm |
+| **Microlife** | 30 min of life expectancy per day | Smoking 2 cigs/day = −1 ml/day |
+| **LLE** | Loss of Life Expectancy | 1 mm ≈ 21 min ≈ 0.7 microlives |
+| **£ value** | NICE/DfT policy valuation | 1 mm ≈ £1.60 ≈ 1 ml |
+
+: The three currencies of risk. {.striped}
+
+:::
+
+:::
+
+
+:::{.cr-section}
+
+### Test yourself
+
+You now have three currencies for risk — micromorts, microlives, and loss of life expectancy.[@cr-quiz]{focus-on="cr-quiz"}
+
+You know that a cup of coffee is 0.01 micromorts and Everest is 37,932. You know that smoking costs 10 microlives a day and exercise gains 3.
+
+But can you tell which is riskier: a night in hospital or a skydive? Is red meat worse than sitting all day? Try the quizzes.
+
+:::{#cr-quiz}
+
+::: {style="background:#2b3e50;border-radius:12px;padding:24px;color:#fff;text-align:center;"}
+
+### Can you rank these risks?
+
+[**☠️ Micromort Quiz**](micromort-quiz.html){.btn .btn-danger .btn-lg style="margin:8px;"}
+[**⏳ Microlife Quiz**](microlife-quiz.html){.btn .btn-success .btn-lg style="margin:8px;"}
+[**📊 Ranking Quiz**](risk-ranking-quiz.html){.btn .btn-primary .btn-lg style="margin:8px;"}
+
+:::
+
+:::
+
+:::
+
+```{r session-info, eval=TRUE}
+sessionInfo()
+```
