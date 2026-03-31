@@ -200,7 +200,7 @@ But can you tell which is riskier: a night in hospital or a skydive? Is red meat
 
 [**☠️ Micromort Quiz**](micromort-quiz.html){.btn .btn-danger .btn-lg style="margin:8px;"}
 [**⏳ Microlife Quiz**](microlife-quiz.html){.btn .btn-success .btn-lg style="margin:8px;"}
-[**📊 Ranking Quiz**](risk-ranking-quiz.html){.btn .btn-primary .btn-lg style="margin:8px;"}
+[**📊 Rank Risks Quiz**](risk-ranking-quiz.html){.btn .btn-primary .btn-lg style="margin:8px;"}
 
 :::
 
@@ -208,6 +208,10 @@ But can you tell which is riskier: a night in hospital or a skydive? Is red meat
 
 :::
 
+<details>
+<summary>Session Info</summary>
 ```{r session-info, eval=TRUE}
 sessionInfo()
 ```
+</details>
+
