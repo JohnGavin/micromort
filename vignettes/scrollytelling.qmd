@@ -5,6 +5,7 @@ format:
     code-fold: true
     code-summary: "Show code"
     remove-header-space: true
+    css: closeread-standalone.css
 vignette: >
   %\VignetteIndexEntry{The Risk Landscape: A Scrollytelling Guide}
   %\VignetteEngine{quarto::html}
@@ -14,7 +15,8 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE, comment = "#>", echo = FALSE,
-  fig.width = 8, fig.height = 5, dpi = 150
+  fig.width = 8, fig.height = 5, dpi = 150,
+  warning = FALSE, message = FALSE
 )
 if (requireNamespace("micromort", quietly = TRUE)) {
   library(micromort)
@@ -105,7 +107,7 @@ cr_top <- cr |>
 ggplot(cr_top, aes(x = micromorts, y = activity)) +
   geom_point(aes(colour = category), size = 3) +
   scale_x_log10(labels = scales::label_comma()) +
-  scale_colour_brewer(palette = "Set2") +
+  scale_colour_viridis_d(option = "turbo") +
   labs(x = "Micromorts (log scale)", y = NULL, colour = "Category",
        caption = "Source: micromorts.rip, Wikipedia, CDC MMWR") +
   dark_theme +
