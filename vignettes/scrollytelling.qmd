@@ -1,5 +1,6 @@
 ---
-title: "The Risk Landscape"
+title: "What is a Micromort?"
+subtitle: "A visual introduction to everyday risk — then test yourself"
 format:
   closeread-html:
     code-fold: true
@@ -7,7 +8,7 @@ format:
     remove-header-space: true
     css: closeread-standalone.css
 vignette: >
-  %\VignetteIndexEntry{The Risk Landscape: A Scrollytelling Guide}
+  %\VignetteIndexEntry{What is a Micromort?}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
@@ -220,23 +221,35 @@ The UK Department for Transport values a micromort at **£1.60**. NICE values a 
 
 :::{.cr-section}
 
-### Test yourself
+### Now test yourself
 
 You now have three currencies for risk — micromorts (mm), microlives (ml/day), and loss of life expectancy (LLE).[@cr-quiz]{focus-on="cr-quiz"}
 
-You know that coffee is 0.01 mm and Everest is 37,932 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day.
+You know that coffee is 0.01 mm and Everest is 37,932 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:
 
-But can you tell which is riskier: a night in hospital or a skydive? Is red meat worse than sitting all day? Try the quizzes.
+**☠️ Micromort Quiz** — which activity is riskier? Pick A or B. Covers acute risks from skydiving to surgery.
+
+**⏳ Microlife Quiz** — which daily habit has the bigger effect on your lifespan? Smoking vs diet vs exercise.
+
+**📊 Rank Risks Quiz** — drag and drop 4 items into the correct order. Mixes acute and chronic risks on the same scale.
 
 :::{#cr-quiz}
 
-::: {style="background:#2b3e50;border-radius:12px;padding:24px;color:#fff;text-align:center;"}
+::: {style="background:#2b3e50;border-radius:12px;padding:28px;color:#fff;text-align:center;"}
 
-### Can you rank these risks?
+### Ready?
 
-[**☠️ Micromort Quiz**](micromort-quiz.html){.btn .btn-danger .btn-lg style="margin:8px;"}
-[**⏳ Microlife Quiz**](microlife-quiz.html){.btn .btn-success .btn-lg style="margin:8px;"}
-[**📊 Rank Risks Quiz**](risk-ranking-quiz.html){.btn .btn-primary .btn-lg style="margin:8px;"}
+[**☠️ Micromort Quiz**](micromort-quiz.html){.btn .btn-danger .btn-lg style="margin:8px;display:block;"}
+
+Which event is more likely to kill you?
+
+[**⏳ Microlife Quiz**](microlife-quiz.html){.btn .btn-success .btn-lg style="margin:8px;display:block;"}
+
+Which daily habit has the bigger effect?
+
+[**📊 Rank Risks Quiz**](risk-ranking-quiz.html){.btn .btn-primary .btn-lg style="margin:8px;display:block;"}
+
+Rank 4 risks from biggest to smallest effect.
 
 :::
 

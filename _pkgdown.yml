@@ -26,16 +26,19 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: "Interactive"
-      - text: "Risk Scrollytelling"
+      - text: "Start here"
+      - text: "What is a Micromort?"
         href: articles/scrollytelling.html
-      - text: "Micromort Quiz (play in browser)"
+      - text: "---"
+      - text: "Quizzes"
+      - text: "☠️ Micromort Quiz"
         href: articles/micromort-quiz.html
-      - text: "Microlife Quiz (play in browser)"
+      - text: "⏳ Microlife Quiz"
         href: articles/microlife-quiz.html
-      - text: "Ranking Quiz (play in browser)"
+      - text: "📊 Rank Risks Quiz"
         href: articles/risk-ranking-quiz.html
       - text: "---"
+      - text: "Reference"
       - text: "Introduction"
         href: articles/introduction.html
       - text: "Palatable Units"
@@ -51,6 +54,7 @@ navbar:
       - text: "REST API"
         href: articles/rest_api.html
       - text: "---"
+      - text: "Developer"
       - text: "Architecture Overview"
         href: articles/architecture.html
       - text: "Project Telemetry"
