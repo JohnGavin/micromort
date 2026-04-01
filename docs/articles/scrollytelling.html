@@ -71,29 +71,84 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div class="cell">
+<style type="text/css">
+.cr-section .narrative-col p,
+.cr-section .narrative-col li {
+  font-size: 1.25rem;
+  line-height: 1.8;
+}
+.cr-section .narrative-col h3 {
+  font-size: 1.6rem;
+}
+</style>
+</div>
 <div class="cr-section cr-column-screen sidebar-left">
 <div class="narrative-col">
 <section id="how-dangerous-is-your-morning" class="level3 narrative trigger">
 <h3 class="narrative anchored" data-anchor-id="how-dangerous-is-your-morning">How dangerous is your morning?</h3>
 </section>
-<div class="trigger">
-<div class="narrative">
-<p>Every morning you make dozens of tiny gambles with your life. Brewing coffee. Crossing the road. Driving to work.</p>
-</div>
-</div>
 <div class="trigger new-trigger" data-focus-on="cr-mundane">
 <div class="narrative">
-<p>Each carries a <strong>micromort</strong> — a one-in-a-million chance of death.</p>
+<p>Every morning involves risk. Brewing coffee. Crossing the road. Commuting to work. Each activity carries a measurable probability of death.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>Your cup of coffee? <strong>0.01 micromorts.</strong> The ride to work by car? <strong>0.13 micromorts.</strong> By bicycle? <strong>0.5 micromorts</strong> — roughly four times riskier than driving.</p>
+<p>A <strong>micromort (mm)</strong> is a one-in-a-million chance of death from a single activity.</p>
 </div>
 </div>
 <div class="trigger">
+<table class="narrative caption-top table">
+<thead>
+<tr class="header">
+<th>Activity</th>
+<th style="text-align: center;">Micromorts (mm)</th>
+<th style="text-align: center;">Ratio vs coffee</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Cup of coffee</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;">1x</td>
+</tr>
+<tr class="even">
+<td>Crossing a road</td>
+<td style="text-align: center;">0.02</td>
+<td style="text-align: center;">2x</td>
+</tr>
+<tr class="odd">
+<td>Office work (8 hrs)</td>
+<td style="text-align: center;">0.03</td>
+<td style="text-align: center;">3x</td>
+</tr>
+<tr class="even">
+<td>Taking a bath</td>
+<td style="text-align: center;">0.07</td>
+<td style="text-align: center;">7x</td>
+</tr>
+<tr class="odd">
+<td>Commuting by car</td>
+<td style="text-align: center;">0.13</td>
+<td style="text-align: center;">13x</td>
+</tr>
+<tr class="even">
+<td>Glass of wine</td>
+<td style="text-align: center;">0.50</td>
+<td style="text-align: center;">50x</td>
+</tr>
+<tr class="odd">
+<td>Commuting by bicycle</td>
+<td style="text-align: center;">0.50</td>
+<td style="text-align: center;">50x</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="trigger">
 <div class="narrative">
-<p>These numbers are vanishingly small. But they are not zero — and they are not equal.</p>
+<p>Cycling to work is <strong>50 times riskier than drinking a cup of coffee</strong> — and roughly <strong>4 times riskier than driving</strong> (0.50 / 0.13 = 3.8x).</p>
 </div>
 </div>
 </div>
@@ -125,27 +180,22 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>The micromort scale spans <strong>six orders of magnitude</strong> — from 0.01 (a dental X-ray) to nearly 40,000 (summiting Everest).</p>
+<p>The micromort scale spans <strong>six orders of magnitude</strong> — from a dental X-ray (0.05 mm) to summiting Everest (37,932 mm).</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>At the bottom: the invisible risks of daily life. A cup of coffee, a bath, a road crossing. Each below 0.1 micromorts.</p>
+<p><strong>Bottom</strong> (&lt; 1 mm): daily activities — commuting, coffee, office work, dental X-rays. Risks you never notice.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>In the middle: the risks we weigh consciously. A hospital stay (75 mm). Surgery under general anaesthesia (10 mm). A long-haul flight (4 mm).</p>
+<p><strong>Middle</strong> (1–100 mm): risks you weigh consciously — a night in hospital (75 mm), general anaesthesia (10 mm), a long-haul flight (4 mm), running a marathon (7 mm).</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>At the top: risks that make headlines. Base jumping (430 mm per jump). <strong>Everest: 37,932 micromorts per ascent</strong> — a 1-in-26 chance of death.</p>
-</div>
-</div>
-<div class="trigger">
-<div class="narrative">
-<p>The logarithmic scale is not an aesthetic choice. It is the only honest way to show data that ranges from coffee to Everest.</p>
+<p><strong>Top</strong> (&gt; 100 mm): risks that make headlines — base jumping (430 mm per jump), Himalayan mountaineering (12,000 mm), <strong>Everest at 37,932 mm — roughly a 4% chance of death per ascent</strong>.</p>
 </div>
 </div>
 </div>
@@ -172,22 +222,22 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <div class="trigger new-trigger" data-focus-on="cr-chronic">
 <div class="narrative">
-<p>Not all risks kill you in an instant.</p>
+<p>Not all risks kill in an instant.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>Some shorten your life by half an hour, every single day. David Spiegelhalter called these <strong>microlives</strong> — each one worth 30 minutes of life expectancy.</p>
+<p>Some shorten your life by half an hour, every single day. David Spiegelhalter called these <strong>microlives (ml)</strong> — each one worth 30 minutes of life expectancy.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p><strong>Smoking 20 cigarettes a day costs 10 microlives.</strong> That is 5 hours of life, lost every 24 hours. A heavy smoker lives as though the day were only 19 hours long.</p>
+<p><strong>Smoking 20 cigarettes a day costs 10 microlives.</strong> That is 10 × 30 = 300 minutes = <strong>5 hours of life, lost every 24 hours.</strong> A heavy smoker lives as though the day were only 19 hours long.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>But the scale works in reverse too. <strong>150 minutes of weekly exercise gains 3 microlives per day.</strong> Five servings of fruit and vegetables: +4 microlives. A Mediterranean diet: +2.</p>
+<p>The scale works in reverse too. <strong>150 minutes of weekly exercise gains 3 ml/day.</strong> Five servings of fruit and vegetables: <strong>+4 ml/day</strong> — yes, diet can outweigh exercise in Spiegelhalter’s estimates (both from the BMJ 2012 paper). A Mediterranean diet: +2 ml/day.</p>
 </div>
 </div>
 <div class="trigger">
@@ -224,12 +274,12 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>The answer is <strong>Loss of Life Expectancy</strong> — the average time lost or gained per exposure.</p>
+<p>The answer is <strong>Loss of Life Expectancy (LLE)</strong> — the average time lost or gained per exposure.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>One micromort costs roughly <strong>21 minutes</strong> of life expectancy. One microlife is <strong>30 minutes</strong>. So 1 micromort ≈ 0.7 microlives.</p>
+<p>One micromort costs roughly <strong>21 minutes</strong> of life expectancy. One microlife is <strong>30 minutes</strong>. So 1 mm ≈ 0.7 ml.</p>
 </div>
 </div>
 <div class="trigger">
@@ -242,15 +292,17 @@ ul.task-list li input[type="checkbox"] {
 <div class="sticky-col-stack">
 <div id="cr-bridge" class="sticky">
 <table class="table-striped caption-top table">
-<caption>The three currencies of risk.</caption>
+<caption>The three currencies of risk and the exchange rate between them.</caption>
 <colgroup>
-<col style="width: 23%">
-<col style="width: 42%">
-<col style="width: 34%">
+<col style="width: 19%">
+<col style="width: 16%">
+<col style="width: 35%">
+<col style="width: 29%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Unit</th>
+<th style="text-align: center;">Abbreviation</th>
 <th>Definition</th>
 <th>Example</th>
 </tr>
@@ -258,23 +310,27 @@ ul.task-list li input[type="checkbox"] {
 <tbody>
 <tr class="odd">
 <td><strong>Micromort</strong></td>
+<td style="text-align: center;">mm</td>
 <td>1-in-a-million death probability</td>
 <td>Skydiving (per jump) = 10 mm</td>
 </tr>
 <tr class="even">
 <td><strong>Microlife</strong></td>
+<td style="text-align: center;">ml/day</td>
 <td>30 min of life expectancy per day</td>
 <td>Smoking 2 cigs/day = −1 ml/day</td>
 </tr>
 <tr class="odd">
 <td><strong>LLE</strong></td>
+<td style="text-align: center;">min</td>
 <td>Loss of Life Expectancy</td>
-<td>1 mm ≈ 21 min ≈ 0.7 microlives</td>
+<td>1 mm ≈ 21 min ≈ 0.7 ml</td>
 </tr>
 <tr class="even">
 <td><strong>£ value</strong></td>
+<td style="text-align: center;">£</td>
 <td>NICE/DfT policy valuation</td>
-<td>1 mm ≈ £1.60 ≈ 1 ml</td>
+<td>1 mm ≈ £1.60 ≈ 1 ml/day</td>
 </tr>
 </tbody>
 </table>
@@ -289,12 +345,12 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <div class="trigger new-trigger" data-focus-on="cr-quiz">
 <div class="narrative">
-<p>You now have three currencies for risk — micromorts, microlives, and loss of life expectancy.</p>
+<p>You now have three currencies for risk — micromorts (mm), microlives (ml/day), and loss of life expectancy (LLE).</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>You know that a cup of coffee is 0.01 micromorts and Everest is 37,932. You know that smoking costs 10 microlives a day and exercise gains 3.</p>
+<p>You know that coffee is 0.01 mm and Everest is 37,932 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day.</p>
 </div>
 </div>
 <div class="trigger">
