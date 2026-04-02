@@ -28,7 +28,7 @@ navbar:
       menu:
       - text: "Start here"
       - text: "What is a Micromort?"
-        href: articles/scrollytelling.html
+        href: articles/what-is-a-micromort.html
       - text: "---"
       - text: "Quizzes"
       - text: "☠️ Micromort Quiz"
