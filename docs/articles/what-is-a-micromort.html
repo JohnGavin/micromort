@@ -38,6 +38,15 @@ ul.task-list li input[type="checkbox"] {
 <script src="what-is-a-micromort_files/libs/quarto-contrib/intersection-observer-polyfill-1.0.0/intersection-observer.js"></script>
 <script src="what-is-a-micromort_files/libs/quarto-contrib/scrollama-3.2.0/scrollama.min.js"></script>
 <script src="what-is-a-micromort_files/libs/quarto-contrib/closeread-0.1.0/closeread.js"></script>
+<link href="what-is-a-micromort_files/libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="what-is-a-micromort_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="what-is-a-micromort_files/libs/plotly-binding-4.12.0/plotly.js"></script>
+<script src="what-is-a-micromort_files/libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="what-is-a-micromort_files/libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="what-is-a-micromort_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="what-is-a-micromort_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<link href="what-is-a-micromort_files/libs/plotly-htmlwidgets-css-2.25.2/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="what-is-a-micromort_files/libs/plotly-main-2.25.2/plotly-latest.min.js"></script>
 <meta cr-debug-mode="false">
 <meta cr-remove-header-space="true">
 
@@ -104,7 +113,7 @@ ul.task-list li input[type="checkbox"] {
 <thead>
 <tr class="header">
 <th>Activity</th>
-<th style="text-align: center;">Micromorts (mm)</th>
+<th style="text-align: center;">mm</th>
 <th style="text-align: center;">Ratio vs coffee</th>
 </tr>
 </thead>
@@ -149,7 +158,12 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>Cycling to work is <strong>50 times riskier than drinking a cup of coffee</strong> — and roughly <strong>4 times riskier than driving</strong> (0.50 / 0.13 = 3.8x).</p>
+<p>All of these are <strong>below 1 mm</strong> — risks so small we never perceive them as dangerous. The 50x ratio between wine and coffee sounds alarming, but in absolute terms it is the difference between a 0.01 and 0.5 in a million chance. Both are negligible.</p>
+</div>
+</div>
+<div class="trigger">
+<div class="narrative">
+<p>Hover over the bars to compare.</p>
 </div>
 </div>
 </div>
@@ -158,11 +172,8 @@ ul.task-list li input[type="checkbox"] {
 <div id="cr-mundane" class="sticky">
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="what-is-a-micromort_files/figure-html/mundane-plot-1.png" class="img-fluid figure-img" width="1200"></p>
-</figure>
-</div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-51a98ca64cb458ad5e37" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-51a98ca64cb458ad5e37">{"x":{"visdat":{"15c0e62afc908":["function () ","plotlyVisDat"]},"cur_data":"15c0e62afc908","attrs":{"15c0e62afc908":{"y":{},"x":{},"orientation":"h","marker":{"color":"#2c7be5"},"hovertemplate":["<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 1x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 2x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 3x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 7x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 13x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 50x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 50x vs coffee<extra><\/extra>"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Micromorts (mm)","gridcolor":"#333355","zerolinecolor":"#333355"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","gridcolor":"#333355","type":"category","categoryorder":"array","categoryarray":["Cup of coffee","Crossing a road","Working in an office (8 hours)","Taking a bath","Commuting by car (30 min)","Drinking a glass of wine","Commuting by bicycle (30 min)"]},"annotations":[{"text":"1 mm = one-in-a-million chance of death","x":0.5,"y":-0.12,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":11,"color":"#888888"}}],"paper_bgcolor":"#1a1a2e","plot_bgcolor":"#1a1a2e","font":{"color":"#e0e0e0","size":13},"legend":{"bgcolor":"#1a1a2e","font":{"color":"#e0e0e0"}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"data":[{"y":["Cup of coffee","Crossing a road","Working in an office (8 hours)","Taking a bath","Commuting by car (30 min)","Drinking a glass of wine","Commuting by bicycle (30 min)"],"x":[0.01,0.02,0.029999999999999999,0.070000000000000007,0.13,0.5,0.5],"orientation":"h","marker":{"color":"#2c7be5","line":{"color":"rgba(31,119,180,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 1x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 2x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 3x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 7x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 13x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 50x vs coffee<extra><\/extra>","<b>%{y}<\/b><br>%{x:.2f} mm<br>%{x:.2f} / 0.01 = 50x vs coffee<extra><\/extra>"],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
@@ -176,27 +187,27 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <div class="trigger new-trigger" data-focus-on="cr-spectrum">
 <div class="narrative">
-<p>Now zoom out.</p>
+<p>Now zoom out. Hover over any dot to see the activity name and micromort value.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>The micromort scale spans <strong>six orders of magnitude</strong> — from a dental X-ray (0.05 mm) to summiting Everest (37,932 mm).</p>
+<p>The micromort scale spans <strong>six orders of magnitude</strong> — from a dental X-ray (0.05 mm) to summiting Everest (~38,000 mm).</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p><strong>Bottom</strong> (&lt; 1 mm): daily activities — commuting, coffee, office work, dental X-rays. Risks you never notice.</p>
+<p><strong>Bottom</strong> (&lt; 1 mm): daily activities — commuting, coffee, office work, dental X-rays. Risks so small we never notice them.</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p><strong>Middle</strong> (1–100 mm): risks you weigh consciously — a night in hospital (75 mm), general anaesthesia (10 mm), a long-haul flight (4 mm), running a marathon (7 mm).</p>
+<p><strong>Middle</strong> (1–100 mm): risks we weigh consciously — a night in hospital (75 mm), general anaesthesia (10 mm), a long-haul flight (4 mm), running a marathon (7 mm).</p>
 </div>
 </div>
 <div class="trigger">
 <div class="narrative">
-<p><strong>Top</strong> (&gt; 100 mm): risks that make headlines — base jumping (430 mm per jump), Himalayan mountaineering (12,000 mm), <strong>Everest at 37,932 mm — roughly a 4% chance of death per ascent</strong>.</p>
+<p><strong>Top</strong> (&gt; 100 mm): risks that make headlines — base jumping (430 mm per jump), Himalayan mountaineering (12,000 mm), <strong>Everest at ~38,000 mm — roughly a 4% chance of death per ascent</strong>.</p>
 </div>
 </div>
 </div>
@@ -205,11 +216,8 @@ ul.task-list li input[type="checkbox"] {
 <div id="cr-spectrum" class="sticky">
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="what-is-a-micromort_files/figure-html/spectrum-plot-1.png" class="img-fluid figure-img" width="1200"></p>
-</figure>
-</div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-d7155d8b3d6d390079ad" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-d7155d8b3d6d390079ad">{"x":{"visdat":{"15c0e415c3b23":["function () ","plotlyVisDat"]},"cur_data":"15c0e415c3b23","attrs":{"15c0e415c3b23":{"x":{},"y":{},"mode":"markers","marker":{"size":10},"hovertemplate":"<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","text":{},"color":{},"colors":"Set1","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"}},"layout":{"height":700,"margin":{"b":40,"l":220,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Micromorts, mm (log scale)","type":"log","tickformat":",","gridcolor":"#333355","zerolinecolor":"#333355"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"size":11},"gridcolor":"#333355","type":"category","categoryorder":"array","categoryarray":["COVID-19 unvaccinated (age 50-64)","Hang gliding (per flight)","Skydiving (UK)","Skydiving (US)","COVID-19 monovalent vaccine (age 65-79)","CT scan abdomen (radiation per scan)","General anesthesia (emergency)","Motorcycling (60 miles)","Skydiving (per jump)","Swimming","Ecstasy/MDMA (per dose)","Living (one day, under age 1)","American football","COVID-19 unvaccinated (all ages)","COVID-19 bivalent booster (age 80+)","US military in Afghanistan (2010)","Heroin use (per dose)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 monovalent vaccine (age 80+)","Night in hospital","COVID-19 unvaccinated (age 65-79)","Living (one day, age 75)","Vaginal birth (mother)","Scuba diving, trained (yearly)","Caesarean birth (mother)","COVID-19 unvaccinated (age 80+)","Base jumping (per jump)","First day of life (newborn)","Living (one day, age 90)","Living in US during COVID-19 (Jul 2020)","Matterhorn ascent","Spanish flu infection","COVID-19 infection (unvaccinated)","Himalayan mountaineering","Mt. Everest ascent"]},"paper_bgcolor":"#1a1a2e","plot_bgcolor":"#1a1a2e","font":{"color":"#e0e0e0","size":13},"legend":{"bgcolor":"#1a1a2e","font":{"color":"#e0e0e0"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"data":[{"x":[10000,500,234,76,55,50,23,20,9,8],"y":["COVID-19 infection (unvaccinated)","Living in US during COVID-19 (Jul 2020)","COVID-19 unvaccinated (age 80+)","COVID-19 unvaccinated (age 65-79)","COVID-19 monovalent vaccine (age 80+)","Living in NYC COVID-19 (Mar-May 2020)","COVID-19 bivalent booster (age 80+)","COVID-19 unvaccinated (all ages)","COVID-19 monovalent vaccine (age 65-79)","COVID-19 unvaccinated (age 50-64)"],"mode":"markers","marker":{"color":"rgba(228,26,28,1)","size":10,"line":{"color":"rgba(228,26,28,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["COVID-19","COVID-19","COVID-19","COVID-19","COVID-19","COVID-19","COVID-19","COVID-19","COVID-19","COVID-19"],"type":"scatter","name":"COVID-19","textfont":{"color":"rgba(228,26,28,1)"},"error_y":{"color":"rgba(228,26,28,1)"},"error_x":{"color":"rgba(228,26,28,1)"},"line":{"color":"rgba(228,26,28,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[463,430,105,15],"y":["Living (one day, age 90)","First day of life (newborn)","Living (one day, age 75)","Living (one day, under age 1)"],"mode":"markers","marker":{"color":"rgba(55,126,184,1)","size":10,"line":{"color":"rgba(55,126,184,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["Daily Life","Daily Life","Daily Life","Daily Life"],"type":"scatter","name":"Daily Life","textfont":{"color":"rgba(55,126,184,1)"},"error_y":{"color":"rgba(55,126,184,1)"},"error_x":{"color":"rgba(55,126,184,1)"},"line":{"color":"rgba(55,126,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[3000],"y":["Spanish flu infection"],"mode":"markers","marker":{"color":"rgba(77,175,74,1)","size":10,"line":{"color":"rgba(77,175,74,1)"}},"hovertemplate":"<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","text":"Disease","type":"scatter","name":"Disease","textfont":{"color":"rgba(77,175,74,1)"},"error_y":{"color":"rgba(77,175,74,1)"},"error_x":{"color":"rgba(77,175,74,1)"},"line":{"color":"rgba(77,175,74,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[30,13],"y":["Heroin use (per dose)","Ecstasy/MDMA (per dose)"],"mode":"markers","marker":{"color":"rgba(152,78,163,1)","size":10,"line":{"color":"rgba(152,78,163,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["Drugs","Drugs"],"type":"scatter","name":"Drugs","textfont":{"color":"rgba(152,78,163,1)"},"error_y":{"color":"rgba(152,78,163,1)"},"error_x":{"color":"rgba(152,78,163,1)"},"line":{"color":"rgba(152,78,163,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[170,120,75,10,10],"y":["Caesarean birth (mother)","Vaginal birth (mother)","Night in hospital","General anesthesia (emergency)","CT scan abdomen (radiation per scan)"],"mode":"markers","marker":{"color":"rgba(255,127,0,1)","size":10,"line":{"color":"rgba(255,127,0,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["Medical","Medical","Medical","Medical","Medical"],"type":"scatter","name":"Medical","textfont":{"color":"rgba(255,127,0,1)"},"error_y":{"color":"rgba(255,127,0,1)"},"error_x":{"color":"rgba(255,127,0,1)"},"line":{"color":"rgba(255,127,0,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[25],"y":["US military in Afghanistan (2010)"],"mode":"markers","marker":{"color":"rgba(255,255,51,1)","size":10,"line":{"color":"rgba(255,255,51,1)"}},"hovertemplate":"<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","text":"Military","type":"scatter","name":"Military","textfont":{"color":"rgba(255,255,51,1)"},"error_y":{"color":"rgba(255,255,51,1)"},"error_x":{"color":"rgba(255,255,51,1)"},"line":{"color":"rgba(255,255,51,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[37932,12000,2840],"y":["Mt. Everest ascent","Himalayan mountaineering","Matterhorn ascent"],"mode":"markers","marker":{"color":"rgba(166,86,40,1)","size":10,"line":{"color":"rgba(166,86,40,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["Mountaineering","Mountaineering","Mountaineering"],"type":"scatter","name":"Mountaineering","textfont":{"color":"rgba(166,86,40,1)"},"error_y":{"color":"rgba(166,86,40,1)"},"error_x":{"color":"rgba(166,86,40,1)"},"line":{"color":"rgba(166,86,40,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[430,164,20,12,10,8,8,8],"y":["Base jumping (per jump)","Scuba diving, trained (yearly)","American football","Swimming","Skydiving (per jump)","Skydiving (US)","Skydiving (UK)","Hang gliding (per flight)"],"mode":"markers","marker":{"color":"rgba(247,129,191,1)","size":10,"line":{"color":"rgba(247,129,191,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>"],"text":["Sport","Sport","Sport","Sport","Sport","Sport","Sport","Sport"],"type":"scatter","name":"Sport","textfont":{"color":"rgba(247,129,191,1)"},"error_y":{"color":"rgba(247,129,191,1)"},"error_x":{"color":"rgba(247,129,191,1)"},"line":{"color":"rgba(247,129,191,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[10],"y":["Motorcycling (60 miles)"],"mode":"markers","marker":{"color":"rgba(153,153,153,1)","size":10,"line":{"color":"rgba(153,153,153,1)"}},"hovertemplate":"<b>%{y}<\/b><br>%{x:,.1f} mm<br>Category: %{text}<extra><\/extra>","text":"Travel","type":"scatter","name":"Travel","textfont":{"color":"rgba(153,153,153,1)"},"error_y":{"color":"rgba(153,153,153,1)"},"error_x":{"color":"rgba(153,153,153,1)"},"line":{"color":"rgba(153,153,153,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
@@ -243,7 +251,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>The slow burn is not all loss. Some of it is gain.</p>
+<p>Hover over the bars to explore. Red = life lost. Green = life gained.</p>
 </div>
 </div>
 </div>
@@ -252,11 +260,8 @@ ul.task-list li input[type="checkbox"] {
 <div id="cr-chronic" class="sticky">
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="what-is-a-micromort_files/figure-html/chronic-plot-1.png" class="img-fluid figure-img" width="1200"></p>
-</figure>
-</div>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a06b8b64b1bfb2809051" style="width:100%;height:406px;"></div>
+<script type="application/json" data-for="htmlwidget-a06b8b64b1bfb2809051">{"x":{"visdat":{"15c0e76519b24":["function () ","plotlyVisDat"]},"cur_data":"15c0e76519b24","attrs":{"15c0e76519b24":{"x":{},"y":{},"orientation":"h","marker":{"color":{}},"hovertemplate":"<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","text":{},"customdata":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"height":650,"margin":{"b":40,"l":200,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"Microlives per day (ml/day)","zeroline":true,"zerolinecolor":"#333355","zerolinewidth":1,"gridcolor":"#333355"},"yaxis":{"domain":[0,1],"automargin":true,"title":"","tickfont":{"size":10},"gridcolor":"#333355","type":"category","categoryorder":"array","categoryarray":["Smoking 20 cigarettes","Smoking 10 cigarettes","Untreated hypertension","Being male (vs female)","Being 15 kg overweight","Type 2 diabetes (poorly controlled)","Being 10 kg overweight","4th-5th alcoholic drink","Sitting 8+ hours/day","High LDL cholesterol (untreated)","Family history of heart disease","Smoking 2 cigarettes","Being 5 kg overweight","2nd-3rd alcoholic drink","Red meat (1 portion/day)","Processed meat (1 portion/day)","Low fiber diet","High sugar diet","2 hours TV watching","Living with a smoker","Air pollution (high)","Family history of cancer","Low physical activity","Excessive alcohol (cancer)","2-3 cups coffee (men)","Chronic stress/poor sleep","First alcoholic drink","Statin therapy (if indicated)","Cancer screening (age-appropriate)","20 min moderate exercise","High fiber diet","Mediterranean diet","Blood pressure control","150 min weekly exercise","5 servings fruit/veg","Being female (vs male)","Living in 2010 vs 1910","Living in Sweden vs Russia (male)"]},"annotations":[{"text":"1 ml = 30 min of life expectancy. Red = lose, Green = gain.","x":0.5,"y":-0.080000000000000002,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":11,"color":"#888888"}}],"paper_bgcolor":"#1a1a2e","plot_bgcolor":"#1a1a2e","font":{"color":"#e0e0e0","size":13},"legend":{"bgcolor":"#1a1a2e","font":{"color":"#e0e0e0"}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false,"displayModeBar":false},"data":[{"x":[-10,-5,-4,-4,-3,-3,-2,-2,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,1,1,2,2,2,2,3,4,4,15,21],"y":["Smoking 20 cigarettes","Smoking 10 cigarettes","Untreated hypertension","Being male (vs female)","Being 15 kg overweight","Type 2 diabetes (poorly controlled)","Being 10 kg overweight","4th-5th alcoholic drink","Sitting 8+ hours/day","High LDL cholesterol (untreated)","Family history of heart disease","Smoking 2 cigarettes","Being 5 kg overweight","2nd-3rd alcoholic drink","Red meat (1 portion/day)","Processed meat (1 portion/day)","Low fiber diet","High sugar diet","2 hours TV watching","Living with a smoker","Air pollution (high)","Family history of cancer","Low physical activity","Excessive alcohol (cancer)","2-3 cups coffee (men)","Chronic stress/poor sleep","First alcoholic drink","Statin therapy (if indicated)","Cancer screening (age-appropriate)","20 min moderate exercise","High fiber diet","Mediterranean diet","Blood pressure control","150 min weekly exercise","5 servings fruit/veg","Being female (vs male)","Living in 2010 vs 1910","Living in Sweden vs Russia (male)"],"orientation":"h","marker":{"color":["#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#dc3545","#198754","#198754","#198754","#198754","#198754","#198754","#198754","#198754","#198754","#198754","#198754","#198754"],"line":{"color":"rgba(31,119,180,1)"}},"hovertemplate":["<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>","<b>%{y}<\/b><br>%{x:+.0f} ml/day (%{text})<br>= %{customdata} min/day<extra><\/extra>"],"text":["lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","lose","gain","gain","gain","gain","gain","gain","gain","gain","gain","gain","gain","gain"],"customdata":[300,150,120,120,90,90,60,60,60,60,60,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,60,60,60,60,90,120,120,450,630],"type":"bar","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </div>
@@ -351,7 +356,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="trigger">
 <div class="narrative">
-<p>You know that coffee is 0.01 mm and Everest is 37,932 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:</p>
+<p>You know that coffee is 0.01 mm and Everest is ~38,000 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:</p>
 </div>
 </div>
 <div class="trigger">
@@ -409,23 +414,29 @@ Session Info
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt; [1] dplyr_1.1.4     ggplot2_4.0.1   micromort_0.1.0 testthat_3.3.2 
+#&gt; [1] plotly_4.12.0   dplyr_1.1.4     ggplot2_4.0.1   micromort_0.1.0
+#&gt; [5] testthat_3.3.2 
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
-#&gt;  [1] generics_0.1.4     digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    
-#&gt;  [5] grid_4.5.2         RColorBrewer_1.1-3 pkgload_1.4.1      fastmap_1.2.0     
-#&gt;  [9] rprojroot_2.1.1    jsonlite_2.0.0     pkgbuild_1.4.8     backports_1.5.0   
-#&gt; [13] brio_1.1.5         purrr_1.2.1        viridisLite_0.4.2  scales_1.4.0      
-#&gt; [17] cli_3.6.5          rlang_1.1.7        bit64_4.6.0-1      withr_3.0.2       
-#&gt; [21] yaml_2.3.12        otel_0.2.0         tools_4.5.2        checkmate_2.3.3   
-#&gt; [25] credentials_2.0.3  assertthat_0.2.1   vctrs_0.7.1        R6_2.6.1          
-#&gt; [29] lifecycle_1.0.5    fs_1.6.6           htmlwidgets_1.6.4  bit_4.6.0         
-#&gt; [33] usethis_3.2.1      arrow_22.0.0       pkgconfig_2.0.3    desc_1.4.3        
-#&gt; [37] pillar_1.11.1      gtable_0.3.6       glue_1.8.0         gert_2.3.1        
-#&gt; [41] xfun_0.56          tibble_3.3.1       tidyselect_1.2.1   sys_3.4.3         
-#&gt; [45] knitr_1.51         farver_2.1.2       htmltools_0.5.9    labeling_0.4.3    
-#&gt; [49] rmarkdown_2.30     compiler_4.5.2     S7_0.2.1           askpass_1.2.1     
-#&gt; [53] openssl_2.3.4</code></pre>
+#&gt;  [1] tidyr_1.3.2         generics_0.1.4      digest_0.6.39      
+#&gt;  [4] magrittr_2.0.4      evaluate_1.0.5      grid_4.5.2         
+#&gt;  [7] RColorBrewer_1.1-3  pkgload_1.4.1       fastmap_1.2.0      
+#&gt; [10] rprojroot_2.1.1     jsonlite_2.0.0      pkgbuild_1.4.8     
+#&gt; [13] backports_1.5.0     brio_1.1.5          httr_1.4.7         
+#&gt; [16] purrr_1.2.1         crosstalk_1.2.2     viridisLite_0.4.2  
+#&gt; [19] scales_1.4.0        lazyeval_0.2.2      cli_3.6.5          
+#&gt; [22] rlang_1.1.7         bit64_4.6.0-1       withr_3.0.2        
+#&gt; [25] yaml_2.3.12         otel_0.2.0          tools_4.5.2        
+#&gt; [28] checkmate_2.3.3     credentials_2.0.3   assertthat_0.2.1   
+#&gt; [31] vctrs_0.7.1         R6_2.6.1            lifecycle_1.0.5    
+#&gt; [34] fs_1.6.6            htmlwidgets_1.6.4   bit_4.6.0          
+#&gt; [37] usethis_3.2.1       arrow_22.0.0        pkgconfig_2.0.3    
+#&gt; [40] desc_1.4.3          pillar_1.11.1       gtable_0.3.6       
+#&gt; [43] data.table_1.18.2.1 glue_1.8.0          gert_2.3.1         
+#&gt; [46] xfun_0.56           tibble_3.3.1        tidyselect_1.2.1   
+#&gt; [49] sys_3.4.3           knitr_1.51          farver_2.1.2       
+#&gt; [52] htmltools_0.5.9     rmarkdown_2.30      compiler_4.5.2     
+#&gt; [55] S7_0.2.1            askpass_1.2.1       openssl_2.3.4</code></pre>
 </div>
 </details>
 

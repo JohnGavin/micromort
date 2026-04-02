@@ -26,21 +26,25 @@ if (requireNamespace("micromort", quietly = TRUE)) {
 }
 library(ggplot2)
 library(dplyr)
+library(plotly)
 
-dark_theme <- theme_minimal(base_size = 15) +
-  theme(
-    plot.background = element_rect(fill = "#1a1a2e", colour = NA),
-    panel.background = element_rect(fill = "#1a1a2e", colour = NA),
-    panel.grid.minor = element_blank(),
-    panel.grid.major.y = element_blank(),
-    panel.grid.major.x = element_line(colour = "#333355"),
-    text = element_text(colour = "#e0e0e0"),
-    axis.text = element_text(colour = "#e0e0e0"),
-    plot.caption = element_text(colour = "#888888", size = 11),
-    legend.background = element_rect(fill = "#1a1a2e"),
-    legend.text = element_text(colour = "#e0e0e0"),
-    legend.title = element_text(colour = "#e0e0e0")
-  )
+# Shared plotly dark theme
+dark_plotly <- function(p) {
+  p |> layout(
+    paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+    font = list(color = "#e0e0e0", size = 13),
+    xaxis = list(gridcolor = "#333355", zerolinecolor = "#333355"),
+    yaxis = list(gridcolor = "#333355"),
+    legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0"))
+  ) |> config(displayModeBar = FALSE)
+}
+
+# Format mm for display
+fmt_mm <- function(x) {
+  ifelse(x >= 1000, paste0(format(round(x, -2), big.mark = ","), " mm"),
+  ifelse(x >= 1, paste0(round(x, 1), " mm"),
+         paste0(x, " mm")))
+}
 ```
 
 ```{css}
@@ -62,8 +66,8 @@ Every morning involves risk. Brewing coffee. Crossing the road. Commuting to wor
 
 A **micromort (mm)** is a one-in-a-million chance of death from a single activity.
 
-| Activity | Micromorts (mm) | Ratio vs coffee |
-|----------|:---------:|:---------:|
+| Activity | mm | Ratio vs coffee |
+|----------|:--:|:---:|
 | Cup of coffee | 0.01 | 1x |
 | Crossing a road | 0.02 | 2x |
 | Office work (8 hrs) | 0.03 | 3x |
@@ -72,7 +76,9 @@ A **micromort (mm)** is a one-in-a-million chance of death from a single activit
 | Glass of wine | 0.50 | 50x |
 | Commuting by bicycle | 0.50 | 50x |
 
-Cycling to work is **50 times riskier than drinking a cup of coffee** — and roughly **4 times riskier than driving** (0.50 / 0.13 = 3.8x).
+All of these are **below 1 mm** — risks so small we never perceive them as dangerous. The 50x ratio between wine and coffee sounds alarming, but in absolute terms it is the difference between a 0.01 and 0.5 in a million chance. Both are negligible.
+
+Hover over the bars to compare.
 
 :::{#cr-mundane}
 ```{r mundane-plot}
@@ -86,14 +92,22 @@ mundane <- cr |>
   arrange(micromorts) |>
   mutate(activity = factor(activity, levels = activity))
 
-ggplot(mundane, aes(x = micromorts, y = activity)) +
-  geom_col(fill = "#2c7be5", alpha = 0.9) +
-  geom_text(aes(label = sprintf("%.2f", micromorts)),
-            hjust = -0.1, size = 4.5, colour = "#e0e0e0") +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.3))) +
-  labs(x = "Micromorts (mm)", y = NULL,
-       caption = "1 mm = one-in-a-million chance of death per activity") +
-  dark_theme
+p <- plot_ly(mundane, y = ~activity, x = ~micromorts, type = "bar",
+  orientation = "h",
+  marker = list(color = "#2c7be5"),
+  hovertemplate = paste0("<b>%{y}</b><br>",
+    "%{x:.2f} mm<br>",
+    "%{x:.2f} / 0.01 = ", round(mundane$micromorts / 0.01), "x vs coffee",
+    "<extra></extra>")) |>
+  layout(
+    xaxis = list(title = "Micromorts (mm)"),
+    yaxis = list(title = ""),
+    annotations = list(list(
+      text = "1 mm = one-in-a-million chance of death",
+      x = 0.5, y = -0.12, xref = "paper", yref = "paper",
+      showarrow = FALSE, font = list(size = 11, color = "#888888")))
+  ) |> dark_plotly()
+p
 ```
 :::
 
@@ -104,49 +118,45 @@ ggplot(mundane, aes(x = micromorts, y = activity)) +
 
 ### The full spectrum
 
-Now zoom out.[@cr-spectrum]{focus-on="cr-spectrum"}
+Now zoom out. Hover over any dot to see the activity name and micromort value.[@cr-spectrum]{focus-on="cr-spectrum"}
 
-The micromort scale spans **six orders of magnitude** — from a dental X-ray (0.05 mm) to summiting Everest (37,932 mm).
+The micromort scale spans **six orders of magnitude** — from a dental X-ray (0.05 mm) to summiting Everest (~38,000 mm).
 
-**Bottom** (< 1 mm): daily activities — commuting, coffee, office work, dental X-rays. Risks you never notice.
+**Bottom** (< 1 mm): daily activities — commuting, coffee, office work, dental X-rays. Risks so small we never notice them.
 
-**Middle** (1–100 mm): risks you weigh consciously — a night in hospital (75 mm), general anaesthesia (10 mm), a long-haul flight (4 mm), running a marathon (7 mm).
+**Middle** (1–100 mm): risks we weigh consciously — a night in hospital (75 mm), general anaesthesia (10 mm), a long-haul flight (4 mm), running a marathon (7 mm).
 
-**Top** (> 100 mm): risks that make headlines — base jumping (430 mm per jump), Himalayan mountaineering (12,000 mm), **Everest at 37,932 mm — roughly a 4% chance of death per ascent**.
+**Top** (> 100 mm): risks that make headlines — base jumping (430 mm per jump), Himalayan mountaineering (12,000 mm), **Everest at ~38,000 mm — roughly a 4% chance of death per ascent**.
 
 :::{#cr-spectrum}
-```{r spectrum-plot, fig.height=10}
-# Include items referenced in text + top risks
-text_items <- c("Dental X-ray (radiation per scan)", "Night in hospital",
-  "General anesthesia (emergency)", "Flying (8h long-haul)",
-  "Running a marathon", "Base jumping (per jump)",
-  "Himalayan mountaineering", "Mt. Everest ascent")
-
+```{r spectrum-plot}
 cr_show <- cr |>
   filter(micromorts > 0) |>
   arrange(desc(micromorts)) |>
   slice_head(n = 35) |>
-  bind_rows(cr |> filter(activity %in% text_items)) |>
-  distinct(activity, .keep_all = TRUE) |>
-  arrange(desc(micromorts)) |>
-  slice_head(n = 35) |>
   mutate(
-    activity = factor(activity, levels = rev(activity)),
-    highlight = ifelse(activity %in% text_items, "referenced", "other")
+    mm_label = fmt_mm(micromorts),
+    activity_short = activity
   )
 
-ggplot(cr_show, aes(x = micromorts, y = activity)) +
-  geom_point(aes(colour = category), size = 3) +
-  geom_text(
-    data = cr_show |> filter(highlight == "referenced"),
-    aes(label = activity), hjust = -0.1, size = 3.5,
-    colour = "#ff6b6b", fontface = "bold", nudge_x = 0.15) +
-  scale_x_log10(labels = scales::label_comma()) +
-  scale_colour_viridis_d(option = "turbo") +
-  labs(x = "Micromorts, mm (log scale)", y = NULL, colour = "Category",
-       caption = "Source: micromorts.rip, Wikipedia, CDC MMWR.\nRed labels = items referenced in text.") +
-  dark_theme +
-  theme(axis.text.y = element_text(size = 11))
+p2 <- plot_ly(cr_show, x = ~micromorts, y = ~reorder(activity, micromorts),
+  type = "scatter", mode = "markers",
+  color = ~category, colors = "Set1",
+  marker = list(size = 10),
+  hovertemplate = paste0(
+    "<b>%{y}</b><br>",
+    "%{x:,.1f} mm<br>",
+    "Category: %{text}",
+    "<extra></extra>"),
+  text = ~category) |>
+  layout(
+    xaxis = list(title = "Micromorts, mm (log scale)", type = "log",
+                 tickformat = ","),
+    yaxis = list(title = "", tickfont = list(size = 11)),
+    height = 700,
+    margin = list(l = 220)
+  ) |> dark_plotly()
+p2
 ```
 :::
 
@@ -165,26 +175,41 @@ Some shorten your life by half an hour, every single day. David Spiegelhalter ca
 
 The scale works in reverse too. **150 minutes of weekly exercise gains 3 ml/day.** Five servings of fruit and vegetables: **+4 ml/day** — yes, diet can outweigh exercise in Spiegelhalter's estimates (both from the BMJ 2012 paper). A Mediterranean diet: +2 ml/day.
 
-The slow burn is not all loss. Some of it is gain.
+Hover over the bars to explore. Red = life lost. Green = life gained.
 
 :::{#cr-chronic}
-```{r chronic-plot, fig.height=9}
+```{r chronic-plot}
 ch <- chronic_risks()
 ch <- ch |>
   arrange(microlives_per_day) |>
   mutate(
     factor = factor(factor, levels = factor),
-    fill_colour = ifelse(direction == "gain", "#198754", "#dc3545")
+    colour = ifelse(direction == "gain", "#198754", "#dc3545"),
+    dir_label = ifelse(direction == "gain", "gain", "lose")
   )
 
-ggplot(ch, aes(x = microlives_per_day, y = factor)) +
-  geom_col(aes(fill = fill_colour), alpha = 0.9) +
-  scale_fill_identity() +
-  geom_vline(xintercept = 0, colour = "#e0e0e0", linewidth = 0.5) +
-  labs(x = "Microlives per day (ml/day)", y = NULL,
-       caption = "1 ml = 30 min of life expectancy per day.\nRed = life lost. Green = life gained.") +
-  dark_theme +
-  theme(axis.text.y = element_text(size = 10))
+p3 <- plot_ly(ch, x = ~microlives_per_day, y = ~factor, type = "bar",
+  orientation = "h",
+  marker = list(color = ~colour),
+  hovertemplate = paste0(
+    "<b>%{y}</b><br>",
+    "%{x:+.0f} ml/day (%{text})<br>",
+    "= %{customdata} min/day",
+    "<extra></extra>"),
+  text = ~dir_label,
+  customdata = ~abs(microlives_per_day) * 30) |>
+  layout(
+    xaxis = list(title = "Microlives per day (ml/day)", zeroline = TRUE,
+                 zerolinecolor = "#e0e0e0", zerolinewidth = 1),
+    yaxis = list(title = "", tickfont = list(size = 10)),
+    height = 650,
+    margin = list(l = 200),
+    annotations = list(list(
+      text = "1 ml = 30 min of life expectancy. Red = lose, Green = gain.",
+      x = 0.5, y = -0.08, xref = "paper", yref = "paper",
+      showarrow = FALSE, font = list(size = 11, color = "#888888")))
+  ) |> dark_plotly()
+p3
 ```
 :::
 
@@ -225,7 +250,7 @@ The UK Department for Transport values a micromort at **£1.60**. NICE values a 
 
 You now have three currencies for risk — micromorts (mm), microlives (ml/day), and loss of life expectancy (LLE).[@cr-quiz]{focus-on="cr-quiz"}
 
-You know that coffee is 0.01 mm and Everest is 37,932 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:
+You know that coffee is 0.01 mm and Everest is ~38,000 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:
 
 **☠️ Micromort Quiz** — which activity is riskier? Pick A or B. Covers acute risks from skydiving to surgery.
 
