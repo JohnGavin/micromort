@@ -1,57 +1,48 @@
 # Current Work
 
-## Session: 2026-03-24 to 2026-03-28
+## Session: 2026-03-29 to 2026-04-03
 
 ### Branch: main
 
 ### Completed
 
-#### Ranking Quiz (Issue #65)
-1. R backend: `ranking_quiz_questions()`, `kendall_tau_score()`, `ranking_tag_mapping()` — 67 tests
-2. Shinylive version with SortableJS drag-and-drop
-3. Tie prevention: min 1.1x LLE ratio between adjacent items
-4. Tag selection: 8 tags, Select All/Deselect All, validation
-5. Direction labels: green "gain" / red "lose" badges + arrows on reveal
-6. Bootstrap tooltips for LLE, Kendall tau link to Wikipedia
-7. Tap-to-show LLE help for mobile (hover doesn't work on touch)
+#### Closeread "What is a Micromort?" vignette
+1. Closeread Quarto extension installed (scroll-triggered sticky panels)
+2. 5-act narrative: Morning risks → Full spectrum → Chronic risks → Bridge → Quizzes
+3. All plots converted to interactive plotly (dark theme, hover tooltips)
+4. Workaround: post-process HTML to inject closeread JS (Quarto 1.8.26 bug)
+5. Renamed scrollytelling.qmd → what-is-a-micromort.qmd (SEO-friendly URL)
 
-#### Pure JS Quiz Migration (98% size reduction)
-8. Ported all 3 quizzes from Shinylive (61MB each) to pure JS (<1MB each)
-   - `micromort-quiz.qmd` — acute pairwise A-vs-B
-   - `microlife-quiz.qmd` — chronic pairwise A-vs-B
-   - `risk-ranking-quiz.qmd` — cross-domain drag-and-drop ranking
-9. Same features: leaderboard, percentile, share, cross-round dedup, QR codes
+#### Navbar regrouped into 4 sections
+- Start here: What is a Micromort?
+- Quizzes: ☠️ Micromort, ⏳ Microlife, 📊 Rank Risks
+- Reference: 7 analysis articles
+- Developer: Architecture + Telemetry
 
-#### UX Improvements (all quizzes)
-10. Default 5 questions (was 10)
-11. Human-readable numbers: `fmtMM()` — 2,840 not 2840.00
-12. Side-by-side layout with flexbox, 800px max-width centered
-13. Mobile-responsive CSS (stack vertically below 600px)
-14. QR codes on instructions + results pages
-15. WCAG contrast audit: fixed 3 failing combinations (medium badge, period badge, selected button)
-16. Flatly theme workaround: fully inline styles bypass theme `!important` overrides
+#### Content fixes (scrollytelling)
+6. Axis labels with units: Micromorts (mm), Microlives per day (ml/day)
+7. Wine 50x ratio explained: both below 1mm, absolute difference negligible
+8. Everest rounded: 37,932 → ~38,000 mm
+9. Spectrum plot: all text-referenced items included, plotly hover
+10. Smoking arithmetic: 10 × 30 = 300 min = 5 hrs
+11. Diet vs exercise verified: both from Spiegelhalter BMJ 2012
+12. Bridge table: abbreviations (mm, ml/day) to avoid confusion with millilitres
 
-#### Data Quality
-17. Activity unit standardisation: Rock climbing (per day), Base jumping (per jump), etc.
-18. Construction (all trades, per work day) clarified
-19. Charbroiled steaks (cumulative benzopyrene) clarified
-20. Cross-round dedup: no repeat questions across Try Again rounds
+#### Quiz UX fixes
+13. Submit button moved next to Next in ranking quiz nav bar
+14. Yellow buttons → burnt orange (#b85c0a) for WCAG contrast
+15. Removed middot separator from question count
+16. 📊 emoji for ranking quiz share text
 
-#### Config & Infrastructure
-21. Shiny module data-sharing rule + skill added to global config
-22. WCAG contrast audit methodology documented
-23. Plus Maths references added to introduction + data_reliability vignettes
-24. Vignette chunks migrated to targets: 76% → 93% coverage
+### Pipeline: 116 targets, 615 tests
 
-### Pipeline
-- 116 targets, 615 tests, all pass
-
-### Quiz URLs (pure JS — instant load)
+### URLs
+- https://johngavin.github.io/micromort/articles/what-is-a-micromort.html
 - https://johngavin.github.io/micromort/articles/micromort-quiz.html
 - https://johngavin.github.io/micromort/articles/microlife-quiz.html
 - https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html
 
 ### Next Session
-- Shinylive versions can be removed once pure JS versions are stable
-- Monitor leaderboard (quiz_type: acute/chronic/ranking)
-- Weekly email runs Mondays 06:00 UTC
+- Closeread scroll effects not working (CSS loads but scroll-trigger layout not activating)
+- Consider adding ggiraph to nix env for interactive SVG plots
+- Weekly leaderboard email running (Mondays 06:00 UTC)
