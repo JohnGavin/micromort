@@ -230,7 +230,7 @@ plan_vignette_outputs <- list(
       cr <- common_risks()
       landmarks <- c(
         "Cup of coffee", "Crossing a road", "Chest X-ray (radiation per scan)",
-        "Commuting by car (30 min)", "Drinking a glass of wine",
+        "Commuting by car (30 min)", "Drinking a glass of wine (daily, chronic risk)",
         "Skiing", "Driving (230 miles)", "Flying (8h long-haul)",
         "CT scan head (radiation per scan)", "Scuba diving, trained (per dive)",
         "Running a marathon", "Skydiving (US)",
@@ -327,7 +327,8 @@ plan_vignette_outputs <- list(
       everyday <- c(
         "Cup of coffee", "Crossing a road", "Working in an office (8 hours)",
         "Taking a bath", "Commuting by car (30 min)",
-        "Commuting by bicycle (30 min)", "Drinking a glass of wine",
+        "Commuting by bicycle (30 min)",
+        "Drinking a glass of wine (daily, chronic risk)",
         "Skiing", "Horse riding"
       )
       cr |>

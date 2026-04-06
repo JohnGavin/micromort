@@ -318,8 +318,8 @@ activity_descriptions <- function() {
     "https://en.wikipedia.org/wiki/CT_scan",
 
     # Mundane
-    "Drinking a glass of wine",
-    "Acute alcohol effects including impaired judgment and cardiovascular stress.",
+    "Drinking a glass of wine (daily, chronic risk)",
+    "Wikipedia's 0.5 mm figure mixes chronic effects (cancer, liver disease from daily drinking) with acute risk. Actual acute risk from a single glass is <0.05 mm. See chronic_risks() for microlife-based alcohol data.",
     "https://en.wikipedia.org/wiki/Alcohol_(drug)",
 
     "Cup of coffee",
@@ -331,8 +331,8 @@ activity_descriptions <- function() {
     "https://en.wikipedia.org/wiki/Traffic_collision",
 
     "Commuting by bicycle (30 min)",
-    "Cycling commute with risk from traffic collisions and exertion-related events.",
-    "https://en.wikipedia.org/wiki/Bicycle_safety",
+    "0.12 mm per trip (range 0.09-0.14). Based on Cycling UK 2024: 9-11M trips per fatality. Cross-checked with DfT deaths / NTS distance. Previous Wikipedia estimate of 0.5 mm was ~4x too high.",
+    "https://www.cyclinguk.org/statistics",
 
     "Working in an office (8 hours)",
     "Background mortality rate during sedentary office work.",
