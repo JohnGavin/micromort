@@ -41,6 +41,11 @@ library(bslib)
 # R string literals (commas/quotes break the parser). The ## file: directive
 # puts the CSV in a virtual file that R reads normally.
 #
+# PROVENANCE: quiz_pairs.csv is pre-computed by quiz_pairs() which pulls
+# from atomic_risks(). Each row's micromort values trace to source_url in
+# atomic_risks(). The help_url_a / help_url_b columns carry per-activity
+# source URLs. See data-raw/generate_quiz_csv.R for the generation pipeline.
+#
 # PIPELINE TRACKED: vig_quiz_csv_check target verifies this data matches
 # the canonical output of quiz_pairs().
 #

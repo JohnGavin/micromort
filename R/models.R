@@ -137,7 +137,12 @@ daily_hazard_rate <- function(age, sex = "male") {
   checkmate::assert_number(age, lower = 0, upper = 120)
   checkmate::assert_choice(sex, c("male", "female"))
 
-  # Gompertz-Makeham parameters (approximate for developed countries)
+
+  # Gompertz-Makeham parameters (approximate for developed countries).
+  # Precision ceiling: these are population-level approximations — individual
+
+  # hazard is unknown. Output rounded to 1dp for micromorts to avoid false
+  # precision. See issue #70 (B3).
   if (sex == "male") {
     a <- 0.0001   # Background mortality
     b <- 0.00005  # Initial mortality
@@ -154,7 +159,8 @@ daily_hazard_rate <- function(age, sex = "male") {
 
   # Estimate microlives consumed
   remaining_years <- pmax(85 - age, 1)
-  microlives_consumed <- round(48 * daily_prob * remaining_years * 365 / 48, 2)
+  # B3: round to 1dp (was 2dp) — Gompertz params are approximate
+  microlives_consumed <- round(48 * daily_prob * remaining_years * 365 / 48, 1)
 
   tibble::tibble(
     age = age,
@@ -162,8 +168,9 @@ daily_hazard_rate <- function(age, sex = "male") {
     daily_prob = daily_prob,
     micromorts = round(micromorts, 1),
     microlives_consumed = microlives_consumed,
+    precision_note = "Gompertz-Makeham approximation; treat as order-of-magnitude",
     interpretation = sprintf(
-      "At age %d (%s): %.1f micromorts/day baseline risk",
+      "At age %d (%s): ~%.0f micromorts/day baseline risk",
       age, sex, micromorts
     )
   )

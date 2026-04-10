@@ -42,8 +42,11 @@ risk_equivalence <- function(reference, risks = NULL, min_ratio = 0.01,
       reference_micromorts = ref_mm,
       ratio = round(micromorts / ref_mm, 2),
       equivalence = paste0(
-        "1 ", activity, " = ",
-        format(round(micromorts / ref_mm, 1), scientific = FALSE), " ", reference
+        "1 ", activity, " (",
+        format(round(micromorts, 1), scientific = FALSE), " mm) = ",
+        format(round(micromorts / ref_mm, 1), scientific = FALSE), " ",
+        reference, " (",
+        format(round(ref_mm, 1), scientific = FALSE), " mm each)"
       )
     ) |>
     dplyr::filter(ratio >= min_ratio, ratio <= max_ratio) |>

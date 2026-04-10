@@ -71,6 +71,19 @@ common_risks <- function(profile = list(), duration_hours = NULL) {
       ),
       micromorts = sum(micromorts),
       n_components = dplyr::n(),
+      # A1: propagate uncertainty metadata from atomic level
+      # confidence = lowest tier among components (conservative)
+      confidence = dplyr::case_when(
+        any(confidence == "low") ~ "low",
+        any(confidence == "medium") ~ "medium",
+        TRUE ~ "high"
+      ),
+      # estimate_range: combine component ranges where available
+      estimate_range = {
+        ranges <- estimate_range[!is.na(estimate_range) & nchar(estimate_range) > 0]
+        if (length(ranges) > 0) paste(ranges, collapse = "; ") else NA_character_
+      },
+      source_count = sum(source_count, na.rm = TRUE),
       .row_order = min(.row_order),
       .groups = "drop"
     ) |>
@@ -83,7 +96,7 @@ common_risks <- function(profile = list(), duration_hours = NULL) {
     dplyr::select(
       activity, micromorts, microlives, category, period,
       period_type, period_days, micromorts_per_day, source_url,
-      n_components, hedgeable_pct
+      n_components, hedgeable_pct, confidence, estimate_range, source_count
     )
 }
 
