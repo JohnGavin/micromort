@@ -505,6 +505,19 @@ activity_descriptions <- function() {
 
     "Daily homicide risk (Honduras)",
     "Daily population-level homicide risk in Honduras; among the world's highest rates.",
-    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html"
+    "https://www.unodc.org/unodc/en/data-and-analysis/global-study-on-homicide.html",
+
+    # Age-conditioned activities
+    "Bed fall (per night)",
+    "Falling out of bed kills ~450 Americans/year. Risk is massively age-dependent: 0.004 mm/night under 65 vs 10.2 mm/night for 85+ males (2,500-fold difference).",
+    "https://www.cdc.gov/nchs/products/databriefs/db532.htm",
+
+    "General anaesthesia (elective)",
+    "Elective anaesthesia mortality varies ~100-fold by age: ~0.5 mm for under-60s to ~50 mm for 80+ (Lancet). Emergency anaesthesia is ~10 mm across all ages.",
+    "https://doi.org/10.1016/S0140-6736(02)11626-6",
+
+    "Taking a bath (age-conditioned)",
+    "Bathtub drowning risk stratified by age. Children under 5 and elderly 65+ face elevated risk; adults 5-64 have very low risk (~0.02 mm).",
+    "https://www.cdc.gov/drowning/data/index.html"
   )
 }

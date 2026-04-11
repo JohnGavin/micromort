@@ -41,11 +41,11 @@ test_that("atomic_risks() has expected row count", {
 
   ar <- atomic_risks()
   # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
-  # + 9 occupational + 6 road traffic + 6 homicide = 131
-  expect_equal(nrow(ar), 131)
+  # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned = 145
+  expect_equal(nrow(ar), 145)
   # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
-  # + 9 occupational + 1 road traffic + 1 homicide = 109 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 109)
+  # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned = 112 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 112)
 })
 
 test_that("component_id values are unique", {
@@ -152,10 +152,10 @@ test_that("annual radiation categories are correct", {
 test_that("common_risks() has correct activity count", {
   cr <- common_risks()
   # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default)
-  # + 9 occupational = 105
+  # + 9 occupational + 3 age-conditioned (all_ages default) = 108
   # But road traffic + homicide excluded (condition_value not in defaults)
   # Kangaroo is legacy Wildlife; default filter: shark, dog_US, bee_general, snake_US = +4 new
-  expect_equal(nrow(cr), 104)
+  expect_equal(nrow(cr), 107)
 })
 
 test_that("common_risks() has expected columns", {
@@ -354,6 +354,71 @@ test_that("partial profile defaults unspecified condition variables", {
   bee_rows <- filtered[grepl("bee_sting", filtered$activity_id), ]
   expect_equal(nrow(bee_rows), 1)
   expect_equal(bee_rows$condition_value, "healthy")
+})
+
+# ── Age conditioning (#73) ──────────────────────────────────────────────────
+
+test_that("age-conditioned rows exist in atomic_risks", {
+  ar <- atomic_risks()
+  age_rows <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "age", ]
+  # bed_fall (6) + anaesthesia_elective (4) + bath_age (4) = 14
+
+  expect_equal(nrow(age_rows), 14)
+  expect_equal(length(unique(age_rows$activity_id)), 3)
+  expect_true("all_ages" %in% age_rows$condition_value)
+})
+
+test_that("default filter returns all_ages for age-conditioned activities", {
+  ar <- atomic_risks()
+  filtered <- filter_by_profile(ar)
+  age_filtered <- filtered[!is.na(filtered$condition_variable) &
+                             filtered$condition_variable == "age", ]
+  expect_true(all(age_filtered$condition_value == "all_ages"))
+  expect_equal(nrow(age_filtered), 3)  # bed_fall + anaesthesia + bath
+})
+
+test_that("age profile selects correct bed fall row", {
+  cr_old <- common_risks(profile = list(age = "85_plus_male"))
+  bed <- cr_old[grepl("Bed fall", cr_old$activity), ]
+  expect_equal(nrow(bed), 1)
+  expect_equal(bed$micromorts, 10.2)
+})
+
+test_that("age profile selects correct anaesthesia row", {
+  cr_young <- common_risks(profile = list(age = "under_60"))
+  anaes <- cr_young[grepl("anaesthesia", cr_young$activity, ignore.case = TRUE), ]
+  expect_equal(nrow(anaes), 1)
+  expect_equal(anaes$micromorts, 0.5)
+
+  cr_80 <- common_risks(profile = list(age = "80_plus"))
+  anaes80 <- cr_80[grepl("anaesthesia", cr_80$activity, ignore.case = TRUE), ]
+  expect_equal(nrow(anaes80), 1)
+  expect_equal(anaes80$micromorts, 50)
+})
+
+test_that("bed fall age range spans 2500x as documented", {
+  ar <- atomic_risks()
+  bed <- ar[ar$activity_id == "bed_fall", ]
+  ratio <- max(bed$micromorts) / min(bed$micromorts)
+  expect_gt(ratio, 2000)
+})
+
+test_that("age conditioning does not affect non-age activities", {
+  cr_default <- common_risks()
+  cr_aged <- common_risks(profile = list(age = "85_plus_male"))
+  # Everest should be identical in both
+  ev_d <- cr_default[cr_default$activity == "Mt. Everest ascent", "micromorts"]
+
+  ev_a <- cr_aged[cr_aged$activity == "Mt. Everest ascent", "micromorts"]
+  expect_equal(ev_d$micromorts, ev_a$micromorts)
+})
+
+test_that("snapshot: age-conditioned activity names", {
+  ar <- atomic_risks()
+  age_activities <- sort(unique(
+    ar$activity[!is.na(ar$condition_variable) & ar$condition_variable == "age"]
+  ))
+  expect_snapshot(age_activities)
 })
 
 test_that("common_risks() aggregates wildlife correctly", {

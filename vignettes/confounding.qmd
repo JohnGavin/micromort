@@ -174,7 +174,38 @@ The 37x difference between the US and rural sub-Saharan Africa reflects differen
 
 The same pattern applies to dog bites (24x difference driven by rabies PEP availability). For more on the systematic framework behind these geographic estimates, see the [Data Reliability](data_reliability.html) vignette.
 
-## 6. Implications for the Micromort Package
+## 6. Demographic What-If: How Age Reshuffles the Top 10
+
+Population-average rankings can shift dramatically when conditioned on age. The `micromort` package now supports `condition_variable = "age"` for bed falls, elective anaesthesia, and bathing — activities where age is the dominant confounder.
+
+### Bed falls by age group
+
+```{r bed-fall-age}
+#| echo: false
+#| tbl-cap: "Bed fall micromorts per night by age group (CDC Data Brief 532)"
+safe_tar_read("vig_confounding_bed_fall_age") |> knitr::kable(digits = 2)
+```
+
+For an 85-year-old man, a bed fall carries **10.2 micromorts per night** — 2,550x the risk for someone under 65 (0.004 mm). This single activity, invisible in population-average rankings, becomes more dangerous than motorcycling.
+
+### Top-15 ranking: default vs 85+ male
+
+```{r demographic-whatif}
+#| echo: false
+#| tbl-cap: "Top-15 riskiest activities: population default vs 85+ male profile"
+safe_tar_read("vig_confounding_demographic_whatif") |> knitr::kable(digits = 1)
+```
+
+Key shifts for an 85-year-old male:
+
+- **Bed fall** enters the top 15 (absent from the default ranking entirely)
+- **General anaesthesia (elective)** jumps from ~2 mm to 50 mm — a routine procedure becomes high-risk
+- **Taking a bath** rises from 0.07 mm to 0.5 mm
+- Activities with no age conditioning (mountaineering, COVID-19) remain unchanged
+
+This demonstrates why `common_risks(profile = list(age = "85_plus_male"))` gives a more honest risk picture for an elderly user than the population average.
+
+## 7. Implications for the Micromort Package
 
 This package addresses confounding in several ways:
 

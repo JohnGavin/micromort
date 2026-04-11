@@ -4,7 +4,7 @@ utils::globalVariables(c(
  "component_label", "duration_hours", "hedgeable", "hedge_description",
  "hedge_reduction_pct", "condition_variable", "condition_value",
  "confidence", "notes", ".row_order", "n_components", "hedgeable_pct",
- "dist", ".env", ".data",
+ "dist", ".env", ".data", "estimate_range", "source_count",
  # risk_equivalence.R
  "ratio", "reference_micromorts", "equivalence",
  # visualization.R
@@ -37,8 +37,8 @@ utils::globalVariables(c(
 #'     \item{hedgeable}{Can this component be mitigated?}
 #'     \item{hedge_description}{How to mitigate (if hedgeable)}
 #'     \item{hedge_reduction_pct}{Estimated percent reduction from hedging}
-#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, `"country"`, or `NA`}
-#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, ISO-2 country codes (e.g. `"US"`, `"UK"`), or `NA`}
+#'     \item{condition_variable}{What this risk depends on: `"health_profile"`, `"geography"`, `"country"`, `"age"`, or `NA`}
+#'     \item{condition_value}{Condition value: `"healthy"`, `"dvt_risk_factors"`, `"high_income"`, `"low_income"`, `"allergic"`, `"all_ages"`, age groups (e.g. `"under_65"`, `"65_74_male"`, `"85_plus_male"`), ISO-2 country codes (e.g. `"US"`, `"UK"`), or `NA`}
 #'     \item{confidence}{Data confidence: `"high"`, `"medium"`, `"low"`, `"estimated"`}
 #'     \item{source_url}{Citation URL}
 #'     \item{notes}{Scaling behavior, caveats}
@@ -615,6 +615,124 @@ atomic_risks <- function() {
       estimate_range = NA_character_
     )
 
+  # ── Part 10: Age-conditioned activities (CDC / NHS data) ───────────────
+  # These activities have dramatic age-dependent risk (confounding vignette).
+  # condition_variable = "age", with "all_ages" as the population-average default.
+  cpsc_url <- "https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home"
+  cdc_falls_url <- "https://www.cdc.gov/nchs/products/databriefs/db532.htm"
+  cdc_drowning_url <- "https://www.cdc.gov/drowning/data/index.html"
+
+  age_conditioned <- tibble::tribble(
+    ~activity, ~activity_id, ~micromorts, ~component, ~risk_category,
+    ~component_label, ~category, ~period,
+    ~condition_variable, ~condition_value, ~confidence, ~source_url, ~notes,
+
+    # ─ Bed falls (CDC Data Brief 532 + CPSC) ─
+    # ~450 US deaths/yr; 2500-fold age difference
+    "Bed fall (per night)", "bed_fall",
+    0.004, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "under_65", "high", cdc_falls_url,
+    "CDC: ~0.4 deaths/100k/yr for under-65; / 365 * 10 = 0.004 mm/night",
+
+    "Bed fall (per night)", "bed_fall",
+    0.68, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "65_74_male", "high", cdc_falls_url,
+    "CDC: 24.7 deaths/100k/yr for 65-74 males; / 365 * 10 = 0.68 mm/night",
+
+    "Bed fall (per night)", "bed_fall",
+    0.39, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "65_74_female", "high", cdc_falls_url,
+    "CDC: 14.2 deaths/100k/yr for 65-74 females; / 365 * 10 = 0.39 mm/night",
+
+    "Bed fall (per night)", "bed_fall",
+    10.2, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "85_plus_male", "high", cdc_falls_url,
+    "CDC: 373.3 deaths/100k/yr for 85+ males; / 365 * 10 = 10.2 mm/night",
+
+    "Bed fall (per night)", "bed_fall",
+    8.8, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "85_plus_female", "high", cdc_falls_url,
+    "CDC: 319.7 deaths/100k/yr for 85+ females; / 365 * 10 = 8.8 mm/night",
+
+    # Population average (default for unspecified age)
+    "Bed fall (per night)", "bed_fall",
+    0.004, "all_causes", "physical", "Fall from bed",
+    "Daily Life", "per night",
+    "age", "all_ages", "high", cdc_falls_url,
+    "Population average: ~450 deaths/yr / 330M / 365 * 1e6 ≈ 0.004 mm/night (dominated by elderly)",
+
+    # ─ General anaesthesia (age-stratified) ─
+    # Population average is ~10mm (emergency) but elective varies enormously by age
+    # NHS/Lancet data: elective mortality 1:100k (young) to 1:10k (elderly)
+    "General anaesthesia (elective)", "anaesthesia_elective",
+    0.5, "all_causes", "medical", "Anaesthesia mortality",
+    "Medical", "per event",
+    "age", "under_60", "medium", "https://doi.org/10.1016/S0140-6736(02)11626-6",
+    "Lancet: ~1:200k elective cases in under-60s; ~0.5 mm/event",
+
+    "General anaesthesia (elective)", "anaesthesia_elective",
+    5.0, "all_causes", "medical", "Anaesthesia mortality",
+    "Medical", "per event",
+    "age", "60_79", "medium", "https://doi.org/10.1016/S0140-6736(02)11626-6",
+    "Lancet: ~1:20k elective cases age 60-79; ~5 mm/event",
+
+    "General anaesthesia (elective)", "anaesthesia_elective",
+    50.0, "all_causes", "medical", "Anaesthesia mortality",
+    "Medical", "per event",
+    "age", "80_plus", "medium", "https://doi.org/10.1016/S0140-6736(02)11626-6",
+    "Lancet: ~1:2k elective cases age 80+; ~50 mm/event (100x young-adult rate)",
+
+    # Population average (default)
+    "General anaesthesia (elective)", "anaesthesia_elective",
+    2.0, "all_causes", "medical", "Anaesthesia mortality",
+    "Medical", "per event",
+    "age", "all_ages", "medium", "https://doi.org/10.1016/S0140-6736(02)11626-6",
+    "Population-weighted average elective anaesthesia mortality",
+
+    # ─ Drowning (bath) — age-stratified ─
+    # CDC: ~4000 US drowning deaths/yr, bimodal (children + elderly)
+    "Taking a bath (age-conditioned)", "bath_age",
+    0.3, "drowning", "physical", "Bathtub drowning",
+    "Daily Life", "per event",
+    "age", "under_5", "medium", cdc_drowning_url,
+    "CDC: children 1-4 drown rate 7.6/100k/yr; bathtub subset ~0.3 mm/bath",
+
+    "Taking a bath (age-conditioned)", "bath_age",
+    0.02, "drowning", "physical", "Bathtub drowning",
+    "Daily Life", "per event",
+    "age", "5_64", "medium", cdc_drowning_url,
+    "CDC: adults 5-64 bathtub drowning ~0.02 mm/bath",
+
+    "Taking a bath (age-conditioned)", "bath_age",
+    0.5, "drowning", "physical", "Bathtub drowning",
+    "Daily Life", "per event",
+    "age", "65_plus", "medium", cdc_drowning_url,
+    "CDC: elderly bathtub drowning elevated; ~0.5 mm/bath",
+
+    # Population average (default)
+    "Taking a bath (age-conditioned)", "bath_age",
+    0.07, "drowning", "physical", "Bathtub drowning",
+    "Daily Life", "per event",
+    "age", "all_ages", "medium", cdc_drowning_url,
+    "Population average matching existing 'Taking a bath' entry"
+  ) |>
+    dplyr::mutate(
+      period_type = parse_period_type(period),
+      component_id = paste0(activity_id, "_all_causes_", condition_value),
+      duration_hours = NA_real_,
+      hedgeable = FALSE,
+      hedge_description = NA_character_,
+      hedge_reduction_pct = NA_real_,
+      validation_status = "corroborated",
+      source_count = 2L,
+      estimate_range = NA_character_
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -646,7 +764,8 @@ atomic_risks <- function() {
     wildlife[, all_cols],
     occupational[, all_cols],
     road_traffic[, all_cols],
-    homicide[, all_cols]
+    homicide[, all_cols],
+    age_conditioned[, all_cols]
   )
 }
 
@@ -738,7 +857,8 @@ compute_period_days <- function(period, period_type) {
 #'
 #' @param risks A tibble from [atomic_risks()].
 #' @param profile A named list of condition variables and their values,
-#'   e.g. `list(health_profile = "dvt_risk_factors")`.
+#'   e.g. `list(health_profile = "dvt_risk_factors")` or
+#'   `list(age = "85_plus_male")`.
 #' @return Filtered tibble.
 #' @noRd
 filter_by_profile <- function(risks, profile = list()) {
@@ -748,13 +868,13 @@ filter_by_profile <- function(risks, profile = list()) {
       risks |>
         dplyr::filter(
           is.na(condition_variable) |
-            condition_value %in% c("healthy", "unconditional", "high_income")
+            condition_value %in% c("healthy", "unconditional", "high_income", "all_ages")
         )
     )
   }
 
 
-  defaults <- c("healthy", "unconditional", "high_income")
+  defaults <- c("healthy", "unconditional", "high_income", "all_ages")
 
   # For each condition variable in profile, keep matching rows
   # For condition variables NOT in profile, keep default

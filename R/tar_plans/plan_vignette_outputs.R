@@ -804,6 +804,53 @@ plan_vignette_outputs <- list(
   ),
 
 
+  # Bed fall age stratification table (from atomic_risks)
+  targets::tar_target(
+    vig_confounding_bed_fall_age,
+    {
+      ar <- atomic_risks()
+      ar |>
+        dplyr::filter(activity_id == "bed_fall") |>
+        dplyr::select(activity, condition_value, micromorts, confidence, notes) |>
+        dplyr::arrange(micromorts)
+    }
+  ),
+
+  # Demographic what-if: top-10 ranking shift (#74)
+  # Compare default (all_ages) vs 60-79 age profile
+  targets::tar_target(
+    vig_confounding_demographic_whatif,
+    {
+      default_cr <- common_risks()
+      aged_cr <- common_risks(profile = list(age = "85_plus_male"))
+
+      default_top <- default_cr |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 15) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(default_mm = micromorts)
+
+      aged_top <- aged_cr |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 15) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(aged_mm = micromorts)
+
+      # Full outer join to show activities that appear in either top-15
+      merged <- dplyr::full_join(
+        default_top |> dplyr::mutate(default_rank = dplyr::row_number()),
+        aged_top |> dplyr::mutate(aged_rank = dplyr::row_number()),
+        by = "activity"
+      ) |>
+        dplyr::arrange(
+          dplyr::coalesce(aged_rank, 99L),
+          dplyr::coalesce(default_rank, 99L)
+        )
+
+      merged
+    }
+  ),
+
   # ==========================================================================
   # TELEMETRY VIGNETTE (supplement existing targets)
   # ==========================================================================
