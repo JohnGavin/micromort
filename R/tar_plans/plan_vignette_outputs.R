@@ -851,6 +851,59 @@ plan_vignette_outputs <- list(
     }
   ),
 
+  # Disease mortality by country (OWID/GBD 2023, #75)
+  targets::tar_target(
+    vig_confounding_disease_by_country,
+    {
+      ar <- atomic_risks()
+      disease_ids <- c(
+        "daily_cvd_mortality", "daily_cancer_mortality",
+        "daily_lri_mortality", "daily_diarrheal_mortality"
+      )
+      ar |>
+        dplyr::filter(activity_id %in% disease_ids) |>
+        dplyr::select(activity_id, condition_value, micromorts, notes) |>
+        tidyr::pivot_wider(
+          names_from = condition_value,
+          values_from = micromorts
+        ) |>
+        dplyr::select(-notes) |>
+        dplyr::arrange(activity_id)
+    }
+  ),
+
+  # Country what-if: UK vs Nigeria disease profile (#75)
+  targets::tar_target(
+    vig_confounding_disease_whatif,
+    {
+      cr_uk <- common_risks(profile = list(country = "UK"))
+      cr_ng <- common_risks(profile = list(country = "NG"))
+
+      uk_top <- cr_uk |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 15) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(uk_mm = micromorts)
+
+      ng_top <- cr_ng |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 15) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(ng_mm = micromorts)
+
+      merged <- dplyr::full_join(
+        uk_top |> dplyr::mutate(uk_rank = dplyr::row_number()),
+        ng_top |> dplyr::mutate(ng_rank = dplyr::row_number()),
+        by = "activity"
+      ) |>
+        dplyr::arrange(
+          dplyr::coalesce(ng_rank, 99L),
+          dplyr::coalesce(uk_rank, 99L)
+        )
+      merged
+    }
+  ),
+
   # ==========================================================================
   # TELEMETRY VIGNETTE (supplement existing targets)
   # ==========================================================================

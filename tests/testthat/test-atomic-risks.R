@@ -41,11 +41,13 @@ test_that("atomic_risks() has expected row count", {
 
   ar <- atomic_risks()
   # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
-  # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned = 145
-  expect_equal(nrow(ar), 145)
+  # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned
+  # + 24 disease-by-country (4 causes x 6 countries) = 169
+  expect_equal(nrow(ar), 169)
   # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
-  # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned = 112 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 112)
+  # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned
+  # + 4 disease-by-country = 116 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 116)
 })
 
 test_that("component_id values are unique", {
@@ -422,6 +424,61 @@ test_that("snapshot: age-conditioned activity names", {
   expect_snapshot(age_activities)
 })
 
+# ── Country-level disease mortality (#75) ────────────────────────────────────
+
+test_that("disease-by-country rows exist in atomic_risks", {
+  ar <- atomic_risks()
+  disease_ids <- c(
+    "daily_cvd_mortality", "daily_cancer_mortality",
+    "daily_lri_mortality", "daily_diarrheal_mortality"
+  )
+  disease_rows <- ar[ar$activity_id %in% disease_ids, ]
+
+  expect_equal(nrow(disease_rows), 24)
+  expect_equal(length(unique(disease_rows$activity_id)), 4)
+  expect_true(all(disease_rows$condition_variable == "country"))
+  expect_equal(sort(unique(disease_rows$condition_value)),
+               c("BR", "IN", "JP", "NG", "UK", "US"))
+})
+
+test_that("disease micromort values match GBD conversion formula", {
+  ar <- atomic_risks()
+  uk_cvd <- ar[ar$activity_id == "daily_cvd_mortality" &
+                 ar$condition_value == "UK", "micromorts"][[1]]
+  # 118.38 / 365 * 10 = 3.24
+
+  expect_equal(uk_cvd, round(118.38 / 365 * 10, 2))
+
+  ng_diarrheal <- ar[ar$activity_id == "daily_diarrheal_mortality" &
+                       ar$condition_value == "NG", "micromorts"][[1]]
+  expect_equal(ng_diarrheal, round(32.19 / 365 * 10, 2))
+})
+
+test_that("country profile includes disease rows", {
+  cr_ng <- common_risks(profile = list(country = "NG"))
+  disease <- cr_ng[grepl("mortality risk \\(Nigeria\\)", cr_ng$activity), ]
+  expect_equal(nrow(disease), 4)
+  expect_true(all(disease$micromorts > 0))
+})
+
+test_that("default common_risks excludes disease-by-country rows", {
+  cr <- common_risks()
+  disease <- cr[grepl("mortality risk", cr$activity), ]
+  expect_equal(nrow(disease), 0)
+})
+
+test_that("snapshot: disease-by-country activity names", {
+  ar <- atomic_risks()
+  disease_ids <- c(
+    "daily_cvd_mortality", "daily_cancer_mortality",
+    "daily_lri_mortality", "daily_diarrheal_mortality"
+  )
+  disease_activities <- sort(unique(
+    ar$activity[ar$activity_id %in% disease_ids]
+  ))
+  expect_snapshot(disease_activities)
+})
+
 test_that("common_risks() aggregates wildlife correctly", {
   cr <- common_risks()
   wildlife <- cr[cr$category == "Wildlife", ]
@@ -511,11 +568,12 @@ test_that("homicide included with country profile", {
 test_that("country-conditioned entries hidden from default view", {
   ar <- atomic_risks()
   country <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "country", ]
-  expect_equal(nrow(country), 12)  # 6 road + 6 homicide
+  # 6 road + 6 homicide + 24 disease (4 causes x 6 countries) = 36
+  expect_equal(nrow(country), 36)
 
   cr <- common_risks()
   # None of these should appear in default common_risks
-  cr_country <- cr[grepl("Daily road traffic|Daily homicide", cr$activity), ]
+  cr_country <- cr[grepl("Daily road traffic|Daily homicide|mortality risk", cr$activity), ]
   expect_equal(nrow(cr_country), 0)
 })
 

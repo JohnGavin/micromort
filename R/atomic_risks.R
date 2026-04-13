@@ -733,6 +733,102 @@ atomic_risks <- function() {
       estimate_range = NA_character_
     )
 
+  # ── Part 11: Country-level disease mortality (OWID/GBD 2023) ───────────
+  # Source: IHME Global Burden of Disease 2023, via Our World in Data
+  # Age-standardised death rates per 100k/year
+
+  # Conversion: rate_per_100k_year / 365 * 10 = mm/day
+  owid_cvd_url <- "https://ourworldindata.org/grapher/cardiovascular-disease-death-rate"
+  owid_cancer_url <- "https://ourworldindata.org/grapher/cancer-death-rates"
+  owid_lri_url <- "https://ourworldindata.org/grapher/pneumonia-death-rates-age-standardized"
+  owid_diarrheal_url <- "https://ourworldindata.org/grapher/diarrheal-disease-death-rates"
+
+  make_disease_rows <- function(tribble_data, activity_id, category_label,
+                                source_url) {
+    tribble_data |>
+      dplyr::mutate(
+        activity_id = activity_id,
+        component = "all_causes",
+        risk_category = "medical",
+        component_label = activity,
+        category = "Disease",
+        period = "per day",
+        period_type = "day",
+        source_url = source_url,
+        component_id = paste0(activity_id, "_all_causes_", condition_value),
+        duration_hours = NA_real_,
+        hedgeable = FALSE,
+        hedge_description = NA_character_,
+        hedge_reduction_pct = NA_real_,
+        condition_variable = "country",
+        confidence = "high",
+        notes = paste0(
+          "IHME GBD 2023 via OWID; age-standardised ",
+          category_label,
+          " death rate / 365 * 10 = mm/day"
+        ),
+        validation_status = "corroborated",
+        source_count = 2L,
+        estimate_range = NA_character_
+      )
+  }
+
+  # Cardiovascular disease (IHME GBD 2023)
+  cvd_mortality <- make_disease_rows(
+    tibble::tribble(
+      ~activity, ~condition_value, ~micromorts,
+      "Daily CVD mortality risk (UK)", "UK", round(118.38 / 365 * 10, 2),
+      "Daily CVD mortality risk (US)", "US", round(144.15 / 365 * 10, 2),
+      "Daily CVD mortality risk (Japan)", "JP", round(76.47 / 365 * 10, 2),
+      "Daily CVD mortality risk (India)", "IN", round(279.11 / 365 * 10, 2),
+      "Daily CVD mortality risk (Nigeria)", "NG", round(267.58 / 365 * 10, 2),
+      "Daily CVD mortality risk (Brazil)", "BR", round(146.97 / 365 * 10, 2)
+    ),
+    "daily_cvd_mortality", "cardiovascular", owid_cvd_url
+  )
+
+  # Cancer — all neoplasms (IHME GBD 2023)
+  cancer_mortality <- make_disease_rows(
+    tibble::tribble(
+      ~activity, ~condition_value, ~micromorts,
+      "Daily cancer mortality risk (UK)", "UK", round(144.33 / 365 * 10, 2),
+      "Daily cancer mortality risk (US)", "US", round(115.04 / 365 * 10, 2),
+      "Daily cancer mortality risk (Japan)", "JP", round(119.39 / 365 * 10, 2),
+      "Daily cancer mortality risk (India)", "IN", round(83.92 / 365 * 10, 2),
+      "Daily cancer mortality risk (Nigeria)", "NG", round(101.88 / 365 * 10, 2),
+      "Daily cancer mortality risk (Brazil)", "BR", round(110.10 / 365 * 10, 2)
+    ),
+    "daily_cancer_mortality", "cancer (neoplasms)", owid_cancer_url
+  )
+
+  # Lower respiratory infections (IHME GBD 2023)
+  lri_mortality <- make_disease_rows(
+    tibble::tribble(
+      ~activity, ~condition_value, ~micromorts,
+      "Daily LRI mortality risk (UK)", "UK", round(19.20 / 365 * 10, 2),
+      "Daily LRI mortality risk (US)", "US", round(10.47 / 365 * 10, 2),
+      "Daily LRI mortality risk (Japan)", "JP", round(15.84 / 365 * 10, 2),
+      "Daily LRI mortality risk (India)", "IN", round(39.75 / 365 * 10, 2),
+      "Daily LRI mortality risk (Nigeria)", "NG", round(64.54 / 365 * 10, 2),
+      "Daily LRI mortality risk (Brazil)", "BR", round(40.08 / 365 * 10, 2)
+    ),
+    "daily_lri_mortality", "lower respiratory infection", owid_lri_url
+  )
+
+  # Diarrheal diseases (IHME GBD 2023)
+  diarrheal_mortality <- make_disease_rows(
+    tibble::tribble(
+      ~activity, ~condition_value, ~micromorts,
+      "Daily diarrheal mortality risk (UK)", "UK", round(0.69 / 365 * 10, 2),
+      "Daily diarrheal mortality risk (US)", "US", round(1.36 / 365 * 10, 2),
+      "Daily diarrheal mortality risk (Japan)", "JP", round(0.68 / 365 * 10, 2),
+      "Daily diarrheal mortality risk (India)", "IN", round(46.69 / 365 * 10, 2),
+      "Daily diarrheal mortality risk (Nigeria)", "NG", round(32.19 / 365 * 10, 2),
+      "Daily diarrheal mortality risk (Brazil)", "BR", round(2.83 / 365 * 10, 2)
+    ),
+    "daily_diarrheal_mortality", "diarrheal disease", owid_diarrheal_url
+  )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -765,7 +861,11 @@ atomic_risks <- function() {
     occupational[, all_cols],
     road_traffic[, all_cols],
     homicide[, all_cols],
-    age_conditioned[, all_cols]
+    age_conditioned[, all_cols],
+    cvd_mortality[, all_cols],
+    cancer_mortality[, all_cols],
+    lri_mortality[, all_cols],
+    diarrheal_mortality[, all_cols]
   )
 }
 
