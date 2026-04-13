@@ -905,6 +905,94 @@ plan_vignette_outputs <- list(
   ),
 
   # ==========================================================================
+  # CHRONIC VS ACUTE scrollytelling (#75 Slice 6)
+  # ==========================================================================
+
+  # How many days of chronic risk equals one acute event?
+  targets::tar_target(
+    vig_chronic_acute_equivalences,
+    {
+      # Acute one-off risks (top activities people worry about)
+      acute_events <- common_risks() |>
+        dplyr::filter(period_type == "event", micromorts >= 1) |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 10) |>
+        dplyr::select(activity, micromorts)
+
+      # Chronic daily risks (UK profile)
+      uk_daily <- common_risks(profile = list(country = "UK")) |>
+        dplyr::filter(grepl("mortality risk", activity)) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(daily_activity = activity, daily_mm = micromorts)
+
+      # Cross-join: days of each chronic risk = each acute event
+      tidyr::crossing(acute_events, uk_daily) |>
+        dplyr::mutate(
+          days_equivalent = round(micromorts / daily_mm, 1),
+          label = paste0(
+            round(days_equivalent, 0), " days of ",
+            sub(" \\(UK\\)", "", daily_activity)
+          )
+        ) |>
+        dplyr::arrange(activity, dplyr::desc(daily_mm))
+    }
+  ),
+
+  # Cumulative annual chronic risk vs top acute activities
+  targets::tar_target(
+    vig_chronic_acute_waterfall,
+    {
+      # UK chronic disease risks annualised
+      uk_daily <- common_risks(profile = list(country = "UK")) |>
+        dplyr::filter(grepl("mortality risk", activity)) |>
+        dplyr::mutate(
+          annual_mm = round(micromorts * 365, 0),
+          cause = sub("Daily | mortality risk \\(UK\\)", "", activity)
+        ) |>
+        dplyr::select(cause, daily_mm = micromorts, annual_mm) |>
+        dplyr::arrange(dplyr::desc(annual_mm))
+
+      # Top acute risks for comparison
+      acute_top <- common_risks() |>
+        dplyr::filter(period_type == "event", micromorts >= 5) |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 8) |>
+        dplyr::select(cause = activity, micromorts) |>
+        dplyr::rename(one_off_mm = micromorts)
+
+      list(chronic_annual = uk_daily, acute_comparison = acute_top)
+    }
+  ),
+
+  # UK vs Nigeria profile shift for scrollytelling
+  targets::tar_target(
+    vig_chronic_acute_country_shift,
+    {
+      uk <- common_risks(profile = list(country = "UK")) |>
+        dplyr::filter(grepl("mortality risk", activity)) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(uk_mm = micromorts)
+
+      ng <- common_risks(profile = list(country = "NG")) |>
+        dplyr::filter(grepl("mortality risk", activity)) |>
+        dplyr::select(activity, micromorts) |>
+        dplyr::rename(ng_mm = micromorts)
+
+      # Match by stripping country suffix
+      uk$cause <- sub(" \\(UK\\)", "", uk$activity)
+      ng$cause <- sub(" \\(Nigeria\\)", "", ng$activity)
+
+      dplyr::inner_join(
+        uk |> dplyr::select(cause, uk_mm),
+        ng |> dplyr::select(cause, ng_mm),
+        by = "cause"
+      ) |>
+        dplyr::mutate(ratio = round(ng_mm / uk_mm, 1)) |>
+        dplyr::arrange(dplyr::desc(ratio))
+    }
+  ),
+
+  # ==========================================================================
   # TELEMETRY VIGNETTE (supplement existing targets)
   # ==========================================================================
 

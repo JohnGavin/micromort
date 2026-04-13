@@ -1,0 +1,160 @@
+---
+title: "The Invisible Risk"
+subtitle: "Why chronic daily disease dwarfs the dangers you worry about"
+format:
+  closeread-html:
+    css: |
+      .sticky-col-container { min-height: 80vh; }
+      .cr-section { margin-bottom: 4rem; }
+      table { width: 100%; }
+    code-fold: true
+    code-summary: "Show code"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+
+safe_tar_read <- function(name) {
+  store <- Sys.getenv("TARGETS_STORE", unset = NA)
+  if (is.na(store)) {
+    store <- tryCatch(
+      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+      error = function(e) "_targets"
+    )
+  }
+  tryCatch(
+    targets::tar_read_raw(name, store = store),
+    error = function(e) {
+      message("Target '", name, "' not found. Run tar_make() first.")
+      NULL
+    }
+  )
+}
+```
+
+:::{.cr-section}
+
+## One skydive
+
+A heroin dose carries **30 micromorts**. Base jumping: **430**. These feel dangerous because they're *chosen* and *visible*.
+
+But what if the bigger risk is something you can't see, can't feel, and can't opt out of? @cr-equiv-table
+
+:::{#cr-equiv-table .sticky}
+
+```{r equiv-table}
+#| echo: false
+equiv <- safe_tar_read("vig_chronic_acute_equivalences")
+if (!is.null(equiv)) {
+  # Show heroin dose vs UK chronic risks (compelling comparison)
+  heroin <- equiv[equiv$activity == "Heroin use (per dose)", ]
+  if (nrow(heroin) > 0) {
+    heroin |>
+      dplyr::select(`Chronic daily risk` = daily_activity,
+                     `Daily mm` = daily_mm,
+                     `Days to equal one heroin dose` = days_equivalent) |>
+      knitr::kable(digits = 1)
+  }
+} else {
+  cat("*Run tar_make() to see equivalence data.*")
+}
+```
+
+:::
+
+[**9 days.** That's how long it takes for background cardiovascular disease risk in the UK to accumulate the same 30 micromorts as a single dose of heroin.]{highlight="cr-equiv-table"}
+
+[Every 9 days, your heart silently rolls the same dice as a heroin user — but nobody stages an intervention.]{highlight="cr-equiv-table"}
+
+:::
+
+
+:::{.cr-section}
+
+## The annual picture
+
+Over a full year, chronic disease risk dwarfs any one-off activity. Here's the UK annual chronic disease burden alongside the acute activities that make headlines: @cr-waterfall
+
+:::{#cr-waterfall .sticky}
+
+```{r waterfall}
+#| echo: false
+wf <- safe_tar_read("vig_chronic_acute_waterfall")
+if (!is.null(wf)) {
+  cat("### UK annual chronic disease risk (micromorts/year)\n\n")
+  wf$chronic_annual |> knitr::kable(digits = 1)
+  cat("\n### Acute one-off risks for comparison\n\n")
+  wf$acute_comparison |> knitr::kable(digits = 1)
+} else {
+  cat("*Run tar_make() to see waterfall data.*")
+}
+```
+
+:::
+
+[UK cancer alone accumulates over **1,400 micromorts per year**. CVD adds another **1,200**. Together, that's the equivalent of climbing the Matterhorn — every single year.]{highlight="cr-waterfall"}
+
+[Yet we fear the mountain, not the mundane.]{highlight="cr-waterfall"}
+
+:::
+
+
+:::{.cr-section}
+
+## Country matters
+
+The chronic burden is not fixed — it depends enormously on where you live. Switching from a UK to Nigerian profile changes everything: @cr-country
+
+:::{#cr-country .sticky}
+
+```{r country-shift}
+#| echo: false
+cs <- safe_tar_read("vig_chronic_acute_country_shift")
+if (!is.null(cs)) {
+  cs |>
+    dplyr::select(Cause = cause,
+                   `UK (mm/day)` = uk_mm,
+                   `Nigeria (mm/day)` = ng_mm,
+                   `Ratio (NG/UK)` = ratio) |>
+    knitr::kable(digits = 2)
+} else {
+  cat("*Run tar_make() to see country comparison.*")
+}
+```
+
+:::
+
+[**Diarrheal disease** jumps from 0.02 mm/day in the UK to 0.88 mm/day in Nigeria — a 44x difference driven by clean water and sanitation infrastructure.]{highlight="cr-country"}
+
+[**CVD** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
+
+[These are the confounders that population-average micromort tables hide. See the [confounding vignette](confounding.html) for the full geographic and demographic analysis.]{highlight="cr-country"}
+
+:::
+
+
+:::{.cr-section}
+
+## The takeaway
+
+The risks we *choose* (skydiving, motorcycling, mountaineering) are visible, voluntary, and bounded. The risks we *inherit* (cardiovascular disease, cancer, respiratory infections) are invisible, involuntary, and cumulative.
+
+The micromort framework makes them commensurable — you can compare a skydive to a week of heart disease, a flight to a month of air pollution, a surgery to a year of background cancer risk.
+
+Explore the data yourself:
+
+- `common_risks(profile = list(country = "UK"))` — your country's disease burden
+- `geography_quiz_pairs()` — quiz comparing risks across countries
+- `risk_equivalence()` — formal equivalence calculations
+
+:::
+
+```{r session-info, eval=TRUE}
+sessionInfo()
+```
