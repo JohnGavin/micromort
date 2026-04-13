@@ -89,192 +89,15 @@
 <img src="logo.png" class="logo" alt=""><h1 id="micromort-">micromort <a class="anchor" aria-label="anchor" href="#micromort-"></a>
 </h1>
 </div>
-<p>A <strong>data package</strong> providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature. This is a reference dataset for risk comparison and communication — not a time-series analysis tool or epidemiological modelling framework.</p>
+<p>A <strong>data package</strong> providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, IHME GBD 2023 via OWID, and academic literature.</p>
+<p><strong>120 activity IDs</strong> across 193 atomic risk rows. <strong>35+ chronic factors.</strong> <strong>6-country disease mortality</strong> + risk factors from GBD 2023. <strong>3 interactive quizzes.</strong> <a href="https://johngavin.github.io/micromort/articles/chronic_vs_acute.html">Closeread scrollytelling.</a> <a href="https://johngavin.github.io/micromort/articles/rest_api.html">REST API.</a></p>
 <div class="section level2">
-<h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
-</h2>
-<ul>
-<li>
-<strong>62 acute risks</strong> measured in micromorts (one-in-a-million death probability per event)</li>
-<li>
-<strong>35+ chronic factors</strong> measured in microlives (30-minute life expectancy change per day)</li>
-<li>
-<strong>14 authoritative sources</strong> with full provenance tracking</li>
-<li>
-<strong>Parquet datasets</strong> for cross-language compatibility (R, Python, Arrow)</li>
-<li>
-<strong>Plumber REST API</strong> for programmatic access</li>
-<li>
-<strong>Interactive dashboard</strong> for data exploration</li>
-<li>
-<strong>targets pipeline</strong> for reproducible data updates</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
-</h2>
-<details><summary>
-Package architecture diagram (click to expand; renders on GitHub)
-</summary><pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
-graph LR
-
-  Conversion["Unit Conversion&lt;br&gt;5 functions"]
-  Data["Risk Datasets&lt;br&gt;21 functions"]
-  Analysis["Risk Analysis&lt;br&gt;6 functions"]
-  Viz["Visualization&lt;br&gt;5 functions"]
-  Apps["Interactive Apps&lt;br&gt;6 functions"]
-
-  Conversion --&gt; Data --&gt; Analysis --&gt; Viz --&gt; Apps
-
-  style Conversion fill:#999999,stroke:#CC0000,color:#000000
-  style Data fill:#999999,stroke:#CC0000,color:#000000
-  style Analysis fill:#999999,stroke:#CC0000,color:#000000
-  style Viz fill:#999999,stroke:#CC0000,color:#000000
-  style Apps fill:#999999,stroke:#CC0000,color:#000000</code></pre>
-</details><p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed package diagrams.</p>
-<p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams of the data pipeline, function hierarchy, and user journey.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<div class="section level3">
-<h3 id="r-universe-recommended">R-Universe (Recommended)<a class="anchor" aria-label="anchor" href="#r-universe-recommended"></a>
-</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from r-universe (pre-built binaries, fast)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"micromort"</span>, repos <span class="op">=</span> <span class="st">"https://johngavin.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="github">GitHub<a class="anchor" aria-label="anchor" href="#github"></a>
-</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install from GitHub (source)</span></span>
-<span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JohnGavin/micromort"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="nix-users">Nix Users<a class="anchor" aria-label="anchor" href="#nix-users"></a>
-</h3>
-<p>This project provides a reproducible Nix environment with pre-built binaries from the <code>johngavin</code> cachix cache:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Enter project shell (uses cachix cache for fast builds)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">./default.sh</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Start R</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">R</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="using-with-rix">Using with rix<a class="anchor" aria-label="anchor" href="#using-with-rix"></a>
-</h4>
-<p>To include micromort in your own Nix-based R project:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/rix/" class="external-link">rix</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://docs.ropensci.org/rix/reference/rix.html" class="external-link">rix</a></span><span class="op">(</span></span>
-<span>  r_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span><span class="op">)</span>,</span>
-<span>  git_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>      package_name <span class="op">=</span> <span class="st">"micromort"</span>,</span>
-<span>      repo_url <span class="op">=</span> <span class="st">"https://github.com/JohnGavin/micromort"</span>,</span>
-<span>      commit <span class="op">=</span> <span class="st">"main"</span>  <span class="co"># Or specific SHA for reproducibility</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  project_path <span class="op">=</span> <span class="st">"."</span>,</span>
-<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="concepts">Concepts<a class="anchor" aria-label="anchor" href="#concepts"></a>
-</h2>
-<div class="section level3">
-<h3 id="micromort-acute-risk">Micromort (Acute Risk)<a class="anchor" aria-label="anchor" href="#micromort-acute-risk"></a>
-</h3>
-<p>A <strong>micromort</strong> is a unit of mortality risk equal to a <strong>one-in-a-million probability of death per specific event</strong>.</p>
-<ul>
-<li>
-<strong>Unit:</strong> 1 micromort = 1/1,000,000 = 0.0001% death probability</li>
-<li>
-<strong>Scope:</strong> Per discrete event (e.g., one skydive, one surgery, one flight)</li>
-<li>
-<strong>Sign:</strong> Always non-negative (it’s a probability)</li>
-<li>
-<strong>Example:</strong> Skydiving has ~8 micromorts per jump (8-in-a-million death chance per jump)</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="microlife-chronic-risk">Microlife (Chronic Risk)<a class="anchor" aria-label="anchor" href="#microlife-chronic-risk"></a>
-</h3>
-<p>A <strong>microlife</strong> is a unit of life expectancy change equal to <strong>30 minutes of expected lifespan, measured per day</strong> of exposure.</p>
-<ul>
-<li>
-<strong>Unit:</strong> 1 microlife = 30 minutes of life expectancy</li>
-<li>
-<strong>Scope:</strong> Per day of maintaining a habit or exposure</li>
-<li>
-<strong>Sign:</strong> Positive (life gained) or negative (life lost)</li>
-<li>
-<strong>Example:</strong> Smoking 2 cigarettes daily costs -1 microlife/day (losing 30 mins of life expectancy each day you smoke)</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="conversion">Conversion<a class="anchor" aria-label="anchor" href="#conversion"></a>
-</h3>
-<p><strong>1 micromort ≈ 0.7 microlives</strong> (assuming 40 years remaining life expectancy). The conversion scales linearly with remaining life expectancy:</p>
-<table class="table">
-<thead><tr>
-<th>Remaining life expectancy</th>
-<th>1 micromort ≈</th>
-</tr></thead>
-<tbody>
-<tr>
-<td>10 years</td>
-<td>0.18 microlives</td>
-</tr>
-<tr>
-<td>20 years</td>
-<td>0.35 microlives</td>
-</tr>
-<tr>
-<td>40 years (default)</td>
-<td>0.70 microlives</td>
-</tr>
-<tr>
-<td>60 years</td>
-<td>1.05 microlives</td>
-</tr>
-</tbody>
-</table>
-<p>Use <code>lle(prob, life_expectancy = ...)</code> and <code><a href="reference/as_microlife.html">as_microlife()</a></code> to convert at any age. See the <a href="#calculate-baseline-risk-by-age">Age-Based Hazard Rates</a> section for daily micromort exposure by age.</p>
-</div>
-<div class="section level3">
-<h3 id="morbidity-metrics">Morbidity Metrics<a class="anchor" aria-label="anchor" href="#morbidity-metrics"></a>
-</h3>
-<p>Micromorts and microlives focus on mortality. For quality-of-life impacts:</p>
-<ul>
-<li>
-<strong>QALY (Quality-Adjusted Life Year):</strong> 1 year of perfect health. Used in healthcare economics.</li>
-<li>
-<strong>DALY (Disability-Adjusted Life Years):</strong> Disease burden combining:
-<ul>
-<li>
-<strong>YLL (Years of Life Lost):</strong> Premature mortality component</li>
-<li>
-<strong>YLD (Years Lived with Disability):</strong> Morbidity component</li>
-</ul>
-</li>
-<li>
-<strong>QALD (Quality-Adjusted Life Days):</strong> 1 day of perfect health. For common illnesses.</li>
-</ul>
-<p>See the <a href="https://johngavin.github.io/micromort/articles/introduction.html">Introduction vignette</a> for detailed examples and the <a href="#glossary">Glossary</a> for all acronym definitions.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="explore">Explore<a class="anchor" aria-label="anchor" href="#explore"></a>
 </h2>
 <div class="section level3">
 <h3 id="load-the-datasets">Load the Datasets<a class="anchor" aria-label="anchor" href="#load-the-datasets"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://johngavin.github.io/micromort/">micromort</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load acute risks (micromorts per event)</span></span>
@@ -285,23 +108,13 @@ graph LR
 <span><span class="co"># Load chronic risks (microlives per day)</span></span>
 <span><span class="va">chronic</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_chronic_risks.html">load_chronic_risks</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">chronic</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 38</span></span>
-<span></span>
-<span><span class="co"># Load source registry</span></span>
-<span><span class="va">sources</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_sources.html">load_sources</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sources</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 14</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 38</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="acute-risks-micromorts-per-event">Acute Risks (Micromorts per Event)<a class="anchor" aria-label="anchor" href="#acute-risks-micromorts-per-event"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Convert a probability to micromorts</span></span>
-<span><span class="co"># Example: 1 in 10,000 chance = 100 micromorts</span></span>
-<span><span class="fu"><a href="reference/as_micromort.html">as_micromort</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">10000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 100</span></span>
-<span></span>
-<span><span class="co"># Top 10 riskiest activities (micromorts per event/period)</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Top 10 riskiest activities</span></span>
 <span><span class="va">acute</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">activity</span>, <span class="va">micromorts</span>, <span class="va">category</span>, <span class="va">period</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
@@ -318,13 +131,12 @@ graph LR
 <span><span class="co">#&gt;  8 Base jumping (per jump)                        430 Sport          per jump   </span></span>
 <span><span class="co">#&gt;  9 First day of life (newborn)                    430 Daily Life     per day    </span></span>
 <span><span class="co">#&gt; 10 COVID-19 unvaccinated (age 80+)                234 COVID-19       11 weeks (…</span></span></code></pre></div>
-<p><strong>Caption:</strong> Micromorts represent probability of death per event. Higher values = higher risk per occurrence.</p>
 </div>
 <div class="section level3">
 <h3 id="chronic-risks-microlives-per-day">Chronic Risks (Microlives per Day)<a class="anchor" aria-label="anchor" href="#chronic-risks-microlives-per-day"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Factors that reduce life expectancy (microlives lost per day)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Factors that reduce life expectancy</span></span>
 <span><span class="va">chronic</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">factor</span>, <span class="va">microlives_per_day</span>, <span class="va">category</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -342,30 +154,27 @@ graph LR
 <span><span class="co">#&gt;  8 4th-5th alcoholic drink                             -2 Alcohol       </span></span>
 <span><span class="co">#&gt;  9 Sitting 8+ hours/day                                -2 Sedentary     </span></span>
 <span><span class="co">#&gt; 10 High LDL cholesterol (untreated)                    -2 Cardiovascular</span></span></code></pre></div>
-<p><strong>Caption:</strong> Microlives per day. Negative values = life expectancy loss; positive = gain. Effects accumulate daily.</p>
 </div>
-<div class="section level3">
-<h3 id="visualize-risks">Visualize Risks<a class="anchor" aria-label="anchor" href="#visualize-risks"></a>
-</h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Filter to show only activities with micromorts &gt;= 1 for clarity on log scale</span></span>
-<span><span class="fu"><a href="reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="visualize">Visualize<a class="anchor" aria-label="anchor" href="#visualize"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plot_risks.html">plot_risks</a></span><span class="op">(</span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="reference/figures/README-plot-1.png" alt="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity." width="100%"><p class="caption">
 Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity.
 </p>
 </div>
 </div>
-</div>
 <div class="section level2">
-<h2 id="analysis-functions">Analysis Functions<a class="anchor" aria-label="anchor" href="#analysis-functions"></a>
+<h2 id="analyse">Analyse<a class="anchor" aria-label="anchor" href="#analyse"></a>
 </h2>
 <div class="section level3">
 <h3 id="compare-lifestyle-interventions">Compare Lifestyle Interventions<a class="anchor" aria-label="anchor" href="#compare-lifestyle-interventions"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Compare quitting smoking vs losing weight (microlives gained per day)</span></span>
-<span><span class="fu"><a href="reference/compare_interventions.html">compare_interventions</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/compare_interventions.html">compare_interventions</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Quit 10 cigarettes/day"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Smoking 10 cigarettes"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
 <span>  <span class="st">"Lose 5kg"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>factor <span class="op">=</span> <span class="st">"Being 5 kg overweight"</span>, change <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
@@ -379,9 +188,8 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <div class="section level3">
 <h3 id="calculate-baseline-risk-by-age">Calculate Baseline Risk by Age<a class="anchor" aria-label="anchor" href="#calculate-baseline-risk-by-age"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Daily baseline mortality risk at age 35 (micromorts per day just from being alive)</span></span>
-<span><span class="fu"><a href="reference/daily_hazard_rate.html">daily_hazard_rate</a></span><span class="op">(</span><span class="fl">35</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/daily_hazard_rate.html">daily_hazard_rate</a></span><span class="op">(</span><span class="fl">35</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 7</span></span>
 <span><span class="co">#&gt;     age sex   daily_prob micromorts microlives_consumed precision_note          </span></span>
 <span><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;               &lt;dbl&gt; &lt;chr&gt;                   </span></span>
@@ -391,51 +199,33 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 <div class="section level3">
 <h3 id="lifestyle-tradeoffs">Lifestyle Tradeoffs<a class="anchor" aria-label="anchor" href="#lifestyle-tradeoffs"></a>
 </h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># How much exercise offsets smoking? (in microlives per day)</span></span>
-<span><span class="fu"><a href="reference/lifestyle_tradeoff.html">lifestyle_tradeoff</a></span><span class="op">(</span><span class="st">"Smoking 2 cigarettes"</span>, <span class="st">"20 min moderate exercise"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/lifestyle_tradeoff.html">lifestyle_tradeoff</a></span><span class="op">(</span><span class="st">"Smoking 2 cigarettes"</span>, <span class="st">"20 min moderate exercise"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 1 × 6</span></span>
 <span><span class="co">#&gt;   bad_habit            bad_ml_per_day good_habit    good_ml_per_day units_needed</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;                         &lt;dbl&gt; &lt;chr&gt;                   &lt;dbl&gt;        &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt; 1 Smoking 2 cigarettes             -1 20 min moder…               2          0.5</span></span>
 <span><span class="co">#&gt; # ℹ 1 more variable: interpretation &lt;chr&gt;</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="country-level-disease-risk">Country-Level Disease Risk<a class="anchor" aria-label="anchor" href="#country-level-disease-risk"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Compare disease burden: UK vs Nigeria</span></span>
+<span><span class="fu"><a href="reference/common_risks.html">common_risks</a></span><span class="op">(</span>profile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"NG"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"mortality risk"</span>, <span class="va">activity</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">activity</span>, <span class="va">micromorts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   activity                                 micromorts</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                                         &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Daily CVD mortality risk (Nigeria)             7.33</span></span>
+<span><span class="co">#&gt; 2 Daily cancer mortality risk (Nigeria)          2.79</span></span>
+<span><span class="co">#&gt; 3 Daily LRI mortality risk (Nigeria)             1.77</span></span>
+<span><span class="co">#&gt; 4 Daily diarrheal mortality risk (Nigeria)       0.88</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="api-access">API Access<a class="anchor" aria-label="anchor" href="#api-access"></a>
-</h2>
-<p>Launch the REST API for programmatic access:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/launch_api.html">launch_api</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co"># API available at http://localhost:8080</span></span>
-<span><span class="co"># Swagger docs at http://localhost:8080/__docs__/</span></span></code></pre></div>
-<p><strong>Core endpoints</strong> (30 total — see <a href="https://johngavin.github.io/micromort/articles/rest_api.html">REST API vignette</a> for full reference):</p>
-<ul>
-<li>
-<code>GET /v1/risks/acute</code> — Acute risks (micromorts per event)</li>
-<li>
-<code>GET /v1/risks/chronic</code> — Chronic risks (microlives per day)</li>
-<li>
-<code>GET /v1/risks/cancer</code> — Cancer mortality by type/sex/age</li>
-<li>
-<code>GET /v1/analysis/equivalence</code> — Risk equivalence lookup</li>
-<li>
-<code>GET /v1/convert/hazard-rate?age=35</code> — Daily hazard rate</li>
-<li>
-<code>GET /v1/sources</code> — Source registry</li>
-<li>
-<code>GET /health</code> — Health check</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="interactive-dashboard">Interactive Dashboard<a class="anchor" aria-label="anchor" href="#interactive-dashboard"></a>
-</h2>
-<p>Launch the Shiny dashboard:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/launch_dashboard.html">launch_dashboard</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="risk-quizzes">Risk Quizzes<a class="anchor" aria-label="anchor" href="#risk-quizzes"></a>
+<h2 id="quizzes">Quizzes<a class="anchor" aria-label="anchor" href="#quizzes"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -467,9 +257,125 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </tbody>
 </table>
 <p>All Shinylive quizzes run via WebR in the browser (30-60s initial load).</p>
-<p>Generate geography-specific quiz pairs comparing disease risk across countries:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/geography_quiz_pairs.html">geography_quiz_pairs</a></span><span class="op">(</span>countries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UK"</span>, <span class="st">"NG"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Generate geography-specific quiz pairs</span></span>
+<span><span class="fu"><a href="reference/geography_quiz_pairs.html">geography_quiz_pairs</a></span><span class="op">(</span>countries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UK"</span>, <span class="st">"NG"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="install">Install<a class="anchor" aria-label="anchor" href="#install"></a>
+</h2>
+<div class="section level3">
+<h3 id="r-universe-recommended">R-Universe (Recommended)<a class="anchor" aria-label="anchor" href="#r-universe-recommended"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"micromort"</span>, repos <span class="op">=</span> <span class="st">"https://johngavin.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="github">GitHub<a class="anchor" aria-label="anchor" href="#github"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JohnGavin/micromort"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="nix-users">Nix Users<a class="anchor" aria-label="anchor" href="#nix-users"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="ex">./default.sh</span>   <span class="co"># Reproducible R env with cachix cache</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="ex">R</span></span></code></pre></div>
+<details><summary>
+Using with rix
+</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/rix/" class="external-link">rix</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://docs.ropensci.org/rix/reference/rix.html" class="external-link">rix</a></span><span class="op">(</span></span>
+<span>  r_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span><span class="op">)</span>,</span>
+<span>  git_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    package_name <span class="op">=</span> <span class="st">"micromort"</span>,</span>
+<span>    repo_url <span class="op">=</span> <span class="st">"https://github.com/JohnGavin/micromort"</span>,</span>
+<span>    commit <span class="op">=</span> <span class="st">"main"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span>,</span>
+<span>  project_path <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details>
+</div>
+</div>
+<div class="section level2">
+<h2 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
+</h2>
+<p>Launch the REST API for programmatic access:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/launch_api.html">launch_api</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Swagger docs at http://localhost:8080/__docs__/</span></span></code></pre></div>
+<p><strong>Core endpoints</strong> (30 total — <a href="https://johngavin.github.io/micromort/articles/rest_api.html">full reference</a>):</p>
+<table class="table">
+<thead><tr>
+<th>Endpoint</th>
+<th>Returns</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>GET /v1/risks/acute</code></td>
+<td>Acute risks (micromorts)</td>
+</tr>
+<tr>
+<td><code>GET /v1/risks/chronic</code></td>
+<td>Chronic risks (microlives)</td>
+</tr>
+<tr>
+<td><code>GET /v1/risks/cancer</code></td>
+<td>Cancer mortality by type/sex/age</td>
+</tr>
+<tr>
+<td><code>GET /v1/analysis/equivalence</code></td>
+<td>Risk equivalence lookup</td>
+</tr>
+<tr>
+<td><code>GET /v1/convert/hazard-rate?age=35</code></td>
+<td>Daily hazard rate</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="concepts">Concepts<a class="anchor" aria-label="anchor" href="#concepts"></a>
+</h2>
+<div class="section level3">
+<h3 id="micromort-acute-risk">Micromort (Acute Risk)<a class="anchor" aria-label="anchor" href="#micromort-acute-risk"></a>
+</h3>
+<p>A <strong>micromort</strong> = one-in-a-million probability of death per event. Skydiving: ~8 micromorts per jump.</p>
+</div>
+<div class="section level3">
+<h3 id="microlife-chronic-risk">Microlife (Chronic Risk)<a class="anchor" aria-label="anchor" href="#microlife-chronic-risk"></a>
+</h3>
+<p>A <strong>microlife</strong> = 30 minutes of life expectancy change per day. Smoking 2 cigarettes: -1 microlife/day.</p>
+</div>
+<div class="section level3">
+<h3 id="conversion">Conversion<a class="anchor" aria-label="anchor" href="#conversion"></a>
+</h3>
+<p><strong>1 micromort ≈ 0.7 microlives</strong> (at 40 years remaining life expectancy).</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
+</h2>
+<details><summary>
+Package architecture (click to expand; renders on GitHub)
+</summary><pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
+graph LR
+
+  Conversion["Unit Conversion&lt;br&gt;5 functions"]
+  Data["Risk Datasets&lt;br&gt;21 functions"]
+  Analysis["Risk Analysis&lt;br&gt;6 functions"]
+  Viz["Visualization&lt;br&gt;5 functions"]
+  Apps["Interactive Apps&lt;br&gt;6 functions"]
+
+  Conversion --&gt; Data --&gt; Analysis --&gt; Viz --&gt; Apps
+
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
+  style Data fill:#999999,stroke:#CC0000,color:#000000
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
+  style Viz fill:#999999,stroke:#CC0000,color:#000000
+  style Apps fill:#999999,stroke:#CC0000,color:#000000</code></pre>
+</details><p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams.</p>
 </div>
 <div class="section level2">
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>
@@ -525,554 +431,29 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </table>
 </div>
 <div class="section level2">
-<h2 id="project-structure">Project Structure<a class="anchor" aria-label="anchor" href="#project-structure"></a>
-</h2>
-<details><summary>
-Click to expand project tree
-</summary><pre><code><span><span class="co">#&gt; .</span></span>
-<span><span class="co">#&gt; ├── CLAUDE.md</span></span>
-<span><span class="co">#&gt; ├── DESCRIPTION</span></span>
-<span><span class="co">#&gt; ├── LICENSE</span></span>
-<span><span class="co">#&gt; ├── LICENSE.md</span></span>
-<span><span class="co">#&gt; ├── NAMESPACE</span></span>
-<span><span class="co">#&gt; ├── R</span></span>
-<span><span class="co">#&gt; │   ├── activity_descriptions.R</span></span>
-<span><span class="co">#&gt; │   ├── api.R</span></span>
-<span><span class="co">#&gt; │   ├── atomic_risks.R</span></span>
-<span><span class="co">#&gt; │   ├── dashboard.R</span></span>
-<span><span class="co">#&gt; │   ├── data.R</span></span>
-<span><span class="co">#&gt; │   ├── dev</span></span>
-<span><span class="co">#&gt; │   │   ├── issues</span></span>
-<span><span class="co">#&gt; │   │   └── verify_pkgdown_urls.R</span></span>
-<span><span class="co">#&gt; │   ├── diagrams.R</span></span>
-<span><span class="co">#&gt; │   ├── factor_descriptions.R</span></span>
-<span><span class="co">#&gt; │   ├── micromort.R</span></span>
-<span><span class="co">#&gt; │   ├── models.R</span></span>
-<span><span class="co">#&gt; │   ├── quiz.R</span></span>
-<span><span class="co">#&gt; │   ├── radiation_profiles.R</span></span>
-<span><span class="co">#&gt; │   ├── ranking_quiz.R</span></span>
-<span><span class="co">#&gt; │   ├── regional.R</span></span>
-<span><span class="co">#&gt; │   ├── risk_equivalence.R</span></span>
-<span><span class="co">#&gt; │   ├── risks.R</span></span>
-<span><span class="co">#&gt; │   ├── tar_plans</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_data_acquisition.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_documentation.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_export.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_leaderboard_stats.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_logging.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_normalization.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_pkgctx.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_pkgdown.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_qa_gates.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_site_build.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_telemetry.R</span></span>
-<span><span class="co">#&gt; │   │   ├── plan_validation.R</span></span>
-<span><span class="co">#&gt; │   │   └── plan_vignette_outputs.R</span></span>
-<span><span class="co">#&gt; │   └── visualization.R</span></span>
-<span><span class="co">#&gt; ├── README.md</span></span>
-<span><span class="co">#&gt; ├── README.qmd</span></span>
-<span><span class="co">#&gt; ├── README_files</span></span>
-<span><span class="co">#&gt; │   └── libs</span></span>
-<span><span class="co">#&gt; │       ├── bootstrap</span></span>
-<span><span class="co">#&gt; │       ├── clipboard</span></span>
-<span><span class="co">#&gt; │       └── quarto-html</span></span>
-<span><span class="co">#&gt; ├── box</span></span>
-<span><span class="co">#&gt; │   ├── api</span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   └── endpoints.R</span></span>
-<span><span class="co">#&gt; │   ├── dashboard</span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   ├── server.R</span></span>
-<span><span class="co">#&gt; │   │   └── ui.R</span></span>
-<span><span class="co">#&gt; │   ├── data</span></span>
-<span><span class="co">#&gt; │   │   ├── __init__.R</span></span>
-<span><span class="co">#&gt; │   │   ├── loaders.R</span></span>
-<span><span class="co">#&gt; │   │   ├── parsers.R</span></span>
-<span><span class="co">#&gt; │   │   └── schemas.R</span></span>
-<span><span class="co">#&gt; │   └── models</span></span>
-<span><span class="co">#&gt; │       ├── __init__.R</span></span>
-<span><span class="co">#&gt; │       ├── compare.R</span></span>
-<span><span class="co">#&gt; │       └── hazard.R</span></span>
-<span><span class="co">#&gt; ├── check</span></span>
-<span><span class="co">#&gt; │   ├── micromort.Rcheck</span></span>
-<span><span class="co">#&gt; │   │   ├── 00_pkg_src</span></span>
-<span><span class="co">#&gt; │   │   ├── 00check.log</span></span>
-<span><span class="co">#&gt; │   │   ├── 00install.out</span></span>
-<span><span class="co">#&gt; │   │   ├── R_check_bin</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-Ex.R</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-Ex.Rout</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-Ex.pdf</span></span>
-<span><span class="co">#&gt; │   │   └── micromort-Ex.timings</span></span>
-<span><span class="co">#&gt; │   └── micromort_0.1.0.tar.gz</span></span>
-<span><span class="co">#&gt; ├── data-raw</span></span>
-<span><span class="co">#&gt; │   ├── 01_extract_current_data.R</span></span>
-<span><span class="co">#&gt; │   ├── 02_regional_life_expectancy.R</span></span>
-<span><span class="co">#&gt; │   ├── 02_regional_life_expectancy_sample.R</span></span>
-<span><span class="co">#&gt; │   ├── 03_osha_occupational_risks.R</span></span>
-<span><span class="co">#&gt; │   ├── 04_road_traffic_mortality.R</span></span>
-<span><span class="co">#&gt; │   ├── 05_global_homicide_rates.R</span></span>
-<span><span class="co">#&gt; │   ├── README_regional_data.md</span></span>
-<span><span class="co">#&gt; │   ├── generate_og_image.R</span></span>
-<span><span class="co">#&gt; │   ├── generate_quiz_csv.R</span></span>
-<span><span class="co">#&gt; │   └── sources</span></span>
-<span><span class="co">#&gt; │       ├── acute_risks_base.csv</span></span>
-<span><span class="co">#&gt; │       ├── chronic_risks_base.csv</span></span>
-<span><span class="co">#&gt; │       ├── covid_vaccine_rr.csv</span></span>
-<span><span class="co">#&gt; │       ├── demographic_factors.csv</span></span>
-<span><span class="co">#&gt; │       └── risk_sources.csv</span></span>
-<span><span class="co">#&gt; ├── default.R</span></span>
-<span><span class="co">#&gt; ├── default.nix</span></span>
-<span><span class="co">#&gt; ├── default.sh</span></span>
-<span><span class="co">#&gt; ├── docs</span></span>
-<span><span class="co">#&gt; │   ├── 404.html</span></span>
-<span><span class="co">#&gt; │   ├── 404.md</span></span>
-<span><span class="co">#&gt; │   ├── CLAUDE.html</span></span>
-<span><span class="co">#&gt; │   ├── CLAUDE.md</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE-text.html</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE-text.md</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE.html</span></span>
-<span><span class="co">#&gt; │   ├── LICENSE.md</span></span>
-<span><span class="co">#&gt; │   ├── api</span></span>
-<span><span class="co">#&gt; │   │   └── quiz_stats.json</span></span>
-<span><span class="co">#&gt; │   ├── apple-touch-icon.png</span></span>
-<span><span class="co">#&gt; │   ├── articles</span></span>
-<span><span class="co">#&gt; │   │   ├── _extensions</span></span>
-<span><span class="co">#&gt; │   │   ├── architecture.html</span></span>
-<span><span class="co">#&gt; │   │   ├── architecture.md</span></span>
-<span><span class="co">#&gt; │   │   ├── architecture_files</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_quiz_shinylive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_quiz_shinylive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_quiz_shinylive_files</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_vs_acute.html</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_vs_acute.md</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_vs_acute_files</span></span>
-<span><span class="co">#&gt; │   │   ├── closeread-standalone.css</span></span>
-<span><span class="co">#&gt; │   │   ├── confounding.html</span></span>
-<span><span class="co">#&gt; │   │   ├── confounding.md</span></span>
-<span><span class="co">#&gt; │   │   ├── confounding_files</span></span>
-<span><span class="co">#&gt; │   │   ├── data_reliability.html</span></span>
-<span><span class="co">#&gt; │   │   ├── data_reliability.md</span></span>
-<span><span class="co">#&gt; │   │   ├── data_reliability_files</span></span>
-<span><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   │   ├── introduction.html</span></span>
-<span><span class="co">#&gt; │   │   ├── introduction.md</span></span>
-<span><span class="co">#&gt; │   │   ├── introduction_files</span></span>
-<span><span class="co">#&gt; │   │   ├── microlife-quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── microlife-quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── microlife-quiz_files</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── micromort-quiz_files</span></span>
-<span><span class="co">#&gt; │   │   ├── palatable_units.html</span></span>
-<span><span class="co">#&gt; │   │   ├── palatable_units.md</span></span>
-<span><span class="co">#&gt; │   │   ├── palatable_units_files</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_shinylive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_shinylive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_shinylive_files</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_quiz_shinylive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_quiz_shinylive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_quiz_shinylive_files</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_variation.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_variation.md</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_variation_files</span></span>
-<span><span class="co">#&gt; │   │   ├── rest_api.html</span></span>
-<span><span class="co">#&gt; │   │   ├── rest_api.md</span></span>
-<span><span class="co">#&gt; │   │   ├── rest_api_files</span></span>
-<span><span class="co">#&gt; │   │   ├── risk-ranking-quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk-ranking-quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk-ranking-quiz_files</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence_files</span></span>
-<span><span class="co">#&gt; │   │   ├── shinylive-sw.js</span></span>
-<span><span class="co">#&gt; │   │   ├── telemetry.html</span></span>
-<span><span class="co">#&gt; │   │   ├── telemetry.md</span></span>
-<span><span class="co">#&gt; │   │   ├── telemetry_files</span></span>
-<span><span class="co">#&gt; │   │   ├── what-is-a-micromort.html</span></span>
-<span><span class="co">#&gt; │   │   ├── what-is-a-micromort.md</span></span>
-<span><span class="co">#&gt; │   │   └── what-is-a-micromort_files</span></span>
-<span><span class="co">#&gt; │   ├── authors.html</span></span>
-<span><span class="co">#&gt; │   ├── authors.md</span></span>
-<span><span class="co">#&gt; │   ├── deps</span></span>
-<span><span class="co">#&gt; │   │   ├── bootstrap-5.3.1</span></span>
-<span><span class="co">#&gt; │   │   ├── bootstrap-toc-1.0.1</span></span>
-<span><span class="co">#&gt; │   │   ├── clipboard.js-2.0.11</span></span>
-<span><span class="co">#&gt; │   │   ├── data-deps.txt</span></span>
-<span><span class="co">#&gt; │   │   ├── font-awesome-6.5.2</span></span>
-<span><span class="co">#&gt; │   │   ├── headroom-0.11.0</span></span>
-<span><span class="co">#&gt; │   │   ├── jquery-3.6.0</span></span>
-<span><span class="co">#&gt; │   │   └── search-1.0.0</span></span>
-<span><span class="co">#&gt; │   ├── extra.css</span></span>
-<span><span class="co">#&gt; │   ├── extra.js</span></span>
-<span><span class="co">#&gt; │   ├── favicon-96x96.png</span></span>
-<span><span class="co">#&gt; │   ├── favicon.ico</span></span>
-<span><span class="co">#&gt; │   ├── favicon.svg</span></span>
-<span><span class="co">#&gt; │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   ├── katex-auto.js</span></span>
-<span><span class="co">#&gt; │   ├── lightswitch.js</span></span>
-<span><span class="co">#&gt; │   ├── link.svg</span></span>
-<span><span class="co">#&gt; │   ├── llms.txt</span></span>
-<span><span class="co">#&gt; │   ├── logo.png</span></span>
-<span><span class="co">#&gt; │   ├── news</span></span>
-<span><span class="co">#&gt; │   ├── pkgdown.js</span></span>
-<span><span class="co">#&gt; │   ├── pkgdown.yml</span></span>
-<span><span class="co">#&gt; │   ├── reference</span></span>
-<span><span class="co">#&gt; │   │   ├── activity_descriptions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── activity_descriptions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── annual_risk_budget.html</span></span>
-<span><span class="co">#&gt; │   │   ├── annual_risk_budget.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_microlife.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_microlife.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_micromort.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_micromort.md</span></span>
-<span><span class="co">#&gt; │   │   ├── as_probability.html</span></span>
-<span><span class="co">#&gt; │   │   ├── as_probability.md</span></span>
-<span><span class="co">#&gt; │   │   ├── atomic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── atomic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── cancer_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── cancer_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_quiz_pairs.html</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_quiz_pairs.md</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── common_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── common_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── compare_interventions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── compare_interventions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── conditional_risk.html</span></span>
-<span><span class="co">#&gt; │   │   ├── conditional_risk.md</span></span>
-<span><span class="co">#&gt; │   │   ├── covid_vaccine_rr.html</span></span>
-<span><span class="co">#&gt; │   │   ├── covid_vaccine_rr.md</span></span>
-<span><span class="co">#&gt; │   │   ├── daily_hazard_rate.html</span></span>
-<span><span class="co">#&gt; │   │   ├── daily_hazard_rate.md</span></span>
-<span><span class="co">#&gt; │   │   ├── demographic_factors.html</span></span>
-<span><span class="co">#&gt; │   │   ├── demographic_factors.md</span></span>
-<span><span class="co">#&gt; │   │   ├── factor_descriptions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── factor_descriptions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── figures</span></span>
-<span><span class="co">#&gt; │   │   ├── format_activity_name.html</span></span>
-<span><span class="co">#&gt; │   │   ├── format_activity_name.md</span></span>
-<span><span class="co">#&gt; │   │   ├── geography_quiz_pairs.html</span></span>
-<span><span class="co">#&gt; │   │   ├── geography_quiz_pairs.md</span></span>
-<span><span class="co">#&gt; │   │   ├── hedged_portfolio.html</span></span>
-<span><span class="co">#&gt; │   │   ├── hedged_portfolio.md</span></span>
-<span><span class="co">#&gt; │   │   ├── index.html</span></span>
-<span><span class="co">#&gt; │   │   ├── index.md</span></span>
-<span><span class="co">#&gt; │   │   ├── kendall_tau_score.html</span></span>
-<span><span class="co">#&gt; │   │   ├── kendall_tau_score.md</span></span>
-<span><span class="co">#&gt; │   │   ├── laggard_regions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── laggard_regions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_api.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_api.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_chronic_quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_chronic_quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_dashboard.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_dashboard.md</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_quiz.html</span></span>
-<span><span class="co">#&gt; │   │   ├── launch_quiz.md</span></span>
-<span><span class="co">#&gt; │   │   ├── libs</span></span>
-<span><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.html</span></span>
-<span><span class="co">#&gt; │   │   ├── lifestyle_tradeoff.md</span></span>
-<span><span class="co">#&gt; │   │   ├── lle.html</span></span>
-<span><span class="co">#&gt; │   │   ├── lle.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_acute_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_acute_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_chronic_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_chronic_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── load_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── load_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── patient_radiation_comparison.html</span></span>
-<span><span class="co">#&gt; │   │   ├── patient_radiation_comparison.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risk_components.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-2.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-3.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-4.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks-5.png</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks_interactive.html</span></span>
-<span><span class="co">#&gt; │   │   ├── plot_risks_interactive.md</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot.html</span></span>
-<span><span class="co">#&gt; │   │   ├── prepare_risks_plot.md</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_pairs.html</span></span>
-<span><span class="co">#&gt; │   │   ├── quiz_pairs.md</span></span>
-<span><span class="co">#&gt; │   │   ├── radiation_profiles.html</span></span>
-<span><span class="co">#&gt; │   │   ├── radiation_profiles.md</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_quiz_questions.html</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_quiz_questions.md</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_tag_mapping.html</span></span>
-<span><span class="co">#&gt; │   │   ├── ranking_tag_mapping.md</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.md</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.html</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_mortality_multiplier.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_components.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_components.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_data_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_data_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_equivalence.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_exchange_matrix.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_exchange_matrix.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_for_duration.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_for_duration.md</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_sources.html</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_sources.md</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark.html</span></span>
-<span><span class="co">#&gt; │   │   ├── theme_micromort_dark.md</span></span>
-<span><span class="co">#&gt; │   │   ├── vaccination_risks.html</span></span>
-<span><span class="co">#&gt; │   │   ├── vaccination_risks.md</span></span>
-<span><span class="co">#&gt; │   │   ├── value_of_micromort.html</span></span>
-<span><span class="co">#&gt; │   │   ├── value_of_micromort.md</span></span>
-<span><span class="co">#&gt; │   │   ├── vanguard_regions.html</span></span>
-<span><span class="co">#&gt; │   │   └── vanguard_regions.md</span></span>
-<span><span class="co">#&gt; │   ├── search.json</span></span>
-<span><span class="co">#&gt; │   ├── site.webmanifest</span></span>
-<span><span class="co">#&gt; │   ├── sitemap.xml</span></span>
-<span><span class="co">#&gt; │   ├── tutorials</span></span>
-<span><span class="co">#&gt; │   ├── web-app-manifest-192x192.png</span></span>
-<span><span class="co">#&gt; │   └── web-app-manifest-512x512.png</span></span>
-<span><span class="co">#&gt; ├── inst</span></span>
-<span><span class="co">#&gt; │   ├── dashboard</span></span>
-<span><span class="co">#&gt; │   │   └── about.md</span></span>
-<span><span class="co">#&gt; │   ├── extdata</span></span>
-<span><span class="co">#&gt; │   │   ├── acute_risks.parquet</span></span>
-<span><span class="co">#&gt; │   │   ├── chronic_risks.parquet</span></span>
-<span><span class="co">#&gt; │   │   ├── logs</span></span>
-<span><span class="co">#&gt; │   │   ├── regional_life_expectancy.parquet</span></span>
-<span><span class="co">#&gt; │   │   ├── risk_sources.parquet</span></span>
-<span><span class="co">#&gt; │   │   └── vignettes</span></span>
-<span><span class="co">#&gt; │   └── plumber</span></span>
-<span><span class="co">#&gt; │       └── api.R</span></span>
-<span><span class="co">#&gt; ├── man</span></span>
-<span><span class="co">#&gt; │   ├── activity_descriptions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── acute_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── annual_risk_budget.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_microlife.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_micromort.Rd</span></span>
-<span><span class="co">#&gt; │   ├── as_probability.Rd</span></span>
-<span><span class="co">#&gt; │   ├── atomic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── cancer_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── chronic_quiz_pairs.Rd</span></span>
-<span><span class="co">#&gt; │   ├── chronic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── common_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── compare_interventions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── conditional_risk.Rd</span></span>
-<span><span class="co">#&gt; │   ├── covid_vaccine_rr.Rd</span></span>
-<span><span class="co">#&gt; │   ├── daily_hazard_rate.Rd</span></span>
-<span><span class="co">#&gt; │   ├── demographic_factors.Rd</span></span>
-<span><span class="co">#&gt; │   ├── factor_descriptions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── figures</span></span>
-<span><span class="co">#&gt; │   │   ├── README-plot-1.png</span></span>
-<span><span class="co">#&gt; │   │   ├── logo-candidates</span></span>
-<span><span class="co">#&gt; │   │   ├── logo.png</span></span>
-<span><span class="co">#&gt; │   │   └── og-image.png</span></span>
-<span><span class="co">#&gt; │   ├── format_activity_name.Rd</span></span>
-<span><span class="co">#&gt; │   ├── geography_quiz_pairs.Rd</span></span>
-<span><span class="co">#&gt; │   ├── hedged_portfolio.Rd</span></span>
-<span><span class="co">#&gt; │   ├── kendall_tau_score.Rd</span></span>
-<span><span class="co">#&gt; │   ├── laggard_regions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_api.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_chronic_quiz.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_dashboard.Rd</span></span>
-<span><span class="co">#&gt; │   ├── launch_quiz.Rd</span></span>
-<span><span class="co">#&gt; │   ├── lifestyle_tradeoff.Rd</span></span>
-<span><span class="co">#&gt; │   ├── lle.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_acute_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_chronic_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── load_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── patient_radiation_comparison.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risk_components.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── plot_risks_interactive.Rd</span></span>
-<span><span class="co">#&gt; │   ├── prepare_risks_plot.Rd</span></span>
-<span><span class="co">#&gt; │   ├── quiz_pairs.Rd</span></span>
-<span><span class="co">#&gt; │   ├── radiation_profiles.Rd</span></span>
-<span><span class="co">#&gt; │   ├── ranking_quiz_questions.Rd</span></span>
-<span><span class="co">#&gt; │   ├── ranking_tag_mapping.Rd</span></span>
-<span><span class="co">#&gt; │   ├── regional_life_expectancy.Rd</span></span>
-<span><span class="co">#&gt; │   ├── regional_mortality_multiplier.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_components.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_data_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_equivalence.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_exchange_matrix.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_for_duration.Rd</span></span>
-<span><span class="co">#&gt; │   ├── risk_sources.Rd</span></span>
-<span><span class="co">#&gt; │   ├── theme_micromort_dark.Rd</span></span>
-<span><span class="co">#&gt; │   ├── vaccination_risks.Rd</span></span>
-<span><span class="co">#&gt; │   ├── value_of_micromort.Rd</span></span>
-<span><span class="co">#&gt; │   └── vanguard_regions.Rd</span></span>
-<span><span class="co">#&gt; ├── nix-shell-root</span></span>
-<span><span class="co">#&gt; ├── package.nix</span></span>
-<span><span class="co">#&gt; ├── pkgdown</span></span>
-<span><span class="co">#&gt; │   ├── extra.css</span></span>
-<span><span class="co">#&gt; │   ├── extra.js</span></span>
-<span><span class="co">#&gt; │   └── favicon</span></span>
-<span><span class="co">#&gt; │       ├── apple-touch-icon.png</span></span>
-<span><span class="co">#&gt; │       ├── favicon-96x96.png</span></span>
-<span><span class="co">#&gt; │       ├── favicon.ico</span></span>
-<span><span class="co">#&gt; │       ├── favicon.svg</span></span>
-<span><span class="co">#&gt; │       ├── site.webmanifest</span></span>
-<span><span class="co">#&gt; │       ├── web-app-manifest-192x192.png</span></span>
-<span><span class="co">#&gt; │       └── web-app-manifest-512x512.png</span></span>
-<span><span class="co">#&gt; ├── plans</span></span>
-<span><span class="co">#&gt; │   ├── PLAN_consistency_refactor.md</span></span>
-<span><span class="co">#&gt; │   ├── PLAN_regional_longevity.md</span></span>
-<span><span class="co">#&gt; │   ├── PLAN_risk_equivalence_dashboard.md</span></span>
-<span><span class="co">#&gt; │   └── PLAN_vignette_targets_refactor.md</span></span>
-<span><span class="co">#&gt; ├── push_to_cachix.sh</span></span>
-<span><span class="co">#&gt; ├── tests</span></span>
-<span><span class="co">#&gt; │   └── testthat</span></span>
-<span><span class="co">#&gt; │       ├── _snaps</span></span>
-<span><span class="co">#&gt; │       ├── test-adversarial.R</span></span>
-<span><span class="co">#&gt; │       ├── test-api.R</span></span>
-<span><span class="co">#&gt; │       ├── test-atomic-risks.R</span></span>
-<span><span class="co">#&gt; │       ├── test-chronic-quiz.R</span></span>
-<span><span class="co">#&gt; │       ├── test-diagrams.R</span></span>
-<span><span class="co">#&gt; │       ├── test-quiz.R</span></span>
-<span><span class="co">#&gt; │       ├── test-radiation-profiles.R</span></span>
-<span><span class="co">#&gt; │       ├── test-ranking-quiz.R</span></span>
-<span><span class="co">#&gt; │       ├── test-risk-components.R</span></span>
-<span><span class="co">#&gt; │       ├── test-risk-equivalence.R</span></span>
-<span><span class="co">#&gt; │       └── test-visualization.R</span></span>
-<span><span class="co">#&gt; └── vignettes</span></span>
-<span><span class="co">#&gt;     ├── _extensions</span></span>
-<span><span class="co">#&gt;     │   ├── qmd-lab</span></span>
-<span><span class="co">#&gt;     │   └── quarto-ext</span></span>
-<span><span class="co">#&gt;     ├── _quarto.yaml</span></span>
-<span><span class="co">#&gt;     ├── _quarto.yml</span></span>
-<span><span class="co">#&gt;     ├── architecture.qmd</span></span>
-<span><span class="co">#&gt;     ├── chronic_quiz_shinylive.qmd</span></span>
-<span><span class="co">#&gt;     ├── chronic_quiz_shinylive_files</span></span>
-<span><span class="co">#&gt;     ├── chronic_vs_acute.qmd</span></span>
-<span><span class="co">#&gt;     ├── closeread-standalone.css</span></span>
-<span><span class="co">#&gt;     ├── confounding.qmd</span></span>
-<span><span class="co">#&gt;     ├── data_reliability.qmd</span></span>
-<span><span class="co">#&gt;     ├── introduction.qmd</span></span>
-<span><span class="co">#&gt;     ├── microlife-quiz.qmd</span></span>
-<span><span class="co">#&gt;     ├── microlife-quiz_files</span></span>
-<span><span class="co">#&gt;     ├── micromort-quiz.qmd</span></span>
-<span><span class="co">#&gt;     ├── micromort-quiz_files</span></span>
-<span><span class="co">#&gt;     ├── palatable_units.qmd</span></span>
-<span><span class="co">#&gt;     ├── quiz.html</span></span>
-<span><span class="co">#&gt;     ├── quiz_data.json</span></span>
-<span><span class="co">#&gt;     ├── quiz_files</span></span>
-<span><span class="co">#&gt;     │   └── libs</span></span>
-<span><span class="co">#&gt;     ├── quiz_pairs.json</span></span>
-<span><span class="co">#&gt;     ├── quiz_shinylive.qmd</span></span>
-<span><span class="co">#&gt;     ├── quiz_shinylive_files</span></span>
-<span><span class="co">#&gt;     ├── ranking_quiz_shinylive.qmd</span></span>
-<span><span class="co">#&gt;     ├── ranking_quiz_shinylive_files</span></span>
-<span><span class="co">#&gt;     ├── regional_variation.qmd</span></span>
-<span><span class="co">#&gt;     ├── rest_api.qmd</span></span>
-<span><span class="co">#&gt;     ├── risk-ranking-quiz.qmd</span></span>
-<span><span class="co">#&gt;     ├── risk-ranking-quiz_files</span></span>
-<span><span class="co">#&gt;     ├── risk_equivalence.qmd</span></span>
-<span><span class="co">#&gt;     ├── scrollytelling.html</span></span>
-<span><span class="co">#&gt;     ├── scrollytelling_files</span></span>
-<span><span class="co">#&gt;     │   ├── figure-html</span></span>
-<span><span class="co">#&gt;     │   └── libs</span></span>
-<span><span class="co">#&gt;     ├── shinylive-sw.js</span></span>
-<span><span class="co">#&gt;     ├── telemetry.qmd</span></span>
-<span><span class="co">#&gt;     ├── what-is-a-micromort.qmd</span></span>
-<span><span class="co">#&gt;     └── what-is-a-micromort_files</span></span></code></pre>
-</details>
-</div>
-<div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h2>
-<p>Contributions are welcome! Please:</p>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Report issues</strong> at <a href="https://github.com/JohnGavin/micromort/issues" class="external-link">GitHub Issues</a>
-</li>
-<li>
-<strong>Submit PRs</strong> following the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>
-</li>
-<li>
-<strong>Add data</strong> - New risk sources welcome! Include:
-<ul>
-<li>Source URL with citation</li>
-<li>Units (micromorts per event OR microlives per day)</li>
-<li>Period specification (per jump, per day, per year, etc.)</li>
-</ul>
-</li>
-</ol>
-<div class="section level3">
-<h3 id="development-setup">Development Setup<a class="anchor" aria-label="anchor" href="#development-setup"></a>
-</h3>
-<p>Requires <a href="https://nixos.org/" class="external-link">Nix</a> (the <code>./default.sh</code> script builds a reproducible R environment via Nix):</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># Clone and enter Nix environment</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/JohnGavin/micromort.git</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="bu">cd</span> micromort</span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="ex">./default.sh</span>   <span class="co"># Requires Nix — builds reproducible R env with all dependencies</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co"># Run tests</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::test()"</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co"># Check package</span></span>
-<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">"devtools::check()"</span></span></code></pre></div>
-</div>
-</div>
-<div class="section level2">
 <h2 id="glossary">Glossary<a class="anchor" aria-label="anchor" href="#glossary"></a>
 </h2>
 <table class="table">
-<colgroup>
-<col width="28%">
-<col width="34%">
-<col width="37%">
-</colgroup>
 <thead><tr>
 <th>Acronym</th>
-<th>Full Name</th>
 <th>Definition</th>
 </tr></thead>
 <tbody>
 <tr>
 <td>DALY</td>
-<td>Disability-Adjusted Life Year</td>
-<td>Disease burden = <a href="#glossary">YLL</a> + <a href="#glossary">YLD</a>. 1 DALY = 1 year of healthy life lost.</td>
+<td>Disability-Adjusted Life Year (YLL + YLD)</td>
 </tr>
 <tr>
 <td>LLE</td>
-<td>Loss of Life Expectancy</td>
-<td>Expected lifespan reduction from a risk, in minutes. See <code><a href="reference/lle.html">lle()</a></code>.</td>
-</tr>
-<tr>
-<td>QALD</td>
-<td>Quality-Adjusted Life Day</td>
-<td>1 day of perfect health. Useful for short-duration conditions.</td>
+<td>Loss of Life Expectancy (minutes)</td>
 </tr>
 <tr>
 <td>QALY</td>
 <td>Quality-Adjusted Life Year</td>
-<td>1 year of perfect health. Used in healthcare cost-effectiveness.</td>
 </tr>
 <tr>
 <td>VSL</td>
-<td>Value of Statistical Life</td>
-<td>Monetary value society places on preventing one death (~$10M USD). See <code><a href="reference/value_of_micromort.html">value_of_micromort()</a></code>.</td>
-</tr>
-<tr>
-<td>YLD</td>
-<td>Years Lived with Disability</td>
-<td>Morbidity component of <a href="#glossary">DALY</a>. Time spent in impaired health.</td>
-</tr>
-<tr>
-<td>YLL</td>
-<td>Years of Life Lost</td>
-<td>Mortality component of <a href="#glossary">DALY</a>. Premature death relative to standard life expectancy.</td>
+<td>Value of Statistical Life (~$10M USD)</td>
 </tr>
 </tbody>
 </table>
@@ -1082,16 +463,14 @@ Click to expand project tree
 </h2>
 <ul>
 <li>Howard RA (1980). “On Making Life and Death Decisions.” <em>Societal Risk Assessment</em>.</li>
-<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.” BMJ 345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-link">DOI: 10.1136/bmj.e8223</a>
-</li>
-<li>Blastland M, Spiegelhalter D (2013). <em>The Norm Chronicles: Stories and Numbers About Danger</em>.</li>
+<li>Spiegelhalter D (2012). “Using speed of ageing and ‘microlives’.” BMJ 345:e8223.</li>
+<li>Blastland M, Spiegelhalter D (2013). <em>The Norm Chronicles</em>.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>MIT © <a href="https://github.com/JohnGavin" class="external-link">John Gavin</a></p>
-<p>See <a href="LICENSE">LICENSE</a> for details.</p>
+<p>MIT. See <a href="LICENSE">LICENSE</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

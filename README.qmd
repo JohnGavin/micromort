@@ -19,142 +19,11 @@ library(dplyr)
 
 # micromort <img src="man/figures/logo.png" align="right" height="139" alt="micromort logo: one bright dot among a million, representing a one-in-a-million chance of death" />
 
-A **data package** providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, and academic literature. This is a reference dataset for risk comparison and communication — not a time-series analysis tool or epidemiological modelling framework.
+A **data package** providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, IHME GBD 2023 via OWID, and academic literature.
 
-## Features
+**120 activity IDs** across 193 atomic risk rows. **35+ chronic factors.** **6-country disease mortality** + risk factors from GBD 2023. **3 interactive quizzes.** [Closeread scrollytelling.](https://johngavin.github.io/micromort/articles/chronic_vs_acute.html) [REST API.](https://johngavin.github.io/micromort/articles/rest_api.html)
 
-- **62 acute risks** measured in micromorts (one-in-a-million death probability per event)
-- **35+ chronic factors** measured in microlives (30-minute life expectancy change per day)
-- **14 authoritative sources** with full provenance tracking
-- **Parquet datasets** for cross-language compatibility (R, Python, Arrow)
-- **Plumber REST API** for programmatic access
-- **Interactive dashboard** for data exploration
-- **targets pipeline** for reproducible data updates
-
-## Architecture
-
-```{r architecture-diagram, echo=FALSE, results='asis'}
-# Mermaid renders on GitHub but shows as raw text in pkgdown.
-# Wrap in <details> so it's collapsed on the pkgdown homepage.
-diagram <- tryCatch({
-  store <- tryCatch(
-    file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
-    error = function(e) "_targets"
-  )
-  targets::tar_read_raw("readme_concept_diagram", store = store)
-}, error = function(e) NULL)
-
-if (!is.null(diagram)) {
-  cat("<details>\n<summary>Package architecture diagram (click to expand; renders on GitHub)</summary>\n\n")
-  cat("```mermaid\n", diagram, "\n```\n", sep = "")
-  cat("\n</details>\n")
-} else {
-  cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed package diagrams.\n")
-}
-```
-
-See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed package diagrams.
-
-See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html)
-for detailed diagrams of the data pipeline, function hierarchy, and user journey.
-
-## Installation
-
-### R-Universe (Recommended)
-
-```r
-# Install from r-universe (pre-built binaries, fast)
-install.packages("micromort", repos = "https://johngavin.r-universe.dev")
-```
-
-### GitHub
-
-```r
-# Install from GitHub (source)
-# install.packages("devtools")
-devtools::install_github("JohnGavin/micromort")
-```
-
-### Nix Users
-
-This project provides a reproducible Nix environment with pre-built binaries from the `johngavin` cachix cache:
-
-```bash
-# Enter project shell (uses cachix cache for fast builds)
-./default.sh
-
-# Start R
-R
-```
-
-#### Using with rix
-
-To include micromort in your own Nix-based R project:
-
-```r
-library(rix)
-
-rix(
-  r_pkgs = c("dplyr", "ggplot2"),
-  git_pkgs = list(
-    list(
-      package_name = "micromort",
-      repo_url = "https://github.com/JohnGavin/micromort",
-      commit = "main"  # Or specific SHA for reproducibility
-    )
-  ),
-  project_path = ".",
-  overwrite = TRUE
-)
-```
-
-## Concepts
-
-### Micromort (Acute Risk)
-A **micromort** is a unit of mortality risk equal to a **one-in-a-million probability of death per specific event**.
-
-- **Unit:** 1 micromort = 1/1,000,000 = 0.0001% death probability
-- **Scope:** Per discrete event (e.g., one skydive, one surgery, one flight)
-- **Sign:** Always non-negative (it's a probability)
-- **Example:** Skydiving has ~8 micromorts per jump (8-in-a-million death chance per jump)
-
-### Microlife (Chronic Risk)
-
-A **microlife** is a unit of life expectancy change equal to **30 minutes of expected lifespan, measured per day** of exposure.
-
-- **Unit:** 1 microlife = 30 minutes of life expectancy
-- **Scope:** Per day of maintaining a habit or exposure
-- **Sign:** Positive (life gained) or negative (life lost)
-- **Example:** Smoking 2 cigarettes daily costs -1 microlife/day (losing 30 mins of life expectancy each day you smoke)
-
-### Conversion {#conversion}
-
-**1 micromort ≈ 0.7 microlives** (assuming 40 years remaining life expectancy).
-The conversion scales linearly with remaining life expectancy:
-
-| Remaining life expectancy | 1 micromort ≈ |
-|---------------------------|---------------|
-| 10 years | 0.18 microlives |
-| 20 years | 0.35 microlives |
-| 40 years (default) | 0.70 microlives |
-| 60 years | 1.05 microlives |
-
-Use `lle(prob, life_expectancy = ...)` and `as_microlife()` to convert at any age.
-See the [Age-Based Hazard Rates](#calculate-baseline-risk-by-age) section for daily micromort exposure by age.
-
-### Morbidity Metrics
-
-Micromorts and microlives focus on mortality. For quality-of-life impacts:
-
-- **QALY (Quality-Adjusted Life Year):** 1 year of perfect health. Used in healthcare economics.
-- **DALY (Disability-Adjusted Life Years):** Disease burden combining:
-    - **YLL (Years of Life Lost):** Premature mortality component
-    - **YLD (Years Lived with Disability):** Morbidity component
-- **QALD (Quality-Adjusted Life Days):** 1 day of perfect health. For common illnesses.
-
-See the [Introduction vignette](https://johngavin.github.io/micromort/articles/introduction.html) for detailed examples and the [Glossary](#glossary) for all acronym definitions.
-
-## Quick Start
+## Explore
 
 ### Load the Datasets
 
@@ -168,52 +37,38 @@ nrow(acute)
 # Load chronic risks (microlives per day)
 chronic <- load_chronic_risks()
 nrow(chronic)
-
-# Load source registry
-sources <- load_sources()
-nrow(sources)
 ```
 
 ### Acute Risks (Micromorts per Event)
 
 ```{r acute}
-# Convert a probability to micromorts
-# Example: 1 in 10,000 chance = 100 micromorts
-as_micromort(1/10000)
-
-# Top 10 riskiest activities (micromorts per event/period)
+# Top 10 riskiest activities
 acute |>
   dplyr::select(activity, micromorts, category, period) |>
   head(10)
 ```
 
-**Caption:** Micromorts represent probability of death per event. Higher values = higher risk per occurrence.
-
 ### Chronic Risks (Microlives per Day)
 
 ```{r chronic}
-# Factors that reduce life expectancy (microlives lost per day)
+# Factors that reduce life expectancy
 chronic |>
   dplyr::filter(direction == "loss") |>
   dplyr::select(factor, microlives_per_day, category) |>
   head(10)
 ```
 
-**Caption:** Microlives per day. Negative values = life expectancy loss; positive = gain. Effects accumulate daily.
-
-### Visualize Risks
+## Visualize
 
 ```{r plot, fig.cap="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity.", fig.height=18, fig.width=10, warning=FALSE}
-# Filter to show only activities with micromorts >= 1 for clarity on log scale
 plot_risks(common_risks() |> dplyr::filter(micromorts >= 1))
 ```
 
-## Analysis Functions
+## Analyse
 
 ### Compare Lifestyle Interventions
 
 ```{r compare}
-# Compare quitting smoking vs losing weight (microlives gained per day)
 compare_interventions(list(
   "Quit 10 cigarettes/day" = list(factor = "Smoking 10 cigarettes", change = -1),
   "Lose 5kg" = list(factor = "Being 5 kg overweight", change = -1)
@@ -223,46 +78,25 @@ compare_interventions(list(
 ### Calculate Baseline Risk by Age
 
 ```{r hazard}
-# Daily baseline mortality risk at age 35 (micromorts per day just from being alive)
 daily_hazard_rate(35)
 ```
 
 ### Lifestyle Tradeoffs
 
 ```{r tradeoff}
-# How much exercise offsets smoking? (in microlives per day)
 lifestyle_tradeoff("Smoking 2 cigarettes", "20 min moderate exercise")
 ```
 
-## API Access
+### Country-Level Disease Risk
 
-Launch the REST API for programmatic access:
-
-```r
-launch_api()
-# API available at http://localhost:8080
-# Swagger docs at http://localhost:8080/__docs__/
+```{r country-risk}
+# Compare disease burden: UK vs Nigeria
+common_risks(profile = list(country = "NG")) |>
+  dplyr::filter(grepl("mortality risk", activity)) |>
+  dplyr::select(activity, micromorts)
 ```
 
-**Core endpoints** (30 total — see [REST API vignette](https://johngavin.github.io/micromort/articles/rest_api.html) for full reference):
-
-- `GET /v1/risks/acute` — Acute risks (micromorts per event)
-- `GET /v1/risks/chronic` — Chronic risks (microlives per day)
-- `GET /v1/risks/cancer` — Cancer mortality by type/sex/age
-- `GET /v1/analysis/equivalence` — Risk equivalence lookup
-- `GET /v1/convert/hazard-rate?age=35` — Daily hazard rate
-- `GET /v1/sources` — Source registry
-- `GET /health` — Health check
-
-## Interactive Dashboard
-
-Launch the Shiny dashboard:
-
-```r
-launch_dashboard()
-```
-
-## Risk Quizzes
+## Quizzes
 
 | Quiz | Play in browser | Local |
 |------|----------------|-------|
@@ -272,11 +106,105 @@ launch_dashboard()
 
 All Shinylive quizzes run via WebR in the browser (30-60s initial load).
 
-Generate geography-specific quiz pairs comparing disease risk across countries:
-
 ```r
+# Generate geography-specific quiz pairs
 geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
 ```
+
+## Install
+
+### R-Universe (Recommended)
+
+```r
+install.packages("micromort", repos = "https://johngavin.r-universe.dev")
+```
+
+### GitHub
+
+```r
+devtools::install_github("JohnGavin/micromort")
+```
+
+### Nix Users
+
+```bash
+./default.sh   # Reproducible R env with cachix cache
+R
+```
+
+<details>
+<summary>Using with rix</summary>
+
+```r
+library(rix)
+rix(
+  r_pkgs = c("dplyr", "ggplot2"),
+  git_pkgs = list(list(
+    package_name = "micromort",
+    repo_url = "https://github.com/JohnGavin/micromort",
+    commit = "main"
+  )),
+  project_path = ".",
+  overwrite = TRUE
+)
+```
+
+</details>
+
+## API
+
+Launch the REST API for programmatic access:
+
+```r
+launch_api()
+# Swagger docs at http://localhost:8080/__docs__/
+```
+
+**Core endpoints** (30 total — [full reference](https://johngavin.github.io/micromort/articles/rest_api.html)):
+
+| Endpoint | Returns |
+|----------|---------|
+| `GET /v1/risks/acute` | Acute risks (micromorts) |
+| `GET /v1/risks/chronic` | Chronic risks (microlives) |
+| `GET /v1/risks/cancer` | Cancer mortality by type/sex/age |
+| `GET /v1/analysis/equivalence` | Risk equivalence lookup |
+| `GET /v1/convert/hazard-rate?age=35` | Daily hazard rate |
+
+## Concepts
+
+### Micromort (Acute Risk)
+A **micromort** = one-in-a-million probability of death per event.
+Skydiving: ~8 micromorts per jump.
+
+### Microlife (Chronic Risk)
+A **microlife** = 30 minutes of life expectancy change per day.
+Smoking 2 cigarettes: -1 microlife/day.
+
+### Conversion
+
+**1 micromort ≈ 0.7 microlives** (at 40 years remaining life expectancy).
+
+## Architecture
+
+```{r architecture-diagram, echo=FALSE, results='asis'}
+diagram <- tryCatch({
+  store <- tryCatch(
+    file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+    error = function(e) "_targets"
+  )
+  targets::tar_read_raw("readme_concept_diagram", store = store)
+}, error = function(e) NULL)
+
+if (!is.null(diagram)) {
+  cat("<details>\n<summary>Package architecture (click to expand; renders on GitHub)</summary>\n\n")
+  cat("```mermaid\n", diagram, "\n```\n", sep = "")
+  cat("\n</details>\n")
+} else {
+  cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html).\n")
+}
+```
+
+See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed diagrams.
 
 ## Data Sources
 
@@ -290,69 +218,21 @@ geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
 | SEER Cancer Statistics | Government | Cancer mortality by type/sex |
 | IHME GBD 2023 via OWID | Academic | Disease + risk-factor mortality by country |
 
-## Project Structure
+## Glossary
 
-<details>
-<summary>Click to expand project tree</summary>
-
-```{r tree, echo=FALSE, message=FALSE}
-if (requireNamespace("fs", quietly = TRUE)) {
-  fs::dir_tree(recurse = 2, regexp = "^[^._]")
-} else {
-  cat("Install fs package to see directory tree: install.packages('fs')\n")
-}
-```
-
-</details>
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. **Report issues** at [GitHub Issues](https://github.com/JohnGavin/micromort/issues)
-2. **Submit PRs** following the [tidyverse style guide](https://style.tidyverse.org/)
-3. **Add data** - New risk sources welcome! Include:
-   - Source URL with citation
-   - Units (micromorts per event OR microlives per day)
-   - Period specification (per jump, per day, per year, etc.)
-
-### Development Setup
-
-Requires [Nix](https://nixos.org/) (the `./default.sh` script builds a reproducible R environment via Nix):
-
-```bash
-# Clone and enter Nix environment
-git clone https://github.com/JohnGavin/micromort.git
-cd micromort
-./default.sh   # Requires Nix — builds reproducible R env with all dependencies
-
-# Run tests
-Rscript -e "devtools::test()"
-
-# Check package
-Rscript -e "devtools::check()"
-```
-
-## Glossary {#glossary}
-
-| Acronym | Full Name | Definition |
-|---------|-----------|------------|
-| DALY | Disability-Adjusted Life Year | Disease burden = [YLL](#glossary) + [YLD](#glossary). 1 DALY = 1 year of healthy life lost. |
-| LLE | Loss of Life Expectancy | Expected lifespan reduction from a risk, in minutes. See `lle()`. |
-| QALD | Quality-Adjusted Life Day | 1 day of perfect health. Useful for short-duration conditions. |
-| QALY | Quality-Adjusted Life Year | 1 year of perfect health. Used in healthcare cost-effectiveness. |
-| VSL | Value of Statistical Life | Monetary value society places on preventing one death (~$10M USD). See `value_of_micromort()`. |
-| YLD | Years Lived with Disability | Morbidity component of [DALY](#glossary). Time spent in impaired health. |
-| YLL | Years of Life Lost | Mortality component of [DALY](#glossary). Premature death relative to standard life expectancy. |
+| Acronym | Definition |
+|---------|------------|
+| DALY | Disability-Adjusted Life Year (YLL + YLD) |
+| LLE | Loss of Life Expectancy (minutes) |
+| QALY | Quality-Adjusted Life Year |
+| VSL | Value of Statistical Life (~$10M USD) |
 
 ## References
 
 - Howard RA (1980). "On Making Life and Death Decisions." *Societal Risk Assessment*.
-- Spiegelhalter D (2012). "Using speed of ageing and 'microlives'." BMJ 345:e8223. [DOI: 10.1136/bmj.e8223](https://doi.org/10.1136/bmj.e8223)
-- Blastland M, Spiegelhalter D (2013). *The Norm Chronicles: Stories and Numbers About Danger*.
+- Spiegelhalter D (2012). "Using speed of ageing and 'microlives'." BMJ 345:e8223.
+- Blastland M, Spiegelhalter D (2013). *The Norm Chronicles*.
 
 ## License
 
-MIT © [John Gavin](https://github.com/JohnGavin)
-
-See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).
