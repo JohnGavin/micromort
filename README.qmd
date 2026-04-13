@@ -34,6 +34,8 @@ A **data package** providing curated, cross-sectional snapshots of micromort (ac
 ## Architecture
 
 ```{r architecture-diagram, echo=FALSE, results='asis'}
+# Mermaid renders on GitHub but shows as raw text in pkgdown.
+# Wrap in <details> so it's collapsed on the pkgdown homepage.
 diagram <- tryCatch({
   store <- tryCatch(
     file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
@@ -43,11 +45,15 @@ diagram <- tryCatch({
 }, error = function(e) NULL)
 
 if (!is.null(diagram)) {
+  cat("<details>\n<summary>Package architecture diagram (click to expand; renders on GitHub)</summary>\n\n")
   cat("```mermaid\n", diagram, "\n```\n", sep = "")
+  cat("\n</details>\n")
 } else {
   cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed package diagrams.\n")
 }
 ```
+
+See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed package diagrams.
 
 See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html)
 for detailed diagrams of the data pipeline, function hierarchy, and user journey.
@@ -197,7 +203,7 @@ chronic |>
 
 ### Visualize Risks
 
-```{r plot, fig.cap="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity.", fig.height=10}
+```{r plot, fig.cap="Risk comparison in micromorts (log scale). Bars show death probability per event. COVID-19 and other risks shown in separate panels for clarity.", fig.height=18, fig.width=10, warning=FALSE}
 # Filter to show only activities with micromorts >= 1 for clarity on log scale
 plot_risks(common_risks() |> dplyr::filter(micromorts >= 1))
 ```
@@ -256,13 +262,20 @@ Launch the Shiny dashboard:
 launch_dashboard()
 ```
 
-## Risk Quiz
+## Risk Quizzes
 
-[Play in browser](https://johngavin.github.io/micromort/articles/quiz_shinylive.html)
-— runs via WebR/Shinylive (30-60s initial load). Or locally:
+| Quiz | Play in browser | Local |
+|------|----------------|-------|
+| Which Is Riskier? | [Shinylive](https://johngavin.github.io/micromort/articles/quiz_shinylive.html) | `launch_quiz()` |
+| Microlife Quiz | [Shinylive](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html) | `launch_chronic_quiz()` |
+| Rank the Risks | [Shinylive](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | — |
+
+All Shinylive quizzes run via WebR in the browser (30-60s initial load).
+
+Generate geography-specific quiz pairs comparing disease risk across countries:
 
 ```r
-micromort::launch_quiz()
+geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
 ```
 
 ## Data Sources
@@ -275,6 +288,7 @@ micromort::launch_quiz()
 | CDC MMWR | Government | COVID vaccine data |
 | Spiegelhalter (2012) BMJ | Academic | Microlife framework |
 | SEER Cancer Statistics | Government | Cancer mortality by type/sex |
+| IHME GBD 2023 via OWID | Academic | Disease + risk-factor mortality by country |
 
 ## Project Structure
 

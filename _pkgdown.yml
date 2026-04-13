@@ -33,10 +33,20 @@ navbar:
       - text: "Quizzes"
       - text: "☠️ Micromort Quiz"
         href: articles/micromort-quiz.html
+      - text: "☠️ Micromort Quiz (Shinylive)"
+        href: articles/quiz_shinylive.html
       - text: "⏳ Microlife Quiz"
         href: articles/microlife-quiz.html
+      - text: "⏳ Microlife Quiz (Shinylive)"
+        href: articles/chronic_quiz_shinylive.html
       - text: "📊 Rank Risks Quiz"
         href: articles/risk-ranking-quiz.html
+      - text: "📊 Ranking Quiz (Shinylive)"
+        href: articles/ranking_quiz_shinylive.html
+      - text: "---"
+      - text: "Storytelling"
+      - text: "The Invisible Risk"
+        href: articles/chronic_vs_acute.html
       - text: "---"
       - text: "Reference"
       - text: "Introduction"
