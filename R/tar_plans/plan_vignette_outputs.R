@@ -816,8 +816,8 @@ plan_vignette_outputs <- list(
     }
   ),
 
-  # Demographic what-if: top-10 ranking shift (#74)
-  # Compare default (all_ages) vs 60-79 age profile
+  # Demographic what-if: top-15 ranking shift (#74)
+  # Compare default (all_ages) vs 85+ male age profile
   targets::tar_target(
     vig_confounding_demographic_whatif,
     {

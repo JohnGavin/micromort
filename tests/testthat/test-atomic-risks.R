@@ -153,8 +153,9 @@ test_that("common_risks() has correct activity count", {
   cr <- common_risks()
   # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default)
   # + 9 occupational + 3 age-conditioned (all_ages default) = 108
-  # But road traffic + homicide excluded (condition_value not in defaults)
+  # But road traffic + homicide excluded (condition_value not in defaults) = -1
   # Kangaroo is legacy Wildlife; default filter: shark, dog_US, bee_general, snake_US = +4 new
+  # Net: 108 - 1 = 107
   expect_equal(nrow(cr), 107)
 })
 

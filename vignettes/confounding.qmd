@@ -186,7 +186,14 @@ Population-average rankings can shift dramatically when conditioned on age. The 
 safe_tar_read("vig_confounding_bed_fall_age") |> knitr::kable(digits = 2)
 ```
 
-For an 85-year-old man, a bed fall carries **10.2 micromorts per night** — 2,550x the risk for someone under 65 (0.004 mm). This single activity, invisible in population-average rankings, becomes more dangerous than motorcycling.
+```{r bed-fall-dynamic, echo=FALSE}
+bed_age <- safe_tar_read("vig_confounding_bed_fall_age")
+bed_85m <- bed_age[bed_age$condition_value == "85_plus_male", "micromorts"]
+bed_u65 <- bed_age[bed_age$condition_value == "under_65", "micromorts"]
+bed_ratio <- round(bed_85m / bed_u65)
+```
+
+For an 85-year-old man, a bed fall carries **`r bed_85m` micromorts per night** — `r format(bed_ratio, big.mark=",")`x the risk for someone under 65 (`r bed_u65` mm). This single activity, invisible in population-average rankings, becomes more dangerous than motorcycling.
 
 ### Top-15 ranking: default vs 85+ male
 
@@ -196,11 +203,19 @@ For an 85-year-old man, a bed fall carries **10.2 micromorts per night** — 2,5
 safe_tar_read("vig_confounding_demographic_whatif") |> knitr::kable(digits = 1)
 ```
 
+```{r whatif-dynamic, echo=FALSE}
+whatif <- safe_tar_read("vig_confounding_demographic_whatif")
+anaes_default <- whatif[whatif$activity == "General anaesthesia (elective)", "default_mm"]
+anaes_aged <- whatif[whatif$activity == "General anaesthesia (elective)", "aged_mm"]
+bath_default <- whatif[whatif$activity == "Taking a bath (age-conditioned)", "default_mm"]
+bath_aged <- whatif[whatif$activity == "Taking a bath (age-conditioned)", "aged_mm"]
+```
+
 Key shifts for an 85-year-old male:
 
 - **Bed fall** enters the top 15 (absent from the default ranking entirely)
-- **General anaesthesia (elective)** jumps from ~2 mm to 50 mm — a routine procedure becomes high-risk
-- **Taking a bath** rises from 0.07 mm to 0.5 mm
+- **General anaesthesia (elective)** jumps from ~`r round(anaes_default, 0)` mm to `r round(anaes_aged, 0)` mm — a routine procedure becomes high-risk
+- **Taking a bath** rises from `r round(bath_default, 2)` mm to `r round(bath_aged, 1)` mm
 - Activities with no age conditioning (mountaineering, COVID-19) remain unchanged
 
 This demonstrates why `common_risks(profile = list(age = "85_plus_male"))` gives a more honest risk picture for an elderly user than the population average.
