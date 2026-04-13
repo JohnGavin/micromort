@@ -45,6 +45,10 @@ assign_difficulty <- function(ratios) {
 #'
 #'   When `NULL` (default), the original `min_ratio`/`max_ratio` behaviour
 #'   is preserved and no `difficulty` column is added.
+#' @param profile A named list of condition variables for filtering conditional
+#'   risks, passed to [common_risks()]. E.g. `list(country = "US")` to include
+#'   country-specific disease mortality in the quiz pool. Default `list()`
+#'   uses population-average unconditional risks only.
 #'
 #' @return A tibble with columns:
 #'   - `activity_a`, `micromorts_a`, `category_a`, `hedgeable_pct_a`, `period_a`
@@ -62,16 +66,21 @@ assign_difficulty <- function(ratios) {
 #' easy <- quiz_pairs(difficulty = "easy", seed = 42)
 #' head(easy)
 #'
+#' # Country-specific quiz with Nigerian disease risk
+#' ng_pairs <- quiz_pairs(profile = list(country = "NG"), seed = 42)
+#' head(ng_pairs)
+#'
 #' @export
 quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
                        prefer_cross_category = TRUE, seed = NULL,
-                       difficulty = NULL) {
+                       difficulty = NULL, profile = list()) {
   checkmate::assert_number(min_ratio, lower = 1.0)
   checkmate::assert_number(max_ratio, lower = 1.0)
   checkmate::assert_flag(prefer_cross_category)
   checkmate::assert_int(seed, null.ok = TRUE)
   checkmate::assert_choice(difficulty, c("easy", "medium", "hard", "mixed"),
                            null.ok = TRUE)
+  checkmate::assert_list(profile, names = "named")
 
   # When difficulty is set, use wider ratio pool
 
@@ -83,7 +92,7 @@ quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
   if (!is.null(seed)) set.seed(seed)
 
 
-  cr <- common_risks()
+  cr <- common_risks(profile = profile)
   cr <- cr[cr$micromorts > 0, ]
 
   n <- nrow(cr)
@@ -388,6 +397,167 @@ chronic_quiz_pairs <- function(min_ratio = 1.1, max_ratio = 2.0,
 format_activity_name <- function(name) {
   formatted <- sub("\\s*\\(", "<br>(", name)
   shiny::HTML(formatted)
+}
+
+
+#' Generate Geography Quiz Pairs Comparing Risk Across Countries
+#'
+#' Creates quiz pairs that compare the same disease risk across different
+#' countries, or compare country-specific disease risk against acute
+#' one-off activities. Uses [common_risks()] with country profiles.
+#'
+#' @param countries Character vector of ISO-2 country codes to compare.
+#'   Default `c("UK", "NG")` (UK vs Nigeria — high contrast).
+#' @param seed Optional random seed for reproducibility.
+#' @param include_acute If `TRUE` (default), also includes cross-domain pairs
+#'   comparing country-specific disease risk vs unconditional acute activities
+#'   (e.g., "Daily CVD risk (Nigeria) vs Skydiving").
+#' @param difficulty Optional difficulty level: `"easy"`, `"medium"`, `"hard"`,
+#'   or `"mixed"`.
+#' @return A tibble with the same columns as [quiz_pairs()], plus a
+#'   `pair_type` column indicating `"cross_country"` or `"disease_vs_acute"`.
+#'
+#' @examples
+#' geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+#'
+#' @export
+geography_quiz_pairs <- function(countries = c("UK", "NG"),
+                                  seed = NULL,
+                                  include_acute = TRUE,
+                                  difficulty = NULL) {
+  checkmate::assert_character(countries, min.len = 2)
+  checkmate::assert_int(seed, null.ok = TRUE)
+  checkmate::assert_flag(include_acute)
+  checkmate::assert_choice(difficulty, c("easy", "medium", "hard", "mixed"),
+                           null.ok = TRUE)
+
+  if (!is.null(seed)) set.seed(seed)
+
+  # Get country-specific risks for each country
+  country_risks <- lapply(countries, function(cc) {
+    cr <- common_risks(profile = list(country = cc))
+    cr$country <- cc
+    cr
+  })
+  all_country <- do.call(rbind, country_risks)
+
+  # Cross-country pairs: same activity_id across different countries
+  # Identify disease activities that appear in multiple countries
+  disease_activities <- all_country[grepl("mortality risk", all_country$activity), ]
+
+  cross_pairs <- list()
+  country_combos <- utils::combn(countries, 2)
+
+  for (j in seq_len(ncol(country_combos))) {
+    c1 <- country_combos[1, j]
+    c2 <- country_combos[2, j]
+    r1 <- disease_activities[disease_activities$country == c1, ]
+    r2 <- disease_activities[disease_activities$country == c2, ]
+
+    # Match by stripping country suffix to find same-cause pairs
+    r1$cause <- sub(" \\(.*\\)$", "", r1$activity)
+    r2$cause <- sub(" \\(.*\\)$", "", r2$activity)
+    common_causes <- intersect(r1$cause, r2$cause)
+
+    for (cause in common_causes) {
+      a <- r1[r1$cause == cause, ][1, ]
+      b <- r2[r2$cause == cause, ][1, ]
+      ratio <- max(a$micromorts, b$micromorts) / min(a$micromorts, b$micromorts)
+      if (ratio >= 1.1) {
+        cross_pairs[[length(cross_pairs) + 1L]] <- tibble::tibble(
+          activity_a = a$activity, micromorts_a = a$micromorts,
+          category_a = a$category, hedgeable_pct_a = a$hedgeable_pct,
+          period_a = a$period,
+          activity_b = b$activity, micromorts_b = b$micromorts,
+          category_b = b$category, hedgeable_pct_b = b$hedgeable_pct,
+          period_b = b$period,
+          ratio = ratio, pair_type = "cross_country"
+        )
+      }
+    }
+  }
+
+  result <- if (length(cross_pairs) > 0) {
+    do.call(rbind, cross_pairs)
+  } else {
+    tibble::tibble()
+  }
+
+  # Disease-vs-acute pairs: country disease risk vs unconditional acute
+
+  if (include_acute && nrow(disease_activities) > 0) {
+    acute <- common_risks()
+    acute <- acute[acute$micromorts > 0 & !grepl("mortality risk", acute$activity), ]
+
+    acute_pairs <- list()
+    for (i in seq_len(nrow(disease_activities))) {
+      d <- disease_activities[i, ]
+      for (j in seq_len(nrow(acute))) {
+        a <- acute[j, ]
+        ratio <- max(d$micromorts, a$micromorts) / min(d$micromorts, a$micromorts)
+        if (ratio >= 1.5 && ratio <= 10) {
+          acute_pairs[[length(acute_pairs) + 1L]] <- tibble::tibble(
+            activity_a = d$activity, micromorts_a = d$micromorts,
+            category_a = d$category, hedgeable_pct_a = d$hedgeable_pct,
+            period_a = d$period,
+            activity_b = a$activity, micromorts_b = a$micromorts,
+            category_b = a$category, hedgeable_pct_b = a$hedgeable_pct,
+            period_b = a$period,
+            ratio = ratio, pair_type = "disease_vs_acute"
+          )
+        }
+      }
+    }
+
+    if (length(acute_pairs) > 0) {
+      acute_result <- do.call(rbind, acute_pairs)
+      result <- rbind(result, acute_result)
+    }
+  }
+
+  if (nrow(result) == 0) return(tibble::tibble())
+
+  # Assign difficulty if requested
+  if (!is.null(difficulty)) {
+    result$difficulty <- assign_difficulty(result$ratio)
+    if (difficulty != "mixed") {
+      result <- result[result$difficulty == difficulty, ]
+    }
+  }
+
+  # Set answer
+  result$answer <- ifelse(result$micromorts_a >= result$micromorts_b, "a", "b")
+
+  # Greedy limit: each activity at most 3 times, max 50 pairs
+  selected <- logical(nrow(result))
+  activity_counts <- list()
+  for (i in seq_len(nrow(result))) {
+    if (sum(selected) >= 50L) break
+    a <- result$activity_a[i]
+    b <- result$activity_b[i]
+    ca <- if (is.null(activity_counts[[a]])) 0L else activity_counts[[a]]
+    cb <- if (is.null(activity_counts[[b]])) 0L else activity_counts[[b]]
+    if (ca < 3L && cb < 3L) {
+      selected[i] <- TRUE
+      activity_counts[[a]] <- ca + 1L
+      activity_counts[[b]] <- cb + 1L
+    }
+  }
+  result <- result[selected, ]
+
+  # Join descriptions
+  desc <- activity_descriptions()
+  desc_a <- desc
+  names(desc_a) <- c("activity_a", "description_a", "help_url_a")
+  desc_b <- desc
+  names(desc_b) <- c("activity_b", "description_b", "help_url_b")
+  result <- merge(result, desc_a, by = "activity_a", all.x = TRUE)
+  result <- merge(result, desc_b, by = "activity_b", all.x = TRUE)
+
+  # Shuffle
+  result <- result[sample(nrow(result)), ]
+
+  tibble::as_tibble(result)
 }
 
 

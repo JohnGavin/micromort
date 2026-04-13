@@ -135,6 +135,9 @@ kendall_tau_score <- function(user_order, correct_order) {
 #' @param seed Optional integer seed for reproducibility.
 #' @param difficulty Optional difficulty level: "easy", "medium", "hard",
 #'   or "mixed". Easy = large LLE spread within question, hard = small spread.
+#' @param profile A named list of condition variables for filtering conditional
+#'   risks, passed to [common_risks()]. E.g. `list(country = "NG")` to include
+#'   Nigerian disease mortality in the acute risk pool. Default `list()`.
 #'
 #' @return A tibble with columns:
 #'   - `question_id`, `tag`, `item_name`, `item_source` ("acute"/"chronic"),
@@ -149,7 +152,8 @@ ranking_quiz_questions <- function(tags = NULL,
                                     items_per_question = 3L,
                                     n_questions = 5L,
                                     seed = NULL,
-                                    difficulty = NULL) {
+                                    difficulty = NULL,
+                                    profile = list()) {
   checkmate::assert_character(tags, null.ok = TRUE, min.len = 1)
   checkmate::assert_int(items_per_question, lower = 2L, upper = 4L)
   checkmate::assert_int(n_questions, lower = 1L)
@@ -159,13 +163,14 @@ ranking_quiz_questions <- function(tags = NULL,
   checkmate::assert_int(seed, null.ok = TRUE)
   checkmate::assert_choice(difficulty, c("easy", "medium", "hard", "mixed"),
                            null.ok = TRUE)
+  checkmate::assert_list(profile, names = "named")
 
   if (!is.null(seed)) set.seed(seed)
 
   lle_per_mm <- as.numeric(lle(1 / 1e6, 40))  # ~21.04 minutes
 
   # Build unified pool
-  acute <- common_risks()
+  acute <- common_risks(profile = profile)
   acute <- acute[acute$micromorts > 0, ]
   acute_pool <- tibble::tibble(
     item_name = acute$activity,

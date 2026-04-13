@@ -9,7 +9,8 @@ ranking_quiz_questions(
   items_per_question = 3L,
   n_questions = 5L,
   seed = NULL,
-  difficulty = NULL
+  difficulty = NULL,
+  profile = list()
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ Default 3.}
 
 \item{difficulty}{Optional difficulty level: "easy", "medium", "hard",
 or "mixed". Easy = large LLE spread within question, hard = small spread.}
+
+\item{profile}{A named list of condition variables for filtering conditional
+risks, passed to \code{\link[=common_risks]{common_risks()}}. E.g. \code{list(country = "NG")} to include
+Nigerian disease mortality in the acute risk pool. Default \code{list()}.}
 }
 \value{
 A tibble with columns:

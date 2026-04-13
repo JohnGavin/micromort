@@ -267,3 +267,64 @@ test_that("shinylive quiz code is in sync with R/quiz.R", {
   expect_true(pkg_has_submit, label = "R/quiz.R has submit button")
   expect_true(qmd_has_submit, label = "qmd has submit button")
 })
+
+
+# ── Geography quiz pairs (#75) ──────────────────────────────────────────────
+
+test_that("quiz_pairs() accepts profile parameter", {
+  qp <- quiz_pairs(profile = list(country = "NG"), seed = 42)
+  expect_s3_class(qp, "tbl_df")
+  expect_gte(nrow(qp), 10)
+  # Should contain Nigerian disease activities
+  all_acts <- c(qp$activity_a, qp$activity_b)
+  expect_true(any(grepl("Nigeria", all_acts)))
+})
+
+test_that("quiz_pairs() default profile matches original behaviour", {
+  qp_default <- quiz_pairs(seed = 42)
+  qp_empty <- quiz_pairs(profile = list(), seed = 42)
+  expect_identical(qp_default, qp_empty)
+})
+
+test_that("geography_quiz_pairs() returns expected columns", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+  expect_s3_class(geo, "tbl_df")
+  expect_true("pair_type" %in% names(geo))
+  expect_true(all(geo$pair_type %in% c("cross_country", "disease_vs_acute")))
+  expect_true("answer" %in% names(geo))
+})
+
+test_that("geography_quiz_pairs() generates cross-country pairs", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+  cross <- geo[geo$pair_type == "cross_country", ]
+  expect_gte(nrow(cross), 2)
+  # Cross-country pairs should have different countries in activity names
+  expect_true(all(grepl("UK", cross$activity_a) | grepl("UK", cross$activity_b)))
+  expect_true(all(grepl("Nigeria", cross$activity_a) | grepl("Nigeria", cross$activity_b)))
+})
+
+test_that("geography_quiz_pairs() generates disease-vs-acute pairs", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+  dva <- geo[geo$pair_type == "disease_vs_acute", ]
+  expect_gte(nrow(dva), 5)
+})
+
+test_that("geography_quiz_pairs() with include_acute = FALSE", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42,
+                               include_acute = FALSE)
+  expect_true(all(geo$pair_type == "cross_country"))
+})
+
+test_that("geography_quiz_pairs() each activity at most 3 times", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+  all_acts <- c(geo$activity_a, geo$activity_b)
+  counts <- table(all_acts)
+  expect_true(all(counts <= 3))
+})
+
+test_that("snapshot: geography_quiz_pairs cross-country activities", {
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42,
+                               include_acute = FALSE)
+  pairs <- paste(geo$activity_a, "vs", geo$activity_b)
+  expect_snapshot(sort(pairs))
+})

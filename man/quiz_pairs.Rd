@@ -9,7 +9,8 @@ quiz_pairs(
   max_ratio = 2,
   prefer_cross_category = TRUE,
   seed = NULL,
-  difficulty = NULL
+  difficulty = NULL,
+  profile = list()
 )
 }
 \arguments{
@@ -40,6 +41,11 @@ based on data-driven terciles:
 
 When \code{NULL} (default), the original \code{min_ratio}/\code{max_ratio} behaviour
 is preserved and no \code{difficulty} column is added.}
+
+\item{profile}{A named list of condition variables for filtering conditional
+risks, passed to \code{\link[=common_risks]{common_risks()}}. E.g. \code{list(country = "US")} to include
+country-specific disease mortality in the quiz pool. Default \code{list()}
+uses population-average unconditional risks only.}
 }
 \value{
 A tibble with columns:
@@ -65,5 +71,9 @@ head(pairs)
 # Easy questions (large ratio differences)
 easy <- quiz_pairs(difficulty = "easy", seed = 42)
 head(easy)
+
+# Country-specific quiz with Nigerian disease risk
+ng_pairs <- quiz_pairs(profile = list(country = "NG"), seed = 42)
+head(ng_pairs)
 
 }
