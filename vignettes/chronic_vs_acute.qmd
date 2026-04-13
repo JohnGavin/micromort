@@ -3,10 +3,6 @@ title: "The Invisible Risk"
 subtitle: "Why chronic daily disease dwarfs the dangers you worry about"
 format:
   closeread-html:
-    css: |
-      .sticky-col-container { min-height: 80vh; }
-      .cr-section { margin-bottom: 4rem; }
-      table { width: 100%; }
     code-fold: true
     code-summary: "Show code"
 ---
