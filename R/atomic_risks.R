@@ -829,18 +829,18 @@ atomic_risks <- function() {
     "daily_diarrheal_mortality", "diarrheal disease", owid_diarrheal_url
   )
 
-  # ── Part 12: Risk-factor-attributed mortality (OWID/GBD 2019) ──────────
+  # ── Part 12: Risk-factor-attributed mortality (OWID/GBD 2023) ──────────
   # Deaths attributable to specific risk factors (not disease categories).
-  # Source: IHME GBD 2019 risk factor data via Our World in Data.
+  # Source: IHME GBD 2023 risk factor data via Our World in Data API.
   # These are ATTRIBUTABLE deaths — the fraction of total deaths caused by
 
   # each risk factor. They overlap with Part 11 disease categories (e.g.,
   # smoking-attributed deaths include lung cancer + CVD + COPD).
   # Conversion: rate_per_100k_year / 365 * 10 = mm/day
   owid_smoking_url <- "https://ourworldindata.org/grapher/death-rate-smoking"
-  owid_pollution_url <- "https://ourworldindata.org/grapher/outdoor-air-pollution-death-rate"
+  owid_pollution_url <- "https://ourworldindata.org/grapher/death-rate-from-air-pollution-per-100000"
   owid_obesity_url <- "https://ourworldindata.org/grapher/death-rate-from-obesity"
-  owid_alcohol_url <- "https://ourworldindata.org/grapher/alcohol-death-rate"
+  owid_alcohol_url <- "https://ourworldindata.org/grapher/rate-of-premature-deaths-due-to-alcohol-gbd"
 
   # Hedging estimates: % of attributed deaths avoidable by eliminating
   # exposure (theoretical maximum). Real-world reduction is lower.
@@ -869,7 +869,7 @@ atomic_risks <- function() {
         condition_variable = "country",
         confidence = "high",
         notes = paste0(
-          "IHME GBD 2019 via OWID; age-standardised deaths attributed to ",
+          "IHME GBD 2023 via OWID; age-standardised deaths attributed to ",
           factor_label, " / 365 * 10 = mm/day"
         ),
         validation_status = "corroborated",
@@ -878,59 +878,59 @@ atomic_risks <- function() {
       )
   }
 
-  # Smoking-attributed deaths (IHME GBD 2019)
+  # Smoking-attributed deaths (IHME GBD 2023)
   # Includes lung cancer, COPD, CVD, etc. attributable to tobacco use
   smoking_mortality <- make_risk_factor_rows(
     tibble::tribble(
       ~activity, ~condition_value, ~micromorts,
-      "Daily smoking-attributed mortality (UK)", "UK", round(118.0 / 365 * 10, 2),
-      "Daily smoking-attributed mortality (US)", "US", round(127.0 / 365 * 10, 2),
-      "Daily smoking-attributed mortality (Japan)", "JP", round(105.0 / 365 * 10, 2),
-      "Daily smoking-attributed mortality (India)", "IN", round(106.0 / 365 * 10, 2),
-      "Daily smoking-attributed mortality (Nigeria)", "NG", round(17.0 / 365 * 10, 2),
-      "Daily smoking-attributed mortality (Brazil)", "BR", round(63.0 / 365 * 10, 2)
+      "Daily smoking-attributed mortality (UK)", "UK", round(54.28 / 365 * 10, 2),
+      "Daily smoking-attributed mortality (US)", "US", round(54.94 / 365 * 10, 2),
+      "Daily smoking-attributed mortality (Japan)", "JP", round(35.95 / 365 * 10, 2),
+      "Daily smoking-attributed mortality (India)", "IN", round(65.38 / 365 * 10, 2),
+      "Daily smoking-attributed mortality (Nigeria)", "NG", round(11.56 / 365 * 10, 2),
+      "Daily smoking-attributed mortality (Brazil)", "BR", round(44.34 / 365 * 10, 2)
     ),
     "daily_smoking_mortality", "tobacco smoking", owid_smoking_url
   )
 
-  # Air pollution-attributed deaths (outdoor + household, IHME GBD 2019)
+  # Air pollution-attributed deaths (ambient + household, IHME GBD 2023)
   pollution_mortality <- make_risk_factor_rows(
     tibble::tribble(
       ~activity, ~condition_value, ~micromorts,
-      "Daily air pollution mortality (UK)", "UK", round(26.0 / 365 * 10, 2),
-      "Daily air pollution mortality (US)", "US", round(21.0 / 365 * 10, 2),
-      "Daily air pollution mortality (Japan)", "JP", round(22.0 / 365 * 10, 2),
-      "Daily air pollution mortality (India)", "IN", round(98.0 / 365 * 10, 2),
-      "Daily air pollution mortality (Nigeria)", "NG", round(163.0 / 365 * 10, 2),
-      "Daily air pollution mortality (Brazil)", "BR", round(26.0 / 365 * 10, 2)
+      "Daily air pollution mortality (UK)", "UK", round(14.46 / 365 * 10, 2),
+      "Daily air pollution mortality (US)", "US", round(13.04 / 365 * 10, 2),
+      "Daily air pollution mortality (Japan)", "JP", round(17.06 / 365 * 10, 2),
+      "Daily air pollution mortality (India)", "IN", round(186.24 / 365 * 10, 2),
+      "Daily air pollution mortality (Nigeria)", "NG", round(150.55 / 365 * 10, 2),
+      "Daily air pollution mortality (Brazil)", "BR", round(34.63 / 365 * 10, 2)
     ),
     "daily_pollution_mortality", "air pollution", owid_pollution_url
   )
 
-  # High BMI / obesity-attributed deaths (IHME GBD 2019)
+  # High BMI / obesity-attributed deaths (IHME GBD 2023)
   obesity_mortality <- make_risk_factor_rows(
     tibble::tribble(
       ~activity, ~condition_value, ~micromorts,
-      "Daily obesity-attributed mortality (UK)", "UK", round(89.0 / 365 * 10, 2),
-      "Daily obesity-attributed mortality (US)", "US", round(118.0 / 365 * 10, 2),
-      "Daily obesity-attributed mortality (Japan)", "JP", round(18.0 / 365 * 10, 2),
-      "Daily obesity-attributed mortality (India)", "IN", round(36.0 / 365 * 10, 2),
-      "Daily obesity-attributed mortality (Nigeria)", "NG", round(30.0 / 365 * 10, 2),
-      "Daily obesity-attributed mortality (Brazil)", "BR", round(79.0 / 365 * 10, 2)
+      "Daily obesity-attributed mortality (UK)", "UK", round(31.96 / 365 * 10, 2),
+      "Daily obesity-attributed mortality (US)", "US", round(55.85 / 365 * 10, 2),
+      "Daily obesity-attributed mortality (Japan)", "JP", round(11.07 / 365 * 10, 2),
+      "Daily obesity-attributed mortality (India)", "IN", round(32.07 / 365 * 10, 2),
+      "Daily obesity-attributed mortality (Nigeria)", "NG", round(59.98 / 365 * 10, 2),
+      "Daily obesity-attributed mortality (Brazil)", "BR", round(51.58 / 365 * 10, 2)
     ),
     "daily_obesity_mortality", "high body mass index", owid_obesity_url
   )
 
-  # Alcohol-attributed deaths (IHME GBD 2019)
+  # Alcohol-attributed deaths (IHME GBD 2023)
   alcohol_mortality <- make_risk_factor_rows(
     tibble::tribble(
       ~activity, ~condition_value, ~micromorts,
-      "Daily alcohol-attributed mortality (UK)", "UK", round(18.0 / 365 * 10, 2),
-      "Daily alcohol-attributed mortality (US)", "US", round(20.0 / 365 * 10, 2),
-      "Daily alcohol-attributed mortality (Japan)", "JP", round(11.0 / 365 * 10, 2),
-      "Daily alcohol-attributed mortality (India)", "IN", round(22.0 / 365 * 10, 2),
-      "Daily alcohol-attributed mortality (Nigeria)", "NG", round(16.0 / 365 * 10, 2),
-      "Daily alcohol-attributed mortality (Brazil)", "BR", round(14.0 / 365 * 10, 2)
+      "Daily alcohol-attributed mortality (UK)", "UK", round(30.81 / 365 * 10, 2),
+      "Daily alcohol-attributed mortality (US)", "US", round(30.79 / 365 * 10, 2),
+      "Daily alcohol-attributed mortality (Japan)", "JP", round(20.97 / 365 * 10, 2),
+      "Daily alcohol-attributed mortality (India)", "IN", round(9.51 / 365 * 10, 2),
+      "Daily alcohol-attributed mortality (Nigeria)", "NG", round(6.15 / 365 * 10, 2),
+      "Daily alcohol-attributed mortality (Brazil)", "BR", round(22.30 / 365 * 10, 2)
     ),
     "daily_alcohol_mortality", "alcohol use", owid_alcohol_url
   )
