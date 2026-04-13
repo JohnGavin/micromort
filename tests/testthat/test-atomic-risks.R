@@ -42,12 +42,12 @@ test_that("atomic_risks() has expected row count", {
   ar <- atomic_risks()
   # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned
-  # + 24 disease-by-country (4 causes x 6 countries) = 169
-  expect_equal(nrow(ar), 169)
+  # + 24 disease-by-country + 24 risk-factor-attributed = 193
+  expect_equal(nrow(ar), 193)
   # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned
-  # + 4 disease-by-country = 116 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 116)
+  # + 4 disease-by-country + 4 risk-factor = 120 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 120)
 })
 
 test_that("component_id values are unique", {
@@ -72,7 +72,7 @@ test_that("decomposed activities have multiple components", {
 
 test_that("component types are valid", {
   ar <- atomic_risks()
-  valid_components <- c("all_causes", "crash", "dvt", "radiation", "drowning")
+  valid_components <- c("all_causes", "crash", "dvt", "radiation", "drowning", "attributed")
   expect_true(all(ar$component %in% valid_components))
 })
 
@@ -479,6 +479,42 @@ test_that("snapshot: disease-by-country activity names", {
   expect_snapshot(disease_activities)
 })
 
+# ── Risk-factor-attributed mortality (#75 Slice 3) ──────────────────────────
+
+test_that("risk-factor rows exist in atomic_risks", {
+  ar <- atomic_risks()
+  rf_ids <- c(
+    "daily_smoking_mortality", "daily_pollution_mortality",
+    "daily_obesity_mortality", "daily_alcohol_mortality"
+  )
+  rf_rows <- ar[ar$activity_id %in% rf_ids, ]
+
+  expect_equal(nrow(rf_rows), 24)
+  expect_equal(length(unique(rf_rows$activity_id)), 4)
+  expect_true(all(rf_rows$condition_variable == "country"))
+  expect_true(all(rf_rows$hedgeable))
+})
+
+test_that("risk-factor mortality excluded from default common_risks", {
+  cr <- common_risks()
+  rf <- cr[grepl("attributed mortality|pollution mortality", cr$activity), ]
+  expect_equal(nrow(rf), 0)
+})
+
+test_that("risk-factor mortality included with country profile", {
+  cr_uk <- common_risks(profile = list(country = "UK"))
+  rf <- cr_uk[grepl("attributed mortality|pollution mortality", cr_uk$activity), ]
+  expect_equal(nrow(rf), 4)
+  expect_true(all(rf$micromorts > 0))
+})
+
+test_that("Nigeria air pollution higher than UK", {
+  ar <- atomic_risks()
+  ng <- ar[ar$activity_id == "daily_pollution_mortality" & ar$condition_value == "NG", "micromorts"][[1]]
+  uk <- ar[ar$activity_id == "daily_pollution_mortality" & ar$condition_value == "UK", "micromorts"][[1]]
+  expect_gt(ng, uk * 3)
+})
+
 test_that("common_risks() aggregates wildlife correctly", {
   cr <- common_risks()
   wildlife <- cr[cr$category == "Wildlife", ]
@@ -568,8 +604,8 @@ test_that("homicide included with country profile", {
 test_that("country-conditioned entries hidden from default view", {
   ar <- atomic_risks()
   country <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "country", ]
-  # 6 road + 6 homicide + 24 disease (4 causes x 6 countries) = 36
-  expect_equal(nrow(country), 36)
+  # 6 road + 6 homicide + 24 disease + 24 risk-factor = 60
+  expect_equal(nrow(country), 60)
 
   cr <- common_risks()
   # None of these should appear in default common_risks
