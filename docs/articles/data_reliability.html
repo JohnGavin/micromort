@@ -41,11 +41,15 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
-    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/ranking_quiz_shinylive.html">Ranking Quiz (play in browser)</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/what-is-a-micromort.html">What is a Micromort?</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Quizzes</h6></li>
+    <li><a class="dropdown-item" href="../articles/micromort-quiz.html">☠️ Micromort Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/microlife-quiz.html">⏳ Microlife Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/risk-ranking-quiz.html">📊 Rank Risks Quiz</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
@@ -54,6 +58,7 @@
     <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Developer</h6></li>
     <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
     <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
   </ul>
@@ -578,7 +583,17 @@
 <strong>Time period</strong>: When was the data collected?</li>
 </ol>
 <p>Entries start at <code>validation_status = "single_source"</code> and get upgraded as more sources confirm them.</p>
-</section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
+<section class="level3"><h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<ul>
+<li>Spiegelhalter D (2009). “Micromorts.” Plus Magazine. <a href="https://plus.maths.org/os/issue55/features/risk/index" class="external-link">plus.maths.org</a>
+</li>
+<li>Spiegelhalter D (2012). “Microlives.” Plus Magazine. <a href="https://plus.maths.org/content/understanding-uncertainty-microlives" class="external-link">plus.maths.org</a>
+</li>
+<li>
+<a href="https://micromorts.rip/" class="external-link">micromorts.rip</a> — curated micromort database</li>
+<li><a href="https://en.wikipedia.org/wiki/Micromort" class="external-link">Wikipedia: Micromort</a></li>
+</ul></section></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
 </h2>
 <div class="cell">
 <details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">

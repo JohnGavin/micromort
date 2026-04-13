@@ -24,11 +24,15 @@ educational."><meta property="og:image" content="https://johngavin.github.io/mic
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
-    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/ranking_quiz_shinylive.html">Ranking Quiz (play in browser)</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/what-is-a-micromort.html">What is a Micromort?</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Quizzes</h6></li>
+    <li><a class="dropdown-item" href="../articles/micromort-quiz.html">☠️ Micromort Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/microlife-quiz.html">⏳ Microlife Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/risk-ranking-quiz.html">📊 Rank Risks Quiz</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
@@ -37,6 +41,7 @@ educational."><meta property="og:image" content="https://johngavin.github.io/mic
     <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Developer</h6></li>
     <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
     <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
   </ul></li>
@@ -69,7 +74,8 @@ educational.</p>
 <span>  max_ratio <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  prefer_cross_category <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  difficulty <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  difficulty <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  profile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -108,6 +114,13 @@ risk categories are prioritised over same-category pairs.</p></dd>
 <li><p><strong>mixed</strong>: samples equally from all three tiers</p></li>
 </ul><p>When <code>NULL</code> (default), the original <code>min_ratio</code>/<code>max_ratio</code> behaviour
 is preserved and no <code>difficulty</code> column is added.</p></dd>
+
+
+<dt id="arg-profile">profile<a class="anchor" aria-label="anchor" href="#arg-profile"></a></dt>
+<dd><p>A named list of condition variables for filtering conditional
+risks, passed to <code><a href="common_risks.html">common_risks()</a></code>. E.g. <code>list(country = "US")</code> to include
+country-specific disease mortality in the quiz pool. Default <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>
+uses population-average unconditional risks only.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -153,6 +166,23 @@ is preserved and no <code>difficulty</code> column is added.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more variables: micromorts_b &lt;dbl&gt;, category_b &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   hedgeable_pct_b &lt;dbl&gt;, period_b &lt;chr&gt;, ratio &lt;dbl&gt;, difficulty &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   answer &lt;chr&gt;, description_a &lt;chr&gt;, help_url_a &lt;chr&gt;, description_b &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   help_url_b &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Country-specific quiz with Nigerian disease risk</span></span></span>
+<span class="r-in"><span><span class="va">ng_pairs</span> <span class="op">&lt;-</span> <span class="fu">quiz_pairs</span><span class="op">(</span>profile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>country <span class="op">=</span> <span class="st">"NG"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ng_pairs</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Airline pilot (an… Commuting…        0.13  Travel                   0 per trip</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> All US workers ba… Commuting…        0.13  Travel                   0 per trip</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> American football  COVID-19 …       23     COVID-19                 0 11 week…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Base jumping (per… Living in…      500     COVID-19                 0 per mon…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Bee/wasp sting (g… High-alti…        0.035 Environme…               0 per year</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> COVID-19 infectio… Himalayan…    <span style="text-decoration: underline;">12</span>000     Mountaine…               0 per exp…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 10 more variables: micromorts_b &lt;dbl&gt;, category_b &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   hedgeable_pct_b &lt;dbl&gt;, period_b &lt;chr&gt;, ratio &lt;dbl&gt;, answer &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   description_a &lt;chr&gt;, help_url_a &lt;chr&gt;, description_b &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   help_url_b &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

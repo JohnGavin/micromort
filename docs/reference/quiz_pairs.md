@@ -14,7 +14,8 @@ quiz_pairs(
   max_ratio = 2,
   prefer_cross_category = TRUE,
   seed = NULL,
-  difficulty = NULL
+  difficulty = NULL,
+  profile = list()
 )
 ```
 
@@ -58,6 +59,16 @@ quiz_pairs(
 
   When `NULL` (default), the original `min_ratio`/`max_ratio` behaviour
   is preserved and no `difficulty` column is added.
+
+- profile:
+
+  A named list of condition variables for filtering conditional risks,
+  passed to
+  [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md).
+  E.g. `list(country = "US")` to include country-specific disease
+  mortality in the quiz pool. Default
+  [`list()`](https://rdrr.io/r/base/list.html) uses population-average
+  unconditional risks only.
 
 ## Value
 
@@ -111,5 +122,22 @@ head(easy)
 #> # ℹ 11 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, difficulty <chr>,
 #> #   answer <chr>, description_a <chr>, help_url_a <chr>, description_b <chr>,
+#> #   help_url_b <chr>
+
+# Country-specific quiz with Nigerian disease risk
+ng_pairs <- quiz_pairs(profile = list(country = "NG"), seed = 42)
+head(ng_pairs)
+#> # A tibble: 6 × 16
+#>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
+#>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
+#> 1 Airline pilot (an… Commuting…        0.13  Travel                   0 per trip
+#> 2 All US workers ba… Commuting…        0.13  Travel                   0 per trip
+#> 3 American football  COVID-19 …       23     COVID-19                 0 11 week…
+#> 4 Base jumping (per… Living in…      500     COVID-19                 0 per mon…
+#> 5 Bee/wasp sting (g… High-alti…        0.035 Environme…               0 per year
+#> 6 COVID-19 infectio… Himalayan…    12000     Mountaine…               0 per exp…
+#> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
+#> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
+#> #   description_a <chr>, help_url_a <chr>, description_b <chr>,
 #> #   help_url_b <chr>
 ```

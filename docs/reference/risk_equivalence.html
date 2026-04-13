@@ -20,11 +20,15 @@ ratio of micromorts. &quot;How many X-rays equal one skydive?&quot;"><meta prope
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Interactive</h6></li>
-    <li><a class="dropdown-item" href="../articles/quiz_shinylive.html">Risk Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/chronic_quiz_shinylive.html">Microlife Quiz (play in browser)</a></li>
-    <li><a class="dropdown-item" href="../articles/ranking_quiz_shinylive.html">Ranking Quiz (play in browser)</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/what-is-a-micromort.html">What is a Micromort?</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Quizzes</h6></li>
+    <li><a class="dropdown-item" href="../articles/micromort-quiz.html">☠️ Micromort Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/microlife-quiz.html">⏳ Microlife Quiz</a></li>
+    <li><a class="dropdown-item" href="../articles/risk-ranking-quiz.html">📊 Rank Risks Quiz</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/palatable_units.html">Palatable Units</a></li>
     <li><a class="dropdown-item" href="../articles/regional_variation.html">Regional Variation</a></li>
@@ -33,6 +37,7 @@ ratio of micromorts. &quot;How many X-rays equal one skydive?&quot;"><meta prope
     <li><a class="dropdown-item" href="../articles/data_reliability.html">Data Reliability</a></li>
     <li><a class="dropdown-item" href="../articles/rest_api.html">REST API</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Developer</h6></li>
     <li><a class="dropdown-item" href="../articles/architecture.html">Architecture Overview</a></li>
     <li><a class="dropdown-item" href="../articles/telemetry.html">Project Telemetry</a></li>
   </ul></li>
@@ -96,7 +101,7 @@ Defaults to <code><a href="common_risks.html">common_risks()</a></code>.</p></dd
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">risk_equivalence</span><span class="op">(</span><span class="st">"Chest X-ray (radiation per scan)"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 103 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 106 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity         micromorts reference reference_micromorts  ratio equivalence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest asc…      <span style="text-decoration: underline;">37</span>932 Chest X-…                  0.1 <span style="text-decoration: underline;">379</span>320 1 Mt. Ever…</span>
@@ -109,9 +114,9 @@ Defaults to <code><a href="common_risks.html">common_risks()</a></code>.</p></dd
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (p…        430 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>300 1 Base jum…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of li…        430 Chest X-…                  0.1   <span style="text-decoration: underline;">4</span>300 1 First da…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvacc…        234 Chest X-…                  0.1   <span style="text-decoration: underline;">2</span>340 1 COVID-19…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 93 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 96 more rows</span></span>
 <span class="r-in"><span><span class="fu">risk_equivalence</span><span class="op">(</span><span class="st">"Skydiving (US)"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 95 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 97 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity         micromorts reference reference_micromorts  ratio equivalence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest asc…      <span style="text-decoration: underline;">37</span>932 Skydivin…                    8 <span style="text-decoration: underline;">4</span>742.  1 Mt. Ever…</span>
@@ -124,7 +129,7 @@ Defaults to <code><a href="common_risks.html">common_risks()</a></code>.</p></dd
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (p…        430 Skydivin…                    8   53.8 1 Base jum…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of li…        430 Skydivin…                    8   53.8 1 First da…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvacc…        234 Skydivin…                    8   29.2 1 COVID-19…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 85 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 87 more rows</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

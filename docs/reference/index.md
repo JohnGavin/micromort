@@ -145,6 +145,8 @@ API, dashboard, and quiz
   : Launch Interactive "Which Is Riskier?" Quiz
 - [`quiz_pairs()`](https://johngavin.github.io/micromort/reference/quiz_pairs.md)
   : Generate Quiz Pairs for "Which Is Riskier?" Game
+- [`geography_quiz_pairs()`](https://johngavin.github.io/micromort/reference/geography_quiz_pairs.md)
+  : Generate Geography Quiz Pairs Comparing Risk Across Countries
 - [`activity_descriptions()`](https://johngavin.github.io/micromort/reference/activity_descriptions.md)
   : Activity Descriptions and Help URLs
 - [`launch_chronic_quiz()`](https://johngavin.github.io/micromort/reference/launch_chronic_quiz.md)

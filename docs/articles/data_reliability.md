@@ -223,6 +223,15 @@ with:
 Entries start at `validation_status = "single_source"` and get upgraded
 as more sources confirm them.
 
+### References
+
+- Spiegelhalter D (2009). “Micromorts.” Plus Magazine.
+  [plus.maths.org](https://plus.maths.org/os/issue55/features/risk/index)
+- Spiegelhalter D (2012). “Microlives.” Plus Magazine.
+  [plus.maths.org](https://plus.maths.org/content/understanding-uncertainty-microlives)
+- [micromorts.rip](https://micromorts.rip/) — curated micromort database
+- [Wikipedia: Micromort](https://en.wikipedia.org/wiki/Micromort)
+
 ## Reproducibility
 
 Show code

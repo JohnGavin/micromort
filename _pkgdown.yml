@@ -151,6 +151,7 @@ reference:
   - launch_dashboard
   - launch_quiz
   - quiz_pairs
+  - geography_quiz_pairs
   - activity_descriptions
   - launch_chronic_quiz
   - chronic_quiz_pairs

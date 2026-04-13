@@ -67,20 +67,23 @@ Other analysis:
 ``` r
 # Baseline risk at age 30
 daily_hazard_rate(30)
-#> # A tibble: 1 × 6
-#>     age sex   daily_prob micromorts microlives_consumed interpretation          
+#> # A tibble: 1 × 7
+#>     age sex   daily_prob micromorts microlives_consumed precision_note          
 #>   <dbl> <chr>      <dbl>      <dbl>               <dbl> <chr>                   
-#> 1    30 male  0.00000203          2                0.04 At age 30 (male): 2.0 m…
+#> 1    30 male  0.00000203          2                   0 Gompertz-Makeham approx…
+#> # ℹ 1 more variable: interpretation <chr>
 
 # Compare male vs female at age 65
 daily_hazard_rate(65, "male")
-#> # A tibble: 1 × 6
-#>     age sex   daily_prob micromorts microlives_consumed interpretation          
+#> # A tibble: 1 × 7
+#>     age sex   daily_prob micromorts microlives_consumed precision_note          
 #>   <dbl> <chr>      <dbl>      <dbl>               <dbl> <chr>                   
-#> 1    65 male   0.0000346       34.6                0.25 At age 65 (male): 34.6 …
+#> 1    65 male   0.0000346       34.6                 0.3 Gompertz-Makeham approx…
+#> # ℹ 1 more variable: interpretation <chr>
 daily_hazard_rate(65, "female")
-#> # A tibble: 1 × 6
-#>     age sex    daily_prob micromorts microlives_consumed interpretation         
+#> # A tibble: 1 × 7
+#>     age sex    daily_prob micromorts microlives_consumed precision_note         
 #>   <dbl> <chr>       <dbl>      <dbl>               <dbl> <chr>                  
-#> 1    65 female  0.0000151       15.1                0.11 At age 65 (female): 15…
+#> 1    65 female  0.0000151       15.1                 0.1 Gompertz-Makeham appro…
+#> # ℹ 1 more variable: interpretation <chr>
 ```

@@ -12,7 +12,8 @@ ranking_quiz_questions(
   items_per_question = 3L,
   n_questions = 5L,
   seed = NULL,
-  difficulty = NULL
+  difficulty = NULL,
+  profile = list()
 )
 ```
 
@@ -42,6 +43,15 @@ ranking_quiz_questions(
   Optional difficulty level: "easy", "medium", "hard", or "mixed". Easy
   = large LLE spread within question, hard = small spread.
 
+- profile:
+
+  A named list of condition variables for filtering conditional risks,
+  passed to
+  [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md).
+  E.g. `list(country = "NG")` to include Nigerian disease mortality in
+  the acute risk pool. Default
+  [`list()`](https://rdrr.io/r/base/list.html).
+
 ## Value
 
 A tibble with columns:
@@ -58,8 +68,8 @@ ranking_quiz_questions(tags = "Travel", n_questions = 3, seed = 42)
 #>   question_id tag    item_name                item_source lle_minutes micromorts
 #>         <int> <chr>  <chr>                    <chr>             <dbl>      <dbl>
 #> 1           1 Travel Train (1000 miles)       acute            21.0       1     
-#> 2           1 Travel Commuting by bicycle (3… acute            10.5       0.5   
-#> 3           1 Travel Frequent executive flye… acute             3.16      0.15  
+#> 2           1 Travel Frequent executive flye… acute             3.16      0.15  
+#> 3           1 Travel Commuting by bicycle (3… acute             2.52      0.12  
 #> 4           2 Travel Flying (8h long-haul)    acute            82.0       3.9   
 #> 5           2 Travel Flying (5h medium-haul)  acute            36.8       1.75  
 #> 6           2 Travel Commuting by car (30 mi… acute             2.73      0.13  

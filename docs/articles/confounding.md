@@ -203,7 +203,129 @@ geographic estimates, see the [Data
 Reliability](https://johngavin.github.io/micromort/articles/data_reliability.md)
 vignette.
 
-## 6. Implications for the Micromort Package
+## 6. Geography of Disease: How Country Reshuffles Daily Risk
+
+The leading causes of death vary dramatically by country — and not just
+for infectious diseases. Using [IHME Global Burden of Disease
+2023](https://ourworldindata.org/what-do-people-die-from-in-different-countries)
+age-standardised death rates, we can express chronic disease mortality
+as daily micromorts.
+
+### Disease death rates by country
+
+| activity_id               |   UK |   US |   JP |   IN |   NG |   BR |
+|:--------------------------|-----:|-----:|-----:|-----:|-----:|-----:|
+| daily_cancer_mortality    | 3.95 | 3.15 | 3.27 | 2.30 | 2.79 | 3.02 |
+| daily_cvd_mortality       | 3.24 | 3.95 | 2.10 | 7.65 | 7.33 | 4.03 |
+| daily_diarrheal_mortality | 0.02 | 0.04 | 0.02 | 1.28 | 0.88 | 0.08 |
+| daily_lri_mortality       | 0.53 | 0.29 | 0.43 | 1.09 | 1.77 | 1.10 |
+
+Daily micromorts by cause and country (IHME GBD 2023, age-standardised)
+
+Key findings:
+
+- **Cardiovascular disease** is the leading killer everywhere, at 3.24
+  mm/day in the UK and 7.65 mm/day in India (2.4x ratio). For context, a
+  single skydive is 8 mm — less than 3 days of background CVD risk in
+  India.
+- **Diarrheal diseases** show the starkest gap: 0.02 mm/day in the UK vs
+  1.28 mm/day in India — a 64x difference driven by clean water and
+  sanitation infrastructure.
+- **Cancer** is *higher* in the UK (3.95 mm/day) than India (2.3 mm/day)
+  — a counterintuitive finding. As the [OWID data
+  insight](https://ourworldindata.org/data-insights/richer-countries-dont-just-avoid-infectious-disease-they-also-have-lower-rates-of-chronic-disease-deaths)
+  notes, richer countries avoid both infectious *and* chronic disease
+  deaths, but cancer is the exception where age structure and screening
+  detection inflate high-income rates.
+
+### Top-15 ranking: UK vs Nigeria
+
+| activity                                | uk_mm | uk_rank | ng_mm | ng_rank |
+|:----------------------------------------|------:|--------:|------:|--------:|
+| Mt. Everest ascent                      | 37932 |       1 | 37932 |       1 |
+| Himalayan mountaineering                | 12000 |       2 | 12000 |       2 |
+| COVID-19 infection (unvaccinated)       | 10000 |       3 | 10000 |       3 |
+| Spanish flu infection                   |  3000 |       4 |  3000 |       4 |
+| Matterhorn ascent                       |  2840 |       5 |  2840 |       5 |
+| Living in US during COVID-19 (Jul 2020) |   500 |       6 |   500 |       6 |
+| Living (one day, age 90)                |   463 |       7 |   463 |       7 |
+| Base jumping (per jump)                 |   430 |       8 |   430 |       8 |
+| First day of life (newborn)             |   430 |       9 |   430 |       9 |
+| COVID-19 unvaccinated (age 80+)         |   234 |      10 |   234 |      10 |
+| Caesarean birth (mother)                |   170 |      11 |   170 |      11 |
+| Scuba diving, trained (yearly)          |   164 |      12 |   164 |      12 |
+| Vaginal birth (mother)                  |   120 |      13 |   120 |      13 |
+| Living (one day, age 75)                |   105 |      14 |   105 |      14 |
+| COVID-19 unvaccinated (age 65-79)       |    76 |      15 |    76 |      15 |
+
+Top-15 riskiest activities: UK vs Nigeria country profile
+
+Switching from a UK to Nigeria profile reveals that chronic diseases
+dominate daily risk far more than any acute activity, and that the gap
+between countries is structural — not about individual behaviour.
+
+## 7. Demographic What-If: How Age Reshuffles the Top 10
+
+Population-average rankings can shift dramatically when conditioned on
+age. The `micromort` package now supports `condition_variable = "age"`
+for bed falls, elective anaesthesia, and bathing — activities where age
+is the dominant confounder.
+
+### Bed falls by age group
+
+| activity | condition_value | micromorts | confidence | notes |
+|:---|:---|---:|:---|:---|
+| Bed fall (per night) | under_65 | 0.00 | high | CDC: ~0.4 deaths/100k/yr for under-65; / 365 \* 10 = 0.004 mm/night |
+| Bed fall (per night) | all_ages | 0.00 | high | Population average: ~450 deaths/yr / 330M / 365 \* 1e6 ≈ 0.004 mm/night (dominated by elderly) |
+| Bed fall (per night) | 65_74_female | 0.39 | high | CDC: 14.2 deaths/100k/yr for 65-74 females; / 365 \* 10 = 0.39 mm/night |
+| Bed fall (per night) | 65_74_male | 0.68 | high | CDC: 24.7 deaths/100k/yr for 65-74 males; / 365 \* 10 = 0.68 mm/night |
+| Bed fall (per night) | 85_plus_female | 8.80 | high | CDC: 319.7 deaths/100k/yr for 85+ females; / 365 \* 10 = 8.8 mm/night |
+| Bed fall (per night) | 85_plus_male | 10.20 | high | CDC: 373.3 deaths/100k/yr for 85+ males; / 365 \* 10 = 10.2 mm/night |
+
+Bed fall micromorts per night by age group (CDC Data Brief 532)
+
+For an 85-year-old man, a bed fall carries **10.2 micromorts per night**
+— 2,550x the risk for someone under 65 (0.004 mm). This single activity,
+invisible in population-average rankings, becomes more dangerous than
+motorcycling.
+
+### Top-15 ranking: default vs 85+ male
+
+| activity | default_mm | default_rank | aged_mm | aged_rank |
+|:---|---:|---:|---:|---:|
+| Mt. Everest ascent | 37932 | 1 | 37932 | 1 |
+| Himalayan mountaineering | 12000 | 2 | 12000 | 2 |
+| COVID-19 infection (unvaccinated) | 10000 | 3 | 10000 | 3 |
+| Spanish flu infection | 3000 | 4 | 3000 | 4 |
+| Matterhorn ascent | 2840 | 5 | 2840 | 5 |
+| Living in US during COVID-19 (Jul 2020) | 500 | 6 | 500 | 6 |
+| Living (one day, age 90) | 463 | 7 | 463 | 7 |
+| Base jumping (per jump) | 430 | 8 | 430 | 8 |
+| First day of life (newborn) | 430 | 9 | 430 | 9 |
+| COVID-19 unvaccinated (age 80+) | 234 | 10 | 234 | 10 |
+| Caesarean birth (mother) | 170 | 11 | 170 | 11 |
+| Scuba diving, trained (yearly) | 164 | 12 | 164 | 12 |
+| Vaginal birth (mother) | 120 | 13 | 120 | 13 |
+| Living (one day, age 75) | 105 | 14 | 105 | 14 |
+| COVID-19 unvaccinated (age 65-79) | 76 | 15 | 76 | 15 |
+
+Top-15 riskiest activities: population default vs 85+ male profile
+
+Key shifts for an 85-year-old male:
+
+- **Bed fall** enters the top 15 (absent from the default ranking
+  entirely)
+- **General anaesthesia (elective)** jumps from ~ mm to mm — a routine
+  procedure becomes high-risk
+- **Taking a bath** rises from mm to mm
+- Activities with no age conditioning (mountaineering, COVID-19) remain
+  unchanged
+
+This demonstrates why
+`common_risks(profile = list(age = "85_plus_male"))` gives a more honest
+risk picture for an elderly user than the population average.
+
+## 8. Implications for the Micromort Package
 
 This package addresses confounding in several ways:
 

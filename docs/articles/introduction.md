@@ -281,6 +281,9 @@ conditions like the common cold, YLD dominates.
 - Spiegelhalter D (2012). “Understanding uncertainty: Microlives.” Plus
   Magazine.
   [plus.maths.org](https://plus.maths.org/content/understanding-uncertainty-microlives)
+- Spiegelhalter D (2009). “Micromorts.” Plus Magazine.
+  [plus.maths.org](https://plus.maths.org/os/issue55/features/risk/index)
+  — includes the additivity formula for combining independent risks.
 - WHO Global Burden of Disease:
   [ghdx.healthdata.org](https://ghdx.healthdata.org/)
 - NICE Methods Guide:

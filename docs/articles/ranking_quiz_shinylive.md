@@ -1,9 +1,9 @@
-# Rank these risks from most to least dangerous
+# Rank these risks by their effect on lifespan
 
-# Rank these risks from most to least dangerous
+# Rank these risks by their effect on lifespan
 
 Interactive drag-and-drop quiz ranking everyday risks by their effect on
-life expectancy — combining acute micromorts and chronic microlives.
+life expectancy. Combining acute micromorts and chronic microlives.
 
 ``` shinylive-r
 #| '!! shinylive warning !!': |
@@ -39,6 +39,7 @@ quiz_css <- "
     white-space: nowrap;
     font-size: clamp(1rem, 2.5vw, 1.5rem);
   }
+  .tooltip-inner { font-size: 1rem !important; max-width: 350px !important; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   .option-btn {
     padding: 8px 18px; border: 2px solid #dee2e6; border-radius: 8px;
@@ -299,7 +300,7 @@ ranking_encouragement_lines <- function() {
   )
 }
 
-# ---- LLE label helper ----
+# ---- LLE helpers ----
 # Format LLE without spurious trailing .0
 fmt_lle <- function(x) sub("\\.0$", "", sprintf("%.1f", x))
 lle_label <- function(lle_min) {
@@ -310,6 +311,21 @@ lle_label <- function(lle_min) {
   } else {
     paste0(fmt_lle(lle_min), " min")
   }
+}
+# Reusable LLE abbreviation tag with tooltip — use on every page
+lle_tooltip_text <- paste0(
+  "Loss of Life Expectancy: the average time gained or lost per exposure. ",
+  "Ranges from <1 min (cup of coffee) to 5+ hrs/day (smoking 20/day). ",
+  "Can be harmful (smoking = 5 hrs/day lost) or beneficial (exercise = 1-1.5 hrs/day gained). ",
+  "Shown as positive magnitude here.")
+lle_abbr_tag <- function() {
+  tags$span(
+    `data-bs-toggle` = "tooltip",
+    `data-bs-placement` = "top",
+    `data-bs-delay` = '{"show": 100, "hide": 200}',
+    title = lle_tooltip_text,
+    style = "cursor: help; text-decoration: underline dotted;",
+    tags$b(tags$em("Loss of Life Expectancy (LLE)")))
 }
 
 # ---- Instructions page ----
@@ -332,39 +348,64 @@ instructions_ui <- function() {
     card(
       card_body(
         tags$ul(class = "mb-1",
-          tags$li("Each question shows ", tags$b(tags$em("3 or 4 risky activities or habits")), "."),
-          tags$li(tags$b(tags$em("Drag and drop")), " to rank them from ",
-                  tags$b("most dangerous"), " (top) to ",
-                  tags$b("least dangerous"), " (bottom)."),
-          tags$li("Risk is measured as ", tags$b(tags$em("Loss of Life Expectancy (LLE)")),
-                  " in minutes, combining both acute (micromort) and chronic (microlife) risks."),
-          tags$li("You can ", tags$b(tags$em("skip")), " questions or go ",
-                  tags$b(tags$em("back")), " and re-order."),
-          tags$li("Scoring uses ", tags$b(tags$em("Kendall tau")),
-                  ": each correctly ordered pair of items scores a point.")
+          tags$li(tags$b(tags$em("Select one or more tags")),
+                  " below to choose which risk categories to quiz on."),
+          tags$li(tags$b(tags$em("Drag and drop")),
+                  " to rank by risk to lifespan, biggest (top) to smallest (bottom)."),
+          tags$li("Rank by magnitude of factor (can be harmful or beneficial)."),
+          tags$li("Risk is measured as ",
+                  lle_abbr_tag(),
+                  "."),
+          tags$li("Each correctly ordered pair scores a point (",
+                  tags$a(href = "https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient",
+                         target = "_blank",
+                         tags$abbr(title = "Kendall rank correlation: counts how many pairs you ordered correctly vs incorrectly. Perfect = all pairs right.",
+                                   "Kendall's Tau")),
+                  ").")
         ),
         div(class = "mb-1", style = "padding-left: 1.5em;", tags$em(encouragement)),
         div(class = "option-row",
-          span(class = "option-label", "Tags:"),
-          div(id = "tag_group", style = "display: flex; flex-wrap: wrap; gap: 4px;",
-              tag_buttons)
+          span(class = "option-label",
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "right",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Select 1 or more risk categories. Click individual tags to toggle. Use Select All / Deselect All for bulk selection.",
+                         style = "cursor: help; text-decoration: underline dotted; font-size: 1.1em;",
+                         "Tags")),
+          div(style = "display: flex; flex-direction: column; gap: 4px;",
+            div(style = "display: flex; gap: 4px; margin-bottom: 4px;",
+              tags$button(class = "btn btn-sm btn-outline-secondary",
+                onclick = "selectAllTags(true)", "Select All"),
+              tags$button(class = "btn btn-sm btn-outline-secondary",
+                onclick = "selectAllTags(false)", "Deselect All")),
+            div(id = "tag_group", style = "display: flex; flex-wrap: wrap; gap: 4px;",
+                tag_buttons))
         ),
         div(class = "option-row",
-          span(class = "option-label", "Items per Q:"),
+          span(class = "option-label",
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "top",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Number of risk items to rank in each question. 3 is quicker, 4 is harder.",
+                         style = "cursor: help; text-decoration: underline dotted;",
+                         "Items per question")),
           div(class = "option-btn-group", id = "grp_items",
             actionButton("items_3", "3", class = "option-btn selected",
               onclick = "selectInGroup('grp_items', this)"),
             actionButton("items_4", "4", class = "option-btn",
-              onclick = "selectInGroup('grp_items', this)"))
-        ),
-        div(class = "option-row",
-          span(class = "option-label", "Questions:"),
+              onclick = "selectInGroup('grp_items', this)")),
+          span(style = "width: 24px;"),
+          span(class = "option-label",
+               tags$span(`data-bs-toggle` = "tooltip", `data-bs-placement` = "top",
+                         `data-bs-delay` = '{"show": 0, "hide": 200}',
+                         title = "Total number of ranking questions in this round.",
+                         style = "cursor: help; text-decoration: underline dotted;",
+                         "Questions")),
           div(class = "option-btn-group", id = "grp_nq",
             actionButton("nq_5", "5", class = "option-btn selected",
               onclick = "selectInGroup('grp_nq', this)"),
             actionButton("nq_10", "10", class = "option-btn",
               onclick = "selectInGroup('grp_nq', this)"))
         ),
+        uiOutput("tag_error_msg"),
         div(class = "text-center mt-3",
             actionButton("start_quiz", "Start Quiz", class = "btn-primary btn-lg"))
       )
@@ -376,7 +417,17 @@ instructions_ui <- function() {
 question_ui <- function(state) {
   q <- state$current_q
   n <- state$n_questions
+
+  # Guard against NULL/empty state during initial render
+  if (is.null(state$questions) || q > length(state$questions)) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   q_data <- state$questions[[q]]
+  if (is.null(q_data) || nrow(q_data) == 0) {
+    return(div(class = "text-center", h3("Loading...")))
+  }
+
   revealed <- state$revealed[q]
   user_order <- state$user_orders[[q]]
   items_k <- nrow(q_data)
@@ -396,7 +447,12 @@ question_ui <- function(state) {
       source_badge <- if (row$item_source == "acute") {
         tags$span(class = "badge bg-danger", "acute")
       } else {
-        tags$span(class = "badge bg-info", "chronic")
+        dir_label <- if (!is.na(row$microlives_per_day) && row$microlives_per_day > 0) {
+          "chronic +life"
+        } else {
+          "chronic -life"
+        }
+        tags$span(class = "badge bg-info", dir_label)
       }
       tags$div(
         class = "rank-item",
@@ -424,7 +480,12 @@ question_ui <- function(state) {
       source_badge <- if (row$item_source == "acute") {
         tags$span(class = "badge bg-danger", "acute")
       } else {
-        tags$span(class = "badge bg-info", "chronic")
+        dir_label <- if (!is.na(row$microlives_per_day) && row$microlives_per_day > 0) {
+          "chronic +life"
+        } else {
+          "chronic -life"
+        }
+        tags$span(class = "badge bg-info", dir_label)
       }
       lle_text <- lle_label(row$lle_minutes)
       user_pos_text <- if (!is_correct_pos) {
@@ -439,7 +500,14 @@ question_ui <- function(state) {
         tags$span(class = "item-name", format_activity_name(row$item_name)),
         source_badge,
         tags$span(class = "badge bg-secondary", row$category),
-        tags$span(class = "lle-reveal", paste0("LLE: ", lle_text, user_pos_text))
+        tags$span(class = "lle-reveal",
+                  tags$span(`data-bs-toggle` = "tooltip",
+                            `data-bs-placement` = "top",
+                            `data-bs-delay` = '{"show": 100, "hide": 200}',
+                            title = lle_tooltip_text,
+                            style = "cursor: help; text-decoration: underline dotted;",
+                            "LLE"),
+                  paste0(": ", lle_text, user_pos_text))
       )
     })
   }
@@ -499,13 +567,13 @@ question_ui <- function(state) {
 
   tagList(
     nav_ui,
-    div(class = "rank-label mb-1", "\u2191 Most dangerous"),
+    div(class = "rank-label mb-1", "\u2191 Biggest effect on lifespan"),
     if (!revealed) {
       tags$div(id = "sortable_list", class = "rank-container", rank_items)
     } else {
       tags$div(class = "rank-container", rank_items)
     },
-    div(class = "rank-label mt-1", "\u2193 Least dangerous"),
+    div(class = "rank-label mt-1", "\u2193 Smallest effect on lifespan"),
     if (!is.null(action_btn)) div(class = "text-center mt-3", action_btn),
     result_text,
     if (!revealed) {
@@ -516,6 +584,7 @@ question_ui <- function(state) {
 
 # ---- Results summary page ----
 results_summary_ui <- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n <- state$n_questions
 
   # Compute overall score
@@ -567,7 +636,7 @@ results_summary_ui <- function(state) {
           "var pEl=document.getElementById('percentile_text');",
           "var pLine=pEl&&pEl.textContent?'\\n'+pEl.textContent+'\\n':'\\n';",
           "var text='\\ud83c\\udfaf Ranking Quiz: Kendall tau %.1f%%!'+pLine+",
-          "'Rank risks from most to least dangerous.\\n",
+          "'Rank risks by their effect on lifespan.\\n",
           "Can you beat my score? \\ud83c\\udfaf\\n",
           "https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html';",
           "navigator.clipboard.writeText(text).then(function(){",
@@ -589,6 +658,7 @@ results_summary_ui <- function(state) {
 
 # ---- Results detail page ----
 results_detail_ui <- function(state) {
+  if (is.null(state$questions)) return(div("Loading..."))
   n <- state$n_questions
 
   detail_rows <- lapply(seq_len(n), function(i) {
@@ -659,13 +729,48 @@ ui <- page_fluid(
         }
         Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
       }
-      // Initialize all tags as selected
-      document.addEventListener('DOMContentLoaded', function() {
+      function selectAllTags(selectAll) {
+        var tagBtns = document.querySelectorAll('.tag-btn');
+        selectedTags = {};
+        for (var i = 0; i < tagBtns.length; i++) {
+          if (selectAll) {
+            tagBtns[i].classList.add('selected');
+            selectedTags[tagBtns[i].getAttribute('data-tag')] = true;
+          } else {
+            tagBtns[i].classList.remove('selected');
+          }
+        }
+        Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+      }
+      // Initialize all tags as selected on load
+      function initSelectedTags() {
         var tagBtns = document.querySelectorAll('.tag-btn');
         for (var i = 0; i < tagBtns.length; i++) {
           selectedTags[tagBtns[i].getAttribute('data-tag')] = true;
         }
-      });
+        if (typeof Shiny !== 'undefined') {
+          Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+        }
+      }
+      if (document.readyState === 'complete') { initSelectedTags(); }
+      else { window.addEventListener('load', initSelectedTags); }
+
+      // Initialize Bootstrap tooltips on dynamic content
+      function initTooltips() {
+        var els = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]');
+        for (var i = 0; i < els.length; i++) {
+          if (!els[i]._bsTooltip && typeof bootstrap !== 'undefined') {
+            els[i]._bsTooltip = new bootstrap.Tooltip(els[i], {delay: {show: 100, hide: 200}});
+          }
+        }
+      }
+      // Re-init tooltips whenever Shiny re-renders UI
+      if (typeof Shiny !== 'undefined') {
+        $(document).on('shiny:value', function() { setTimeout(initTooltips, 100); });
+      }
+      // Also init on page load
+      if (document.readyState === 'complete') { initTooltips(); }
+      else { window.addEventListener('load', initTooltips); }
     "))
   ),
   div(class = "container-fluid",
@@ -678,7 +783,16 @@ server <- function(input, output, session) {
     phase = "instructions", n_questions = 5L, current_q = 1L,
     questions = NULL, user_orders = NULL, display_order = NULL,
     revealed = NULL, sel_difficulty = "mixed", sel_nq = 5L,
-    sel_items_per_q = 3L, seen_questions = character())
+    sel_items_per_q = 3L, seen_questions = character(),
+    tag_error = FALSE)
+
+  # Tag error message (inline, above Start button)
+  output$tag_error_msg <- renderUI({
+    if (state$tag_error) {
+      div(class = "alert alert-danger text-center py-2 mt-2",
+          "Please select at least one tag before starting.")
+    }
+  })
 
   # N questions button handlers
   observeEvent(input$nq_5, { state$sel_nq <- 5L })
@@ -691,18 +805,22 @@ server <- function(input, output, session) {
     n <- state$sel_nq
     items_k <- state$sel_items_per_q
 
+    # Validate tag selection
+    sel_tags <- input$selected_tags
+    if (is.null(sel_tags) || length(sel_tags) == 0) {
+      state$tag_error <- TRUE
+      return()
+    }
+    state$tag_error <- FALSE
+
     # Filter pool by items_per_question (3 = q_ids 1-50, 4 = q_ids 51-80)
-    # Count items per question_id to determine k
     q_sizes <- tapply(quiz_pool$item_name, quiz_pool$question_id, length)
     valid_qids <- as.integer(names(q_sizes[q_sizes == items_k]))
 
-    # Filter by selected tags if any
-    sel_tags <- input$selected_tags
-    if (!is.null(sel_tags) && length(sel_tags) > 0) {
-      tagged_rows <- quiz_pool$tag %in% sel_tags
-      tagged_qids <- unique(quiz_pool$question_id[tagged_rows])
-      valid_qids <- intersect(valid_qids, tagged_qids)
-    }
+    # Filter by selected tags
+    tagged_rows <- quiz_pool$tag %in% sel_tags
+    tagged_qids <- unique(quiz_pool$question_id[tagged_rows])
+    valid_qids <- intersect(valid_qids, tagged_qids)
 
     pool_qids <- valid_qids
 
@@ -874,7 +992,7 @@ shinyApp(ui, server)
 28,"Radiation","CT scan head (radiation per scan)","acute",42.0768,2,NA,"Medical","Low-moderate radiation dose (~2 mSv) for neurological imaging.","https://en.wikipedia.org/wiki/CT_scan",2,"hard"
 28,"Lifestyle","Smoking 2 cigarettes","chronic",30,NA,-1,"Smoking","Even light smoking (2 cigarettes/day) carries measurable cardiovascular and cancer risk. Each cigarette costs roughly 15 minutes of life.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco",3,"hard"
 29,"Disease","COVID-19 monovalent vaccine (age 80+)","acute",1157.112,55,NA,"COVID-19","Even with monovalent vaccination, elderly remained at elevated COVID-19 risk in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm",1,"easy"
-29,"Diet & Drink","Eating 100 charbroiled steaks","acute",21.0384,1,NA,"Diet","Polycyclic aromatic hydrocarbons from charring are carcinogenic at high cumulative doses.","https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon",2,"easy"
+29,"Diet & Drink","Eating 100 charbroiled steaks (cumulative benzopyrene)","acute",21.0384,1,NA,"Diet","Cumulative cancer risk from polycyclic aromatic hydrocarbons (benzopyrene) in charred meat across 100 servings.","https://en.wikipedia.org/wiki/Polycyclic_aromatic_hydrocarbon",2,"easy"
 29,"Radiation","Granite resident (annual radon)","acute",2.10384,0.1,NA,"Environment","Radon gas seeps from granite bedrock into homes; mitigable with ventilation.","https://en.wikipedia.org/wiki/Radon",3,"easy"
 30,"Sport & Adventure","Himalayan mountaineering","acute",252460.8,12000,NA,"Mountaineering","Expeditions to 8,000m+ peaks carry extreme risk from altitude sickness, avalanches, and exposure.","https://en.wikipedia.org/wiki/Eight-thousander",1,"easy"
 30,"Sport & Adventure","Rock climbing (per day)","acute",63.1152,3,NA,"Sport","Risk from falls, rockfall, and equipment failure on natural rock. Per full day of climbing.","https://en.wikipedia.org/wiki/Rock_climbing",2,"easy"
