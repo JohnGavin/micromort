@@ -3,9 +3,25 @@ title: "The Invisible Risk"
 subtitle: "Why chronic daily disease dwarfs the dangers you worry about"
 format:
   closeread-html:
+    theme:
+      dark: darkly
+      light: flatly
     code-fold: true
     code-summary: "Show code"
 ---
+
+```{=html}
+<style>
+body { background-color: #1a1a1a; color: #e0e0e0; }
+.cr-section { background-color: #1a1a1a; }
+.sticky-col { background-color: #1a1a1a; }
+table { color: #e0e0e0; }
+th, td { border-color: #444 !important; }
+h2, h3 { color: #ffffff; }
+strong { color: #ffffff; }
+a { color: #6ea8fe; }
+</style>
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
@@ -151,6 +167,11 @@ Explore the data yourself:
 
 :::
 
-```{r session-info, eval=TRUE}
+<details>
+<summary>Session info (click to expand)</summary>
+
+```{r session-info, eval=TRUE, echo=FALSE}
 sessionInfo()
 ```
+
+</details>

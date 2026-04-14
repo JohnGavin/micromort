@@ -99,6 +99,8 @@ Explore the data yourself:
 - [`risk_equivalence()`](https://johngavin.github.io/micromort/reference/risk_equivalence.md)
   — formal equivalence calculations
 
+Session info (click to expand)
+
     #> R version 4.5.2 (2025-10-31)
     #> Platform: aarch64-apple-darwin25.2.0
     #> Running under: macOS Tahoe 26.3.1

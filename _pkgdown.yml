@@ -30,18 +30,20 @@ navbar:
       - text: "What is a Micromort?"
         href: articles/what-is-a-micromort.html
       - text: "---"
-      - text: "Quizzes"
+      - text: "Quizzes (instant)"
       - text: "☠️ Micromort Quiz"
         href: articles/micromort-quiz.html
-      - text: "☠️ Micromort Quiz (Shinylive)"
-        href: articles/quiz_shinylive.html
       - text: "⏳ Microlife Quiz"
         href: articles/microlife-quiz.html
-      - text: "⏳ Microlife Quiz (Shinylive)"
-        href: articles/chronic_quiz_shinylive.html
       - text: "📊 Rank Risks Quiz"
         href: articles/risk-ranking-quiz.html
-      - text: "📊 Ranking Quiz (Shinylive)"
+      - text: "---"
+      - text: "Quizzes (Shinylive — 30-60s load)"
+      - text: "☠️ Micromort (Shinylive)"
+        href: articles/quiz_shinylive.html
+      - text: "⏳ Microlife (Shinylive)"
+        href: articles/chronic_quiz_shinylive.html
+      - text: "📊 Ranking (Shinylive)"
         href: articles/ranking_quiz_shinylive.html
       - text: "---"
       - text: "Storytelling"
