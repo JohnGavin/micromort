@@ -146,13 +146,15 @@ common_risks(profile = list(country = "NG")) |>
 
 ## Quizzes
 
-| Quiz | Play in browser | Local |
-|----|----|----|
-| Which Is Riskier? | [Shinylive](https://johngavin.github.io/micromort/articles/quiz_shinylive.html) | [`launch_quiz()`](https://johngavin.github.io/micromort/reference/launch_quiz.md) |
-| Microlife Quiz | [Shinylive](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html) | [`launch_chronic_quiz()`](https://johngavin.github.io/micromort/reference/launch_chronic_quiz.md) |
-| Rank the Risks | [Shinylive](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | — |
+| Quiz | Instant (static JS) | Shinylive (30-60s load) | Local |
+|----|:--:|:--:|:--:|
+| Which Is Riskier? | [Play](https://johngavin.github.io/micromort/articles/micromort-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/quiz_shinylive.html) | [`launch_quiz()`](https://johngavin.github.io/micromort/reference/launch_quiz.md) |
+| Microlife Quiz | [Play](https://johngavin.github.io/micromort/articles/microlife-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html) | [`launch_chronic_quiz()`](https://johngavin.github.io/micromort/reference/launch_chronic_quiz.md) |
+| Rank the Risks | [Play](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | — |
 
-All Shinylive quizzes run via WebR in the browser (30-60s initial load).
+All quizzes have score submission + percentile ranking via Google Forms.
+Static JS versions load instantly; Shinylive versions use WebR (30-60s
+load).
 
 ``` r
 # Generate geography-specific quiz pairs

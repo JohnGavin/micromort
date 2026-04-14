@@ -231,34 +231,39 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </h2>
 <table class="table">
 <colgroup>
-<col width="20%">
-<col width="55%">
-<col width="24%">
+<col width="10%">
+<col width="36%">
+<col width="41%">
+<col width="12%">
 </colgroup>
 <thead><tr>
 <th>Quiz</th>
-<th>Play in browser</th>
-<th>Local</th>
+<th align="center">Instant (static JS)</th>
+<th align="center">Shinylive (30-60s load)</th>
+<th align="center">Local</th>
 </tr></thead>
 <tbody>
 <tr>
 <td>Which Is Riskier?</td>
-<td><a href="https://johngavin.github.io/micromort/articles/quiz_shinylive.html">Shinylive</a></td>
-<td><code><a href="reference/launch_quiz.html">launch_quiz()</a></code></td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/micromort-quiz.html">Play</a></td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/quiz_shinylive.html">Play</a></td>
+<td align="center"><code><a href="reference/launch_quiz.html">launch_quiz()</a></code></td>
 </tr>
 <tr>
 <td>Microlife Quiz</td>
-<td><a href="https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html">Shinylive</a></td>
-<td><code><a href="reference/launch_chronic_quiz.html">launch_chronic_quiz()</a></code></td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/microlife-quiz.html">Play</a></td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html">Play</a></td>
+<td align="center"><code><a href="reference/launch_chronic_quiz.html">launch_chronic_quiz()</a></code></td>
 </tr>
 <tr>
 <td>Rank the Risks</td>
-<td><a href="https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html">Shinylive</a></td>
-<td>—</td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html">Play</a></td>
+<td align="center"><a href="https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html">Play</a></td>
+<td align="center">—</td>
 </tr>
 </tbody>
 </table>
-<p>All Shinylive quizzes run via WebR in the browser (30-60s initial load).</p>
+<p>All quizzes have score submission + percentile ranking via Google Forms. Static JS versions load instantly; Shinylive versions use WebR (30-60s load).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate geography-specific quiz pairs</span></span>
 <span><span class="fu"><a href="reference/geography_quiz_pairs.html">geography_quiz_pairs</a></span><span class="op">(</span>countries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UK"</span>, <span class="st">"NG"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
