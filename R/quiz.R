@@ -1137,9 +1137,37 @@ results_summary_ui <- function(state) {
       class = "text-center mt-2",
       shiny::tags$small(id = "percentile_text", class = "text-muted"),
       shiny::tags$br(),
+      shiny::tags$small(id = "streak_text", class = "text-muted fw-bold"),
+      shiny::tags$br(),
       shiny::tags$small(
         class = "text-muted",
         "Scores are recorded anonymously (score, total, timestamp only)."
+      )
+    ),
+    shiny::div(
+      class = "text-center mt-3",
+      shiny::tags$small(
+        class = "text-muted",
+        if (pct < 50) {
+          "Risk intuitions improve with practice \u2014 try again!"
+        } else if (pct >= 80) {
+          "Excellent! Challenge yourself with a harder difficulty."
+        } else {
+          "Keep going \u2014 every quiz sharpens your risk intuition."
+        }
+      ),
+      shiny::tags$div(
+        class = "mt-2",
+        shiny::tags$a(
+          href = "../articles/chronic_quiz_shinylive.html",
+          class = "btn btn-outline-secondary btn-sm me-1",
+          "Try Chronic Quiz"
+        ),
+        shiny::tags$a(
+          href = "../articles/ranking_quiz_shinylive.html",
+          class = "btn btn-outline-secondary btn-sm",
+          "Try Ranking Quiz"
+        )
       )
     )
   )
@@ -1169,6 +1197,13 @@ results_detail_ui <- function(state) {
     `mm A` = round(pairs$micromorts_a, 2),
     `mm B` = round(pairs$micromorts_b, 2),
     Ratio = round(pairs$ratio, 2),
+    `Typical %` = vapply(seq_len(n), function(i) {
+      r <- pairs$ratio[i]
+      # Estimate: higher ratio = easier = more players correct
+      if (r >= 3) "~75% answer correctly"
+      else if (r >= 2) "~60% answer correctly"
+      else "~45% answer correctly"
+    }, character(1)),
     `Fun Fact` = vapply(seq_len(n), function(i) {
       ha <- pairs$hedgeable_pct_a[i]
       hb <- pairs$hedgeable_pct_b[i]
@@ -1291,8 +1326,54 @@ quiz_css <- function() {
 }
 
 
+#' @noRd
+streak_js <- function() {
+  "
+  function updateStreak() {
+    var today = new Date().toISOString().slice(0, 10);
+    var lastPlay = localStorage.getItem('micromort_last_play');
+    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    if (lastPlay === today) {
+      // already played today
+    } else if (lastPlay) {
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (lastPlay === yesterday.toISOString().slice(0, 10)) {
+        streak += 1;
+      } else {
+        streak = 1;
+      }
+    } else {
+      streak = 1;
+    }
+    localStorage.setItem('micromort_last_play', today);
+    localStorage.setItem('micromort_streak', streak.toString());
+    showStreak(streak);
+  }
+  function showStreak(streak) {
+    var el = document.getElementById('streak_text');
+    if (!el) return;
+    if (streak >= 2) {
+      el.textContent = streak + '-day streak! Keep it going!';
+    } else if (streak === 1) {
+      el.textContent = 'Play again tomorrow to start a streak!';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    if (streak > 0) showStreak(streak);
+  });
+  $(document).on('shiny:connected', function() {
+    Shiny.addCustomMessageHandler('update_streak', function(msg) {
+      updateStreak();
+    });
+  });
+  "
+}
+
+
 leaderboard_js <- function() {
-  # Google Form POST URL and Sheet JSON endpoint
+  # Google Form POST URL, Sheet JSON endpoint, and streak tracking
   "
   var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
   var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
@@ -1316,11 +1397,13 @@ leaderboard_js <- function() {
       scoreSubmitted = true;
       if (btn) btn.textContent = 'Submitted!';
       getPercentile(score, total);
+      updateStreak();
     }).catch(function() {
       if (btn) {
         btn.textContent = 'Score saved locally';
         btn.disabled = true;
       }
+      updateStreak();
     });
   }
 
@@ -1343,6 +1426,44 @@ leaderboard_js <- function() {
       })
       .catch(function() {});
   }
+
+  function updateStreak() {
+    var today = new Date().toISOString().slice(0, 10);
+    var lastPlay = localStorage.getItem('micromort_last_play');
+    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    if (lastPlay === today) {
+      // already played today
+    } else if (lastPlay) {
+      var yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (lastPlay === yesterday.toISOString().slice(0, 10)) {
+        streak += 1;
+      } else {
+        streak = 1;
+      }
+    } else {
+      streak = 1;
+    }
+    localStorage.setItem('micromort_last_play', today);
+    localStorage.setItem('micromort_streak', streak.toString());
+    showStreak(streak);
+  }
+
+  function showStreak(streak) {
+    var el = document.getElementById('streak_text');
+    if (!el) return;
+    if (streak >= 2) {
+      el.textContent = streak + '-day streak! Keep it going!';
+    } else if (streak === 1) {
+      el.textContent = 'Play again tomorrow to start a streak!';
+    }
+  }
+
+  // Show existing streak on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    if (streak > 0) showStreak(streak);
+  });
   "
 }
 
@@ -1402,7 +1523,8 @@ chronic_quiz_ui <- function() {
   bslib::page_fluid(
     theme = bslib::bs_theme(bootswatch = "flatly", version = 5),
     shiny::tags$head(
-      shiny::tags$style(shiny::HTML(chronic_quiz_css()))
+      shiny::tags$style(shiny::HTML(chronic_quiz_css())),
+      shiny::tags$script(shiny::HTML(streak_js()))
     ),
     shiny::div(
       class = "container",
@@ -1485,6 +1607,12 @@ chronic_quiz_server <- function(n_pairs = NULL) {
 
     shiny::observeEvent(input$try_again_detail, {
       state$phase <- "instructions"
+    })
+
+    # ---- Update streak when results shown ----
+    shiny::observe({
+      shiny::req(state$phase == "results_summary")
+      session$sendCustomMessage("update_streak", list())
     })
 
     # ---- Render main UI ----
@@ -1914,6 +2042,34 @@ chronic_results_summary_ui <- function(state) {
         ),
         "Share"
       )
+    ),
+    shiny::div(
+      class = "text-center mt-3",
+      shiny::tags$small(id = "streak_text", class = "text-muted fw-bold"),
+      shiny::tags$br(),
+      shiny::tags$small(
+        class = "text-muted",
+        if (pct < 50) {
+          "Risk intuitions improve with practice \u2014 try again!"
+        } else if (pct >= 80) {
+          "Excellent! Challenge yourself with a harder difficulty."
+        } else {
+          "Keep going \u2014 every quiz sharpens your risk intuition."
+        }
+      ),
+      shiny::tags$div(
+        class = "mt-2",
+        shiny::tags$a(
+          href = "../articles/quiz_shinylive.html",
+          class = "btn btn-outline-secondary btn-sm me-1",
+          "Try Acute Quiz"
+        ),
+        shiny::tags$a(
+          href = "../articles/ranking_quiz_shinylive.html",
+          class = "btn btn-outline-secondary btn-sm",
+          "Try Ranking Quiz"
+        )
+      )
     )
   )
 }
@@ -1943,6 +2099,12 @@ chronic_results_detail_ui <- function(state) {
     `ml/day B` = pairs$microlives_b,
     `Dir A` = pairs$direction_a,
     `Dir B` = pairs$direction_b,
+    `Typical %` = vapply(seq_len(n), function(i) {
+      r <- pairs$ratio[i]
+      if (r >= 3) "~75% answer correctly"
+      else if (r >= 2) "~60% answer correctly"
+      else "~45% answer correctly"
+    }, character(1)),
     Ratio = round(pairs$ratio, 2)
   )
 

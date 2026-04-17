@@ -187,7 +187,10 @@ chronic_risks <- function() {
     "Cancer screening (age-appropriate)", 1, "Medical", "Early detection improves outcomes",
     "Being female (vs male)", 4, "Demographics", "Female sex advantage",
     "Living in 2010 vs 1910", 15, "Historical", "Medical/social progress",
-    "Living in Sweden vs Russia (male)", 21, "Demographics", "Geographic health advantage"
+    "Living in Sweden vs Russia (male)", 21, "Demographics", "Geographic health advantage",
+
+    # Cancer burden (Philipson et al. 2026 NBER)
+    "Average cancer diagnosis", -6, "Cancer", "~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)"
   ) |>
     dplyr::mutate(
       direction = ifelse(microlives_per_day < 0, "loss", "gain"),

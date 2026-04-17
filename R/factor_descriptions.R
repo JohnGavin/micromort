@@ -180,6 +180,10 @@ factor_descriptions <- function() {
 
     "Living in Sweden vs Russia (male)",
     "Swedish males live ~15 years longer than Russian males, reflecting differences in healthcare, alcohol consumption, and social policy.",
-    "https://en.wikipedia.org/wiki/List_of_countries_by_life_expectancy"
+    "https://en.wikipedia.org/wiki/List_of_countries_by_life_expectancy",
+
+    "Average cancer diagnosis",
+    "Eliminating cancer would save 30.7M US deaths over 35 years, averaging ~12.4 life-years lost per cancer death ($197 trillion economic value; Philipson et al. 2026).",
+    "https://marginalrevolution.com/marginalrevolution/2026/04/the-economic-value-of-eliminating-cancer.html"
   )
 }

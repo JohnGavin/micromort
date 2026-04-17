@@ -116,6 +116,7 @@ atomic_risks <- function() {
     "COVID-19 unvaccinated (age 18-49)", 1, "COVID-19", "11 weeks (2022)", cdc_mmwr,
     "Living 2 months with a smoker", 1, "Environment", "per 2 months", mm_rip,
     "Walking (20 miles)", 1, "Travel", "per trip", wiki_mm,
+    "Walking (1 trip, NYC)", 0.09, "Travel", "per trip", "https://www.nature.com/articles/s44284-025-00383-y",
     "Driving (230 miles)", 1, "Travel", "per trip", wiki_mm,
     "Train (1000 miles)", 1, "Travel", "per trip", mm_rip,
     "Eating 1000 bananas (radiation)", 1, "Diet", "per event", mm_rip,

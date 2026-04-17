@@ -40,14 +40,14 @@ test_that("atomic_risks() has correct column types", {
 test_that("atomic_risks() has expected row count", {
 
   ar <- atomic_risks()
-  # 61 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
+  # 62 legacy + 16 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned
-  # + 24 disease-by-country + 24 risk-factor-attributed = 193
-  expect_equal(nrow(ar), 193)
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
+  # + 24 disease-by-country + 24 risk-factor-attributed = 194
+  expect_equal(nrow(ar), 194)
+  # 62 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned
-  # + 4 disease-by-country + 4 risk-factor = 120 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 120)
+  # + 4 disease-by-country + 4 risk-factor = 121 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 121)
 })
 
 test_that("component_id values are unique", {
@@ -153,12 +153,12 @@ test_that("annual radiation categories are correct", {
 
 test_that("common_risks() has correct activity count", {
   cr <- common_risks()
-  # 61 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default)
-  # + 9 occupational + 3 age-conditioned (all_ages default) = 108
+  # 62 legacy + 4 flights + 8 medical + 7 mundane + 11 annual radiation + 5 wildlife (default)
+  # + 9 occupational + 3 age-conditioned (all_ages default) = 109
   # But road traffic + homicide excluded (condition_value not in defaults) = -1
   # Kangaroo is legacy Wildlife; default filter: shark, dog_US, bee_general, snake_US = +4 new
-  # Net: 108 - 1 = 107
-  expect_equal(nrow(cr), 107)
+  # Net: 109 - 1 = 108
+  expect_equal(nrow(cr), 108)
 })
 
 test_that("common_risks() has expected columns", {

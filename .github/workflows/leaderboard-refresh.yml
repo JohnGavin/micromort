@@ -72,19 +72,35 @@ jobs:
             this_week <- df[df\$ts >= week_breaks[2] & df\$ts < week_breaks[1], ]
             acute_n <- sum(this_week\$quiz_type == \"acute\", na.rm = TRUE)
             chronic_n <- sum(this_week\$quiz_type == \"chronic\", na.rm = TRUE)
+            ranking_n <- sum(this_week\$quiz_type == \"ranking\", na.rm = TRUE)
 
             stats <- targets::tar_read(leaderboard_stats_json)
+
+            # Quiz links
+            base_url <- \"https://johngavin.github.io/micromort/articles\"
+            quiz_links <- paste0(
+              \"Quiz links:\\n\",
+              \"  Acute:   \", base_url, \"/quiz_shinylive.html\\n\",
+              \"  Chronic: \", base_url, \"/chronic_quiz_shinylive.html\\n\",
+              \"  Ranking: \", base_url, \"/ranking_quiz_shinylive.html\\n\"
+            )
+
+            # Overall totals
+            total_all <- stats\$acute_n + stats\$chronic_n + stats\$ranking_n
 
             body <- paste0(
               \"Micromort Quiz Leaderboard — Weekly Report\\n\",
               \"==========================================\\n\\n\",
-              \"Total submissions: \", nrow(df), \"\\n\",
-              \"  Acute: \", stats\$acute_n, \" | Chronic: \", stats\$chronic_n, \"\\n\\n\",
-              \"Weekly submissions (last 4 weeks):\\n\",
-              \"  This week:  \", week1, \" (acute: \", acute_n, \", chronic: \", chronic_n, \")\\n\",
-              \"  1 week ago: \", week2, \"\\n\",
-              \"  2 weeks ago: \", week3, \"\\n\",
-              \"  3 weeks ago: \", week4, \"\\n\\n\",
+              quiz_links, \"\\n\",
+              \"Overall\\n\",
+              \"-------\\n\",
+              \"Total submissions (all quizzes): \", total_all, \"\\n\",
+              \"This week: \", week1, \" | 1w ago: \", week2, \" | 2w ago: \", week3, \" | 3w ago: \", week4, \"\\n\\n\",
+              \"By quiz\\n\",
+              \"-------\\n\",
+              \"  Acute:   \", stats\$acute_n, \" total | \", acute_n, \" this week\\n\",
+              \"  Chronic: \", stats\$chronic_n, \" total | \", chronic_n, \" this week\\n\",
+              \"  Ranking: \", stats\$ranking_n, \" total | \", ranking_n, \" this week\\n\\n\",
               \"Stats JSON updated at: \", format(now, \"%Y-%m-%d %H:%M UTC\"), \"\\n\"
             )
 

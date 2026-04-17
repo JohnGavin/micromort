@@ -206,6 +206,10 @@ activity_descriptions <- function() {
     "Pedestrian fatality risk from traffic collisions over a 20-mile walk.",
     "https://en.wikipedia.org/wiki/Pedestrian",
 
+    "Walking (1 trip, NYC)",
+    "Average pedestrian fatality risk per walking trip in New York City (~110 deaths/year, 41% of trips on foot). Outer boroughs have higher per-pedestrian risk than Times Square.",
+    "https://www.nature.com/articles/s44284-025-00383-y",
+
     "Driving (230 miles)",
     "Traffic fatality risk for a typical 230-mile car journey.",
     "https://en.wikipedia.org/wiki/Traffic_collision",
