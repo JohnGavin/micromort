@@ -162,7 +162,7 @@ chronic |> dplyr::filter(direction == "gain")
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 chronic_risks()
-#> # A tibble: 38 × 7
+#> # A tibble: 39 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -175,10 +175,10 @@ chronic_risks()
 #>  8 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
 #>  9 Red mea…                 -1 Diet     loss      Daily red …               -7.6
 #> 10 Process…                 -1 Diet     loss      Bacon, sau…               -7.6
-#> # ℹ 28 more rows
+#> # ℹ 29 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(direction == "loss")
-#> # A tibble: 26 × 7
+#> # A tibble: 27 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -191,7 +191,7 @@ chronic_risks() |> dplyr::filter(direction == "loss")
 #>  8 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
 #>  9 Red mea…                 -1 Diet     loss      Daily red …               -7.6
 #> 10 Process…                 -1 Diet     loss      Bacon, sau…               -7.6
-#> # ℹ 16 more rows
+#> # ℹ 17 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(category == "Exercise")
 #> # A tibble: 2 × 7
