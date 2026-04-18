@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta charset="UTF-8">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
 <meta name="description" content="Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death.">
+
 <title>Which lifestyle event is more likely to kill you?</title>
 <style>
 code{white-space: pre-wrap;}
@@ -19,19 +22,37 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script><link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+
+
+<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script>
+<link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script><link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
-<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script><link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+
+
 </head>
+
 <body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 
-<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
 <h1 class="title">Which lifestyle event is more likely to kill you?</h1>
 </div>
 
@@ -51,7 +72,10 @@ ul.task-list li input[type="checkbox"] {
   
 
 
-</header><style>
+</header>
+
+
+<style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
   .description { margin-bottom: 0 !important; }
@@ -59,6 +83,21 @@ ul.task-list li input[type="checkbox"] {
   #quarto-content { padding: 0; }
   .shinylive-wrapper { width: 100% !important; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:10px 0;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('qr-container');
+  if (el && typeof qrcode !== 'undefined') {
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
+      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
+      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+  }
+});
+</script>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
@@ -75,6 +114,11 @@ library(bslib)
 # WHY SEPARATE FILE: Shinylive's JS preloader cannot parse CSV embedded in
 # R string literals (commas/quotes break the parser). The ## file: directive
 # puts the CSV in a virtual file that R reads normally.
+#
+# PROVENANCE: quiz_pairs.csv is pre-computed by quiz_pairs() which pulls
+# from atomic_risks(). Each row's micromort values trace to source_url in
+# atomic_risks(). The help_url_a / help_url_b columns carry per-activity
+# source URLs. See data-raw/generate_quiz_csv.R for the generation pipeline.
 #
 # PIPELINE TRACKED: vig_quiz_csv_check target verifies this data matches
 # the canonical output of quiz_pairs().
@@ -247,6 +291,18 @@ function getPercentileLive(score, total) {
     if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
   });
 }
+function renderQR(containerId, size) {
+  var url = window.location.href;
+  var el = document.getElementById(containerId);
+  if (!el || typeof qrcode === 'undefined') return;
+  var qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  el.innerHTML = '&lt;div style=\"display:flex;align-items:center;gap:12px;margin-top:12px;padding:8px 0;\"&gt;' +
+    qr.createImgTag(size || 3) +
+    '&lt;span style=\"font-size:0.85rem;color:#6c757d;word-break:break-all;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
+}
+setTimeout(function() { renderQR('qr-results', 3); }, 500);
 "
 
 # ---- Fun result phrases ----
@@ -573,7 +629,9 @@ results_summary_ui &lt;- function(state) {
       tags$small(id = "percentile_text", class = "text-muted"),
       tags$br(),
       tags$small(class = "text-muted",
-                 "Scores are recorded anonymously (score, total, timestamp only)."))
+                 "Scores are recorded anonymously (score, total, timestamp only).")),
+    div(id = "qr-results"),
+    tags$script(HTML("setTimeout(function() { renderQR('qr-results', 3); }, 100);"))
   )
 }
 
@@ -622,6 +680,7 @@ ui &lt;- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$style(HTML(quiz_css)),
+    tags$script(src = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"),
     tags$script(HTML(leaderboard_js)),
     tags$script(HTML("
       function selectInGroup(groupId, clicked) {
@@ -883,7 +942,9 @@ shinyApp(ui, server)
 "Working in an office (8 hours)","COVID-19 bivalent booster (age 18-49)",0.05,"COVID-19",0,"11 weeks (2022)",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
 "Working in an office (8 hours)","Dental X-ray (radiation per scan)",0.05,"Medical",0,"per event",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"</code></pre>
 
-</main><!-- /main column --><script id="quarto-html-after-body" type="application/javascript">
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -1288,5 +1349,4 @@ shinyApp(ui, server)
 
 
 
-</body>
-</html>
+</body></html>

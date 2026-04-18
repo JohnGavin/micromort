@@ -141,3 +141,13 @@ Session info (click to expand)
     #> [55] farver_2.1.2        igraph_2.2.1        htmltools_0.5.9    
     #> [58] rmarkdown_2.30      compiler_4.5.2      prettyunits_1.2.0  
     #> [61] S7_0.2.1            askpass_1.2.1       openssl_2.3.4
+
+------------------------------------------------------------------------
+
+**micromort**
+[0.1.0](https://github.com/JohnGavin/micromort/releases/tag/v0.1.0) \|
+**Git**
+[`94d93d2`](https://github.com/JohnGavin/micromort/commit/94d93d29c29c25f1b4833b6c65731ca9411cb15f)
+\| **R**
+[4.5.2](https://cran.r-project.org/doc/manuals/r-release/NEWS.html) \|
+**Built** 2026-04-18 12:20:56

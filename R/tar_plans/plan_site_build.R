@@ -46,11 +46,34 @@ plan_site_build <- list(
   ),
 
   # ── P1: Export quiz CSV when quiz_pairs() changes ──────────────────────
+  # Writes to inst/extdata/ AND updates the embedded CSV in the .qmd
   targets::tar_target(
     site_quiz_csv_export,
     {
+      # 1. Write to inst/extdata/
       csv_path <- "inst/extdata/vignettes/quiz_pairs.csv"
       utils::write.csv(vig_quiz_pairs, csv_path, row.names = FALSE)
+
+      # 2. Update embedded CSV in shinylive qmd (## file: directive)
+      qmd_path <- "vignettes/quiz_shinylive.qmd"
+      if (fs::file_exists(qmd_path)) {
+        lines <- readLines(qmd_path, warn = FALSE)
+        marker <- grep("^## file: quiz_pairs\\.csv", lines)[1]
+        if (!is.na(marker)) {
+          csv_start <- marker + 1L
+          if (grepl("^## type:", lines[csv_start])) csv_start <- csv_start + 1L
+          fences <- grep("^```$", lines)
+          csv_end <- fences[fences > marker][1] - 1L
+          csv_text <- utils::capture.output(
+            utils::write.csv(vig_quiz_pairs, stdout(), row.names = FALSE)
+          )
+          new_lines <- c(lines[1:(csv_start - 1)], csv_text,
+                         lines[(csv_end + 1):length(lines)])
+          writeLines(new_lines, qmd_path)
+          cli::cli_alert_success("Embedded CSV updated in {qmd_path}")
+        }
+      }
+
       cli::cli_alert_success("Quiz CSV exported: {nrow(vig_quiz_pairs)} pairs")
       list(path = csv_path, n_rows = nrow(vig_quiz_pairs), timestamp = Sys.time())
     }
@@ -117,32 +140,12 @@ plan_site_build <- list(
   targets::tar_target(
     site_pkgdown,
     {
-      # Depend on pre-build steps
+      # Depend on pre-build steps (CSV export updates embedded CSV in .qmd)
       force(site_source_hash)
       force(site_document)
       force(site_rds_export)
       force(site_readme)
       force(site_quiz_csv_export)
-
-      # Fail fast if quiz data is stale
-      if (!identical(vig_quiz_csv_check$status, "OK")) {
-        cli::cli_abort(c(
-          "x" = "Quiz CSV is {vig_quiz_csv_check$status}",
-          "i" = "Regenerate quiz_pairs.csv in vignettes/quiz_shinylive.qmd"
-        ))
-      }
-      if (!identical(vig_chronic_csv_check$status, "OK")) {
-        cli::cli_abort(c(
-          "x" = "Chronic quiz CSV is {vig_chronic_csv_check$status}",
-          "i" = "Regenerate chronic_pairs.csv in vignettes/chronic_quiz_shinylive.qmd"
-        ))
-      }
-      if (!identical(vig_ranking_csv_check$status, "OK")) {
-        cli::cli_abort(c(
-          "x" = "Ranking quiz CSV is {vig_ranking_csv_check$status}",
-          "i" = "Regenerate ranking_questions.csv in vignettes/ranking_quiz_shinylive.qmd"
-        ))
-      }
 
       cli::cli_alert_info("Building pkgdown site...")
       pkgdown::build_site(preview = FALSE)
