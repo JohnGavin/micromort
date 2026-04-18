@@ -23,23 +23,9 @@ if (requireNamespace("micromort", quietly = TRUE)) {
 }
 library(dplyr)
 
-# Safe tar_read with graceful fallback (finds project root for pkgdown builds)
-safe_tar_read <- function(name) {
-  store <- Sys.getenv("TARGETS_STORE", unset = NA)
-  if (is.na(store)) {
-    store <- tryCatch(
-      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
-      error = function(e) "_targets"
-    )
-  }
-  tryCatch(
-    targets::tar_read_raw(name, store = store),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
+# Shared safe_tar_read with RDS fallback (see inst/vignette_utils.R)
+source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
+  error = function(e) "."), "inst", "vignette_utils.R"))
 ```
 
 Risk numbers disagree. The WHO and the Institute for Health Metrics and Evaluation (IHME) report malaria deaths as 550,000 and 760,000 respectively — a 38% gap from the *same underlying deaths*. Our World in Data's [Deadliest Animals](https://ourworldindata.org/deadliest-animals) chart is visually compelling, but converting annual death counts to per-encounter micromorts is non-trivial. This vignette documents how we handle that uncertainty.

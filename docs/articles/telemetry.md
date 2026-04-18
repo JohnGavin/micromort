@@ -12,6 +12,7 @@ Show code
 
 ``` r
 dep_graph <- safe_tar_read("vig_pipeline_dependency_graph")
+#> Target 'vig_pipeline_dependency_graph' not found in targets store or RDS fallback.
 if (!is.null(dep_graph)) {
   # Render mermaid via htmltools
   htmltools::HTML(paste0(

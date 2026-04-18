@@ -92,6 +92,7 @@ Show code
 
 ``` r
 vis <- safe_tar_read("vig_arch_tar_visnetwork")
+#> Target 'vig_arch_tar_visnetwork' not found in targets store or RDS fallback.
 if (!is.null(vis)) vis
 ```
 

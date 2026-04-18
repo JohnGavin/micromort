@@ -102,8 +102,8 @@ plan_site_build <- list(
           attr(df, "dt_caption") <- obj$x$caption
           saveRDS(df, rds_path, compress = "xz")
         } else if (inherits(obj, "ggplot") || inherits(obj, "gg")) {
-          # Strip S7 env overhead
-          saveRDS(ggplot2::ggplotGrob(obj), rds_path, compress = "xz")
+          # Save as ggplot (not grob) so it can be print()ed on reload
+          saveRDS(obj, rds_path, compress = "xz")
         } else {
           saveRDS(obj, rds_path, compress = "xz")
         }

@@ -22,22 +22,9 @@ if (requireNamespace("micromort", quietly = TRUE)) {
   pkgload::load_all(quiet = TRUE)
 }
 
-safe_tar_read <- function(name) {
-  store <- Sys.getenv("TARGETS_STORE", unset = NA)
-  if (is.na(store)) {
-    store <- tryCatch(
-      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
-      error = function(e) "_targets"
-    )
-  }
-  tryCatch(
-    targets::tar_read_raw(name, store = store),
-    error = function(e) {
-      message("Target '", name, "' not found. Run tar_make() first.")
-      NULL
-    }
-  )
-}
+# Shared safe_tar_read with RDS fallback (see inst/vignette_utils.R)
+source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
+  error = function(e) "."), "inst", "vignette_utils.R"))
 
 # Helper: emit mermaid diagram as a script/div pair so pandoc cannot
 # HTML-encode the arrows (-->) or wrap lines in <p> tags.

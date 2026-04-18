@@ -95,18 +95,9 @@ format:
 ```
 
 ```{r quiz-data-gen, echo=FALSE, results='asis'}
-# Generate JSON from targets pipeline data and embed in script tag
-safe_tar_read <- function(name) {
-  store <- Sys.getenv("TARGETS_STORE", unset = NA)
-  if (is.na(store)) {
-    store <- tryCatch(
-      file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
-      error = function(e) "_targets"
-    )
-  }
-  tryCatch(targets::tar_read_raw(name, store = store),
-           error = function(e) NULL)
-}
+# Shared safe_tar_read with RDS fallback (see inst/vignette_utils.R)
+source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
+  error = function(e) "."), "inst", "vignette_utils.R"))
 pairs <- safe_tar_read("vig_chronic_pairs")
 if (is.null(pairs)) {
   pairs <- rbind(
