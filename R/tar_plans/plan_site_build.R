@@ -33,13 +33,96 @@ plan_site_build <- list(
     }
   ),
 
+  # ── P2: Run devtools::document() before site build ──────────────────────
+  targets::tar_target(
+    site_document,
+    {
+      force(site_source_hash)
+      cli::cli_alert_info("Running devtools::document()...")
+      devtools::document(quiet = TRUE)
+      cli::cli_alert_success("Documentation updated")
+      list(timestamp = Sys.time())
+    }
+  ),
+
+  # ── P1: Export quiz CSV when quiz_pairs() changes ──────────────────────
+  targets::tar_target(
+    site_quiz_csv_export,
+    {
+      csv_path <- "inst/extdata/vignettes/quiz_pairs.csv"
+      utils::write.csv(vig_quiz_pairs, csv_path, row.names = FALSE)
+      cli::cli_alert_success("Quiz CSV exported: {nrow(vig_quiz_pairs)} pairs")
+      list(path = csv_path, n_rows = nrow(vig_quiz_pairs), timestamp = Sys.time())
+    }
+  ),
+
+  # ── P0: Export all vig_* targets to inst/extdata/vignettes/*.rds ───────
+  targets::tar_target(
+    site_rds_export,
+    {
+      out_dir <- "inst/extdata/vignettes"
+      if (!fs::dir_exists(out_dir)) fs::dir_create(out_dir, recurse = TRUE)
+
+      manifest <- targets::tar_manifest()
+      vig_names <- manifest$name[grepl("^vig_", manifest$name)]
+
+      exported <- character()
+      for (name in vig_names) {
+        obj <- tryCatch(targets::tar_read_raw(name), error = function(e) NULL)
+        if (is.null(obj)) next
+
+        rds_path <- file.path(out_dir, paste0(name, ".rds"))
+
+        # DT widgets contain Nix paths — extract data.frame
+        if (inherits(obj, "datatables")) {
+          df <- obj$x$data
+          attr(df, "dt_caption") <- obj$x$caption
+          saveRDS(df, rds_path, compress = "xz")
+        } else if (inherits(obj, "ggplot") || inherits(obj, "gg")) {
+          # Strip S7 env overhead
+          saveRDS(ggplot2::ggplotGrob(obj), rds_path, compress = "xz")
+        } else {
+          saveRDS(obj, rds_path, compress = "xz")
+        }
+        exported <- c(exported, name)
+      }
+
+      cli::cli_alert_success("Exported {length(exported)} vig_* targets to RDS")
+      list(exported = exported, n = length(exported), timestamp = Sys.time())
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
+  # ── P1: Render README.md from README.qmd ───────────────────────────────
+  targets::tar_target(
+    site_readme,
+    {
+      if (!fs::file_exists("README.qmd")) {
+        cli::cli_alert_info("No README.qmd — skipping")
+        return(list(skipped = TRUE, timestamp = Sys.time()))
+      }
+
+      cli::cli_alert_info("Rendering README.qmd -> README.md...")
+      knitr::knit("README.qmd", output = "README.md", quiet = TRUE)
+      cli::cli_alert_success("README.md rendered")
+      list(
+        md_size = fs::file_size("README.md"),
+        timestamp = Sys.time()
+      )
+    }
+  ),
+
   # Build pkgdown site — depends on source hash + CSV consistency checks
 
   targets::tar_target(
     site_pkgdown,
     {
-      # Depend on source hash
+      # Depend on pre-build steps
       force(site_source_hash)
+      force(site_document)
+      force(site_rds_export)
+      force(site_readme)
+      force(site_quiz_csv_export)
 
       # Fail fast if quiz data is stale
       if (!identical(vig_quiz_csv_check$status, "OK")) {
