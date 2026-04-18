@@ -167,6 +167,54 @@ plan_site_build <- list(
     }
   ),
 
+  # Render closeread article (pkgdown strips closeread-html format)
+  targets::tar_target(
+    site_closeread,
+    {
+      force(site_pkgdown)
+
+      qmd_path <- "vignettes/chronic_vs_acute.qmd"
+      if (!fs::file_exists(qmd_path)) {
+        cli::cli_alert_info("Closeread qmd not found — skipping")
+        return(list(qmd = qmd_path, skipped = TRUE, timestamp = Sys.time()))
+      }
+
+      # Must render from vignettes/ dir so _extensions/qmd-lab/closeread is found
+      cli::cli_alert_info("Rendering {qmd_path} with quarto (closeread)...")
+      result <- withr::with_dir("vignettes", {
+        system2(
+          "quarto", c("render", "chronic_vs_acute.qmd"),
+          stdout = TRUE, stderr = TRUE
+        )
+      })
+      status <- attr(result, "status")
+      if (!is.null(status) && status != 0) {
+        cli::cli_abort(c(
+          "x" = "quarto render failed for {qmd_path}",
+          "i" = paste(utils::tail(result, 20), collapse = "\n")
+        ))
+      }
+
+      # Copy to docs/articles/ (overwrite pkgdown's stripped version)
+      articles_dir <- "docs/articles"
+      html_src <- "vignettes/chronic_vs_acute.html"
+      files_src <- "vignettes/chronic_vs_acute_files"
+
+      if (fs::file_exists(html_src)) {
+        fs::file_copy(html_src, file.path(articles_dir, "chronic_vs_acute.html"),
+                      overwrite = TRUE)
+      }
+      if (fs::dir_exists(files_src)) {
+        dest <- file.path(articles_dir, "chronic_vs_acute_files")
+        if (fs::dir_exists(dest)) fs::dir_delete(dest)
+        fs::dir_copy(files_src, dest)
+      }
+
+      cli::cli_alert_success("Closeread article rendered and deployed")
+      list(qmd = qmd_path, output = result, timestamp = Sys.time())
+    }
+  ),
+
   # Copy shinylive outputs into docs/articles/
   targets::tar_target(
     site_deploy_shinylive,
@@ -221,8 +269,9 @@ plan_site_build <- list(
   targets::tar_target(
     site_verify,
     {
-      # Depend on deploy step and leaderboard stats
+      # Depend on deploy steps and leaderboard stats
       force(site_deploy_shinylive)
+      force(site_closeread)
       force(leaderboard_stats_json)
 
       # Check leaderboard stats JSON exists
