@@ -16,10 +16,12 @@ format:
       card-style: summary_large_image
 ---
 
-::: {.callout-tip collapse="true"}
-## Also available as Shinylive app (richer UI, 30-60s load)
-[Open Shinylive version](ranking_quiz_shinylive.html) — full Shiny app with score submission, percentile ranking, and streak tracking.
-:::
+```{=html}
+<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
+<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
+<p style="margin:8px 0 0;color:#0c5460;"><a href="ranking_quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
+</details>
+```
 
 ```{=html}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

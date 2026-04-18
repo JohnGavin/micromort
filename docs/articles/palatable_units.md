@@ -112,30 +112,8 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
-    #> Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-    #> log-10 transformation introduced infinite values.
-
-![Horizontal bar chart on log scale showing ~40 activities ordered by
-micromorts. Activities span 5 orders of magnitude from 0.001 to 430
-micromorts, coloured by
-category.](palatable_units_files/figure-html/palatable_units-chunk-3-1.png)
-
-Spiegelhalter’s logarithmic risk ladder placing activities from
-negligible (banana dose) to extreme (BASE jumping) on a unified scale.
+    #> Target 'vig_palatable_risk_plot' not found. Run tar_make() first.
+    #> NULL
 
 For interactive exploration, use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
@@ -145,13 +123,8 @@ which provides:
 - Click legend to show/hide categories
 - Dropdown filter for COVID-19 vs Other risks
 
-    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-    #> Returning the palette you asked for with that many colors
-    #> Warning in RColorBrewer::brewer.pal(max(N, 3L), "Set2"): n too large, allowed maximum for palette Set2 is 8
-    #> Returning the palette you asked for with that many colors
-
-Interactive risk ladder with hover details, category filtering, and
-zoom.
+    #> Target 'vig_palatable_risk_plot_interactive' not found. Run tar_make() first.
+    #> NULL
 
 ## 5. Media Perception vs. Actual Risk
 
@@ -286,20 +259,19 @@ sessionInfo()
 #> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
 #> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
 #> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
-#> [31] sys_3.4.3           usethis_3.2.1       lazyeval_0.2.2     
-#> [34] yaml_2.3.12         plotly_4.12.0       tidyr_1.3.2        
-#> [37] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
-#> [40] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
-#> [43] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
-#> [46] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
-#> [49] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
-#> [52] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
-#> [55] backports_1.5.0     bit64_4.6.0-1       httr_1.4.7         
-#> [58] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
-#> [61] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
-#> [64] knitr_1.51          viridisLite_0.4.2   rlang_1.1.7        
-#> [67] gert_2.3.1          glue_1.8.0          pkgload_1.4.1      
-#> [70] jsonlite_2.0.0      R6_2.6.1            fs_1.6.6
+#> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
+#> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+#> [37] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+#> [40] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
+#> [43] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
+#> [46] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
+#> [49] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
+#> [52] backports_1.5.0     bit64_4.6.0-1       rmarkdown_2.30     
+#> [55] igraph_2.2.1        bit_4.6.0           otel_0.2.0         
+#> [58] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         
+#> [61] rlang_1.1.7         gert_2.3.1          glue_1.8.0         
+#> [64] pkgload_1.4.1       jsonlite_2.0.0      R6_2.6.1           
+#> [67] fs_1.6.6
 ```
 
 ------------------------------------------------------------------------

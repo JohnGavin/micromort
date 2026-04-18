@@ -1154,3 +1154,6 @@ shinyApp(ui, server)
 30,"Medical","Statin therapy (if indicated)","chronic",30,NA,1,"Medical","Cholesterol-lowering statins reduce major cardiovascular events by ~25% in high-risk patients.","https://en.wikipedia.org/wiki/Statin",3,"medium"
 30,"Radiation","Dental radiographer (annual radiation)","acute",0.210384,0.01,NA,"Occupation","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography",4,"medium"
 ```
+
+[micromort](https://github.com/JohnGavin/micromort) \|
+[docs](https://johngavin.github.io/micromort/)

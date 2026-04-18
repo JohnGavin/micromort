@@ -21,17 +21,23 @@ theme_micromort_dark <- function(label_size = 9) {
     panel.grid.major.y = ggplot2::element_blank(),
     text = ggplot2::element_text(color = "white"),
     axis.text = ggplot2::element_text(color = "white"),
-    axis.text.y = ggplot2::element_text(
-      size = label_size, face = "bold", color = "white"
-    ),
     axis.title = ggplot2::element_text(size = 11, color = "white"),
     plot.title = ggplot2::element_text(size = 14, face = "bold", color = "white"),
     plot.subtitle = ggplot2::element_text(size = 10, color = "#cccccc"),
     plot.caption = ggplot2::element_text(color = "#999999", hjust = 0),
     plot.caption.position = "plot",
-    strip.text = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+    strip.text = ggplot2::element_text(
+      size = 12, face = "bold", color = "white",
+      margin = ggplot2::margin(2, 0, 2, 0)
+    ),
     strip.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
-    plot.margin = ggplot2::margin(5, 10, 5, 10),
+    strip.switch.pad.grid = ggplot2::unit(0, "pt"),
+    strip.switch.pad.wrap = ggplot2::unit(0, "pt"),
+    plot.margin = ggplot2::margin(2, 5, 2, 5),
+    axis.text.y = ggplot2::element_text(
+      size = label_size, face = "bold", color = "white",
+      margin = ggplot2::margin(0, 2, 0, 0)
+    ),
     legend.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
     legend.text = ggplot2::element_text(color = "white"),
     legend.title = ggplot2::element_text(color = "white"),

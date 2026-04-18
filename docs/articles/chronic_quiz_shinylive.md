@@ -766,3 +766,6 @@ shinyApp(ui, server)
 "Type 2 diabetes (poorly controlled)","Sitting 8+ hours/day",-2,"loss","Sedentary",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 "Type 2 diabetes (poorly controlled)","4th-5th alcoholic drink",-2,"loss","Alcohol",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","https://en.wikipedia.org/wiki/Alcohol_and_health","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 ```
+
+[micromort](https://github.com/JohnGavin/micromort) \|
+[docs](https://johngavin.github.io/micromort/)
