@@ -26,49 +26,41 @@ navbar:
     articles:
       text: Articles
       menu:
-      - text: "Start here"
+      - text: "Concepts"
       - text: "What is a Micromort?"
         href: articles/what-is-a-micromort.html
-      - text: "---"
-      - text: "Quizzes (instant)"
-      - text: "☠️ Micromort Quiz"
-        href: articles/micromort-quiz.html
-      - text: "⏳ Microlife Quiz"
-        href: articles/microlife-quiz.html
-      - text: "📊 Rank Risks Quiz"
-        href: articles/risk-ranking-quiz.html
-      - text: "---"
-      - text: "Quizzes (Shinylive — 30-60s load)"
-      - text: "☠️ Micromort (Shinylive)"
-        href: articles/quiz_shinylive.html
-      - text: "⏳ Microlife (Shinylive)"
-        href: articles/chronic_quiz_shinylive.html
-      - text: "📊 Ranking (Shinylive)"
-        href: articles/ranking_quiz_shinylive.html
-      - text: "---"
-      - text: "Storytelling"
-      - text: "The Invisible Risk"
-        href: articles/chronic_vs_acute.html
-      - text: "---"
-      - text: "Reference"
       - text: "Introduction"
         href: articles/introduction.html
       - text: "Palatable Units"
         href: articles/palatable_units.html
-      - text: "Regional Variation"
-        href: articles/regional_variation.html
+      - text: "---"
+      - text: "Quizzes (instant | Shinylive)"
+      - text: "☠️ Micromort: instant | Shinylive"
+        href: articles/micromort-quiz.html
+      - text: "⏳ Microlife: instant | Shinylive"
+        href: articles/microlife-quiz.html
+      - text: "📊 Ranking: instant | Shinylive"
+        href: articles/risk-ranking-quiz.html
+      - text: "---"
+      - text: "Storytelling"
+      - text: "The Invisible Risk (closeread)"
+        href: articles/chronic_vs_acute.html
+      - text: "---"
+      - text: "Analysis"
       - text: "Risk Equivalence"
         href: articles/risk_equivalence.html
+      - text: "Regional Variation"
+        href: articles/regional_variation.html
       - text: "Confounding Variables"
         href: articles/confounding.html
       - text: "Data Reliability"
         href: articles/data_reliability.html
-      - text: "REST API"
-        href: articles/rest_api.html
       - text: "---"
       - text: "Developer"
       - text: "Architecture Overview"
         href: articles/architecture.html
+      - text: "REST API"
+        href: articles/rest_api.html
       - text: "Project Telemetry"
         href: articles/telemetry.html
 

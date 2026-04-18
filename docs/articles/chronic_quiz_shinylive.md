@@ -593,6 +593,7 @@ ui <- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$style(HTML(quiz_css)),
+    tags$script(src = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"),
     tags$script(HTML(chronic_leaderboard_js)),
     tags$script(HTML("
       function selectInGroup(groupId, clicked) {

@@ -13,6 +13,11 @@ format:
       card-style: summary_large_image
 ---
 
+::: {.callout-tip collapse="true"}
+## Also available as Shinylive app (richer UI, 30-60s load)
+[Open Shinylive version](quiz_shinylive.html) — full Shiny app with score submission, percentile ranking, and streak tracking.
+:::
+
 ```{=html}
 <style>
   .quarto-title-meta { display: none; }

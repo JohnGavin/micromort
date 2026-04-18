@@ -16,6 +16,11 @@ format:
       card-style: summary_large_image
 ---
 
+::: {.callout-tip collapse="true"}
+## Also available as Shinylive app (richer UI, 30-60s load)
+[Open Shinylive version](ranking_quiz_shinylive.html) — full Shiny app with score submission, percentile ranking, and streak tracking.
+:::
+
 ```{=html}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
