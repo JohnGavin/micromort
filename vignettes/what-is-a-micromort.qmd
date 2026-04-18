@@ -288,3 +288,15 @@ Rank 4 risks from biggest to smallest effect.
 sessionInfo()
 ```
 </details>
+
+```{r build-info}
+#| echo: false
+#| results: asis
+bi <- tryCatch(
+  targets::tar_read_raw("vig_build_info",
+    store = tryCatch(file.path(rprojroot::find_root(rprojroot::is_r_package), "_targets"),
+                     error = function(e) "_targets")),
+  error = function(e) NULL
+)
+if (!is.null(bi)) cat(bi)
+```

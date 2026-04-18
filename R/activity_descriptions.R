@@ -322,10 +322,6 @@ activity_descriptions <- function() {
     "https://en.wikipedia.org/wiki/CT_scan",
 
     # Mundane
-    "Drinking a glass of wine (daily, chronic risk)",
-    "Wikipedia's 0.5 mm figure mixes chronic effects (cancer, liver disease from daily drinking) with acute risk. Actual acute risk from a single glass is <0.05 mm. See chronic_risks() for microlife-based alcohol data.",
-    "https://en.wikipedia.org/wiki/Alcohol_(drug)",
-
     "Cup of coffee",
     "Extremely low acute risk; caffeine-related cardiac events are vanishingly rare.",
     "https://en.wikipedia.org/wiki/Coffee",

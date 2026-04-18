@@ -215,3 +215,9 @@ While David Spiegelhalter focuses on concepts rather than specific software, the
 ```{r palatable_units-session-info, eval=TRUE}
 sessionInfo()
 ```
+
+```{r build-info}
+#| echo: false
+#| results: asis
+cat(safe_tar_read("vig_build_info") %||% "")
+```

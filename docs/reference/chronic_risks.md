@@ -162,7 +162,7 @@ chronic |> dplyr::filter(direction == "gain")
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 chronic_risks()
-#> # A tibble: 39 × 7
+#> # A tibble: 40 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -171,14 +171,14 @@ chronic_risks()
 #>  4 Being 5…                 -1 Weight   loss      Per 5 kg a…               -7.6
 #>  5 Being 1…                 -2 Weight   loss      Cumulative…              -15.2
 #>  6 Being 1…                 -3 Weight   loss      Cumulative…              -22.8
-#>  7 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
-#>  8 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
-#>  9 Red mea…                 -1 Diet     loss      Daily red …               -7.6
-#> 10 Process…                 -1 Diet     loss      Bacon, sau…               -7.6
-#> # ℹ 29 more rows
+#>  7 Glass o…                 -1 Alcohol  loss      Chronic ca…               -7.6
+#>  8 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
+#>  9 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
+#> 10 Red mea…                 -1 Diet     loss      Daily red …               -7.6
+#> # ℹ 30 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(direction == "loss")
-#> # A tibble: 27 × 7
+#> # A tibble: 28 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -187,11 +187,11 @@ chronic_risks() |> dplyr::filter(direction == "loss")
 #>  4 Being 5…                 -1 Weight   loss      Per 5 kg a…               -7.6
 #>  5 Being 1…                 -2 Weight   loss      Cumulative…              -15.2
 #>  6 Being 1…                 -3 Weight   loss      Cumulative…              -22.8
-#>  7 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
-#>  8 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
-#>  9 Red mea…                 -1 Diet     loss      Daily red …               -7.6
-#> 10 Process…                 -1 Diet     loss      Bacon, sau…               -7.6
-#> # ℹ 17 more rows
+#>  7 Glass o…                 -1 Alcohol  loss      Chronic ca…               -7.6
+#>  8 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
+#>  9 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
+#> 10 Red mea…                 -1 Diet     loss      Daily red …               -7.6
+#> # ℹ 18 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(category == "Exercise")
 #> # A tibble: 2 × 7

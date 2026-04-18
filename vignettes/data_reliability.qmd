@@ -207,3 +207,9 @@ Entries start at `validation_status = "single_source"` and get upgraded as more 
 ```{r data_reliability-session-info, eval=TRUE}
 sessionInfo()
 ```
+
+```{r build-info}
+#| echo: false
+#| results: asis
+cat(safe_tar_read("vig_build_info") %||% "")
+```

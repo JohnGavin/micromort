@@ -173,3 +173,13 @@ sessionInfo()
 #> [64] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0     
 #> [67] R6_2.6.1            fs_1.6.6
 ```
+
+------------------------------------------------------------------------
+
+**micromort**
+[0.1.0](https://github.com/JohnGavin/micromort/releases/tag/v0.1.0) \|
+**Git**
+[`94d93d2`](https://github.com/JohnGavin/micromort/commit/94d93d29c29c25f1b4833b6c65731ca9411cb15f)
+\| **R**
+[4.5.2](https://cran.r-project.org/doc/manuals/r-release/NEWS.html) \|
+**Built** 2026-04-18 12:20:56

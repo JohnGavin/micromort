@@ -142,6 +142,7 @@ chronic_risks <- function() {
     "Being 15 kg overweight", -3, "Weight", "Cumulative effect of excess weight",
 
     # Alcohol
+    "Glass of wine daily", -1, "Alcohol", "Chronic cancer/liver risk from daily wine (Wikipedia 0.5mm/day); not an acute per-glass risk",
     "2nd-3rd alcoholic drink", -1, "Alcohol", "After first drink, additional drinks cost",
     "4th-5th alcoholic drink", -2, "Alcohol", "Heavy drinking costs more",
 

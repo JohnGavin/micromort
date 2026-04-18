@@ -164,3 +164,9 @@ if (!is.null(metrics)) {
 ```{r telemetry-session-info, eval=TRUE}
 sessionInfo()
 ```
+
+```{r build-info}
+#| echo: false
+#| results: asis
+cat(safe_tar_read("vig_build_info") %||% "")
+```

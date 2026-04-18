@@ -45,6 +45,10 @@ factor_descriptions <- function() {
     "https://en.wikipedia.org/wiki/Obesity#Effects_on_health",
 
     # Alcohol
+    "Glass of wine daily",
+    "Daily wine consumption carries chronic cancer and liver risk (~0.5 micromorts/day). Originally misclassified as acute; moved to chronic risks.",
+    "https://en.wikipedia.org/wiki/Alcohol_and_cancer",
+
     "2nd-3rd alcoholic drink",
     "After the first drink's potential protective effect, the second and third drinks increase liver disease and accident risk.",
     "https://en.wikipedia.org/wiki/Alcohol_and_health",

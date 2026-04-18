@@ -27,7 +27,7 @@ A tibble with columns:
 
 ``` r
 activity_descriptions()
-#> # A tibble: 171 × 3
+#> # A tibble: 170 × 3
 #>    activity                                description                  help_url
 #>    <chr>                                   <chr>                        <chr>   
 #>  1 Mt. Everest ascent                      At 8,849m, extreme altitude… https:/…
@@ -40,7 +40,7 @@ activity_descriptions()
 #>  8 Base jumping (per jump)                 Parachuting from fixed obje… https:/…
 #>  9 First day of life (newborn)             The first 24 hours carry el… https:/…
 #> 10 COVID-19 unvaccinated (age 80+)         Unvaccinated elderly face t… https:/…
-#> # ℹ 161 more rows
+#> # ℹ 160 more rows
 activity_descriptions() |> dplyr::filter(grepl("Skydiving", activity))
 #> # A tibble: 3 × 3
 #>   activity             description                                      help_url

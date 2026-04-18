@@ -307,8 +307,6 @@ atomic_risks <- function() {
   mundane <- tibble::tribble(
     ~activity, ~micromorts, ~component, ~risk_category, ~component_label,
     ~category, ~period,
-    "Drinking a glass of wine (daily, chronic risk)", 0.5, "all_causes", "mixed",
-    "Chronic alcohol effects (cancer, liver); not a per-glass acute risk", "Daily Life", "per day (chronic)",
     "Cup of coffee", 0.01, "all_causes", "mixed",
     "Caffeine effects", "Daily Life", "per event",
     "Commuting by car (30 min)", 0.13, "crash", "physical",

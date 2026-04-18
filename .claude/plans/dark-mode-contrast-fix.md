@@ -71,7 +71,18 @@ reducing to `unit(0.5, "lines")` or less.
 The white strips at top/bottom of plots are from `plot.margin` defaults.
 Set `plot.margin = margin(5, 5, 5, 5)` with matching bg color.
 
-### L7: Footer in plots → fig-cap
+### L7: Closeread renders correctly via `quarto render` but pkgdown strips it
+pkgdown's quarto_render wraps articles in pkgdown template, which strips
+closeread's scrollama/sticky-col markup. Fix: render closeread separately
+with `quarto render` from the vignettes/ directory, then copy the output
+HTML + _files/ to docs/articles/ AFTER pkgdown::build_site() runs.
+
+### L8: Pre-existing deleted shinylive _files/ cause quarto render failures
+If git shows deleted files in vignettes/*_files/ directories, `quarto render`
+inside pkgdown will fail because it can't find referenced assets. Fix:
+`git checkout -- vignettes/*_files/` before building.
+
+### L9: Footer in plots → fig-cap
 Plot footers via `labs(caption=)` render inside the PNG at small size.
 Moving to Quarto `fig-cap:` renders as HTML text below the image — searchable,
 resizable, and respects dark mode. But requires pre-computing caption text as

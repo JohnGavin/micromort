@@ -26,6 +26,24 @@ filters:
 </style>
 ```
 
+```{=html}
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:10px 0;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('qr-container');
+  if (el && typeof qrcode !== 'undefined') {
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
+      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
+      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+  }
+});
+</script>
+```
+
 ```{shinylive-r}
 #| standalone: true
 #| viewerHeight: 1200
@@ -611,6 +629,7 @@ ui <- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$style(HTML(quiz_css)),
+    tags$script(src = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"),
     tags$script(HTML(chronic_leaderboard_js)),
     tags$script(HTML("
       function selectInGroup(groupId, clicked) {

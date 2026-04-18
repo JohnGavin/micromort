@@ -304,3 +304,9 @@ The general principle: **a micromort value is only as good as its denominator an
 ```{r confounding-session-info, eval=TRUE}
 sessionInfo()
 ```
+
+```{r build-info}
+#| echo: false
+#| results: asis
+cat(safe_tar_read("vig_build_info") %||% "")
+```

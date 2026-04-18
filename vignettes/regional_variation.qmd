@@ -196,3 +196,9 @@ Raw data from Eurostat `demo_r_mlifexp` dataset. Interactive exploration availab
 ```{r regional_variation-session-info, eval=TRUE}
 sessionInfo()
 ```
+
+```{r build-info}
+#| echo: false
+#| results: asis
+cat(safe_tar_read("vig_build_info") %||% "")
+```
