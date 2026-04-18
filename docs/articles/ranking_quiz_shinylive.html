@@ -83,21 +83,6 @@ ul.task-list li input[type="checkbox"] {
   #quarto-content { padding: 0; }
   .shinylive-wrapper { width: 100% !important; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<div id="qr-container" style="text-align:center; margin:10px 0;"></div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var el = document.getElementById('qr-container');
-  if (el && typeof qrcode !== 'undefined') {
-    var qr = qrcode(0, 'M');
-    qr.addData(window.location.href);
-    qr.make();
-    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
-      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
-      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
-  }
-});
-</script>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
@@ -1245,6 +1230,25 @@ shinyApp(ui, server)
 30,"Medical","Blood pressure control","chronic",60,NA,2,"Medical","Achieving target BP &lt; 130/80 mmHg through medication and lifestyle reduces stroke risk by 35-40%.","https://en.wikipedia.org/wiki/Antihypertensive_drug",2,"medium"
 30,"Medical","Statin therapy (if indicated)","chronic",30,NA,1,"Medical","Cholesterol-lowering statins reduce major cardiovascular events by ~25% in high-risk patients.","https://en.wikipedia.org/wiki/Statin",3,"medium"
 30,"Radiation","Dental radiographer (annual radiation)","acute",0.210384,0.01,NA,"Occupation","Very low annual occupational radiation dose with standard distance protocols.","https://en.wikipedia.org/wiki/Dental_radiography",4,"medium"</code></pre>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('qr-container');
+  if (el && typeof qrcode !== 'undefined') {
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
+      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
+      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+  }
+});
+</script>
+<div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
+  <a href="https://github.com/JohnGavin/micromort" style="color:#6c757d;">micromort</a> |
+  <a href="https://johngavin.github.io/micromort/" style="color:#6c757d;">docs</a>
+</div>
 
 </main>
 <!-- /main column -->

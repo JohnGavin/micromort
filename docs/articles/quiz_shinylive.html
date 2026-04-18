@@ -83,21 +83,6 @@ ul.task-list li input[type="checkbox"] {
   #quarto-content { padding: 0; }
   .shinylive-wrapper { width: 100% !important; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<div id="qr-container" style="text-align:center; margin:10px 0;"></div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var el = document.getElementById('qr-container');
-  if (el && typeof qrcode !== 'undefined') {
-    var qr = qrcode(0, 'M');
-    qr.addData(window.location.href);
-    qr.make();
-    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
-      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
-      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
-  }
-});
-</script>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
@@ -941,6 +926,25 @@ shinyApp(ui, server)
 "Swimming","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",12,"Sport",0,"per swim",1.66666666666667,"hard","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning"
 "Working in an office (8 hours)","COVID-19 bivalent booster (age 18-49)",0.05,"COVID-19",0,"11 weeks (2022)",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
 "Working in an office (8 hours)","Dental X-ray (radiation per scan)",0.05,"Medical",0,"per event",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"</code></pre>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('qr-container');
+  if (el && typeof qrcode !== 'undefined') {
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
+      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
+      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+  }
+});
+</script>
+<div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
+  <a href="https://github.com/JohnGavin/micromort" style="color:#6c757d;">micromort</a> |
+  <a href="https://johngavin.github.io/micromort/" style="color:#6c757d;">docs</a>
+</div>
 
 </main>
 <!-- /main column -->

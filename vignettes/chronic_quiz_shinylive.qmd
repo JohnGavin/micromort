@@ -26,24 +26,6 @@ filters:
 </style>
 ```
 
-```{=html}
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<div id="qr-container" style="text-align:center; margin:10px 0;"></div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var el = document.getElementById('qr-container');
-  if (el && typeof qrcode !== 'undefined') {
-    var qr = qrcode(0, 'M');
-    qr.addData(window.location.href);
-    qr.make();
-    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
-      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
-      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
-  }
-});
-</script>
-```
-
 ```{shinylive-r}
 #| standalone: true
 #| viewerHeight: 1200
@@ -801,4 +783,26 @@ shinyApp(ui, server)
 "Type 2 diabetes (poorly controlled)","Being 10 kg overweight",-2,"loss","Weight",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 "Type 2 diabetes (poorly controlled)","Sitting 8+ hours/day",-2,"loss","Sedentary",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 "Type 2 diabetes (poorly controlled)","4th-5th alcoholic drink",-2,"loss","Alcohol",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","https://en.wikipedia.org/wiki/Alcohol_and_health","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
+```
+
+```{=html}
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('qr-container');
+  if (el && typeof qrcode !== 'undefined') {
+    var qr = qrcode(0, 'M');
+    qr.addData(window.location.href);
+    qr.make();
+    el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
+      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
+      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+  }
+});
+</script>
+<div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
+  <a href="https://github.com/JohnGavin/micromort" style="color:#6c757d;">micromort</a> |
+  <a href="https://johngavin.github.io/micromort/" style="color:#6c757d;">docs</a>
+</div>
 ```

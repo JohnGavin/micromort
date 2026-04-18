@@ -1322,6 +1322,8 @@ quiz_css <- function() {
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .tooltip-inner { max-width: 450px !important; }
+  .bslib-tooltip-wide .tooltip-inner { max-width: 450px !important; }
   "
 }
 
@@ -2215,5 +2217,6 @@ chronic_quiz_css <- function() {
   .quiz-btn .help-link:hover { text-decoration: underline; }
   .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
+  .tooltip-inner { max-width: 450px !important; }
   "
 }

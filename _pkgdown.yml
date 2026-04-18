@@ -64,6 +64,44 @@ navbar:
       - text: "Project Telemetry"
         href: articles/telemetry.html
 
+articles:
+- title: "Concepts"
+  contents:
+  - what-is-a-micromort
+  - introduction
+  - palatable_units
+
+- title: "Quizzes"
+  desc: "Each quiz has an instant (static JS) and Shinylive (richer UI) version."
+  contents:
+  - micromort-quiz
+  - microlife-quiz
+  - risk-ranking-quiz
+
+- title: "Quizzes (Shinylive)"
+  desc: "Full Shiny apps with score submission and percentile ranking. 30-60s load."
+  contents:
+  - quiz_shinylive
+  - chronic_quiz_shinylive
+  - ranking_quiz_shinylive
+
+- title: "Storytelling"
+  contents:
+  - chronic_vs_acute
+
+- title: "Analysis"
+  contents:
+  - risk_equivalence
+  - regional_variation
+  - confounding
+  - data_reliability
+
+- title: "Developer"
+  contents:
+  - architecture
+  - rest_api
+  - telemetry
+
 reference:
 - title: "Datasets"
   desc: "Core data exports"
