@@ -129,3 +129,86 @@ table {
   white-space: normal;
   min-width: 300px;
 }
+
+/* ============================================================
+   Dark mode support for pkgdown light-switch AND browser
+   dark mode extensions.
+   ============================================================ */
+
+/* BS5 dark mode (pkgdown toggle or prefers-color-scheme) */
+[data-bs-theme="dark"] .nav-tabs .nav-link.active,
+[data-bs-theme="dark"] .nav-tabs .nav-link.active:focus,
+[data-bs-theme="dark"] .nav-tabs .nav-link.active:hover {
+  color: #ffffff !important;
+  background-color: #2b3e50 !important;
+  border-color: #444 #444 transparent !important;
+}
+
+[data-bs-theme="dark"] .nav-tabs .nav-link {
+  color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .nav-tabs .nav-link:hover {
+  color: #ffffff !important;
+  border-color: #555 #555 transparent !important;
+}
+
+[data-bs-theme="dark"] .nav-tabs {
+  border-bottom-color: #444 !important;
+}
+
+[data-bs-theme="dark"] .tab-content {
+  color: #e0e0e0;
+}
+
+/* Browser dark mode extension support (prefers-color-scheme) */
+@media (prefers-color-scheme: dark) {
+  .nav-tabs .nav-link.active,
+  .nav-tabs .nav-link.active:focus,
+  .nav-tabs .nav-link.active:hover {
+    color: #ffffff !important;
+    background-color: #2b3e50 !important;
+    border-color: #444 #444 transparent !important;
+  }
+
+  .nav-tabs .nav-link {
+    color: #adb5bd !important;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: #ffffff !important;
+  }
+
+  .nav-tabs {
+    border-bottom-color: #444 !important;
+  }
+
+  /* Ensure body text is readable */
+  body, .contents, .page-content, main {
+    color: #e0e0e0;
+  }
+
+  /* Tables */
+  table, th, td {
+    color: #e0e0e0;
+    border-color: #444 !important;
+  }
+
+  /* Code blocks */
+  pre, code {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+  }
+
+  /* Cards and callouts */
+  .card, .callout {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: #e0e0e0;
+  }
+
+  /* Figure captions */
+  figcaption, .figure-caption {
+    color: #adb5bd;
+  }
+}

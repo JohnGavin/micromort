@@ -30,12 +30,14 @@ theme_micromort_dark <- function(label_size = 9) {
     plot.caption = ggplot2::element_text(color = "#999999", hjust = 0),
     plot.caption.position = "plot",
     strip.text = ggplot2::element_text(size = 12, face = "bold", color = "white"),
+    strip.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
+    plot.margin = ggplot2::margin(5, 10, 5, 10),
     legend.background = ggplot2::element_rect(fill = "#1a1a1a", color = NA),
     legend.text = ggplot2::element_text(color = "white"),
     legend.title = ggplot2::element_text(color = "white"),
     legend.position = "bottom",
     legend.box = "horizontal",
-    panel.spacing = ggplot2::unit(1, "lines")
+    panel.spacing = ggplot2::unit(0.3, "lines")
   )
 }
 
@@ -281,7 +283,7 @@ plot_risks <- function(risks = common_risks(),
       x = NULL,
       y = "Micromorts (Log Scale)",
       fill = "Category",
-      caption = "Sources: Wikipedia, CDC MMWR (https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm)"
+      caption = "Sources: Wikipedia (en.wikipedia.org/wiki/Micromort), CDC MMWR (cdc.gov/mmwr), IHME GBD 2023 via OWID (ourworldindata.org)"
     )
 
   # Apply theme

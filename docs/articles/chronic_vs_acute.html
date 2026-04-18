@@ -120,6 +120,7 @@
 
 
 </header><style>
+/* Default: dark theme for closeread scrollytelling */
 body { background-color: #1a1a1a; color: #e0e0e0; }
 .cr-section { background-color: #1a1a1a; }
 .sticky-col { background-color: #1a1a1a; }
@@ -128,6 +129,17 @@ th, td { border-color: #444 !important; }
 h2, h3 { color: #ffffff; }
 strong { color: #ffffff; }
 a { color: #6ea8fe; }
+/* Light mode override for users without dark extensions */
+@media (prefers-color-scheme: light) {
+  body { background-color: #ffffff; color: #212529; }
+  .cr-section { background-color: #ffffff; }
+  .sticky-col { background-color: #ffffff; }
+  table { color: #212529; }
+  th, td { border-color: #dee2e6 !important; }
+  h2, h3 { color: #212529; }
+  strong { color: #212529; }
+  a { color: #0d6efd; }
+}
 </style>
 <div class="cr-section cr-column-screen sidebar-left">
 <div class="narrative-col">

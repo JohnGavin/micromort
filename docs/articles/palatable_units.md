@@ -112,6 +112,23 @@ terrorism) in context with daily risks.
   headlines but is often negligible on the ladder compared to the
   baseline risk of driving.
 
+    #> Warning in ggplot2::scale_y_log10(labels = scales::comma, limits = c(0.01, : log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+    #> log-10 transformation introduced infinite values.
+
 ![Horizontal bar chart on log scale showing ~40 activities ordered by
 micromorts. Activities span 5 orders of magnitude from 0.001 to 430
 micromorts, coloured by

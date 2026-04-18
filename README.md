@@ -9,7 +9,7 @@ format: gfm
 
 # micromort <img src="man/figures/logo.png" align="right" height="139" alt="micromort logo: one bright dot among a million, representing a one-in-a-million chance of death" />
 
-A **data package** providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including Wikipedia, CDC MMWR, IHME GBD 2023 via OWID, and academic literature.
+A **data package** providing curated, cross-sectional snapshots of micromort (acute risk) and microlife (chronic risk) values from authoritative sources including [Wikipedia](https://en.wikipedia.org/wiki/Micromort), [CDC MMWR](https://www.cdc.gov/mmwr/), [IHME GBD 2023](https://www.healthdata.org/research-analysis/gbd) via [OWID](https://ourworldindata.org/), and academic literature.
 
 **120 activity IDs** across 193 atomic risk rows. **35+ chronic factors.** **6-country disease mortality** + risk factors from GBD 2023. **3 interactive quizzes.** [Closeread scrollytelling.](https://johngavin.github.io/micromort/articles/chronic_vs_acute.html) [REST API.](https://johngavin.github.io/micromort/articles/rest_api.html)
 
@@ -156,7 +156,7 @@ common_risks(profile = list(country = "NG")) |>
 |------|:-------------------:|:----------------------:|:-----:|
 | Which Is Riskier? | [Play](https://johngavin.github.io/micromort/articles/micromort-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/quiz_shinylive.html) | `launch_quiz()` |
 | Microlife Quiz | [Play](https://johngavin.github.io/micromort/articles/microlife-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html) | `launch_chronic_quiz()` |
-| Rank the Risks | [Play](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | — |
+| Rank the Risks | [Play](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | `ranking_quiz_questions()` |
 
 All quizzes have score submission + percentile ranking via Google Forms. Static JS versions load instantly; Shinylive versions use WebR (30-60s load).
 
@@ -270,22 +270,22 @@ See the [Architecture vignette](https://johngavin.github.io/micromort/articles/a
 
 | Source | Type | Data |
 |--------|------|------|
-| Wikipedia: Micromort | Encyclopedia | ~50 acute risks |
-| Wikipedia: Microlife | Encyclopedia | ~20 chronic risks |
-| micromorts.rip | Database | ~45 acute risks |
-| CDC MMWR | Government | COVID vaccine data |
-| Spiegelhalter (2012) BMJ | Academic | Microlife framework |
-| SEER Cancer Statistics | Government | Cancer mortality by type/sex |
-| IHME GBD 2023 via OWID | Academic | Disease + risk-factor mortality by country |
+| [Wikipedia: Micromort](https://en.wikipedia.org/wiki/Micromort) | Encyclopedia | ~50 acute risks |
+| [Wikipedia: Microlife](https://en.wikipedia.org/wiki/Microlife) | Encyclopedia | ~20 chronic risks |
+| [micromorts.rip](https://micromorts.rip/) | Database | ~45 acute risks |
+| [CDC MMWR](https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm) | Government | COVID vaccine data |
+| [Spiegelhalter (2012) BMJ](https://pubmed.ncbi.nlm.nih.gov/23247978/) | Academic | Microlife framework |
+| [SEER Cancer Statistics](https://seer.cancer.gov/) | Government | Cancer mortality by type/sex |
+| [IHME GBD 2023](https://www.healthdata.org/research-analysis/gbd) via [OWID](https://ourworldindata.org/) | Academic | Disease + risk-factor mortality by country |
 
 ## Glossary
 
 | Acronym | Definition |
 |---------|------------|
-| DALY | Disability-Adjusted Life Year (YLL + YLD) |
-| LLE | Loss of Life Expectancy (minutes) |
-| QALY | Quality-Adjusted Life Year |
-| VSL | Value of Statistical Life (~$10M USD) |
+| [DALY](https://en.wikipedia.org/wiki/Disability-adjusted_life_year) | Disability-Adjusted Life Year (YLL + YLD) |
+| [LLE](https://en.wikipedia.org/wiki/Loss_of_life_expectancy) | Loss of Life Expectancy (minutes) |
+| [QALY](https://en.wikipedia.org/wiki/Quality-adjusted_life_year) | Quality-Adjusted Life Year |
+| [VSL](https://en.wikipedia.org/wiki/Value_of_life#Value_of_a_statistical_life) | Value of Statistical Life (~$10M USD) |
 
 ## References
 
