@@ -518,6 +518,164 @@ plan_vignette_outputs <- list(
     }
   ),
 
+  # Everyday activities bar chart (plotly, dark theme)
+  targets::tar_target(
+    vig_equiv_everyday_chart,
+    {
+      everyday <- vig_equiv_everyday
+      plotly::plot_ly(
+        everyday,
+        y = ~stats::reorder(activity, xray_equivalents),
+        x = ~xray_equivalents,
+        type = "bar",
+        orientation = "h",
+        marker = list(color = "#1976D2")
+      ) |>
+        plotly::layout(
+          title = "Everyday Activities in Chest X-ray Equivalents",
+          xaxis = list(title = "Chest X-ray equivalents"),
+          yaxis = list(title = ""),
+          margin = list(l = 200),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13),
+          legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0"))
+        ) |>
+        plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Flight duration Cleveland dotplot by component (plotly, dark theme)
+  targets::tar_target(
+    vig_equiv_flight_duration_chart,
+    {
+      flight_data <- vig_equiv_flight_duration
+      totals <- flight_data |>
+        dplyr::group_by(activity) |>
+        dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+        dplyr::arrange(total)
+      flight_data <- flight_data |>
+        dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
+      plotly::plot_ly(
+        flight_data,
+        y = ~activity,
+        x = ~micromorts,
+        color = ~component_label,
+        type = "scatter",
+        mode = "markers",
+        marker = list(size = 12)
+      ) |>
+        plotly::layout(
+          title = "Flight Risk by Duration and Component (Healthy Profile)",
+          xaxis = list(title = "Micromorts"),
+          yaxis = list(title = "", categoryorder = "array",
+                       categoryarray = totals$activity),
+          legend = list(orientation = "h", y = -0.2,
+                        bgcolor = "#1a1a2e", font = list(color = "#e0e0e0")),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13)
+        ) |>
+        plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Medical procedures in chest X-ray equivalents (plotly, dark theme)
+  targets::tar_target(
+    vig_equiv_medical_exchange_chart,
+    {
+      med <- vig_equiv_medical_focus |>
+        dplyr::mutate(xray_equiv = round(micromorts / 0.1, 0))
+
+      plotly::plot_ly(
+        med,
+        y = ~stats::reorder(activity, xray_equiv),
+        x = ~xray_equiv,
+        type = "bar",
+        orientation = "h",
+        marker = list(color = "#C62828")
+      ) |>
+        plotly::layout(
+          title = "Medical Procedures in Chest X-ray Equivalents",
+          xaxis = list(title = "Number of chest X-rays"),
+          yaxis = list(title = ""),
+          margin = list(l = 200),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13),
+          legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0"))
+        ) |>
+        plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Hedgeable vs non-hedgeable flight risk dotplot (plotly, dark theme)
+  targets::tar_target(
+    vig_equiv_hedgeable_chart,
+    {
+      flight_data <- vig_equiv_flight_duration |>
+        dplyr::mutate(
+          hedge_status = ifelse(hedgeable, "Hedgeable", "Not hedgeable")
+        )
+      totals <- flight_data |>
+        dplyr::group_by(activity) |>
+        dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
+        dplyr::arrange(total)
+      flight_data <- flight_data |>
+        dplyr::mutate(activity = factor(activity, levels = totals$activity))
+
+      plotly::plot_ly(
+        flight_data,
+        y = ~activity,
+        x = ~micromorts,
+        color = ~hedge_status,
+        colors = c("Hedgeable" = "#2E7D32", "Not hedgeable" = "#C62828"),
+        type = "scatter",
+        mode = "markers",
+        marker = list(size = 12)
+      ) |>
+        plotly::layout(
+          title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
+          xaxis = list(title = "Micromorts"),
+          yaxis = list(title = "", categoryorder = "array",
+                       categoryarray = totals$activity),
+          legend = list(orientation = "h", y = -0.2,
+                        bgcolor = "#1a1a2e", font = list(color = "#e0e0e0")),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13)
+        ) |>
+        plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Cumulative radiation timeline line chart (plotly, dark theme)
+  targets::tar_target(
+    vig_equiv_radiation_timeline_chart,
+    {
+      timeline <- vig_radiation_timeline_data
+      n_activities <- length(unique(timeline$activity))
+      pal <- grDevices::hcl.colors(n_activities, palette = "Dark 3")
+
+      plotly::plot_ly(
+        timeline,
+        x = ~year,
+        y = ~cumulative_micromorts,
+        color = ~activity,
+        colors = pal,
+        type = "scatter",
+        mode = "lines"
+      ) |>
+        plotly::layout(
+          title = "Cumulative Radiation Micromorts Over Career",
+          xaxis = list(title = "Years of Exposure"),
+          yaxis = list(title = "Cumulative Micromorts"),
+          legend = list(orientation = "v", x = 1.02, y = 1,
+                        bgcolor = "#1a1a2e", font = list(color = "#e0e0e0")),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13)
+        ) |>
+        plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
 
   # ==========================================================================
   # RADIATION EXPOSURE PROFILES (#24 + #25)
@@ -1162,6 +1320,34 @@ plan_vignette_outputs <- list(
   # TELEMETRY VIGNETTE (supplement existing targets)
   # ==========================================================================
 
+  # Commit velocity chart (ggplotGrob so show_target renders via grid::grid.draw)
+  targets::tar_target(
+    vig_telemetry_commit_velocity_chart,
+    {
+      velocity <- safe_tar_read("vig_commit_velocity")
+      if (is.null(velocity)) return(NULL)
+      p <- ggplot2::ggplot(velocity, ggplot2::aes(x = week, y = commits)) +
+        ggplot2::geom_col(fill = "#1976D2") +
+        ggplot2::labs(
+          title = "Commit Velocity",
+          subtitle = "Last 26 weeks",
+          x = "Week",
+          y = "Commits",
+          caption = paste0(
+            "Weekly commit frequency over the last 26 weeks. ",
+            "Each bar represents commits merged in a calendar week. ",
+            "Data sourced from gert::git_log() with a 500-commit lookback window. ",
+            "Weeks with zero commits indicate maintenance pauses or release ",
+            "stabilization periods. Compare with GitHub Activity table below ",
+            "for issue/PR context."
+          )
+        ) +
+        ggplot2::theme_minimal() +
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+      ggplot2::ggplotGrob(p)
+    }
+  ),
+
   # Top targets by stored object size (extracted from vig_pipeline_summary)
   targets::tar_target(
     vig_telemetry_top_by_size,
@@ -1221,6 +1407,37 @@ plan_vignette_outputs <- list(
       q3 <- ranking_quiz_questions(n_questions = 50, items_per_question = 3, seed = 42)
       q4 <- ranking_quiz_questions(n_questions = 30, items_per_question = 4, seed = 42)
       rbind(q3, q4)
+    }
+  ),
+
+  # JSON script tag for micromort-quiz.qmd (acute pairs)
+  # Produces the complete <script id="quiz-data"> HTML string consumed by JS
+  targets::tar_target(
+    vig_quiz_json_script,
+    {
+      pairs <- vig_quiz_pairs
+      json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
+    }
+  ),
+
+  # JSON script tag for microlife-quiz.qmd (chronic pairs)
+  targets::tar_target(
+    vig_chronic_quiz_json_script,
+    {
+      pairs <- vig_chronic_pairs
+      json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
+    }
+  ),
+
+  # JSON script tag for risk-ranking-quiz.qmd (ranking questions)
+  targets::tar_target(
+    vig_ranking_quiz_json_script,
+    {
+      pairs <- vig_ranking_questions
+      json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
     }
   ),
 
