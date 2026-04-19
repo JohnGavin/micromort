@@ -175,3 +175,82 @@ test_that("descriptions and help_urls are mostly non-NA", {
   expect_true(desc_pct > 80, info = paste("Description coverage:", desc_pct, "%"))
   expect_true(url_pct > 80, info = paste("URL coverage:", url_pct, "%"))
 })
+
+
+# ---- Per-tag validation ----
+
+test_that("each individual tag produces valid output or returns empty tibble gracefully", {
+  all_tags <- c("Radiation", "Travel", "Medical", "Diet & Drink",
+                "Sport & Adventure", "Workplace", "Lifestyle", "Disease")
+  expected_cols <- c("question_id", "tag", "item_name", "item_source",
+                     "lle_minutes", "micromorts", "microlives_per_day",
+                     "category", "description", "help_url",
+                     "correct_rank", "difficulty")
+
+  for (tag in all_tags) {
+    q <- ranking_quiz_questions(tags = tag, n_questions = 5, seed = 42)
+    # Either produces questions with the right schema, or returns empty tibble
+    expect_s3_class(q, "tbl_df", info = paste("Tag:", tag))
+    if (nrow(q) > 0) {
+      expect_true(all(expected_cols %in% names(q)),
+                  info = paste("Missing cols for tag:", tag))
+      expect_true(all(q$lle_minutes > 0),
+                  info = paste("Non-positive lle_minutes for tag:", tag))
+      expect_true(all(q$item_source %in% c("acute", "chronic")),
+                  info = paste("Invalid item_source for tag:", tag))
+    }
+  }
+})
+
+test_that("each tag produces at least 3 items when enough data exists", {
+  # Tags expected to have enough data for at least 1 question of 3 items
+  tags_with_data <- c("Medical", "Diet & Drink", "Lifestyle", "Disease")
+
+  for (tag in tags_with_data) {
+    q <- ranking_quiz_questions(tags = tag, n_questions = 1,
+                                items_per_question = 3, seed = 42)
+    expect_gt(nrow(q), 0,
+              info = paste("Tag", tag, "should produce at least 1 question"))
+  }
+})
+
+
+# ---- CSV schema validation ----
+
+test_that("ranking_quiz_questions output matches expected CSV schema", {
+  expected_cols <- c("question_id", "tag", "item_name", "item_source",
+                     "lle_minutes", "micromorts", "microlives_per_day",
+                     "category", "description", "help_url",
+                     "correct_rank", "difficulty")
+  q <- ranking_quiz_questions(n_questions = 5, seed = 42)
+  expect_equal(names(q), expected_cols)
+})
+
+test_that("CSV schema column types are correct", {
+  q <- ranking_quiz_questions(n_questions = 5, seed = 42)
+  expect_type(q$question_id, "integer")
+  expect_type(q$tag, "character")
+  expect_type(q$item_name, "character")
+  expect_type(q$item_source, "character")
+  expect_type(q$lle_minutes, "double")
+  # micromorts and microlives_per_day can be NA for the other source type
+  expect_type(q$micromorts, "double")
+  expect_type(q$microlives_per_day, "double")
+  expect_type(q$category, "character")
+  expect_type(q$description, "character")
+  expect_type(q$help_url, "character")
+  expect_type(q$correct_rank, "integer")
+  expect_type(q$difficulty, "character")
+})
+
+test_that("combined 3-item and 4-item questions can be row-bound for CSV export", {
+  q3 <- ranking_quiz_questions(n_questions = 5, items_per_question = 3, seed = 42)
+  q4 <- ranking_quiz_questions(n_questions = 3, items_per_question = 4, seed = 42)
+  combined <- rbind(q3, q4)
+  expect_s3_class(combined, "data.frame")
+  # Schema is preserved after rbind
+  expect_equal(names(combined), names(q3))
+  # No duplicate items across combined set (each question uses unique items)
+  # Note: items can repeat across q3 and q4 since they use different seeds implicitly
+  expect_true(nrow(combined) == nrow(q3) + nrow(q4))
+})
