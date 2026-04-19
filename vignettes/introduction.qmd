@@ -346,26 +346,22 @@ The [`hedged_portfolio()`](../reference/hedged_portfolio.html) function calculat
 ```{r introduction-chunk-14}
 #| echo: false
 portfolio <- safe_tar_read("vig_intro_hedged_portfolio")
-if (!is.null(portfolio)) {
-  portfolio$by_category |>
-    DT::datatable(
-      caption = "Microlives gained by disease category",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
-}
+portfolio$by_category |>
+  DT::datatable(
+    caption = "Microlives gained by disease category",
+    options = list(pageLength = 5, dom = "t"),
+    rownames = FALSE
+  )
 ```
 
 ```{r introduction-chunk-15}
 #| echo: false
-if (!is.null(portfolio)) {
-  portfolio$portfolio_summary |>
-    DT::datatable(
-      caption = "Total hedged portfolio effect",
-      options = list(pageLength = 6, dom = "t"),
-      rownames = FALSE
-    )
-}
+portfolio$portfolio_summary |>
+  DT::datatable(
+    caption = "Total hedged portfolio effect",
+    options = list(pageLength = 6, dom = "t"),
+    rownames = FALSE
+  )
 ```
 
 **Interpretation:** A fully "hedged" individual (non-smoker, regular exercise, healthy diet, vaccinated, etc.) can expect to gain significant additional life expectancy compared to an "unhedged" baseline.
