@@ -61,20 +61,7 @@ But what if the bigger risk is something you can't see, can't feel, and can't op
 
 ```{r equiv-table}
 #| echo: false
-equiv <- safe_tar_read("vig_chronic_acute_equivalences")
-if (!is.null(equiv)) {
-  # Show heroin dose vs UK chronic risks (compelling comparison)
-  heroin <- equiv[equiv$activity == "Heroin use (per dose)", ]
-  if (nrow(heroin) > 0) {
-    heroin |>
-      dplyr::select(`Chronic daily risk` = daily_activity,
-                     `Daily mm` = daily_mm,
-                     `Days to equal one heroin dose` = days_equivalent) |>
-      knitr::kable(digits = 1)
-  }
-} else {
-  cat("*Run tar_make() to see equivalence data.*")
-}
+show_target("vig_chronic_acute_heroin_table")
 ```
 
 :::
@@ -94,17 +81,18 @@ Over a full year, chronic disease risk dwarfs any one-off activity. Here's the U
 
 :::{#cr-waterfall .sticky}
 
-```{r waterfall}
+### UK annual chronic disease risk (micromorts/year)
+
+```{r waterfall-chronic}
 #| echo: false
-wf <- safe_tar_read("vig_chronic_acute_waterfall")
-if (!is.null(wf)) {
-  cat("### UK annual chronic disease risk (micromorts/year)\n\n")
-  wf$chronic_annual |> knitr::kable(digits = 1)
-  cat("\n### Acute one-off risks for comparison\n\n")
-  wf$acute_comparison |> knitr::kable(digits = 1)
-} else {
-  cat("*Run tar_make() to see waterfall data.*")
-}
+show_target("vig_chronic_acute_waterfall_chronic")
+```
+
+### Acute one-off risks for comparison
+
+```{r waterfall-acute}
+#| echo: false
+show_target("vig_chronic_acute_waterfall_acute")
 ```
 
 :::
@@ -126,17 +114,7 @@ The chronic burden is not fixed — it depends enormously on where you live. Swi
 
 ```{r country-shift}
 #| echo: false
-cs <- safe_tar_read("vig_chronic_acute_country_shift")
-if (!is.null(cs)) {
-  cs |>
-    dplyr::select(Cause = cause,
-                   `UK (mm/day)` = uk_mm,
-                   `Nigeria (mm/day)` = ng_mm,
-                   `Ratio (NG/UK)` = ratio) |>
-    knitr::kable(digits = 2)
-} else {
-  cat("*Run tar_make() to see country comparison.*")
-}
+show_target("vig_chronic_acute_country_display")
 ```
 
 :::

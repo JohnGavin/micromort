@@ -1229,6 +1229,24 @@ plan_vignette_outputs <- list(
   ),
 
   # ==========================================================================
+  # REGIONAL VARIATION (supplemental sub-targets)
+  # ==========================================================================
+
+  # Narrative text for the microlives gap section
+  targets::tar_target(
+    vig_regional_le_gap_text,
+    {
+      gap <- vig_regional_le_gap
+      paste0(
+        "Life expectancy gap: ", gap$le_gap_years, " years\n",
+        "Lifetime microlives difference: ", gap$lifetime_microlives, "\n",
+        "Daily microlives difference: ", gap$daily_microlives, " per day\n"
+      )
+    }
+  ),
+
+
+  # ==========================================================================
   # CHRONIC VS ACUTE scrollytelling (#75 Slice 6)
   # ==========================================================================
 
@@ -1286,6 +1304,46 @@ plan_vignette_outputs <- list(
 
       list(chronic_annual = uk_daily, acute_comparison = acute_top)
     }
+  ),
+
+  # Heroin-equivalence row (sub-target for equiv-table chunk)
+  targets::tar_target(
+    vig_chronic_acute_heroin_table,
+    {
+      equiv <- vig_chronic_acute_equivalences
+      heroin <- equiv[equiv$activity == "Heroin use (per dose)", ]
+      if (nrow(heroin) == 0) return(data.frame())
+      heroin |>
+        dplyr::select(
+          `Chronic daily risk` = daily_activity,
+          `Daily mm` = daily_mm,
+          `Days to equal one heroin dose` = days_equivalent
+        )
+    }
+  ),
+
+  # Chronic annual waterfall sub-target
+  targets::tar_target(
+    vig_chronic_acute_waterfall_chronic,
+    vig_chronic_acute_waterfall$chronic_annual
+  ),
+
+  # Acute comparison waterfall sub-target
+  targets::tar_target(
+    vig_chronic_acute_waterfall_acute,
+    vig_chronic_acute_waterfall$acute_comparison
+  ),
+
+  # Country shift display sub-target (select/rename for vignette)
+  targets::tar_target(
+    vig_chronic_acute_country_display,
+    vig_chronic_acute_country_shift |>
+      dplyr::select(
+        Cause = cause,
+        `UK (mm/day)` = uk_mm,
+        `Nigeria (mm/day)` = ng_mm,
+        `Ratio (NG/UK)` = ratio
+      )
   ),
 
   # UK vs Nigeria profile shift for scrollytelling
@@ -1380,6 +1438,18 @@ plan_vignette_outputs <- list(
   # ==========================================================================
   # INTRODUCTION VIGNETTE (supplement existing targets)
   # ==========================================================================
+
+  # Portfolio by_category sub-target
+  targets::tar_target(
+    vig_intro_portfolio_by_category,
+    hedged_portfolio()$by_category
+  ),
+
+  # Portfolio summary sub-target
+  targets::tar_target(
+    vig_intro_portfolio_summary,
+    hedged_portfolio()$portfolio_summary
+  ),
 
   # API demo values for inline display
   targets::tar_target(

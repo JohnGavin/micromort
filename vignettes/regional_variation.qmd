@@ -62,15 +62,11 @@ The ~7 year gap between vanguard and laggard regions translates to a substantial
 
 ```{r regional_variation-chunk-2}
 #| echo: false
-gap_data <- safe_tar_read("vig_regional_le_gap")
-if (!is.null(gap_data)) {
-  cat("Life expectancy gap:", gap_data$le_gap_years, "years\n")
-  cat("Lifetime microlives difference:", gap_data$lifetime_microlives, "\n")
-  cat("Daily microlives difference:", gap_data$daily_microlives, "per day\n")
-}
+#| results: asis
+show_target("vig_regional_le_gap_text")
 ```
 
-**Interpretation:** Living in a vanguard region vs a laggard region corresponds to ~`r if(!is.null(gap_data)) gap_data$daily_microlives else "8.4"` microlives per day—roughly equivalent to the benefit of 30 minutes of daily exercise.
+**Interpretation:** Living in a vanguard region vs a laggard region corresponds to ~`r { gap <- safe_tar_read("vig_regional_le_gap"); if (!is.null(gap)) gap$daily_microlives else "8.4" }` microlives per day—roughly equivalent to the benefit of 30 minutes of daily exercise.
 
 ## Regional Data Explorer
 
