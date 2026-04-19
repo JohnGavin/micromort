@@ -153,8 +153,7 @@ Geography is arguably the most powerful confounder in risk data. The same encoun
 
 ```{r snake-geography}
 #| echo: false
-#| tbl-cap: "Snake bite micromorts by geography"
-safe_tar_read("vig_confounding_snake_geography") |> knitr::kable(digits = 1)
+show_target("vig_confounding_snake_geography")
 ```
 
 The 37x difference between the US and rural sub-Saharan Africa reflects differences in antivenom availability, hospital proximity, and emergency transport infrastructure — not differences in snake venom potency. A population-average snake bite risk that blends these geographies would be misleading for everyone: too high for Americans, too low for rural Africans.
@@ -169,8 +168,7 @@ The leading causes of death vary dramatically by country — and not just for in
 
 ```{r disease-by-country}
 #| echo: false
-#| tbl-cap: "Daily micromorts by cause and country (IHME GBD 2023, age-standardised)"
-safe_tar_read("vig_confounding_disease_by_country") |> knitr::kable(digits = 2)
+show_target("vig_confounding_disease_by_country")
 ```
 
 ```{r disease-dynamic, echo=FALSE}
@@ -201,8 +199,7 @@ Key findings:
 
 ```{r disease-whatif}
 #| echo: false
-#| tbl-cap: "Top-15 riskiest activities: UK vs Nigeria country profile"
-safe_tar_read("vig_confounding_disease_whatif") |> knitr::kable(digits = 1)
+show_target("vig_confounding_disease_whatif")
 ```
 
 Switching from a UK to Nigeria profile reveals that chronic diseases dominate daily risk far more than any acute activity, and that the gap between countries is structural — not about individual behaviour.
@@ -215,8 +212,7 @@ Population-average rankings can shift dramatically when conditioned on age. The 
 
 ```{r bed-fall-age}
 #| echo: false
-#| tbl-cap: "Bed fall micromorts per night by age group (CDC Data Brief 532)"
-safe_tar_read("vig_confounding_bed_fall_age") |> knitr::kable(digits = 2)
+show_target("vig_confounding_bed_fall_age")
 ```
 
 ```{r bed-fall-dynamic, echo=FALSE}
@@ -236,8 +232,7 @@ For an 85-year-old man, a bed fall carries **`r bed_85m` micromorts per night** 
 
 ```{r demographic-whatif}
 #| echo: false
-#| tbl-cap: "Top-15 riskiest activities: population default vs 85+ male profile"
-safe_tar_read("vig_confounding_demographic_whatif") |> knitr::kable(digits = 1)
+show_target("vig_confounding_demographic_whatif")
 ```
 
 ```{r whatif-dynamic, echo=FALSE}

@@ -85,10 +85,7 @@ The targets pipeline processes risk data through five stages.
 Target counts update automatically when plan files change.
 
 ```{r pipeline, results='asis'}
-emit_mermaid("vig_arch_pipeline_diagram",
-             "Pipeline diagram not available. Run `targets::tar_make()` first.",
-             caption = "Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets.",
-             alt_text = "Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage.")
+show_target("vig_arch_pipeline_diagram")
 ```
 
 ## 2. Function Hierarchy
@@ -133,8 +130,7 @@ Auto-generated dependency graph of the full targets pipeline.
 ```{r visnetwork}
 #| fig-cap: "Interactive dependency graph of the full targets pipeline. Nodes represent targets; edges show dependencies. Hover for details, drag to rearrange."
 #| fig-alt: "Interactive visNetwork graph showing the directed acyclic graph (DAG) of approximately 40 targets with colour-coded nodes for data, function, and vignette targets."
-vis <- safe_tar_read("vig_arch_tar_visnetwork")
-if (!is.null(vis)) vis
+show_target("vig_arch_tar_visnetwork")
 ```
 
 ## Reproducibility
