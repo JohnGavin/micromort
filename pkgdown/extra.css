@@ -131,6 +131,106 @@ table {
 }
 
 /* ============================================================
+   DataTables dark mode (ALWAYS — site defaults to dark)
+   ============================================================ */
+
+/* DT table text, headers, filters, pagination */
+.dataTables_wrapper,
+.dataTables_wrapper table,
+.dataTables_wrapper th,
+.dataTables_wrapper td,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_paginate,
+.dataTables_wrapper .dataTables_paginate .paginate_button,
+table.dataTable thead th,
+table.dataTable tbody td,
+table.dataTable tfoot th {
+  color: #e0e0e0 !important;
+}
+
+table.dataTable,
+table.dataTable thead,
+table.dataTable tbody {
+  background-color: #1a1a2e !important;
+}
+
+table.dataTable thead th,
+table.dataTable thead td {
+  background-color: #16213e !important;
+  border-bottom-color: #444 !important;
+}
+
+table.dataTable tbody tr {
+  background-color: #1a1a2e !important;
+}
+
+table.dataTable tbody tr:hover {
+  background-color: #252545 !important;
+}
+
+table.dataTable tbody tr.odd {
+  background-color: #1a1a2e !important;
+}
+
+table.dataTable tbody tr.even {
+  background-color: #1e1e3a !important;
+}
+
+table.dataTable td,
+table.dataTable th {
+  border-color: #333 !important;
+}
+
+/* DT filter inputs */
+.dataTables_wrapper input[type="search"],
+.dataTables_wrapper .form-control {
+  background-color: #16213e !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+/* DT pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: #2b3e50 !important;
+  color: #ffffff !important;
+  border-color: #444 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #2b3e50 !important;
+  color: #ffffff !important;
+  border-color: #555 !important;
+}
+
+/* DT caption */
+table.dataTable caption {
+  color: #adb5bd !important;
+  caption-side: top;
+  text-align: left;
+}
+
+/* nouislider (DT range filters) */
+.noUi-connect {
+  background: #2b3e50 !important;
+}
+
+.noUi-base,
+.noUi-target {
+  background: #333 !important;
+  border-color: #444 !important;
+}
+
+/* selectize (DT dropdown filters) */
+.selectize-input,
+.selectize-dropdown {
+  background-color: #16213e !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
+
+/* ============================================================
    Dark mode support for pkgdown light-switch AND browser
    dark mode extensions.
    ============================================================ */
