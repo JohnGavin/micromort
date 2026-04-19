@@ -77,13 +77,10 @@ demos$micromort_from_prob
 
 ```{r introduction-chunk-2}
 #| echo: false
-safe_tar_read("vig_intro_common_risks") |>
-  DT::datatable(
-    caption = "Common risks in micromorts (click column headers to sort, use search box to filter)",
-    filter = "top",
-    options = list(pageLength = 10, scrollX = TRUE),
-    rownames = FALSE
-  )
+DT::datatable(safe_tar_read("vig_intro_common_risks"),
+  caption = "Common risks in micromorts — click headers to sort, search box to filter",
+  filter = "top", rownames = FALSE,
+  options = list(pageLength = 10, scrollX = TRUE))
 ```
 
 ### Visualizing Risks
