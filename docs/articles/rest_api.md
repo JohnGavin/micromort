@@ -56,16 +56,7 @@ curl "http://localhost:8080/v1/risks/acute?category=Medical&limit=10"
 Show code
 
 ``` r
-acute <- safe_tar_read("vig_api_acute_sample")
-if (!is.null(acute)) {
-  DT::datatable(
-    acute,
-    caption = "GET /v1/risks/acute?category=Medical — Medical activities ranked by risk",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("micromorts", "microlives"), 2)
-}
+show_target("vig_api_acute_sample")
 ```
 
 ### Chronic risks
@@ -79,16 +70,7 @@ curl "http://localhost:8080/v1/risks/chronic?direction=gain"
 Show code
 
 ``` r
-chronic <- safe_tar_read("vig_api_chronic_gains")
-if (!is.null(chronic)) {
-  DT::datatable(
-    chronic,
-    caption = "GET /v1/risks/chronic?direction=gain — Factors that extend life",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("microlives_per_day", 1)
-}
+show_target("vig_api_chronic_gains")
 ```
 
 ### Cancer risks
@@ -103,16 +85,7 @@ curl "http://localhost:8080/v1/risks/cancer?age_group=All%20ages"
 Show code
 
 ``` r
-cancer <- safe_tar_read("vig_api_cancer_top3")
-if (!is.null(cancer)) {
-  DT::datatable(
-    cancer,
-    caption = "GET /v1/risks/cancer — Top 3 cancers per sex (All ages)",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("deaths_per_100k", "micromorts_per_year"), 1)
-}
+show_target("vig_api_cancer_top3")
 ```
 
 ## Risk Analysis
@@ -130,16 +103,7 @@ curl "http://localhost:8080/v1/analysis/equivalence?reference=Chest+X-ray+(radia
 Show code
 
 ``` r
-equiv <- safe_tar_read("vig_api_equivalence_sample")
-if (!is.null(equiv)) {
-  DT::datatable(
-    equiv,
-    caption = "GET /v1/analysis/equivalence — Activities expressed in chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("ratio", 1)
-}
+show_target("vig_api_equivalence_sample")
 ```
 
 ### Exchange matrix
@@ -175,16 +139,7 @@ curl "http://localhost:8080/v1/convert/value?vsl=10000000"
 Show code
 
 ``` r
-conversions <- safe_tar_read("vig_api_conversion_table")
-if (!is.null(conversions)) {
-  DT::datatable(
-    conversions,
-    caption = "Unit conversions across the probability-to-microlife spectrum",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatSignif(c("probability", "micromorts", "lle_minutes", "microlife"), 3)
-}
+show_target("vig_api_conversion_table")
 ```
 
 ## Age-Based Hazard Rates
@@ -199,17 +154,7 @@ curl "http://localhost:8080/v1/convert/hazard-rate?age=50&sex=female"
 Show code
 
 ``` r
-hazard <- safe_tar_read("vig_api_hazard_ages")
-if (!is.null(hazard)) {
-  DT::datatable(
-    hazard,
-    caption = "GET /v1/convert/hazard-rate — Daily background mortality by age and sex",
-    options = list(pageLength = 12, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("micromorts", 1) |>
-    DT::formatSignif("daily_prob", 3)
-}
+show_target("vig_api_hazard_ages")
 ```
 
 ## Full Endpoint Reference
@@ -220,20 +165,7 @@ parameters:
 Show code
 
 ``` r
-endpoints <- safe_tar_read("vig_api_endpoint_summary")
-if (!is.null(endpoints)) {
-  DT::datatable(
-    endpoints,
-    caption = "Complete API endpoint reference",
-    options = list(
-      pageLength = 30,
-      dom = "ftip",
-      columnDefs = list(list(width = "250px", targets = 1))
-    ),
-    rownames = FALSE,
-    filter = "top"
-  )
-}
+show_target("vig_api_endpoint_summary")
 ```
 
 ## Using from R

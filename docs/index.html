@@ -21,6 +21,8 @@
 <meta property="og:description" content="A data package providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources.
 ">
 <meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -359,8 +361,25 @@ Using with rix
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
 </h2>
-<p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a>.</p>
-<p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams.</p>
+<details><summary>
+Package architecture (click to expand; renders on GitHub)
+</summary><pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
+graph LR
+
+  Conversion["Unit Conversion&lt;br&gt;5 functions"]
+  Data["Risk Datasets&lt;br&gt;21 functions"]
+  Analysis["Risk Analysis&lt;br&gt;6 functions"]
+  Viz["Visualization&lt;br&gt;5 functions"]
+  Apps["Interactive Apps&lt;br&gt;6 functions"]
+
+  Conversion --&gt; Data --&gt; Analysis --&gt; Viz --&gt; Apps
+
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
+  style Data fill:#999999,stroke:#CC0000,color:#000000
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
+  style Viz fill:#999999,stroke:#CC0000,color:#000000
+  style Apps fill:#999999,stroke:#CC0000,color:#000000</code></pre>
+</details><p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams.</p>
 </div>
 <div class="section level2">
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>

@@ -19,6 +19,8 @@
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Architecture Overview">
 <meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -121,47 +123,16 @@ await mermaid.run({ querySelector: '.mermaid' });
 </h2>
 <p>The targets pipeline processes risk data through five stages. Target counts update automatically when plan files change.</p>
 <details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">emit_mermaid</span><span class="op">(</span><span class="st">"vig_arch_pipeline_diagram"</span>,</span>
-<span>             <span class="st">"Pipeline diagram not available. Run `targets::tar_make()` first."</span>,</span>
-<span>             caption <span class="op">=</span> <span class="st">"Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets."</span>,</span>
-<span>             alt_text <span class="op">=</span> <span class="st">"Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage."</span><span class="op">)</span></span></code></pre></div>
-</details><figure role="figure"><pre class="mermaid" id="vigarchpipelinediagram" aria-label="Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage."></pre>
-<script type="text/plain" data-mermaid="vigarchpipelinediagram">
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
-graph LR
-
-  subgraph S1["1. Data Acquisition"]
-    acq["CSV + API sources<br>10 targets"]
-  end
-
-  subgraph S2["2. Normalisation"]
-    norm["Schema validation<br>3 targets"]
-  end
-
-  subgraph S3["3. Export"]
-    exp["Parquet + RDS<br>4 targets"]
-  end
-
-  subgraph S4["4. Quality"]
-    log["Logging: 1 targets"]
-    val["Validation: 0 targets"]
-  end
-
-  subgraph S5["5. Documentation"]
-    doc["Docs: 4 targets"]
-    vig["Vignettes: 48 targets"]
-  end
-
-  S1 --> S2 --> S3 --> S4 --> S5
-
-  style S1 fill:#999999,stroke:#CC0000,color:#000000
-  style S2 fill:#999999,stroke:#CC0000,color:#000000
-  style S3 fill:#999999,stroke:#CC0000,color:#000000
-  style S4 fill:#999999,stroke:#CC0000,color:#000000
-  style S5 fill:#999999,stroke:#CC0000,color:#000000
-</script><figcaption>
-Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets.
-</figcaption></figure></section><section class="level2"><h2 id="function-hierarchy">2. Function Hierarchy<a class="anchor" aria-label="anchor" href="#function-hierarchy"></a>
+<code class="sourceCode R"><span><span class="fu">show_target</span><span class="op">(</span><span class="st">"vig_arch_pipeline_diagram"</span><span class="op">)</span></span></code></pre></div>
+</details><p>%%{init: {‘theme’: ‘dark’, ‘themeVariables’: {‘primaryColor’: ‘#999999’, ‘primaryTextColor’: ‘#000000’, ‘primaryBorderColor’: ‘#CC0000’, ‘lineColor’: ‘#CC0000’, ‘secondaryColor’: ‘#999999’, ‘tertiaryColor’: ‘#999999’, ‘background’: ‘#000000’, ‘mainBkg’: ‘#999999’, ‘nodeBorder’: ‘#CC0000’, ‘clusterBkg’: ‘#333333’, ‘clusterBorder’: ‘#CC0000’, ‘titleColor’: ‘#000000’, ‘edgeLabelBackground’: ‘#999999’}}}%% graph LR</p>
+<p>subgraph S1[“1. Data Acquisition”] acq[“CSV + API sources<br>10 targets”] end</p>
+<p>subgraph S2[“2. Normalisation”] norm[“Schema validation<br>3 targets”] end</p>
+<p>subgraph S3[“3. Export”] exp[“Parquet + RDS<br>4 targets”] end</p>
+<p>subgraph S4[“4. Quality”] log[“Logging: 1 targets”] val[“Validation: 0 targets”] end</p>
+<p>subgraph S5[“5. Documentation”] doc[“Docs: 4 targets”] vig[“Vignettes: 48 targets”] end</p>
+<p>S1 –&gt; S2 –&gt; S3 –&gt; S4 –&gt; S5</p>
+<p>style S1 fill:#999999,stroke:#CC0000,color:#000000 style S2 fill:#999999,stroke:#CC0000,color:#000000 style S3 fill:#999999,stroke:#CC0000,color:#000000 style S4 fill:#999999,stroke:#CC0000,color:#000000 style S5 fill:#999999,stroke:#CC0000,color:#000000</p>
+</section><section class="level2"><h2 id="function-hierarchy">2. Function Hierarchy<a class="anchor" aria-label="anchor" href="#function-hierarchy"></a>
 </h2>
 <p>All exported functions grouped by category. Click any function to view its documentation.</p>
 <details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
@@ -411,9 +382,9 @@ Figure 4: Nine-step contributor workflow from issue creation through TDD (steps 
 <p>Auto-generated dependency graph of the full targets pipeline.</p>
 <div class="cell">
 <details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vis</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_arch_tar_visnetwork"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">show_target</span><span class="op">(</span><span class="st">"vig_arch_tar_visnetwork"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Target 'vig_arch_tar_visnetwork' not found in targets store or RDS fallback.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">vis</span><span class="op">)</span><span class="op">)</span> <span class="va">vis</span></span></code></pre></div>
+<span><span class="co">#&gt; *Target 'vig_arch_tar_visnetwork' not available.*</span></span></code></pre></div>
 </details>
 </div>
 </section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>

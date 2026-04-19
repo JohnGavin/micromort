@@ -15,53 +15,13 @@ you can mitigate.
 
 How risky are the mundane things we do every day?
 
-Show code
-
-``` r
-everyday <- safe_tar_read("vig_equiv_everyday")
-if (!is.null(everyday)) {
-  DT::datatable(
-    everyday,
-    caption = "Everyday activities ranked by micromort risk, with chest X-ray equivalents",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("micromorts", "microlives", "micromorts_per_day"), 2)
-}
-```
-
 ### Chart
 
 Everyday activities expressed in chest X-ray equivalents:
 
-Show code
+    #> Target 'vig_equiv_everyday_chart' not found in targets store or RDS fallback.
 
-``` r
-everyday <- safe_tar_read("vig_equiv_everyday")
-if (!is.null(everyday) && requireNamespace("plotly", quietly = TRUE)) {
-  plotly::plot_ly(
-    everyday,
-    y = ~stats::reorder(activity, xray_equivalents),
-    x = ~xray_equivalents,
-    type = "bar",
-    orientation = "h",
-    marker = list(color = "#1976D2")
-  ) |>
-    plotly::layout(
-      title = "Everyday Activities in Chest X-ray Equivalents",
-      xaxis = list(title = "Chest X-ray equivalents"),
-      yaxis = list(title = ""),
-      margin = list(l = 200),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      font = list(color = "#1a1a1a")
-    ) |>
-    plotly::config(scrollZoom = TRUE)
-}
-```
-
-Everyday activities expressed in chest X-ray equivalents, showing that a
-long-haul flight equals ~50 chest X-rays while a banana is negligible.
+*Target ‘vig_equiv_everyday_chart’ not available.*
 
 ## Flight Risk Decomposition
 
@@ -71,46 +31,9 @@ dominate at each duration, and which you can mitigate.
 
 ### By Duration
 
-Show code
+    #> Target 'vig_equiv_flight_duration_chart' not found in targets store or RDS fallback.
 
-``` r
-flight_data <- safe_tar_read("vig_equiv_flight_duration")
-if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
-  # Order activities by total micromorts
-  totals <- flight_data |>
-    dplyr::group_by(activity) |>
-    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
-    dplyr::arrange(total)
-  flight_data <- flight_data |>
-    dplyr::mutate(activity = factor(activity, levels = totals$activity))
-
-  plotly::plot_ly(
-    flight_data,
-    y = ~activity,
-    x = ~micromorts,
-    color = ~component_label,
-    type = "scatter",
-    mode = "markers",
-    marker = list(size = 12)
-  ) |>
-    plotly::layout(
-      title = "Flight Risk by Duration and Component (Healthy Profile)",
-      xaxis = list(title = "Micromorts"),
-      yaxis = list(title = "", categoryorder = "array",
-                   categoryarray = totals$activity),
-      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
-                    bgcolor = "rgba(255,255,255,0.9)"),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      font = list(color = "#1a1a1a")
-    ) |>
-    plotly::config(scrollZoom = TRUE)
-}
-```
-
-Cleveland dotplot decomposing flight risk into crash, DVT, and cosmic
-radiation components across 2h, 5h, 8h, and 12h flights, ordered by
-total micromorts.
+*Target ‘vig_equiv_flight_duration_chart’ not available.*
 
 Key observations:
 
@@ -126,79 +49,16 @@ Key observations:
 
 How does DVT risk status change the total?
 
-Show code
-
-``` r
-components <- safe_tar_read("vig_equiv_flight_components")
-if (!is.null(components)) {
-  DT::datatable(
-    components,
-    caption = "Flying (8h long-haul): Healthy vs DVT risk factors",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("micromorts", 1)
-}
-```
-
 ### Components
-
-Show code
-
-``` r
-# Show all flight components across durations
-flight_data <- safe_tar_read("vig_equiv_flight_duration")
-if (!is.null(flight_data)) {
-  DT::datatable(
-    flight_data,
-    caption = "All flight risk components by duration (healthy profile)",
-    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("micromorts", 2)
-}
-```
 
 ## Landmark Equivalences
 
 ### Surprise Table
 
-Show code
-
-``` r
-landmarks <- safe_tar_read("vig_equiv_landmarks")
-if (!is.null(landmarks)) {
-  DT::datatable(
-    landmarks |>
-      dplyr::select(activity, micromorts, category, xray_equivalents),
-    caption = "Landmark activities from coffee to Everest, in chest X-ray equivalents",
-    options = list(pageLength = 20, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("micromorts", 2)
-}
-```
-
 ### Interactive Explorer
 
 Full risk equivalence table with every activity expressed relative to a
 chest X-ray:
-
-Show code
-
-``` r
-explorer <- safe_tar_read("vig_equiv_explorer")
-if (!is.null(explorer)) {
-  DT::datatable(
-    explorer,
-    caption = "All activities as multiples of one chest X-ray (0.1 micromorts)",
-    options = list(pageLength = 15, dom = "ftip", scrollX = TRUE),
-    filter = "top",
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("micromorts", "ratio"), 2)
-}
-```
 
 ## Medical Radiation
 
@@ -206,56 +66,13 @@ if (!is.null(explorer)) {
 
 Medical imaging procedures vary enormously in radiation dose:
 
-Show code
-
-``` r
-med <- safe_tar_read("vig_equiv_medical_focus")
-if (!is.null(med)) {
-  DT::datatable(
-    med |> dplyr::select(activity, micromorts, microlives, period),
-    caption = "Medical radiation procedures ranked by micromort risk",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("micromorts", "microlives"), 2)
-}
-```
-
 ### Exchange Chart
 
 How many chest X-rays equal one CT scan?
 
-Show code
+    #> Target 'vig_equiv_medical_exchange_chart' not found in targets store or RDS fallback.
 
-``` r
-med <- safe_tar_read("vig_equiv_medical_focus")
-if (!is.null(med) && requireNamespace("plotly", quietly = TRUE)) {
-  med <- med |>
-    dplyr::mutate(xray_equiv = round(micromorts / 0.1, 0))
-
-  plotly::plot_ly(
-    med,
-    y = ~stats::reorder(activity, xray_equiv),
-    x = ~xray_equiv,
-    type = "bar",
-    orientation = "h",
-    marker = list(color = "#C62828")
-  ) |>
-    plotly::layout(
-      title = "Medical Procedures in Chest X-ray Equivalents",
-      xaxis = list(title = "Number of chest X-rays"),
-      yaxis = list(title = ""),
-      margin = list(l = 200),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      font = list(color = "#1a1a1a")
-    ) |>
-    plotly::config(scrollZoom = TRUE)
-}
-```
-
-Medical procedures ranked by chest X-ray equivalents, showing that a CT
-abdomen equals ~200 chest X-rays.
+*Target ‘vig_equiv_medical_exchange_chart’ not available.*
 
 ## Hedgeability Analysis
 
@@ -263,71 +80,13 @@ abdomen equals ~200 chest X-rays.
 
 Which activities have hedgeable risk components?
 
-Show code
-
-``` r
-hedgeable <- safe_tar_read("vig_equiv_hedgeable_summary")
-if (!is.null(hedgeable)) {
-  DT::datatable(
-    hedgeable,
-    caption = "Activities with hedgeable risk components (sorted by hedgeable %)",
-    options = list(pageLength = 10, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound("hedgeable_pct", 1)
-}
-```
-
 ### Stacked Components
 
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 
-Show code
+    #> Target 'vig_equiv_hedgeable_chart' not found in targets store or RDS fallback.
 
-``` r
-flight_data <- safe_tar_read("vig_equiv_flight_duration")
-if (!is.null(flight_data) && requireNamespace("plotly", quietly = TRUE)) {
-  flight_data <- flight_data |>
-    dplyr::mutate(
-      hedge_status = ifelse(hedgeable, "Hedgeable", "Not hedgeable")
-    )
-
-  # Order activities by total micromorts
-  totals <- flight_data |>
-    dplyr::group_by(activity) |>
-    dplyr::summarise(total = sum(micromorts), .groups = "drop") |>
-    dplyr::arrange(total)
-  flight_data <- flight_data |>
-    dplyr::mutate(activity = factor(activity, levels = totals$activity))
-
-  plotly::plot_ly(
-    flight_data,
-    y = ~activity,
-    x = ~micromorts,
-    color = ~hedge_status,
-    colors = c("Hedgeable" = "#2E7D32", "Not hedgeable" = "#C62828"),
-    type = "scatter",
-    mode = "markers",
-    marker = list(size = 12)
-  ) |>
-    plotly::layout(
-      title = "Hedgeable vs Non-hedgeable Risk by Flight Duration",
-      xaxis = list(title = "Micromorts"),
-      yaxis = list(title = "", categoryorder = "array",
-                   categoryarray = totals$activity),
-      legend = list(orientation = "h", y = -0.2, font = list(color = "#1a1a1a"),
-                    bgcolor = "rgba(255,255,255,0.9)"),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      font = list(color = "#1a1a1a")
-    ) |>
-    plotly::config(scrollZoom = TRUE)
-}
-```
-
-Flight risk decomposition by hedgeability: DVT risk (green, hedgeable
-via compression socks) vs crash and radiation (red, not hedgeable),
-ordered by total micromorts.
+*Target ‘vig_equiv_hedgeable_chart’ not available.*
 
 ## Radiation Exposure Profiles
 
@@ -341,45 +100,12 @@ questions.
 Annual and cumulative radiation exposure across 11 profiles —
 occupational, passenger, and environmental:
 
-Show code
-
-``` r
-rad_profiles <- safe_tar_read("vig_radiation_profiles")
-if (!is.null(rad_profiles)) {
-  DT::datatable(
-    rad_profiles,
-    caption = "Radiation exposure profiles: annual dose and cumulative micromorts at career milestones",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("annual_msv", "annual_micromorts",
-                       "mm_10y", "mm_20y", "mm_40y",
-                       "xray_equivalents_per_year"), 3)
-}
-```
-
 Key insight: A 40-year airline pilot career accumulates ~6 micromorts of
 radiation — equivalent to just 60 chest X-rays.
 
 ### Patient vs Occupational
 
 How many patient X-rays equal a career of occupational exposure?
-
-Show code
-
-``` r
-prc <- safe_tar_read("vig_radiation_patient_vs_occ")
-if (!is.null(prc)) {
-  DT::datatable(
-    prc,
-    caption = "Patient X-ray exposure vs occupational career radiation (ratio > 1 means patient exceeds worker)",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    filter = "top",
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("patient_micromorts", "occupational_micromorts", "ratio"), 3)
-}
-```
 
 Key insight: 100 lifetime chest X-rays (10 micromorts) exceeds a 40-year
 X-ray technician career (2 micromorts) by 5x.
@@ -388,59 +114,13 @@ X-ray technician career (2 micromorts) by 5x.
 
 Cumulative radiation exposure over a 40-year career:
 
-Show code
+    #> Target 'vig_equiv_radiation_timeline_chart' not found in targets store or RDS fallback.
 
-``` r
-timeline <- safe_tar_read("vig_radiation_timeline_data")
-if (!is.null(timeline) && requireNamespace("plotly", quietly = TRUE)) {
-  n_activities <- length(unique(timeline$activity))
-  pal <- grDevices::hcl.colors(n_activities, palette = "Dark 3")
-
-  plotly::plot_ly(
-    timeline,
-    x = ~year,
-    y = ~cumulative_micromorts,
-    color = ~activity,
-    colors = pal,
-    type = "scatter",
-    mode = "lines"
-  ) |>
-    plotly::layout(
-      title = "Cumulative Radiation Micromorts Over Career",
-      xaxis = list(title = "Years of Exposure"),
-      yaxis = list(title = "Cumulative Micromorts"),
-      legend = list(orientation = "v", x = 1.02, y = 1, font = list(color = "#1a1a1a"),
-                    bgcolor = "rgba(255,255,255,0.9)"),
-      paper_bgcolor = "white",
-      plot_bgcolor = "white",
-      font = list(color = "#1a1a1a")
-    ) |>
-    plotly::config(scrollZoom = TRUE)
-}
-```
-
-Cumulative radiation micromorts over a 40-year career for different
-exposure profiles, showing that 100 lifetime chest X-rays exceeds
-occupational exposure.
+*Target ‘vig_equiv_radiation_timeline_chart’ not available.*
 
 ### Regulatory Context
 
 How do actual doses compare to ICRP regulatory limits?
-
-Show code
-
-``` r
-regulatory <- safe_tar_read("vig_radiation_regulatory")
-if (!is.null(regulatory)) {
-  DT::datatable(
-    regulatory,
-    caption = "Actual annual doses vs ICRP limits (occupational: 20 mSv/yr, public: 1 mSv/yr)",
-    options = list(pageLength = 15, dom = "tip", scrollX = TRUE),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(c("annual_msv", "pct_of_limit"), 1)
-}
-```
 
 Key insight: Actual doses are typically 5-20x below regulatory limits.
 
@@ -448,25 +128,6 @@ Key insight: Actual doses are typically 5-20x below regulatory limits.
 
 Exchange rates between 10 diverse activities. Read as: “one row-activity
 equals X column-activities.”
-
-Show code
-
-``` r
-mat <- safe_tar_read("vig_equiv_matrix")
-if (!is.null(mat)) {
-  DT::datatable(
-    mat,
-    caption = "Risk exchange matrix: cell(i,j) = how many of column j equal one of row i",
-    options = list(
-      pageLength = 10,
-      dom = "t",
-      scrollX = TRUE
-    ),
-    rownames = FALSE
-  ) |>
-    DT::formatRound(names(mat)[-1], 1)
-}
-```
 
 ## Methodology & Caveats
 
@@ -541,20 +202,19 @@ sessionInfo()
 #> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
 #> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
 #> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
-#> [31] sys_3.4.3           usethis_3.2.1       lazyeval_0.2.2     
-#> [34] yaml_2.3.12         plotly_4.12.0       tidyr_1.3.2        
-#> [37] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
-#> [40] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
-#> [43] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
-#> [46] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
-#> [49] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
-#> [52] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
-#> [55] backports_1.5.0     bit64_4.6.0-1       httr_1.4.7         
-#> [58] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
-#> [61] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
-#> [64] knitr_1.51          viridisLite_0.4.2   rlang_1.1.7        
-#> [67] gert_2.3.1          glue_1.8.0          pkgload_1.4.1      
-#> [70] jsonlite_2.0.0      R6_2.6.1            fs_1.6.6
+#> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
+#> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+#> [37] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+#> [40] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
+#> [43] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
+#> [46] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
+#> [49] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
+#> [52] backports_1.5.0     bit64_4.6.0-1       rmarkdown_2.30     
+#> [55] igraph_2.2.1        bit_4.6.0           otel_0.2.0         
+#> [58] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         
+#> [61] rlang_1.1.7         gert_2.3.1          glue_1.8.0         
+#> [64] pkgload_1.4.1       jsonlite_2.0.0      R6_2.6.1           
+#> [67] fs_1.6.6
 ```
 
 ------------------------------------------------------------------------

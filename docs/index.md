@@ -240,8 +240,26 @@ expectancy).
 
 ## Architecture
 
-See the [Architecture
-vignette](https://johngavin.github.io/micromort/articles/architecture.html).
+Package architecture (click to expand; renders on GitHub)
+
+``` mermaid
+%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
+graph LR
+
+  Conversion["Unit Conversion<br>5 functions"]
+  Data["Risk Datasets<br>21 functions"]
+  Analysis["Risk Analysis<br>6 functions"]
+  Viz["Visualization<br>5 functions"]
+  Apps["Interactive Apps<br>6 functions"]
+
+  Conversion --> Data --> Analysis --> Viz --> Apps
+
+  style Conversion fill:#999999,stroke:#CC0000,color:#000000
+  style Data fill:#999999,stroke:#CC0000,color:#000000
+  style Analysis fill:#999999,stroke:#CC0000,color:#000000
+  style Viz fill:#999999,stroke:#CC0000,color:#000000
+  style Apps fill:#999999,stroke:#CC0000,color:#000000
+```
 
 See the [Architecture
 vignette](https://johngavin.github.io/micromort/articles/architecture.html)

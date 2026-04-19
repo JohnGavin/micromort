@@ -211,8 +211,6 @@ compared on a common scale.
 specific risk. For a 1-in-a-million risk (1 micromort), the LLE is
 approximately 21 minutes (assuming 40 years remaining life).
 
-    #> 21 minutes
-
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
 Micromorts and microlives focus on mortality. But many conditions (like
@@ -299,6 +297,12 @@ The
 [`hedged_portfolio()`](https://johngavin.github.io/micromort/reference/hedged_portfolio.md)
 function calculates total life expectancy gain from adopting all optimal
 lifestyle choices:
+
+    #> Target 'vig_intro_portfolio_by_category' not found in targets store or RDS fallback.
+    #> *Target 'vig_intro_portfolio_by_category' not available.*
+
+    #> Target 'vig_intro_portfolio_summary' not found in targets store or RDS fallback.
+    #> *Target 'vig_intro_portfolio_summary' not available.*
 
 **Interpretation:** A fully “hedged” individual (non-smoker, regular
 exercise, healthy diet, vaccinated, etc.) can expect to gain significant

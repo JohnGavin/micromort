@@ -37,9 +37,9 @@ This divergence reversed decades of convergence observed in the 1990s.
 The ~7 year gap between vanguard and laggard regions translates to a
 substantial lifetime difference in microlives:
 
-    #> Life expectancy gap: 2.6 years
-    #> Lifetime microlives difference: 45,496
-    #> Daily microlives difference: 3.1 per day
+    #> Target 'vig_regional_le_gap_text' not found in targets store or RDS fallback.
+
+*Target ‘vig_regional_le_gap_text’ not available.*
 
 **Interpretation:** Living in a vanguard region vs a laggard region
 corresponds to ~3.1 microlives per day—roughly equivalent to the benefit

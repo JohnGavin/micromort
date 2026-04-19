@@ -20,10 +20,14 @@
 <script src="telemetry_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="telemetry_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
 <script src="telemetry_files/libs/datatables-binding-0.34.0/datatables.js"></script><link href="telemetry_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
 <link href="telemetry_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<link href="telemetry_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<link href="telemetry_files/libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
+<link href="telemetry_files/libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
+<script src="telemetry_files/libs/selectize-0.12.0/selectize.min.js"></script><link href="telemetry_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
 <script src="telemetry_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Project Telemetry">
 <meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -104,128 +108,32 @@
 </h2>
 <section class="level3"><h3 id="dependency-graph">Dependency Graph<a class="anchor" aria-label="anchor" href="#dependency-graph"></a>
 </h3>
-<div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dep_graph</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_pipeline_dependency_graph"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Target 'vig_pipeline_dependency_graph' not found in targets store or RDS fallback.</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">dep_graph</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Render mermaid via htmltools</span></span>
-<span>  <span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/HTML.html" class="external-link">HTML</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
-<span>    <span class="st">'&lt;script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"&gt;&lt;/script&gt;'</span>,</span>
-<span>    <span class="st">'&lt;script&gt;mermaid.initialize({startOnLoad: true, securityLevel: "loose", theme: "dark"});&lt;/script&gt;'</span>,</span>
-<span>    <span class="st">'&lt;div class="mermaid" style="background-color: #000000; padding: 1em;"&gt;\n'</span>, <span class="va">dep_graph</span>, <span class="st">'\n&lt;/div&gt;'</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu">htmltools</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html" class="external-link">p</a></span><span class="op">(</span><span class="st">"Dependency graph not available. Run tar_make() first."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<p>Dependency graph not available. Run tar_make() first.</p>
-<p>Target dependency graph showing data flow across the micromort pipeline. Nodes represent individual targets; edges show upstream dependencies. The graph spans data acquisition, normalization, export, logging, documentation, telemetry, and vignette output stages. Built from <code><a href="https://docs.ropensci.org/targets/reference/tar_network.html" class="external-link">targets::tar_network()</a></code> edges. See the introduction vignette for a conceptual overview of the pipeline architecture.</p>
-</div>
-</div>
+<pre><code><span><span class="co">#&gt; Target 'vig_pipeline_dependency_graph' not found in targets store or RDS fallback.</span></span></code></pre>
+<p><em>Target ‘vig_pipeline_dependency_graph’ not available.</em></p>
 </section><section class="level3"><h3 id="plans-and-targets">Plans and Targets<a class="anchor" aria-label="anchor" href="#plans-and-targets"></a>
 </h3>
-<div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">summary</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_pipeline_summary"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">summary</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">summary</span><span class="op">$</span><span class="va">plans</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
-<span>      caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span>
-<span>        <span class="st">"Target counts by plan file ("</span>,</span>
-<span>        <span class="va">summary</span><span class="op">$</span><span class="va">total_targets</span>, <span class="st">" total targets)"</span></span>
-<span>      <span class="op">)</span>,</span>
-<span>      options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span>, dom <span class="op">=</span> <span class="st">"t"</span><span class="op">)</span>,</span>
-<span>      rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-c02e377048ded37f1dc9" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-c02e377048ded37f1dc9">{"x":{"filter":"none","vertical":false,"caption":"<caption>Target counts by plan file (109 total targets)<\/caption>","data":[["plan_data_acquisition.R","plan_documentation.R","plan_export.R","plan_leaderboard_stats.R","plan_logging.R","plan_normalization.R","plan_pkgdown.R","plan_qa_gates.R","plan_site_build.R","plan_telemetry.R","plan_validation.R","plan_vignette_outputs.R"],[10,4,4,2,1,3,3,7,7,5,0,63]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>plan<\/th>\n      <th>n_targets<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"plan","targets":0},{"name":"n_targets","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
 </section><section class="level3"><h3 id="top-5-targets-by-storage-size">Top 5 Targets by Storage Size<a class="anchor" aria-label="anchor" href="#top-5-targets-by-storage-size"></a>
 </h3>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-59a00f2653cfb183f500" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-59a00f2653cfb183f500">{"x":{"filter":"none","vertical":false,"caption":"<caption>Largest targets by stored object size (KB)<\/caption>","data":[[],[]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>size_kb<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"name","targets":0},{"name":"size_kb","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section><section class="level3"><h3 id="top-5-targets-by-compute-time">Top 5 Targets by Compute Time<a class="anchor" aria-label="anchor" href="#top-5-targets-by-compute-time"></a>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-e9c8f55aa6ba8cd0d117" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e9c8f55aa6ba8cd0d117">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\" disabled=\"\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\" disabled=\"\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[[],[]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>size_kb<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"scrollX":true,"initComplete":"function(settings, json) {\n  $(this.api().table().container()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n  $(this.api().table().header()).css({'background-color': '#16213e', 'color': '#e0e0e0'});\n  $('td', this.api().table().body()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n}","columnDefs":[{"className":"dt-right","targets":1},{"name":"name","targets":0},{"name":"size_kb","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script></section><section class="level3"><h3 id="top-5-targets-by-compute-time">Top 5 Targets by Compute Time<a class="anchor" aria-label="anchor" href="#top-5-targets-by-compute-time"></a>
 </h3>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-de92b970ce491ee1654b" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-de92b970ce491ee1654b">{"x":{"filter":"none","vertical":false,"caption":"<caption>Slowest targets by computation time (seconds)<\/caption>","data":[[],[]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>seconds<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"name","targets":0},{"name":"seconds","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section></section><section class="level2"><h2 id="github-activity">2. GitHub Activity<a class="anchor" aria-label="anchor" href="#github-activity"></a>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-da6a4fe3f5c81a8867a8" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-da6a4fe3f5c81a8867a8">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\" disabled=\"\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"number\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\" disabled=\"\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"1\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[[],[]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>name<\/th>\n      <th>seconds<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"scrollX":true,"initComplete":"function(settings, json) {\n  $(this.api().table().container()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n  $(this.api().table().header()).css({'background-color': '#16213e', 'color': '#e0e0e0'});\n  $('td', this.api().table().body()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n}","columnDefs":[{"className":"dt-right","targets":1},{"name":"name","targets":0},{"name":"seconds","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script></section></section><section class="level2"><h2 id="github-activity">2. GitHub Activity<a class="anchor" aria-label="anchor" href="#github-activity"></a>
 </h2>
 <section class="level3"><h3 id="commit-velocity">Commit Velocity<a class="anchor" aria-label="anchor" href="#commit-velocity"></a>
 </h3>
-<div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">velocity</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_commit_velocity"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">velocity</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">velocity</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">week</span>, y <span class="op">=</span> <span class="va">commits</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#1976D2"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>      title <span class="op">=</span> <span class="st">"Commit Velocity"</span>,</span>
-<span>      subtitle <span class="op">=</span> <span class="st">"Last 26 weeks"</span>,</span>
-<span>      x <span class="op">=</span> <span class="st">"Week"</span>,</span>
-<span>      y <span class="op">=</span> <span class="st">"Commits"</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>axis.text.x <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="telemetry_files/figure-html/telemetry-commit-velocity-1.png" alt="Bar chart showing number of commits per week over the last 6 months, with weeks on the x-axis and commit count on the y-axis." width="960"></p>
-<figcaption>Weekly commit frequency over the last 26 weeks. Each bar represents commits merged in a calendar week. Data sourced from <code><a href="https://docs.ropensci.org/gert/reference/git_commit.html" class="external-link">gert::git_log()</a></code> with a 500-commit lookback window. Weeks with zero commits indicate maintenance pauses or release stabilization periods. Compare with GitHub Activity table below for issue/PR context.</figcaption></figure>
-</div>
-</div>
-</div>
+<pre><code><span><span class="co">#&gt; Target 'vig_telemetry_commit_velocity_chart' not found in targets store or RDS fallback.</span></span></code></pre>
+<p><em>Target ‘vig_telemetry_commit_velocity_chart’ not available.</em></p>
 </section><section class="level3"><h3 id="issues-and-pull-requests">Issues and Pull Requests<a class="anchor" aria-label="anchor" href="#issues-and-pull-requests"></a>
 </h3>
-<div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">activity</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_github_activity"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">activity</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">activity</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
-<span>      caption <span class="op">=</span> <span class="st">"GitHub issues and pull requests summary"</span>,</span>
-<span>      options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">5</span>, dom <span class="op">=</span> <span class="st">"t"</span><span class="op">)</span>,</span>
-<span>      rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-01d4cc143074f6480f54" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-01d4cc143074f6480f54">{"x":{"filter":"none","vertical":false,"caption":"<caption>GitHub issues and pull requests summary<\/caption>","data":[["Issues open","Issues closed","PRs open","PRs merged"],[9,32,0,24]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>category<\/th>\n      <th>count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":5,"dom":"t","columnDefs":[{"className":"dt-right","targets":1},{"name":"category","targets":0},{"name":"count","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"lengthMenu":[5,10,25,50,100]}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section></section><section class="level2"><h2 id="project-structure">3. Project Structure<a class="anchor" aria-label="anchor" href="#project-structure"></a>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-47ead7dc2ba0abbde97e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-47ead7dc2ba0abbde97e">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"integer\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"display: none;position: absolute;width: 200px;opacity: 1\">\n      <div data-min=\"0\" data-max=\"32\"><\/div>\n      <span style=\"float: left;\"><\/span>\n      <span style=\"float: right;\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Issues open","Issues closed","PRs open","PRs merged"],[9,32,0,24]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>category<\/th>\n      <th>count<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"scrollX":true,"initComplete":"function(settings, json) {\n  $(this.api().table().container()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n  $(this.api().table().header()).css({'background-color': '#16213e', 'color': '#e0e0e0'});\n  $('td', this.api().table().body()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n}","columnDefs":[{"className":"dt-right","targets":1},{"name":"category","targets":0},{"name":"count","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script></section></section><section class="level2"><h2 id="project-structure">3. Project Structure<a class="anchor" aria-label="anchor" href="#project-structure"></a>
+</h2>
+<div class="datatables html-widget html-fill-item" id="htmlwidget-5b0e7982bbbff6c9b5b4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-5b0e7982bbbff6c9b5b4">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["R source files","Test files","Exported functions","R source LOC","Test LOC","Package version"],["29","9","43","4484","1237","0.1.0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"scrollX":true,"initComplete":"function(settings, json) {\n  $(this.api().table().container()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n  $(this.api().table().header()).css({'background-color': '#16213e', 'color': '#e0e0e0'});\n  $('td', this.api().table().body()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});\n}","columnDefs":[{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":["options.initComplete"],"jsHooks":[]}</script></section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
 </h2>
 <div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="fu">safe_tar_read</span><span class="op">(</span><span class="st">"vig_codebase_metrics"</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">metrics</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">metrics</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">datatable</a></span><span class="op">(</span></span>
-<span>      caption <span class="op">=</span> <span class="st">"Codebase metrics snapshot"</span>,</span>
-<span>      options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pageLength <span class="op">=</span> <span class="fl">10</span>, dom <span class="op">=</span> <span class="st">"t"</span><span class="op">)</span>,</span>
-<span>      rownames <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>    <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<div class="datatables html-widget html-fill-item" id="htmlwidget-a50c727fcc6ceab06dca" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-a50c727fcc6ceab06dca">{"x":{"filter":"none","vertical":false,"caption":"<caption>Codebase metrics snapshot<\/caption>","data":[["R source files","Test files","Exported functions","R source LOC","Test LOC","Package version"],["29","9","43","4484","1237","0.1.0"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>metric<\/th>\n      <th>value<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":10,"dom":"t","columnDefs":[{"name":"metric","targets":0},{"name":"value","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section><section class="level2"><h2 id="reproducibility">Reproducibility<a class="anchor" aria-label="anchor" href="#reproducibility"></a>
-</h2>
-<div class="cell">
-<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Show code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.2 (2025-10-31)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin25.2.0</span></span>
@@ -261,16 +169,16 @@
 <span><span class="co">#&gt; [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        </span></span>
 <span><span class="co">#&gt; [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      </span></span>
 <span><span class="co">#&gt; [37] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      </span></span>
-<span><span class="co">#&gt; [40] dplyr_1.1.4         purrr_1.2.1         labeling_0.4.3     </span></span>
-<span><span class="co">#&gt; [43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0      </span></span>
-<span><span class="co">#&gt; [46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4     </span></span>
-<span><span class="co">#&gt; [49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0  </span></span>
-<span><span class="co">#&gt; [52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1      </span></span>
-<span><span class="co">#&gt; [55] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          </span></span>
-<span><span class="co">#&gt; [58] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     </span></span>
-<span><span class="co">#&gt; [61] knitr_1.51          rlang_1.1.7         gert_2.3.1         </span></span>
-<span><span class="co">#&gt; [64] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0     </span></span>
-<span><span class="co">#&gt; [67] R6_2.6.1            fs_1.6.6</span></span></code></pre></div>
+<span><span class="co">#&gt; [40] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       </span></span>
+<span><span class="co">#&gt; [43] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         </span></span>
+<span><span class="co">#&gt; [46] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     </span></span>
+<span><span class="co">#&gt; [49] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       </span></span>
+<span><span class="co">#&gt; [52] backports_1.5.0     bit64_4.6.0-1       rmarkdown_2.30     </span></span>
+<span><span class="co">#&gt; [55] igraph_2.2.1        bit_4.6.0           otel_0.2.0         </span></span>
+<span><span class="co">#&gt; [58] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         </span></span>
+<span><span class="co">#&gt; [61] rlang_1.1.7         gert_2.3.1          glue_1.8.0         </span></span>
+<span><span class="co">#&gt; [64] pkgload_1.4.1       jsonlite_2.0.0      R6_2.6.1           </span></span>
+<span><span class="co">#&gt; [67] fs_1.6.6</span></span></code></pre></div>
 </details>
 </div>
 <hr>

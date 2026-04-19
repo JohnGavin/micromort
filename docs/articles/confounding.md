@@ -183,13 +183,6 @@ Geography is arguably the most powerful confounder in risk data. The
 same encounter — a snake bite — has vastly different outcomes depending
 on location:
 
-| activity | micromorts | condition_value | hedge_description | confidence |
-|:---|---:|:---|:---|:---|
-| Snake bite (US, with antivenom) | 0.5 | high_income | Wear boots in snake habitat, carry pressure bandage | medium |
-| Snake bite (rural sub-Saharan Africa) | 18.5 | low_income | Footwear, torch at night, proximity to clinic | low |
-
-Snake bite micromorts by geography
-
 The 37x difference between the US and rural sub-Saharan Africa reflects
 differences in antivenom availability, hospital proximity, and emergency
 transport infrastructure — not differences in snake venom potency. A
@@ -213,15 +206,6 @@ as daily micromorts.
 
 ### Disease death rates by country
 
-| activity_id               |   UK |   US |   JP |   IN |   NG |   BR |
-|:--------------------------|-----:|-----:|-----:|-----:|-----:|-----:|
-| daily_cancer_mortality    | 3.95 | 3.15 | 3.27 | 2.30 | 2.79 | 3.02 |
-| daily_cvd_mortality       | 3.24 | 3.95 | 2.10 | 7.65 | 7.33 | 4.03 |
-| daily_diarrheal_mortality | 0.02 | 0.04 | 0.02 | 1.28 | 0.88 | 0.08 |
-| daily_lri_mortality       | 0.53 | 0.29 | 0.43 | 1.09 | 1.77 | 1.10 |
-
-Daily micromorts by cause and country (IHME GBD 2023, age-standardised)
-
 Key findings:
 
 - **Cardiovascular disease** is the leading killer everywhere, at 3.24
@@ -240,26 +224,6 @@ Key findings:
 
 ### Top-15 ranking: UK vs Nigeria
 
-| activity                                | uk_mm | uk_rank | ng_mm | ng_rank |
-|:----------------------------------------|------:|--------:|------:|--------:|
-| Mt. Everest ascent                      | 37932 |       1 | 37932 |       1 |
-| Himalayan mountaineering                | 12000 |       2 | 12000 |       2 |
-| COVID-19 infection (unvaccinated)       | 10000 |       3 | 10000 |       3 |
-| Spanish flu infection                   |  3000 |       4 |  3000 |       4 |
-| Matterhorn ascent                       |  2840 |       5 |  2840 |       5 |
-| Living in US during COVID-19 (Jul 2020) |   500 |       6 |   500 |       6 |
-| Living (one day, age 90)                |   463 |       7 |   463 |       7 |
-| Base jumping (per jump)                 |   430 |       8 |   430 |       8 |
-| First day of life (newborn)             |   430 |       9 |   430 |       9 |
-| COVID-19 unvaccinated (age 80+)         |   234 |      10 |   234 |      10 |
-| Caesarean birth (mother)                |   170 |      11 |   170 |      11 |
-| Scuba diving, trained (yearly)          |   164 |      12 |   164 |      12 |
-| Vaginal birth (mother)                  |   120 |      13 |   120 |      13 |
-| Living (one day, age 75)                |   105 |      14 |   105 |      14 |
-| COVID-19 unvaccinated (age 65-79)       |    76 |      15 |    76 |      15 |
-
-Top-15 riskiest activities: UK vs Nigeria country profile
-
 Switching from a UK to Nigeria profile reveals that chronic diseases
 dominate daily risk far more than any acute activity, and that the gap
 between countries is structural — not about individual behaviour.
@@ -273,43 +237,12 @@ is the dominant confounder.
 
 ### Bed falls by age group
 
-| activity | condition_value | micromorts | confidence | notes |
-|:---|:---|---:|:---|:---|
-| Bed fall (per night) | under_65 | 0.00 | high | CDC: ~0.4 deaths/100k/yr for under-65; / 365 \* 10 = 0.004 mm/night |
-| Bed fall (per night) | all_ages | 0.00 | high | Population average: ~450 deaths/yr / 330M / 365 \* 1e6 ≈ 0.004 mm/night (dominated by elderly) |
-| Bed fall (per night) | 65_74_female | 0.39 | high | CDC: 14.2 deaths/100k/yr for 65-74 females; / 365 \* 10 = 0.39 mm/night |
-| Bed fall (per night) | 65_74_male | 0.68 | high | CDC: 24.7 deaths/100k/yr for 65-74 males; / 365 \* 10 = 0.68 mm/night |
-| Bed fall (per night) | 85_plus_female | 8.80 | high | CDC: 319.7 deaths/100k/yr for 85+ females; / 365 \* 10 = 8.8 mm/night |
-| Bed fall (per night) | 85_plus_male | 10.20 | high | CDC: 373.3 deaths/100k/yr for 85+ males; / 365 \* 10 = 10.2 mm/night |
-
-Bed fall micromorts per night by age group (CDC Data Brief 532)
-
 For an 85-year-old man, a bed fall carries **10.2 micromorts per night**
 — 2,550x the risk for someone under 65 (0.004 mm). This single activity,
 invisible in population-average rankings, becomes more dangerous than
 motorcycling.
 
 ### Top-15 ranking: default vs 85+ male
-
-| activity | default_mm | default_rank | aged_mm | aged_rank |
-|:---|---:|---:|---:|---:|
-| Mt. Everest ascent | 37932 | 1 | 37932 | 1 |
-| Himalayan mountaineering | 12000 | 2 | 12000 | 2 |
-| COVID-19 infection (unvaccinated) | 10000 | 3 | 10000 | 3 |
-| Spanish flu infection | 3000 | 4 | 3000 | 4 |
-| Matterhorn ascent | 2840 | 5 | 2840 | 5 |
-| Living in US during COVID-19 (Jul 2020) | 500 | 6 | 500 | 6 |
-| Living (one day, age 90) | 463 | 7 | 463 | 7 |
-| Base jumping (per jump) | 430 | 8 | 430 | 8 |
-| First day of life (newborn) | 430 | 9 | 430 | 9 |
-| COVID-19 unvaccinated (age 80+) | 234 | 10 | 234 | 10 |
-| Caesarean birth (mother) | 170 | 11 | 170 | 11 |
-| Scuba diving, trained (yearly) | 164 | 12 | 164 | 12 |
-| Vaginal birth (mother) | 120 | 13 | 120 | 13 |
-| Living (one day, age 75) | 105 | 14 | 105 | 14 |
-| COVID-19 unvaccinated (age 65-79) | 76 | 15 | 76 | 15 |
-
-Top-15 riskiest activities: population default vs 85+ male profile
 
 Key shifts for an 85-year-old male:
 
@@ -402,27 +335,29 @@ sessionInfo()
 #> [1] micromort_0.1.0 testthat_3.3.2 
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] generics_0.1.4      digest_0.6.39       magrittr_2.0.4     
-#>  [4] evaluate_1.0.5      grid_4.5.2          RColorBrewer_1.1-3 
-#>  [7] pkgload_1.4.1       fastmap_1.2.0       rprojroot_2.1.1    
-#> [10] jsonlite_2.0.0      processx_3.8.6      pkgbuild_1.4.8     
-#> [13] backports_1.5.0     brio_1.1.5          secretbase_1.1.1   
-#> [16] ps_1.9.1            purrr_1.2.1         scales_1.4.0       
-#> [19] codetools_0.2-20    cli_3.6.5           rlang_1.1.7        
-#> [22] bit64_4.6.0-1       withr_3.0.2         yaml_2.3.12        
-#> [25] otel_0.2.0          tools_4.5.2         checkmate_2.3.3    
-#> [28] dplyr_1.1.4         ggplot2_4.0.1       base64url_1.4      
-#> [31] credentials_2.0.3   assertthat_0.2.1    vctrs_0.7.1        
-#> [34] R6_2.6.1            lifecycle_1.0.5     fs_1.6.6           
-#> [37] bit_4.6.0           usethis_3.2.1       targets_1.11.4     
-#> [40] arrow_22.0.0        callr_3.7.6         pkgconfig_2.0.3    
-#> [43] desc_1.4.3          pillar_1.11.1       gtable_0.3.6       
-#> [46] data.table_1.18.2.1 glue_1.8.0          gert_2.3.1         
-#> [49] xfun_0.56           tibble_3.3.1        tidyselect_1.2.1   
-#> [52] sys_3.4.3           knitr_1.51          farver_2.1.2       
-#> [55] igraph_2.2.1        htmltools_0.5.9     rmarkdown_2.30     
-#> [58] compiler_4.5.2      prettyunits_1.2.0   S7_0.2.1           
-#> [61] askpass_1.2.1       openssl_2.3.4
+#>  [1] gtable_0.3.6        xfun_0.56           bslib_0.10.0       
+#>  [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
+#>  [7] callr_3.7.6         vctrs_0.7.1         tools_4.5.2        
+#> [10] crosstalk_1.2.2     ps_1.9.1            generics_0.1.4     
+#> [13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
+#> [16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
+#> [19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
+#> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
+#> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
+#> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
+#> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
+#> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+#> [37] DT_0.34.0           cachem_1.1.0        tidyselect_1.2.1   
+#> [40] digest_0.6.39       dplyr_1.1.4         purrr_1.2.1        
+#> [43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0      
+#> [46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4     
+#> [49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0  
+#> [52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1      
+#> [55] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
+#> [58] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
+#> [61] knitr_1.51          rlang_1.1.7         gert_2.3.1         
+#> [64] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0     
+#> [67] R6_2.6.1            targets_1.11.4      fs_1.6.6
 ```
 
 ------------------------------------------------------------------------

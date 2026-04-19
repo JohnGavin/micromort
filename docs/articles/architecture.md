@@ -13,17 +13,38 @@ counts update automatically when plan files change.
 Show code
 
 ``` r
-emit_mermaid("vig_arch_pipeline_diagram",
-             "Pipeline diagram not available. Run `targets::tar_make()` first.",
-             caption = "Figure 1: Data pipeline stages from raw Eurostat/CDC data through cleaning, decomposition, aggregation, and vignette output targets.",
-             alt_text = "Mermaid flowchart showing five pipeline stages: ingest, clean, decompose, aggregate, and vignette outputs, with target counts at each stage.")
+show_target("vig_arch_pipeline_diagram")
 ```
 
-``` mermaid
-```
+%%{init: {‘theme’: ‘dark’, ‘themeVariables’: {‘primaryColor’: ‘#999999’,
+‘primaryTextColor’: ‘#000000’, ‘primaryBorderColor’: ‘#CC0000’,
+‘lineColor’: ‘#CC0000’, ‘secondaryColor’: ‘#999999’, ‘tertiaryColor’:
+‘#999999’, ‘background’: ‘#000000’, ‘mainBkg’: ‘#999999’, ‘nodeBorder’:
+‘#CC0000’, ‘clusterBkg’: ‘#333333’, ‘clusterBorder’: ‘#CC0000’,
+‘titleColor’: ‘#000000’, ‘edgeLabelBackground’: ‘#999999’}}}%% graph LR
 
-Figure 1: Data pipeline stages from raw Eurostat/CDC data through
-cleaning, decomposition, aggregation, and vignette output targets.
+subgraph S1\[“1. Data Acquisition”\] acq\[“CSV + API sources  
+10 targets”\] end
+
+subgraph S2\[“2. Normalisation”\] norm\[“Schema validation  
+3 targets”\] end
+
+subgraph S3\[“3. Export”\] exp\[“Parquet + RDS  
+4 targets”\] end
+
+subgraph S4\[“4. Quality”\] log\[“Logging: 1 targets”\]
+val\[“Validation: 0 targets”\] end
+
+subgraph S5\[“5. Documentation”\] doc\[“Docs: 4 targets”\]
+vig\[“Vignettes: 48 targets”\] end
+
+S1 –\> S2 –\> S3 –\> S4 –\> S5
+
+style S1 fill:#999999,stroke:#CC0000,color:#000000 style S2
+fill:#999999,stroke:#CC0000,color:#000000 style S3
+fill:#999999,stroke:#CC0000,color:#000000 style S4
+fill:#999999,stroke:#CC0000,color:#000000 style S5
+fill:#999999,stroke:#CC0000,color:#000000
 
 ## 2. Function Hierarchy
 
@@ -91,9 +112,9 @@ Auto-generated dependency graph of the full targets pipeline.
 Show code
 
 ``` r
-vis <- safe_tar_read("vig_arch_tar_visnetwork")
+show_target("vig_arch_tar_visnetwork")
 #> Target 'vig_arch_tar_visnetwork' not found in targets store or RDS fallback.
-if (!is.null(vis)) vis
+#> *Target 'vig_arch_tar_visnetwork' not available.*
 ```
 
 ## Reproducibility

@@ -8,51 +8,11 @@ pipeline, codebase, and GitHub activity. All data is pre-computed via
 
 ### Dependency Graph
 
-Show code
+    #> Target 'vig_pipeline_dependency_graph' not found in targets store or RDS fallback.
 
-``` r
-dep_graph <- safe_tar_read("vig_pipeline_dependency_graph")
-#> Target 'vig_pipeline_dependency_graph' not found in targets store or RDS fallback.
-if (!is.null(dep_graph)) {
-  # Render mermaid via htmltools
-  htmltools::HTML(paste0(
-    '<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>',
-    '<script>mermaid.initialize({startOnLoad: true, securityLevel: "loose", theme: "dark"});</script>',
-    '<div class="mermaid" style="background-color: #000000; padding: 1em;">\n', dep_graph, '\n</div>'
-  ))
-} else {
-  htmltools::p("Dependency graph not available. Run tar_make() first.")
-}
-```
-
-Dependency graph not available. Run tar_make() first.
-
-Target dependency graph showing data flow across the micromort pipeline.
-Nodes represent individual targets; edges show upstream dependencies.
-The graph spans data acquisition, normalization, export, logging,
-documentation, telemetry, and vignette output stages. Built from
-[`targets::tar_network()`](https://docs.ropensci.org/targets/reference/tar_network.html)
-edges. See the introduction vignette for a conceptual overview of the
-pipeline architecture.
+*Target ‘vig_pipeline_dependency_graph’ not available.*
 
 ### Plans and Targets
-
-Show code
-
-``` r
-summary <- safe_tar_read("vig_pipeline_summary")
-if (!is.null(summary)) {
-  summary$plans |>
-    DT::datatable(
-      caption = paste0(
-        "Target counts by plan file (",
-        summary$total_targets, " total targets)"
-      ),
-      options = list(pageLength = 10, dom = "t"),
-      rownames = FALSE
-    )
-}
-```
 
 ### Top 5 Targets by Storage Size
 
@@ -62,66 +22,13 @@ if (!is.null(summary)) {
 
 ### Commit Velocity
 
-Show code
+    #> Target 'vig_telemetry_commit_velocity_chart' not found in targets store or RDS fallback.
 
-``` r
-velocity <- safe_tar_read("vig_commit_velocity")
-if (!is.null(velocity)) {
-  ggplot2::ggplot(velocity, ggplot2::aes(x = week, y = commits)) +
-    ggplot2::geom_col(fill = "#1976D2") +
-    ggplot2::labs(
-      title = "Commit Velocity",
-      subtitle = "Last 26 weeks",
-      x = "Week",
-      y = "Commits"
-    ) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-}
-```
-
-![Bar chart showing number of commits per week over the last 6 months,
-with weeks on the x-axis and commit count on the
-y-axis.](telemetry_files/figure-html/telemetry-commit-velocity-1.png)
-
-Weekly commit frequency over the last 26 weeks. Each bar represents
-commits merged in a calendar week. Data sourced from
-[`gert::git_log()`](https://docs.ropensci.org/gert/reference/git_commit.html)
-with a 500-commit lookback window. Weeks with zero commits indicate
-maintenance pauses or release stabilization periods. Compare with GitHub
-Activity table below for issue/PR context.
+*Target ‘vig_telemetry_commit_velocity_chart’ not available.*
 
 ### Issues and Pull Requests
 
-Show code
-
-``` r
-activity <- safe_tar_read("vig_github_activity")
-if (!is.null(activity)) {
-  activity |>
-    DT::datatable(
-      caption = "GitHub issues and pull requests summary",
-      options = list(pageLength = 5, dom = "t"),
-      rownames = FALSE
-    )
-}
-```
-
 ## 3. Project Structure
-
-Show code
-
-``` r
-metrics <- safe_tar_read("vig_codebase_metrics")
-if (!is.null(metrics)) {
-  metrics |>
-    DT::datatable(
-      caption = "Codebase metrics snapshot",
-      options = list(pageLength = 10, dom = "t"),
-      rownames = FALSE
-    )
-}
-```
 
 ## Reproducibility
 
@@ -163,16 +70,16 @@ sessionInfo()
 #> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
 #> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
 #> [37] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
-#> [40] dplyr_1.1.4         purrr_1.2.1         labeling_0.4.3     
-#> [43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0      
-#> [46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4     
-#> [49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0  
-#> [52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1      
-#> [55] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
-#> [58] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
-#> [61] knitr_1.51          rlang_1.1.7         gert_2.3.1         
-#> [64] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0     
-#> [67] R6_2.6.1            fs_1.6.6
+#> [40] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
+#> [43] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
+#> [46] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
+#> [49] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
+#> [52] backports_1.5.0     bit64_4.6.0-1       rmarkdown_2.30     
+#> [55] igraph_2.2.1        bit_4.6.0           otel_0.2.0         
+#> [58] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         
+#> [61] rlang_1.1.7         gert_2.3.1          glue_1.8.0         
+#> [64] pkgload_1.4.1       jsonlite_2.0.0      R6_2.6.1           
+#> [67] fs_1.6.6
 ```
 
 ------------------------------------------------------------------------
