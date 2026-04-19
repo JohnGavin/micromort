@@ -1,5 +1,6 @@
 # Shared utilities for vignettes — source() this in setup chunks
 # Provides safe_tar_read() with RDS fallback for pkgdown/CI builds
+# and show_target() with class-based rendering dispatch.
 
 safe_tar_read <- function(name) {
   # Try targets store first
@@ -34,4 +35,55 @@ safe_tar_read <- function(name) {
 
   message("Target '", name, "' not found in targets store or RDS fallback.")
   NULL
+}
+
+
+# Class-based rendering dispatcher for vignette chunks.
+# Resolves the ggplotGrob / htmlwidget / data.frame tension:
+# vignette chunks call show_target("vig_name") as a single expression,
+# and this function handles the correct rendering method per class.
+show_target <- function(name, ...) {
+  obj <- safe_tar_read(name)
+  if (is.null(obj)) {
+    cat(paste0("*Target '", name, "' not available.*\n"))
+    return(invisible(NULL))
+  }
+  render_target(obj, ...)
+}
+
+# S3-style dispatch on object class
+render_target <- function(obj, ...) {
+  if (inherits(obj, "grob") || inherits(obj, "gtable")) {
+    # ggplotGrob objects: render via grid
+    grid::grid.newpage()
+    grid::grid.draw(obj)
+  } else if (inherits(obj, "gg") || inherits(obj, "ggplot")) {
+    # Raw ggplot objects (should be grob, but handle gracefully)
+    print(obj)
+  } else if (inherits(obj, "htmlwidget")) {
+    # plotly, visNetwork, DT, leaflet, etc.
+    obj
+  } else if (inherits(obj, "data.frame")) {
+    # Data frames: wrap in DT with dark theme
+    DT::datatable(obj, rownames = FALSE, filter = "top",
+      options = list(
+        pageLength = 15, scrollX = TRUE,
+        initComplete = DT::JS(
+          "function(settings, json) {",
+          "  $(this.api().table().container()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});",
+          "  $(this.api().table().header()).css({'background-color': '#16213e', 'color': '#e0e0e0'});",
+          "  $('td', this.api().table().body()).css({'background-color': '#1a1a2e', 'color': '#e0e0e0'});",
+          "}"
+        )
+      ), ...)
+  } else if (is.character(obj) && length(obj) == 1) {
+    # Single character string: render as raw markdown/HTML (build-info, mermaid)
+    cat(obj)
+  } else if (is.list(obj) && !is.data.frame(obj)) {
+    # Named list: return invisibly (caller extracts elements)
+    invisible(obj)
+  } else {
+    # Fallback: print
+    print(obj)
+  }
 }

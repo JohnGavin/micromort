@@ -60,6 +60,118 @@ plan_vignette_outputs <- list(
 
 
   # ==========================================================================
+  # WHAT-IS-A-MICROMORT VIGNETTE (closeread scrollytelling)
+  # ==========================================================================
+
+  # Mundane risks bar chart (plotly)
+  targets::tar_target(
+    vig_whatis_mundane_plot,
+    {
+      cr <- common_risks()
+      mundane <- cr |>
+        dplyr::filter(activity %in% c(
+          "Cup of coffee", "Crossing a road",
+          "Commuting by car (30 min)", "Commuting by bicycle (30 min)",
+          "Taking a bath", "Working in an office (8 hours)",
+          "Drinking a glass of wine")) |>
+        dplyr::arrange(micromorts) |>
+        dplyr::mutate(activity = factor(activity, levels = activity))
+
+      plotly::plot_ly(mundane, y = ~activity, x = ~micromorts, type = "bar",
+        orientation = "h",
+        marker = list(color = "#2c7be5"),
+        hovertemplate = paste0("<b>%{y}</b><br>",
+          "%{x:.2f} mm<br>",
+          "%{x:.2f} / 0.01 = ", round(mundane$micromorts / 0.01), "x vs coffee",
+          "<extra></extra>")) |>
+        plotly::layout(
+          xaxis = list(title = "Micromorts (mm)"),
+          yaxis = list(title = ""),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13),
+          annotations = list(list(
+            text = "1 mm = one-in-a-million chance of death",
+            x = 0.5, y = -0.12, xref = "paper", yref = "paper",
+            showarrow = FALSE, font = list(size = 11, color = "#888888")))
+        ) |> plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Full spectrum dot chart (plotly)
+  targets::tar_target(
+    vig_whatis_spectrum_plot,
+    {
+      cr <- common_risks()
+      cr_show <- cr |>
+        dplyr::filter(micromorts > 0) |>
+        dplyr::arrange(dplyr::desc(micromorts)) |>
+        dplyr::slice_head(n = 35)
+
+      plotly::plot_ly(cr_show, x = ~micromorts,
+        y = ~stats::reorder(activity, micromorts),
+        type = "scatter", mode = "markers",
+        color = ~category, colors = "Set1",
+        marker = list(size = 10),
+        hovertemplate = paste0(
+          "<b>%{y}</b><br>",
+          "%{x:,.1f} mm<br>",
+          "Category: %{text}",
+          "<extra></extra>"),
+        text = ~category) |>
+        plotly::layout(
+          xaxis = list(title = "Micromorts, mm (log scale)", type = "log",
+                       tickformat = ","),
+          yaxis = list(title = "", tickfont = list(size = 11)),
+          height = 700,
+          margin = list(l = 220),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13),
+          legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0"))
+        ) |> plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Chronic risks bar chart (plotly)
+  targets::tar_target(
+    vig_whatis_chronic_plot,
+    {
+      ch <- chronic_risks()
+      ch <- ch |>
+        dplyr::arrange(microlives_per_day) |>
+        dplyr::mutate(
+          factor = factor(factor, levels = factor),
+          colour = ifelse(direction == "gain", "#198754", "#dc3545"),
+          dir_label = ifelse(direction == "gain", "gain", "lose")
+        )
+
+      plotly::plot_ly(ch, x = ~microlives_per_day, y = ~factor, type = "bar",
+        orientation = "h",
+        marker = list(color = ~colour),
+        hovertemplate = paste0(
+          "<b>%{y}</b><br>",
+          "%{x:+.0f} ml/day (%{text})<br>",
+          "= %{customdata} min/day",
+          "<extra></extra>"),
+        text = ~dir_label,
+        customdata = ~abs(microlives_per_day) * 30) |>
+        plotly::layout(
+          xaxis = list(title = "Microlives per day (ml/day)", zeroline = TRUE,
+                       zerolinecolor = "#e0e0e0", zerolinewidth = 1),
+          yaxis = list(title = "", tickfont = list(size = 10)),
+          height = 650,
+          margin = list(l = 200),
+          paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
+          font = list(color = "#e0e0e0", size = 13),
+          annotations = list(list(
+            text = "1 ml = 30 min of life expectancy. Red = lose, Green = gain.",
+            x = 0.5, y = -0.08, xref = "paper", yref = "paper",
+            showarrow = FALSE, font = list(size = 11, color = "#888888")))
+        ) |> plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+
+  # ==========================================================================
   # REGIONAL VARIATION VIGNETTE
   # ==========================================================================
 
