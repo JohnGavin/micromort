@@ -190,14 +190,11 @@ test_that("each individual tag produces valid output or returns empty tibble gra
   for (tag in all_tags) {
     q <- ranking_quiz_questions(tags = tag, n_questions = 5, seed = 42)
     # Either produces questions with the right schema, or returns empty tibble
-    expect_s3_class(q, "tbl_df", info = paste("Tag:", tag))
+    expect_s3_class(q, "tbl_df")
     if (nrow(q) > 0) {
-      expect_true(all(expected_cols %in% names(q)),
-                  info = paste("Missing cols for tag:", tag))
-      expect_true(all(q$lle_minutes > 0),
-                  info = paste("Non-positive lle_minutes for tag:", tag))
-      expect_true(all(q$item_source %in% c("acute", "chronic")),
-                  info = paste("Invalid item_source for tag:", tag))
+      expect_true(all(expected_cols %in% names(q)))
+      expect_true(all(q$lle_minutes > 0))
+      expect_true(all(q$item_source %in% c("acute", "chronic")))
     }
   }
 })
@@ -209,8 +206,7 @@ test_that("each tag produces at least 3 items when enough data exists", {
   for (tag in tags_with_data) {
     q <- ranking_quiz_questions(tags = tag, n_questions = 1,
                                 items_per_question = 3, seed = 42)
-    expect_gt(nrow(q), 0,
-              info = paste("Tag", tag, "should produce at least 1 question"))
+    expect_gt(nrow(q), 0)
   }
 })
 
