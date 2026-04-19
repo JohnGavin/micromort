@@ -37,3 +37,4 @@ Cancer screening (age-appropriate),1,Medical,gain,Early detection improves outco
 Being female (vs male),4,Demographics,gain,Female sex advantage,30.4,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
 Living in 2010 vs 1910,15,Historical,gain,Medical/social progress,114.1,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
 Living in Sweden vs Russia (male),21,Demographics,gain,Geographic health advantage,159.7,https://pubmed.ncbi.nlm.nih.gov/23247978/,spiegelhalter_2012,high,2026-03-15
+Average cancer diagnosis,-6,Cancer,loss,~12.4 life-years lost per cancer death (Philipson et al. 2026; $197T value of eliminating cancer over 35 years),-45.6,https://marginalrevolution.com/marginalrevolution/2026/04/the-economic-value-of-eliminating-cancer.html,philipson_2026,low,2026-04-19

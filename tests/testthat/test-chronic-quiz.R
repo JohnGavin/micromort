@@ -164,3 +164,35 @@ test_that("factor_descriptions() has required columns", {
   expect_true(all(nzchar(desc$description)))
   expect_true(all(grepl("^https?://", desc$help_url)))
 })
+
+
+# ---- cancer diagnosis entry (Issue #80) ----
+
+test_that("Average cancer diagnosis exists in chronic_risks() with correct values", {
+  cr <- chronic_risks()
+  cancer <- cr[cr$factor == "Average cancer diagnosis", ]
+  expect_equal(nrow(cancer), 1L)
+  expect_equal(cancer$microlives_per_day, -6)
+  expect_equal(cancer$direction, "loss")
+  expect_equal(cancer$category, "Cancer")
+  # annual_effect_days = -6 * 365 * 30 / (24 * 60)
+  expect_equal(cancer$annual_effect_days, round(-6 * 365 * 30 / (24 * 60), 1))
+})
+
+test_that("factor_descriptions() has description for Average cancer diagnosis", {
+  desc <- factor_descriptions()
+  cancer_desc <- desc[desc$factor == "Average cancer diagnosis", ]
+  expect_equal(nrow(cancer_desc), 1L)
+  expect_true(grepl("cancer", cancer_desc$description, ignore.case = TRUE))
+  expect_true(grepl("^https?://", cancer_desc$help_url))
+})
+
+test_that("Average cancer diagnosis can appear in chronic_quiz_pairs()", {
+  # The entry should be in the pool (abs microlives = 6, within typical ratios)
+  cr <- chronic_risks()
+  cancer <- cr[cr$factor == "Average cancer diagnosis", ]
+  expect_equal(abs(cancer$microlives_per_day), 6)
+  # Should pair with entries of similar magnitude (3-12 range)
+  similar <- cr[abs(cr$microlives_per_day) >= 3 & abs(cr$microlives_per_day) <= 12, ]
+  expect_gte(nrow(similar), 3L)
+})

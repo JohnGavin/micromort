@@ -649,3 +649,33 @@ test_that("parse_period_type handles bite and sting", {
   expect_equal(parse_period_type("per bite"), "event")
   expect_equal(parse_period_type("per sting"), "event")
 })
+
+
+# ── NYC pedestrian walking risk (Issue #80) ──────────────────────────────────
+
+test_that("NYC walking trip exists in atomic_risks with correct values", {
+  ar <- atomic_risks()
+  nyc <- ar[ar$activity == "Walking (1 trip, NYC)", ]
+  expect_equal(nrow(nyc), 1L)
+  expect_equal(nyc$micromorts, 0.09)
+  expect_equal(nyc$category, "Travel")
+  expect_equal(nyc$period, "per trip")
+  expect_equal(nyc$period_type, "event")
+  expect_equal(nyc$source_url, "https://www.nature.com/articles/s44284-025-00383-y")
+})
+
+test_that("NYC walking trip is present in common_risks()", {
+  cr <- common_risks()
+  nyc <- cr[cr$activity == "Walking (1 trip, NYC)", ]
+  expect_equal(nrow(nyc), 1L)
+  expect_equal(nyc$micromorts, 0.09)
+  expect_equal(nyc$microlives, round(0.09 * 0.7, 1))
+})
+
+test_that("activity_descriptions() has description for NYC walking trip", {
+  desc <- activity_descriptions()
+  nyc_desc <- desc[desc$activity == "Walking (1 trip, NYC)", ]
+  expect_equal(nrow(nyc_desc), 1L)
+  expect_true(nchar(nyc_desc$description) > 10)
+  expect_equal(nyc_desc$help_url, "https://www.nature.com/articles/s44284-025-00383-y")
+})
