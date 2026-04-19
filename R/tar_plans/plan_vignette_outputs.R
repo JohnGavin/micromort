@@ -161,7 +161,7 @@ plan_vignette_outputs <- list(
   # Risk ladder plot (faceted by COVID vs Other)
   targets::tar_target(
     vig_intro_risk_plot,
-    plot_risks()
+    ggplot2::ggplotGrob(plot_risks())
   ),
 
 
@@ -256,7 +256,7 @@ plan_vignette_outputs <- list(
   # Risk ladder plot (same as intro but explicitly for this vignette)
   targets::tar_target(
     vig_palatable_risk_plot,
-    plot_risks()
+    ggplot2::ggplotGrob(plot_risks())
   ),
 
 
