@@ -138,8 +138,8 @@ document.addEventListener("DOMContentLoaded", function() {
     "data-quality": "Data Quality"
   };
 
-  // collectSections and createTabset reuse the same logic as the homepage block.
-  // Defined locally so this block is self-contained and doesn't conflict.
+  // Quarto wraps each H2 + content in <section class="level2">.
+  // We collect the entire <section> parent as the tab content.
   function collectSections(sectionIds) {
     var headings = {};
     var sections = {};
@@ -148,13 +148,20 @@ document.addEventListener("DOMContentLoaded", function() {
       var h2 = document.getElementById(id);
       if (!h2) return;
       headings[id] = h2;
-      var content = [];
-      var el = h2.nextElementSibling;
-      while (el && el.tagName !== "H2") {
-        content.push(el);
-        el = el.nextElementSibling;
+      // In Quarto output, the H2 is inside a <section class="level2">
+      var sectionEl = h2.closest("section.level2");
+      if (sectionEl) {
+        sections[id] = [sectionEl];
+      } else {
+        // Fallback: sibling-walk (non-Quarto HTML)
+        var content = [];
+        var el = h2.nextElementSibling;
+        while (el && el.tagName !== "H2") {
+          content.push(el);
+          el = el.nextElementSibling;
+        }
+        sections[id] = content;
       }
-      sections[id] = content;
     });
 
     return { headings: headings, sections: sections };
@@ -194,11 +201,9 @@ document.addEventListener("DOMContentLoaded", function() {
       pane.setAttribute("role", "tabpanel");
       sections[id].forEach(function(el) { pane.appendChild(el); });
       tabContent.appendChild(pane);
-
-      headings[id].style.display = "none";
     });
 
-    return { nav: nav, tabContent: tabContent, firstH2: headings[foundIds[0]] };
+    return { nav: nav, tabContent: tabContent };
   }
 
   var riskUnitIds = ["micromorts", "microlives", "relationship"];
@@ -252,10 +257,23 @@ document.addEventListener("DOMContentLoaded", function() {
     pageContent.appendChild(pane);
   });
 
-  // Insert before the first H2 in the tabbed section
-  var insertPoint = riskUnitTabset.firstH2;
-  insertPoint.parentNode.insertBefore(pagePills, insertPoint);
-  insertPoint.parentNode.insertBefore(pageContent, insertPoint);
+  // Insert the pills+tabs before the first <section class="level2"> that we collected
+  var firstH2 = document.getElementById("micromorts");
+  var firstSection = firstH2 ? firstH2.closest("section.level2") : null;
+  if (firstSection && firstSection.parentNode) {
+    firstSection.parentNode.insertBefore(pagePills, firstSection);
+    firstSection.parentNode.insertBefore(pageContent, firstSection);
+    // Remove any leftover empty sections (their content was moved into tabs)
+    riskUnitIds.concat(valuationIds, appliedIds).forEach(function(id) {
+      var h = document.getElementById(id);
+      if (h) {
+        var sec = h.closest("section.level2");
+        if (sec && sec.parentNode && sec.children.length === 0) {
+          sec.parentNode.removeChild(sec);
+        }
+      }
+    });
+  }
 });
 
 // Code folding for pkgdown articles
