@@ -104,8 +104,6 @@ For interactive exploration with hover details and category filtering, use [`plo
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-cap: "Interactive version of the risk ladder with hover details and category filtering."
-#| fig-alt: "Interactive plotly bar chart of micromorts per activity with tooltips showing exact values, microlives, and source period."
 show_target("vig_intro_risk_plot_interactive")
 ```
 
