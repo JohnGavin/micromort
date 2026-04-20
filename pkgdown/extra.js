@@ -117,6 +117,147 @@ document.addEventListener("DOMContentLoaded", function() {
   insertPoint.parentNode.insertBefore(pageContent, insertPoint);
 });
 
+// Dashboard tabset for the Introduction article
+// Creates two-level navigation: page-level pills (Risk Units / Valuation & Metrics / Applied Risks)
+// with sub-tabs within each page. Sections 9. Conclusion and Reproducibility are left untouched.
+document.addEventListener("DOMContentLoaded", function() {
+  // Only run on the introduction article page (NOT the homepage)
+  if (!document.querySelector("#micromorts")) return;
+  // Guard: if the homepage micromort- element is present, skip (belt-and-suspenders)
+  if (document.querySelector("#micromort-")) return;
+
+  // Short display labels for each section id
+  var labelMap = {
+    "micromorts": "Micromorts",
+    "microlives": "Microlives",
+    "relationship": "Relationship",
+    "vsl": "VSL",
+    "lle": "LLE",
+    "complementary-metrics": "QALY & DALY",
+    "conditional-risks": "Conditional Risks",
+    "data-quality": "Data Quality"
+  };
+
+  // collectSections and createTabset reuse the same logic as the homepage block.
+  // Defined locally so this block is self-contained and doesn't conflict.
+  function collectSections(sectionIds) {
+    var headings = {};
+    var sections = {};
+
+    sectionIds.forEach(function(id) {
+      var h2 = document.getElementById(id);
+      if (!h2) return;
+      headings[id] = h2;
+      var content = [];
+      var el = h2.nextElementSibling;
+      while (el && el.tagName !== "H2") {
+        content.push(el);
+        el = el.nextElementSibling;
+      }
+      sections[id] = content;
+    });
+
+    return { headings: headings, sections: sections };
+  }
+
+  function createTabset(collected, labelMap) {
+    var headings = collected.headings;
+    var sections = collected.sections;
+    var foundIds = Object.keys(headings);
+    if (foundIds.length < 1) return null;
+
+    var nav = document.createElement("ul");
+    nav.className = "nav nav-tabs mb-3";
+    nav.setAttribute("role", "tablist");
+
+    var tabContent = document.createElement("div");
+    tabContent.className = "tab-content";
+
+    foundIds.forEach(function(id, i) {
+      var label = (labelMap && labelMap[id]) ? labelMap[id] : headings[id].textContent;
+
+      var li = document.createElement("li");
+      li.className = "nav-item";
+      li.setAttribute("role", "presentation");
+      var a = document.createElement("a");
+      a.className = "nav-link" + (i === 0 ? " active" : "");
+      a.setAttribute("data-bs-toggle", "tab");
+      a.setAttribute("href", "#intro-tab-" + id);
+      a.setAttribute("role", "tab");
+      a.textContent = label;
+      li.appendChild(a);
+      nav.appendChild(li);
+
+      var pane = document.createElement("div");
+      pane.className = "tab-pane" + (i === 0 ? " active" : "");
+      pane.id = "intro-tab-" + id;
+      pane.setAttribute("role", "tabpanel");
+      sections[id].forEach(function(el) { pane.appendChild(el); });
+      tabContent.appendChild(pane);
+
+      headings[id].style.display = "none";
+    });
+
+    return { nav: nav, tabContent: tabContent, firstH2: headings[foundIds[0]] };
+  }
+
+  var riskUnitIds = ["micromorts", "microlives", "relationship"];
+  var valuationIds = ["vsl", "lle", "complementary-metrics"];
+  var appliedIds = ["conditional-risks", "data-quality"];
+
+  var riskUnitCollected = collectSections(riskUnitIds);
+  var valuationCollected = collectSections(valuationIds);
+  var appliedCollected = collectSections(appliedIds);
+
+  var riskUnitTabset = createTabset(riskUnitCollected, labelMap);
+  var valuationTabset = createTabset(valuationCollected, labelMap);
+  var appliedTabset = createTabset(appliedCollected, labelMap);
+
+  if (!riskUnitTabset || !valuationTabset || !appliedTabset) return;
+
+  // Build page-level pills
+  var pagePills = document.createElement("ul");
+  pagePills.className = "nav nav-pills mb-4";
+  pagePills.setAttribute("role", "tablist");
+  pagePills.style.fontSize = "1.1rem";
+
+  var pageContent = document.createElement("div");
+  pageContent.className = "tab-content";
+
+  var pages = [
+    { id: "intro-page-risk-units", label: "Risk Units", tabset: riskUnitTabset },
+    { id: "intro-page-valuation", label: "Valuation & Metrics", tabset: valuationTabset },
+    { id: "intro-page-applied", label: "Applied Risks", tabset: appliedTabset }
+  ];
+
+  pages.forEach(function(page, i) {
+    var li = document.createElement("li");
+    li.className = "nav-item";
+    li.setAttribute("role", "presentation");
+    var a = document.createElement("a");
+    a.className = "nav-link" + (i === 0 ? " active" : "");
+    a.setAttribute("data-bs-toggle", "pill");
+    a.setAttribute("href", "#" + page.id);
+    a.setAttribute("role", "tab");
+    a.textContent = page.label;
+    li.appendChild(a);
+    pagePills.appendChild(li);
+
+    var pane = document.createElement("div");
+    pane.className = "tab-pane" + (i === 0 ? " active" : "");
+    pane.id = page.id;
+    pane.setAttribute("role", "tabpanel");
+    pane.appendChild(page.tabset.nav);
+    pane.appendChild(page.tabset.tabContent);
+    pageContent.appendChild(pane);
+  });
+
+  // Insert before the first H2 in the tabbed section
+  var insertPoint = riskUnitTabset.firstH2;
+  insertPoint.parentNode.insertBefore(pagePills, insertPoint);
+  insertPoint.parentNode.insertBefore(pageContent, insertPoint);
+});
+
 // Code folding for pkgdown articles
 // Adds "Show code" / "Hide code" toggles to chunks with class .fold-hide
 document.addEventListener("DOMContentLoaded", function() {

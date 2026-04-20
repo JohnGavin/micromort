@@ -32,7 +32,7 @@ source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
 
 This vignette introduces the **micromort** package, which provides tools for understanding and visualizing risks.
 
-## 1. Micromorts (Acute Risk)
+## 1. Micromorts (Acute Risk) {#micromorts}
 
 A **micromort** is a unit of risk representing a one-in-a-million chance of death. More precisely, it's a **microprobability** of death — a one-in-a-million chance of a specific event (death) occurring.
 
@@ -55,7 +55,7 @@ A **micromort** is a unit of risk representing a one-in-a-million chance of deat
 
 The "per year" figure (164) conflates frequency with risk-per-event. A diver doing 5 dives/year vs 50 dives/year faces very different annual risk.
 
-### Conditional Risks
+### Conditional Risks {#selection-effects}
 
 Many activities have **selection effects**. For example:
 
@@ -109,7 +109,7 @@ For interactive exploration with hover details and category filtering, use [`plo
 show_target("vig_intro_risk_plot_interactive")
 ```
 
-## 2. Microlives (Chronic Risk)
+## 2. Microlives (Chronic Risk) {#microlives}
 
 While micromorts measure sudden death, **microlives** measure the impact of chronic habits on your life expectancy. A microlife represents a 30-minute change in life expectancy **per day of exposure**.
 
@@ -142,7 +142,7 @@ cat("Moderate exercise:", demos$microlife_exercise, "microlives/day (life gained
 cat("5kg overweight:", demos$microlife_overweight, "microlife/day (life lost)\n")
 ```
 
-## 3. Relationship Between Micromorts and Microlives
+## 3. Relationship Between Micromorts and Microlives {#relationship}
 
 ### Theoretical Conversion
 
@@ -184,7 +184,7 @@ The conversion allows comparing a single risky event (like one skydive at 8 micr
 *   **Use microlives** for chronic, daily habits that accumulate over a lifetime: smoking, exercise, diet
 *   **Convert between them** for policy decisions, but state your assumptions (age, remaining life expectancy)
 
-## 4. Value of Statistical Life (VSL)
+## 4. Value of Statistical Life (VSL) {#vsl}
 
 The **Value of a Statistical Life (VSL)** is the monetary value used to justify safety spending. It is NOT the value of an individual life, but the aggregate willingness to pay for small risk reductions.
 
@@ -219,7 +219,7 @@ cat("\u00a3", demos$vsl_uk, "per micromort\n")
 
 This consistency suggests that policy decisions affecting acute risks (transport safety) and chronic risks (healthcare interventions) can be compared on a common scale.
 
-## 5. Loss of Life Expectancy (LLE)
+## 5. Loss of Life Expectancy (LLE) {#lle}
 
 **LLE** estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is approximately 21 minutes (assuming 40 years remaining life).
 
@@ -230,7 +230,7 @@ This consistency suggests that policy decisions affecting acute risks (transport
 cat(round(demos$lle_one_micromort, 1), "minutes\n")
 ```
 
-## 6. Complementary Metrics: QALY, DALY, and Morbidity
+## 6. Complementary Metrics: QALY, DALY, and Morbidity {#complementary-metrics}
 
 Micromorts and microlives focus on mortality. But many conditions (like the common cold) cause significant quality of life loss without being fatal. Complementary metrics capture this morbidity burden.
 
@@ -270,7 +270,7 @@ For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like t
 *   WHO Global Burden of Disease: [ghdx.healthdata.org](https://ghdx.healthdata.org/)
 *   NICE Methods Guide: [nice.org.uk](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case)
 
-## 7. Conditional Risks: Cancer, Vaccination, and Risk Hedging
+## 7. Conditional Risks: Cancer, Vaccination, and Risk Hedging {#conditional-risks}
 
 ### Cancer Risks by Type and Sex
 
@@ -376,7 +376,7 @@ This pattern recurs across many "exotic" risks:
 
 The lesson: **always ask "conditional on what?"** before comparing micromort values across populations or activities. For a deeper treatment of how confounding variables distort risk data, including Simpson's paradox and stratification strategies, see the [Confounding Variables](confounding.html) vignette.
 
-## 8. Data Quality: The Denominator Problem
+## 8. Data Quality: The Denominator Problem {#data-quality}
 
 Not every widely-cited risk statistic belongs in a curated dataset. Many "exotic" risk figures circulate in media and popular science without the rigorous **exposure denominator** needed for meaningful micromort calculations. This section explains why certain risks were excluded and what to watch for when interpreting risk data.
 
@@ -433,7 +433,7 @@ Some risks are genuinely **background hazards** where the exposure is simply *be
 
 These are valid "per year" figures because the denominator is the entire population and the exposure is unavoidable. The problem arises when a per-year population rate is presented for an activity that only a fraction of the population engages in.
 
-## 9. Conclusion
+## 9. Conclusion {#conclusion}
 
 The `micromort` package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts), chronic risks (microlives), and quality-of-life metrics (QALYs, DALYs), individuals and policymakers can make more informed choices about risk trade-offs.
 
@@ -443,7 +443,7 @@ The new conditional risk functions enable:
 *   **Vaccination value:** Quantify micromorts avoided through vaccination schedules
 *   **Lifestyle optimization:** Calculate total life expectancy gain from adopting optimal "hedged" behaviors
 
-## Reproducibility
+## Reproducibility {#reproducibility}
 
 ```{r introduction-session-info, eval=TRUE}
 sessionInfo()
