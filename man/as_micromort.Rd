@@ -4,21 +4,27 @@
 \alias{as_micromort}
 \title{Convert Probability to Micromorts}
 \usage{
-as_micromort(prob)
+as_micromort(prob, use_units = FALSE)
 }
 \arguments{
 \item{prob}{Numeric. Probability of death (0 to 1).}
+
+\item{use_units}{Logical. If \code{TRUE}, returns a \code{units} object with unit
+"micromort". Default \code{FALSE} returns a plain numeric for backwards
+compatibility.}
 }
 \value{
-Numeric value in micromorts.
+Numeric value in micromorts, or a \code{units} object when
+\code{use_units = TRUE}.
 }
 \description{
 A micromort represents a one-in-a-million chance of death.
 This function converts a raw probability of death into micromorts.
 }
 \examples{
-as_micromort(1/1000000) # 1 micromort
-as_micromort(1/10000)   # 100 micromorts
+as_micromort(1/1000000) # 1 micromort (plain numeric)
+as_micromort(1/10000)   # 100 micromorts (plain numeric)
+as_micromort(1/1000000, use_units = TRUE) # 1 [micromort]
 }
 \seealso{
 \code{\link[=as_probability]{as_probability()}}, \code{\link[=as_microlife]{as_microlife()}}, \code{\link[=value_of_micromort]{value_of_micromort()}}

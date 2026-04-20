@@ -4,16 +4,26 @@
 #' This function converts a raw probability of death into micromorts.
 #'
 #' @param prob Numeric. Probability of death (0 to 1).
-#' @return Numeric value in micromorts.
+#' @param use_units Logical. If `TRUE`, returns a `units` object with unit
+#'   "micromort". Default `FALSE` returns a plain numeric for backwards
+#'   compatibility.
+#' @return Numeric value in micromorts, or a `units` object when
+#'   `use_units = TRUE`.
 #' @family conversion
 #' @seealso [as_probability()], [as_microlife()], [value_of_micromort()]
 #' @export
 #' @examples
-#' as_micromort(1/1000000) # 1 micromort
-#' as_micromort(1/10000)   # 100 micromorts
-as_micromort <- function(prob) {
+#' as_micromort(1/1000000) # 1 micromort (plain numeric)
+#' as_micromort(1/10000)   # 100 micromorts (plain numeric)
+#' as_micromort(1/1000000, use_units = TRUE) # 1 [micromort]
+as_micromort <- function(prob, use_units = FALSE) {
   checkmate::assert_numeric(prob, lower = 0, upper = 1)
-  prob * 1e6
+  checkmate::assert_flag(use_units)
+  result <- prob * 1e6
+  if (use_units) {
+    result <- units::set_units(result, "micromort", mode = "character")
+  }
+  result
 }
 
 #' Convert Micromorts to Probability
@@ -79,7 +89,11 @@ lle <- function(prob, life_expectancy = 40) {
 #' @param minutes Numeric. Life expectancy change in minutes.
 #'   - Positive values = life gained (e.g., from exercise)
 #'   - Negative values = life lost (e.g., from smoking)
-#' @return Numeric. Value in microlives (same sign as input).
+#' @param use_units Logical. If `TRUE`, returns a `units` object with unit
+#'   "microlife". Default `FALSE` returns a plain numeric for backwards
+#'   compatibility.
+#' @return Numeric. Value in microlives (same sign as input), or a `units`
+#'   object when `use_units = TRUE`.
 #' @details
 #' **Unit definition:** 1 microlife = 30 minutes of life expectancy change per day.
 #'
@@ -99,7 +113,15 @@ lle <- function(prob, life_expectancy = 40) {
 #'
 #' # Being 5kg overweight: costs ~30 mins/day
 #' as_microlife(-30)       # -1 microlife (life lost)
-as_microlife <- function(minutes) {
+#'
+#' # With units tracking
+#' as_microlife(60, use_units = TRUE) # 2 [microlife]
+as_microlife <- function(minutes, use_units = FALSE) {
   checkmate::assert_numeric(minutes)
-  minutes / 30
+  checkmate::assert_flag(use_units)
+  result <- minutes / 30
+  if (use_units) {
+    result <- units::set_units(result, "microlife", mode = "character")
+  }
+  result
 }

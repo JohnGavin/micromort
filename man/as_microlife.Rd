@@ -4,7 +4,7 @@
 \alias{as_microlife}
 \title{Convert Minutes to Microlives}
 \usage{
-as_microlife(minutes)
+as_microlife(minutes, use_units = FALSE)
 }
 \arguments{
 \item{minutes}{Numeric. Life expectancy change in minutes.
@@ -12,9 +12,14 @@ as_microlife(minutes)
 \item Positive values = life gained (e.g., from exercise)
 \item Negative values = life lost (e.g., from smoking)
 }}
+
+\item{use_units}{Logical. If \code{TRUE}, returns a \code{units} object with unit
+"microlife". Default \code{FALSE} returns a plain numeric for backwards
+compatibility.}
 }
 \value{
-Numeric. Value in microlives (same sign as input).
+Numeric. Value in microlives (same sign as input), or a \code{units}
+object when \code{use_units = TRUE}.
 }
 \description{
 A microlife represents a 30-minute change in life expectancy per day.
@@ -38,6 +43,9 @@ as_microlife(60)        # +2 microlives (life gained)
 
 # Being 5kg overweight: costs ~30 mins/day
 as_microlife(-30)       # -1 microlife (life lost)
+
+# With units tracking
+as_microlife(60, use_units = TRUE) # 2 [microlife]
 }
 \seealso{
 \code{\link[=as_micromort]{as_micromort()}}, \code{\link[=lle]{lle()}}, \code{\link[=chronic_risks]{chronic_risks()}}

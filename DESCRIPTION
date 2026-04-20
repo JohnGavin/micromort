@@ -21,7 +21,8 @@ Imports:
     dplyr,
     ggplot2,
     scales,
-    tibble
+    tibble,
+    units
 Suggests:
     box,
     bslib,
