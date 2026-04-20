@@ -144,6 +144,10 @@ document.addEventListener("DOMContentLoaded", function() {
     { label: "Applied Risks", tabs: [
       { id: "conditional-risks", label: "Conditional Risks" },
       { id: "data-quality", label: "Data Quality" }
+    ]},
+    { label: "Notes", tabs: [
+      { id: "conclusion", label: "Conclusion" },
+      { id: "reproducibility", label: "Reproducibility" }
     ]}
   ];
 
