@@ -49,6 +49,7 @@ mermaid_dark_theme_header <- function() {
     atomic_risks = "Data", risk_components = "Data",
     risk_for_duration = "Data", risk_data_sources = "Data",
     acute_risks = "Data", chronic_risks = "Data",
+    chronic_disease_risks = "Data",
     # Regional
     regional_life_expectancy = "Regional",
     vanguard_regions = "Regional", laggard_regions = "Regional",
@@ -64,7 +65,7 @@ mermaid_dark_theme_header <- function() {
     risk_equivalence = "Analysis", risk_exchange_matrix = "Analysis",
     compare_interventions = "Analysis", lifestyle_tradeoff = "Analysis",
     daily_hazard_rate = "Analysis", annual_risk_budget = "Analysis",
-    risk_sensitivity = "Analysis",
+    risk_sensitivity = "Analysis", toxicological_risk = "Analysis",
     # Visualization
     prepare_risks_plot = "Visualization", plot_risks = "Visualization",
     plot_risks_interactive = "Visualization",

@@ -1,0 +1,17 @@
+substance,route,ld50_value,ld50_unit,source
+Botulinum toxin,oral,0.001,ug/kg,CDC estimates
+VX nerve agent,dermal,140,ug/kg,US Army
+Batrachotoxin,subcutaneous,2,ug/kg,Daly et al 1965
+Ricin,oral,1000,ug/kg,Audi et al 2005
+Amatoxin (death cap),oral,100,ug/kg,Wieland 1986
+Saxitoxin,oral,5.7,ug/kg,EFSA 2009
+Dimethylmercury,dermal,50,ug/kg,Nierenberg 1998
+Cantharidin,oral,500,ug/kg,Karras 1996
+Strychnine,oral,1500,ug/kg,IPCS
+Nicotine,oral,6500,ug/kg,Mayer 2014
+Arsenic trioxide,oral,15000,ug/kg,ATSDR
+Methanol,oral,810000,ug/kg,EPA
+Ethanol,oral,7060000,ug/kg,NIOSH
+Caffeine,oral,192000,ug/kg,EFSA
+Aspirin,oral,200000,ug/kg,FDA
+Table salt (NaCl),oral,3000000,ug/kg,MSDS
