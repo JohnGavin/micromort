@@ -257,23 +257,58 @@ document.addEventListener("DOMContentLoaded", function() {
     pageContent.appendChild(pane);
   });
 
-  // Insert the pills+tabs before the first <section class="level2"> that we collected
+  // Find insertion point: the parent that holds all <section class="level2"> elements
   var firstH2 = document.getElementById("micromorts");
   var firstSection = firstH2 ? firstH2.closest("section.level2") : null;
-  if (firstSection && firstSection.parentNode) {
-    firstSection.parentNode.insertBefore(pagePills, firstSection);
-    firstSection.parentNode.insertBefore(pageContent, firstSection);
-    // Remove any leftover empty sections (their content was moved into tabs)
-    riskUnitIds.concat(valuationIds, appliedIds).forEach(function(id) {
-      var h = document.getElementById(id);
-      if (h) {
-        var sec = h.closest("section.level2");
-        if (sec && sec.parentNode && sec.children.length === 0) {
-          sec.parentNode.removeChild(sec);
-        }
-      }
-    });
+  if (!firstSection || !firstSection.parentNode) return;
+
+  var parentContainer = firstSection.parentNode;
+
+  // Insert pills and tab content before the conclusion section (or at end)
+  var conclusionH2 = document.getElementById("conclusion");
+  var conclusionSection = conclusionH2 ? conclusionH2.closest("section.level2") : null;
+
+  if (conclusionSection) {
+    parentContainer.insertBefore(pagePills, conclusionSection);
+    parentContainer.insertBefore(pageContent, conclusionSection);
+  } else {
+    parentContainer.appendChild(pagePills);
+    parentContainer.appendChild(pageContent);
   }
+
+  // Manual tab click handling (Bootstrap JS may not auto-init on dynamic elements)
+  function activateTab(navContainer, paneContainer, targetHref) {
+    navContainer.querySelectorAll(".nav-link").forEach(function(link) {
+      link.classList.remove("active");
+    });
+    paneContainer.querySelectorAll(".tab-pane").forEach(function(p) {
+      p.classList.remove("show", "active");
+    });
+    var activeLink = navContainer.querySelector('[href="' + targetHref + '"]');
+    if (activeLink) activeLink.classList.add("active");
+    var activePane = paneContainer.querySelector(targetHref);
+    if (activePane) activePane.classList.add("show", "active");
+  }
+
+  // Page pills click
+  pagePills.addEventListener("click", function(e) {
+    var link = e.target.closest(".nav-link");
+    if (!link) return;
+    e.preventDefault();
+    activateTab(pagePills, pageContent, link.getAttribute("href"));
+  });
+
+  // Sub-tab clicks within each page
+  pageContent.addEventListener("click", function(e) {
+    var link = e.target.closest(".nav-link");
+    if (!link) return;
+    e.preventDefault();
+    var tabContent = link.closest(".tab-pane").querySelector(".tab-content");
+    var nav = link.closest("ul.nav");
+    if (nav && tabContent) {
+      activateTab(nav, tabContent, link.getAttribute("href"));
+    }
+  });
 });
 
 // Code folding for pkgdown articles
