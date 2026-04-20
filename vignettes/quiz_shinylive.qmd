@@ -229,6 +229,45 @@ function renderQR(containerId, size) {
     '<span style=\"font-size:0.85rem;color:#6c757d;word-break:break-all;\">' + url + '</span></div>';
 }
 setTimeout(function() { renderQR('qr-results', 3); }, 500);
+function updateStreakDisplay(scorePct) {
+  var STREAK_KEY = 'micromort_quiz_streak';
+  var LAST_PLAY_KEY = 'micromort_quiz_last_play';
+  var BEST_KEY = 'micromort_quiz_best_score';
+  var now = new Date();
+  var lastPlay = localStorage.getItem(LAST_PLAY_KEY);
+  var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  if (lastPlay) {
+    var diffHours = (now - new Date(lastPlay)) / 1000 / 3600;
+    if (diffHours < 24) {
+      if (streak === 0) streak = 1;
+    } else if (diffHours < 48) {
+      streak = streak + 1;
+    } else {
+      streak = 1;
+    }
+  } else {
+    streak = 1;
+  }
+  localStorage.setItem(STREAK_KEY, streak);
+  localStorage.setItem(LAST_PLAY_KEY, now.toISOString());
+  var best = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  if (scorePct > best) {
+    best = scorePct;
+    localStorage.setItem(BEST_KEY, best);
+  }
+  var el = document.getElementById('streak_display');
+  if (!el) return;
+  var streakHtml = streak > 1 ? '<span style=\"font-size:1.2rem;\">&#x1F525; Streak: ' + streak + ' days</span>' : '';
+  var msg = '';
+  if (scorePct <= 33) msg = 'Keep learning! Try again to improve.';
+  else if (scorePct <= 66) msg = 'Good effort! You\\'re getting better.';
+  else if (scorePct < 100) msg = 'Great job! Almost perfect.';
+  else msg = 'Perfect score! &#x1F3AF;';
+  var bestHtml = best > 0 ? ' &middot; Best: ' + Math.round(best) + '%' : '';
+  el.innerHTML = '<div style=\"text-align:center;margin:8px 0;\">' +
+    (streakHtml ? '<div>' + streakHtml + '</div>' : '') +
+    '<div style=\"margin-top:4px;\">' + msg + bestHtml + '</div></div>';
+}
 "
 
 # ---- Fun result phrases ----
@@ -556,6 +595,13 @@ results_summary_ui <- function(state) {
       tags$br(),
       tags$small(class = "text-muted",
                  "Scores are recorded anonymously (score, total, timestamp only).")),
+    div(id = "streak_display"),
+    tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
+                             round(pct, 1)))),
+    div(class = "text-center mt-2",
+      tags$a(href = "https://johngavin.github.io/micromort/articles/",
+             target = "_blank", class = "text-muted",
+             tags$small("Try a different quiz \u2192"))),
     div(id = "qr-results"),
     tags$script(HTML("setTimeout(function() { renderQR('qr-results', 3); }, 100);"))
   )
