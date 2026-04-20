@@ -118,162 +118,115 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Dashboard tabset for the Introduction article
-// Uses inline display toggling (no Bootstrap tab CSS dependency)
+// Uses <button> elements + inline display (zero Bootstrap JS dependency)
 document.addEventListener("DOMContentLoaded", function() {
-  // Only run on the introduction article page (NOT the homepage)
-  if (!document.querySelector("#micromorts")) return;
-  if (document.querySelector("#micromort-")) return;
+  if (!document.getElementById("micromorts")) return;
+  if (document.getElementById("micromort-")) return;
 
-  var labelMap = {
-    "micromorts": "Micromorts",
-    "microlives": "Microlives",
-    "relationship": "Relationship",
-    "vsl": "VSL",
-    "lle": "LLE",
-    "complementary-metrics": "QALY & DALY",
-    "conditional-risks": "Conditional Risks",
-    "data-quality": "Data Quality"
-  };
+  // Hide the sidebar TOC — it doesn't work with tabbed content
+  var toc = document.getElementById("toc");
+  if (toc) toc.style.display = "none";
+  // Expand main content to full width
+  var mainCol = document.querySelector(".col-md-9");
+  if (mainCol) { mainCol.style.flex = "0 0 100%"; mainCol.style.maxWidth = "100%"; }
 
-  // Page definitions: each page has a label and section IDs
-  var pageConfig = [
-    { label: "Risk Units", ids: ["micromorts", "microlives", "relationship"] },
-    { label: "Valuation & Metrics", ids: ["vsl", "lle", "complementary-metrics"] },
-    { label: "Applied Risks", ids: ["conditional-risks", "data-quality"] }
+  var pages = [
+    { label: "Risk Units", tabs: [
+      { id: "micromorts", label: "Micromorts" },
+      { id: "microlives", label: "Microlives" },
+      { id: "relationship", label: "Relationship" }
+    ]},
+    { label: "Valuation & Metrics", tabs: [
+      { id: "vsl", label: "VSL" },
+      { id: "lle", label: "LLE" },
+      { id: "complementary-metrics", label: "QALY & DALY" }
+    ]},
+    { label: "Applied Risks", tabs: [
+      { id: "conditional-risks", label: "Conditional Risks" },
+      { id: "data-quality", label: "Data Quality" }
+    ]}
   ];
 
-  // Capture parent before any moves
-  var firstH2 = document.getElementById("micromorts");
-  if (!firstH2) return;
-  var firstSection = firstH2.closest("section.level2");
-  if (!firstSection) return;
-  var parent = firstSection.parentNode;
-
-  // Collect all section elements
-  var allSectionEls = {};
-  pageConfig.forEach(function(page) {
-    page.ids.forEach(function(id) {
-      var h2 = document.getElementById(id);
-      if (h2) allSectionEls[id] = h2.closest("section.level2");
+  // Collect section elements
+  var sections = {};
+  pages.forEach(function(p) {
+    p.tabs.forEach(function(t) {
+      var h2 = document.getElementById(t.id);
+      if (h2) sections[t.id] = h2.closest("section.level2");
     });
   });
 
-  // Hide all collected sections initially
-  Object.values(allSectionEls).forEach(function(sec) {
-    if (sec) sec.style.display = "none";
-  });
+  // Get parent and insertion point
+  var firstSec = sections[pages[0].tabs[0].id];
+  if (!firstSec) return;
+  var parent = firstSec.parentNode;
 
-  // Build navigation: page pills + sub-tabs
-  var wrapper = document.createElement("div");
-  wrapper.id = "intro-dashboard";
+  // Build the dashboard UI
+  var dash = document.createElement("div");
+  dash.id = "intro-dash";
+  dash.innerHTML = '<style>' +
+    '#intro-dash { margin-bottom: 1.5rem; }' +
+    '#intro-dash .page-btns, #intro-dash .tab-btns { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; }' +
+    '#intro-dash button { border:none; padding:0.5rem 1rem; border-radius:4px; cursor:pointer; font-size:0.95rem; }' +
+    '#intro-dash .page-btns button { background:#333; color:#ccc; font-weight:600; }' +
+    '#intro-dash .page-btns button.active { background:#0d6efd; color:#fff; }' +
+    '#intro-dash .tab-btns button { background:#1a1a2e; color:#aaa; border-bottom:2px solid transparent; border-radius:4px 4px 0 0; }' +
+    '#intro-dash .tab-btns button.active { color:#fff; border-bottom-color:#0d6efd; background:#16213e; }' +
+    '</style>';
 
-  // Page pills
-  var pillsNav = document.createElement("ul");
-  pillsNav.className = "nav nav-pills mb-3";
-  pillsNav.style.fontSize = "1.1rem";
-  wrapper.appendChild(pillsNav);
+  var pageBtns = document.createElement("div");
+  pageBtns.className = "page-btns";
+  dash.appendChild(pageBtns);
 
-  // Sub-tab nav (one per page, only one visible at a time)
-  var subNavs = [];
-  pageConfig.forEach(function(page, pi) {
-    // Page pill
-    var li = document.createElement("li");
-    li.className = "nav-item";
-    var a = document.createElement("a");
-    a.className = "nav-link" + (pi === 0 ? " active" : "");
-    a.href = "#";
-    a.textContent = page.label;
-    a.setAttribute("data-page", String(pi));
-    li.appendChild(a);
-    pillsNav.appendChild(li);
+  var tabBtns = document.createElement("div");
+  tabBtns.className = "tab-btns";
+  dash.appendChild(tabBtns);
 
-    // Sub-tab nav for this page
-    var subNav = document.createElement("ul");
-    subNav.className = "nav nav-tabs mb-3";
-    subNav.style.display = (pi === 0) ? "" : "none";
-    subNav.setAttribute("data-page", String(pi));
-
-    page.ids.forEach(function(id, ti) {
-      var sli = document.createElement("li");
-      sli.className = "nav-item";
-      var sa = document.createElement("a");
-      sa.className = "nav-link" + (ti === 0 ? " active" : "");
-      sa.href = "#";
-      sa.textContent = labelMap[id] || id;
-      sa.setAttribute("data-section", id);
-      sa.setAttribute("data-page", String(pi));
-      sli.appendChild(sa);
-      subNav.appendChild(sli);
-    });
-
-    wrapper.appendChild(subNav);
-    subNavs.push(subNav);
-  });
-
-  // Insert wrapper before the FIRST section (so nav appears above content)
-  parent.insertBefore(wrapper, firstSection);
-
-  // Move all collected sections INTO the wrapper (so they appear below nav)
   var contentArea = document.createElement("div");
-  contentArea.id = "intro-content-area";
-  wrapper.appendChild(contentArea);
-  Object.keys(allSectionEls).forEach(function(id) {
-    if (allSectionEls[id]) contentArea.appendChild(allSectionEls[id]);
-  });
+  contentArea.id = "intro-content";
+  dash.appendChild(contentArea);
 
-  // Show initial state: first page, first tab
-  function showPage(pageIdx) {
-    // Update pills
-    pillsNav.querySelectorAll(".nav-link").forEach(function(link) {
-      link.classList.toggle("active", link.getAttribute("data-page") === String(pageIdx));
-    });
-    // Show/hide sub-navs
-    subNavs.forEach(function(nav, i) {
-      nav.style.display = (i === pageIdx) ? "" : "none";
-    });
-    // Show first section of this page
-    var firstId = pageConfig[pageIdx].ids[0];
-    showSection(pageIdx, firstId);
-  }
-
-  function showSection(pageIdx, sectionId) {
-    // Hide all sections
-    Object.values(allSectionEls).forEach(function(sec) {
-      if (sec) sec.style.display = "none";
-    });
-    // Show selected section
-    if (allSectionEls[sectionId]) {
-      allSectionEls[sectionId].style.display = "";
+  // Insert dashboard before first section, move sections into it
+  parent.insertBefore(dash, firstSec);
+  Object.keys(sections).forEach(function(id) {
+    if (sections[id]) {
+      sections[id].style.display = "none";
+      contentArea.appendChild(sections[id]);
     }
-    // Update sub-tab active state
-    var subNav = subNavs[pageIdx];
-    subNav.querySelectorAll(".nav-link").forEach(function(link) {
-      link.classList.toggle("active", link.getAttribute("data-section") === sectionId);
+  });
+
+  // State
+  var currentPage = 0;
+  var currentTab = pages[0].tabs[0].id;
+
+  function render() {
+    // Page buttons
+    pageBtns.innerHTML = "";
+    pages.forEach(function(p, pi) {
+      var btn = document.createElement("button");
+      btn.textContent = p.label;
+      btn.className = (pi === currentPage) ? "active" : "";
+      btn.onclick = function() { currentPage = pi; currentTab = pages[pi].tabs[0].id; render(); };
+      pageBtns.appendChild(btn);
+    });
+
+    // Tab buttons
+    tabBtns.innerHTML = "";
+    pages[currentPage].tabs.forEach(function(t) {
+      var btn = document.createElement("button");
+      btn.textContent = t.label;
+      btn.className = (t.id === currentTab) ? "active" : "";
+      btn.onclick = function() { currentTab = t.id; render(); };
+      tabBtns.appendChild(btn);
+    });
+
+    // Show/hide sections
+    Object.keys(sections).forEach(function(id) {
+      if (sections[id]) sections[id].style.display = (id === currentTab) ? "" : "none";
     });
   }
 
-  // Event: page pill click
-  pillsNav.addEventListener("click", function(e) {
-    e.preventDefault();
-    var link = e.target.closest(".nav-link");
-    if (!link) return;
-    showPage(parseInt(link.getAttribute("data-page")));
-  });
-
-  // Event: sub-tab click
-  subNavs.forEach(function(subNav) {
-    subNav.addEventListener("click", function(e) {
-      e.preventDefault();
-      var link = e.target.closest(".nav-link");
-      if (!link) return;
-      var pageIdx = parseInt(link.getAttribute("data-page"));
-      var sectionId = link.getAttribute("data-section");
-      showSection(pageIdx, sectionId);
-    });
-  });
-
-  // Initial display
-  showPage(0);
+  render();
 });
 
 // Code folding for pkgdown articles
