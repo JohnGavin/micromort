@@ -1,0 +1,183 @@
+country,iso3,cause,year,deaths_per_100k
+United Kingdom,GBR,Cardiovascular diseases,2019,120.5
+United Kingdom,GBR,Neoplasms,2019,136.2
+United Kingdom,GBR,Chronic respiratory diseases,2019,35.8
+United Kingdom,GBR,Diabetes mellitus,2019,10.2
+United Kingdom,GBR,Chronic kidney disease,2019,8.4
+United Kingdom,GBR,Chronic liver disease,2019,12.1
+United Kingdom,GBR,Digestive diseases,2019,15.6
+United States,USA,Cardiovascular diseases,2019,150.8
+United States,USA,Neoplasms,2019,120.5
+United States,USA,Chronic respiratory diseases,2019,42.3
+United States,USA,Diabetes mellitus,2019,18.6
+United States,USA,Chronic kidney disease,2019,14.2
+United States,USA,Chronic liver disease,2019,15.8
+United States,USA,Digestive diseases,2019,18.4
+Japan,JPN,Cardiovascular diseases,2019,75.4
+Japan,JPN,Neoplasms,2019,118.2
+Japan,JPN,Chronic respiratory diseases,2019,18.2
+Japan,JPN,Diabetes mellitus,2019,6.8
+Japan,JPN,Chronic kidney disease,2019,4.2
+Japan,JPN,Chronic liver disease,2019,9.8
+Japan,JPN,Digestive diseases,2019,11.4
+Germany,DEU,Cardiovascular diseases,2019,132.4
+Germany,DEU,Neoplasms,2019,130.8
+Germany,DEU,Chronic respiratory diseases,2019,32.6
+Germany,DEU,Diabetes mellitus,2019,14.2
+Germany,DEU,Chronic kidney disease,2019,10.8
+Germany,DEU,Chronic liver disease,2019,18.4
+Germany,DEU,Digestive diseases,2019,16.8
+France,FRA,Cardiovascular diseases,2019,95.2
+France,FRA,Neoplasms,2019,136.4
+France,FRA,Chronic respiratory diseases,2019,24.6
+France,FRA,Diabetes mellitus,2019,9.4
+France,FRA,Chronic kidney disease,2019,7.8
+France,FRA,Chronic liver disease,2019,22.4
+France,FRA,Digestive diseases,2019,14.2
+Australia,AUS,Cardiovascular diseases,2019,98.6
+Australia,AUS,Neoplasms,2019,128.4
+Australia,AUS,Chronic respiratory diseases,2019,30.4
+Australia,AUS,Diabetes mellitus,2019,12.8
+Australia,AUS,Chronic kidney disease,2019,9.2
+Australia,AUS,Chronic liver disease,2019,10.4
+Australia,AUS,Digestive diseases,2019,12.8
+Canada,CAN,Cardiovascular diseases,2019,104.2
+Canada,CAN,Neoplasms,2019,128.6
+Canada,CAN,Chronic respiratory diseases,2019,34.2
+Canada,CAN,Diabetes mellitus,2019,13.4
+Canada,CAN,Chronic kidney disease,2019,10.2
+Canada,CAN,Chronic liver disease,2019,12.6
+Canada,CAN,Digestive diseases,2019,14.4
+India,IND,Cardiovascular diseases,2019,278.4
+India,IND,Neoplasms,2019,84.6
+India,IND,Chronic respiratory diseases,2019,96.2
+India,IND,Diabetes mellitus,2019,26.4
+India,IND,Chronic kidney disease,2019,18.8
+India,IND,Chronic liver disease,2019,28.6
+India,IND,Digestive diseases,2019,38.4
+China,CHN,Cardiovascular diseases,2019,248.6
+China,CHN,Neoplasms,2019,152.4
+China,CHN,Chronic respiratory diseases,2019,68.4
+China,CHN,Diabetes mellitus,2019,14.8
+China,CHN,Chronic kidney disease,2019,10.4
+China,CHN,Chronic liver disease,2019,24.6
+China,CHN,Digestive diseases,2019,22.8
+Brazil,BRA,Cardiovascular diseases,2019,186.4
+Brazil,BRA,Neoplasms,2019,108.2
+Brazil,BRA,Chronic respiratory diseases,2019,42.8
+Brazil,BRA,Diabetes mellitus,2019,28.6
+Brazil,BRA,Chronic kidney disease,2019,16.4
+Brazil,BRA,Chronic liver disease,2019,18.2
+Brazil,BRA,Digestive diseases,2019,20.4
+Nigeria,NGA,Cardiovascular diseases,2019,312.8
+Nigeria,NGA,Neoplasms,2019,106.4
+Nigeria,NGA,Chronic respiratory diseases,2019,84.6
+Nigeria,NGA,Diabetes mellitus,2019,32.4
+Nigeria,NGA,Chronic kidney disease,2019,28.8
+Nigeria,NGA,Chronic liver disease,2019,48.6
+Nigeria,NGA,Digestive diseases,2019,52.4
+Sweden,SWE,Cardiovascular diseases,2019,108.2
+Sweden,SWE,Neoplasms,2019,126.4
+Sweden,SWE,Chronic respiratory diseases,2019,24.8
+Sweden,SWE,Diabetes mellitus,2019,11.2
+Sweden,SWE,Chronic kidney disease,2019,8.6
+Sweden,SWE,Chronic liver disease,2019,10.8
+Sweden,SWE,Digestive diseases,2019,13.2
+Netherlands,NLD,Cardiovascular diseases,2019,102.8
+Netherlands,NLD,Neoplasms,2019,142.6
+Netherlands,NLD,Chronic respiratory diseases,2019,30.4
+Netherlands,NLD,Diabetes mellitus,2019,10.6
+Netherlands,NLD,Chronic kidney disease,2019,8.4
+Netherlands,NLD,Chronic liver disease,2019,14.2
+Netherlands,NLD,Digestive diseases,2019,13.8
+South Korea,KOR,Cardiovascular diseases,2019,88.4
+South Korea,KOR,Neoplasms,2019,152.6
+South Korea,KOR,Chronic respiratory diseases,2019,24.6
+South Korea,KOR,Diabetes mellitus,2019,10.8
+South Korea,KOR,Chronic kidney disease,2019,7.2
+South Korea,KOR,Chronic liver disease,2019,14.8
+South Korea,KOR,Digestive diseases,2019,14.2
+Mexico,MEX,Cardiovascular diseases,2019,184.6
+Mexico,MEX,Neoplasms,2019,98.4
+Mexico,MEX,Chronic respiratory diseases,2019,46.2
+Mexico,MEX,Diabetes mellitus,2019,62.8
+Mexico,MEX,Chronic kidney disease,2019,28.4
+Mexico,MEX,Chronic liver disease,2019,32.6
+Mexico,MEX,Digestive diseases,2019,26.8
+Poland,POL,Cardiovascular diseases,2019,224.8
+Poland,POL,Neoplasms,2019,152.4
+Poland,POL,Chronic respiratory diseases,2019,36.8
+Poland,POL,Diabetes mellitus,2019,16.4
+Poland,POL,Chronic kidney disease,2019,12.8
+Poland,POL,Chronic liver disease,2019,24.6
+Poland,POL,Digestive diseases,2019,20.4
+Spain,ESP,Cardiovascular diseases,2019,96.4
+Spain,ESP,Neoplasms,2019,130.8
+Spain,ESP,Chronic respiratory diseases,2019,26.4
+Spain,ESP,Diabetes mellitus,2019,10.8
+Spain,ESP,Chronic kidney disease,2019,8.2
+Spain,ESP,Chronic liver disease,2019,16.4
+Spain,ESP,Digestive diseases,2019,13.6
+Italy,ITA,Cardiovascular diseases,2019,108.6
+Italy,ITA,Neoplasms,2019,134.2
+Italy,ITA,Chronic respiratory diseases,2019,24.2
+Italy,ITA,Diabetes mellitus,2019,11.4
+Italy,ITA,Chronic kidney disease,2019,9.8
+Italy,ITA,Chronic liver disease,2019,12.4
+Italy,ITA,Digestive diseases,2019,14.6
+Russia,RUS,Cardiovascular diseases,2019,348.6
+Russia,RUS,Neoplasms,2019,148.4
+Russia,RUS,Chronic respiratory diseases,2019,52.4
+Russia,RUS,Diabetes mellitus,2019,16.2
+Russia,RUS,Chronic kidney disease,2019,12.8
+Russia,RUS,Chronic liver disease,2019,38.4
+Russia,RUS,Digestive diseases,2019,28.6
+Turkey,TUR,Cardiovascular diseases,2019,216.4
+Turkey,TUR,Neoplasms,2019,124.8
+Turkey,TUR,Chronic respiratory diseases,2019,42.6
+Turkey,TUR,Diabetes mellitus,2019,22.4
+Turkey,TUR,Chronic kidney disease,2019,14.8
+Turkey,TUR,Chronic liver disease,2019,16.2
+Turkey,TUR,Digestive diseases,2019,18.4
+Argentina,ARG,Cardiovascular diseases,2019,178.6
+Argentina,ARG,Neoplasms,2019,124.2
+Argentina,ARG,Chronic respiratory diseases,2019,38.6
+Argentina,ARG,Diabetes mellitus,2019,18.4
+Argentina,ARG,Chronic kidney disease,2019,12.8
+Argentina,ARG,Chronic liver disease,2019,14.2
+Argentina,ARG,Digestive diseases,2019,16.8
+Indonesia,IDN,Cardiovascular diseases,2019,226.4
+Indonesia,IDN,Neoplasms,2019,98.6
+Indonesia,IDN,Chronic respiratory diseases,2019,72.4
+Indonesia,IDN,Diabetes mellitus,2019,28.6
+Indonesia,IDN,Chronic kidney disease,2019,18.4
+Indonesia,IDN,Chronic liver disease,2019,16.8
+Indonesia,IDN,Digestive diseases,2019,24.6
+Pakistan,PAK,Cardiovascular diseases,2019,264.8
+Pakistan,PAK,Neoplasms,2019,76.4
+Pakistan,PAK,Chronic respiratory diseases,2019,82.6
+Pakistan,PAK,Diabetes mellitus,2019,32.4
+Pakistan,PAK,Chronic kidney disease,2019,22.8
+Pakistan,PAK,Chronic liver disease,2019,24.6
+Pakistan,PAK,Digestive diseases,2019,34.2
+Bangladesh,BGD,Cardiovascular diseases,2019,248.2
+Bangladesh,BGD,Neoplasms,2019,82.4
+Bangladesh,BGD,Chronic respiratory diseases,2019,78.6
+Bangladesh,BGD,Diabetes mellitus,2019,22.8
+Bangladesh,BGD,Chronic kidney disease,2019,16.4
+Bangladesh,BGD,Chronic liver disease,2019,22.4
+Bangladesh,BGD,Digestive diseases,2019,28.8
+Ethiopia,ETH,Cardiovascular diseases,2019,294.6
+Ethiopia,ETH,Neoplasms,2019,72.4
+Ethiopia,ETH,Chronic respiratory diseases,2019,88.4
+Ethiopia,ETH,Diabetes mellitus,2019,24.8
+Ethiopia,ETH,Chronic kidney disease,2019,18.6
+Ethiopia,ETH,Chronic liver disease,2019,32.4
+Ethiopia,ETH,Digestive diseases,2019,46.8
+Philippines,PHL,Cardiovascular diseases,2019,242.4
+Philippines,PHL,Neoplasms,2019,92.6
+Philippines,PHL,Chronic respiratory diseases,2019,62.4
+Philippines,PHL,Diabetes mellitus,2019,26.8
+Philippines,PHL,Chronic kidney disease,2019,16.2
+Philippines,PHL,Chronic liver disease,2019,18.4
+Philippines,PHL,Digestive diseases,2019,22.6
