@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
     pagePills.appendChild(li);
 
     var pane = document.createElement("div");
-    pane.className = "tab-pane" + (i === 0 ? " active" : "");
+    pane.className = "tab-pane fade" + (i === 0 ? " show active" : "");
     pane.id = page.id;
     pane.setAttribute("role", "tabpanel");
     pane.appendChild(page.tabset.nav);
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
       nav.appendChild(li);
 
       var pane = document.createElement("div");
-      pane.className = "tab-pane" + (i === 0 ? " active" : "");
+      pane.className = "tab-pane fade" + (i === 0 ? " show active" : "");
       pane.id = "intro-tab-" + id;
       pane.setAttribute("role", "tabpanel");
       sections[id].forEach(function(el) { pane.appendChild(el); });
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
     pagePills.appendChild(li);
 
     var pane = document.createElement("div");
-    pane.className = "tab-pane" + (i === 0 ? " active" : "");
+    pane.className = "tab-pane fade" + (i === 0 ? " show active" : "");
     pane.id = page.id;
     pane.setAttribute("role", "tabpanel");
     pane.appendChild(page.tabset.nav);
