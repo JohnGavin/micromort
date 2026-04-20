@@ -64,6 +64,7 @@ mermaid_dark_theme_header <- function() {
     risk_equivalence = "Analysis", risk_exchange_matrix = "Analysis",
     compare_interventions = "Analysis", lifestyle_tradeoff = "Analysis",
     daily_hazard_rate = "Analysis", annual_risk_budget = "Analysis",
+    risk_sensitivity = "Analysis",
     # Visualization
     prepare_risks_plot = "Visualization", plot_risks = "Visualization",
     plot_risks_interactive = "Visualization",

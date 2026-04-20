@@ -27,6 +27,7 @@ lifestyle_tradeoff("Smoking 2 cigarettes", "20 min moderate exercise")
 Other analysis: 
 \code{\link{annual_risk_budget}()},
 \code{\link{compare_interventions}()},
-\code{\link{daily_hazard_rate}()}
+\code{\link{daily_hazard_rate}()},
+\code{\link{risk_sensitivity}()}
 }
 \concept{analysis}

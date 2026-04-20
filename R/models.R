@@ -107,7 +107,13 @@ lifestyle_tradeoff <- function(bad_habit, good_habit) {
 #' Daily Hazard Rate by Age
 #'
 #' Calculates the daily probability of death based on age using
-#' a simplified Gompertz-Makeham mortality model.
+#' a simplified Gompertz-Makeham mortality model. Returns a central estimate
+#' plus credible bounds derived from ±10% sensitivity on the Gompertz
+#' parameters `a` (background mortality) and `b` (initial mortality).
+#'
+#' The Gompertz hazard is `h(x) = a + b * exp(c * x)`. Bounds are computed by
+#' varying `a` and `b` independently by ±10% (four combinations) and taking
+#' the min/max across those combinations.
 #'
 #' @param age Age in years
 #' @param sex "male" or "female" (default: "male")
@@ -115,9 +121,12 @@ lifestyle_tradeoff <- function(bad_habit, good_habit) {
 #' \describe{
 #'   \item{age}{Input age}
 #'   \item{sex}{Input sex}
-#'   \item{daily_prob}{Daily probability of death}
-#'   \item{micromorts}{Daily baseline risk in micromorts}
+#'   \item{daily_prob}{Daily probability of death (central estimate)}
+#'   \item{micromorts}{Daily baseline risk in micromorts (central estimate)}
+#'   \item{micromorts_lower}{Lower credible bound (micromorts) from ±10% parameter sensitivity}
+#'   \item{micromorts_upper}{Upper credible bound (micromorts) from ±10% parameter sensitivity}
 #'   \item{microlives_consumed}{Estimated microlives consumed per day}
+#'   \item{precision_note}{Reminder that Gompertz parameters are approximate}
 #'   \item{interpretation}{Human-readable summary}
 #' }
 #' @family analysis
@@ -127,7 +136,7 @@ lifestyle_tradeoff <- function(bad_habit, good_habit) {
 #' Gompertz B (1825). "On the Nature of the Function Expressive of the Law of
 #' Human Mortality." Philosophical Transactions of the Royal Society.
 #' @examples
-#' # Baseline risk at age 30
+#' # Baseline risk at age 30 with credible bounds
 #' daily_hazard_rate(30)
 #'
 #' # Compare male vs female at age 65
@@ -137,10 +146,8 @@ daily_hazard_rate <- function(age, sex = "male") {
   checkmate::assert_number(age, lower = 0, upper = 120)
   checkmate::assert_choice(sex, c("male", "female"))
 
-
   # Gompertz-Makeham parameters (approximate for developed countries).
   # Precision ceiling: these are population-level approximations — individual
-
   # hazard is unknown. Output rounded to 1dp for micromorts to avoid false
   # precision. See issue #70 (B3).
   if (sex == "male") {
@@ -153,9 +160,27 @@ daily_hazard_rate <- function(age, sex = "male") {
     c <- 0.080
   }
 
-  # Annual probability, then daily
+  # Central estimate
   daily_prob <- (a + b * exp(c * age)) / 365
   micromorts <- daily_prob * 1e6
+
+  # ±10% sensitivity on a and b (four combinations) — Issue #71
+  sens <- 0.10
+  combos <- expand.grid(
+    a_mult = c(1 - sens, 1 + sens),
+    b_mult = c(1 - sens, 1 + sens)
+  )
+  combo_mm <- vapply(
+    seq_len(nrow(combos)),
+    function(i) {
+      a_s <- a * combos$a_mult[i]
+      b_s <- b * combos$b_mult[i]
+      ((a_s + b_s * exp(c * age)) / 365) * 1e6
+    },
+    numeric(1)
+  )
+  micromorts_lower <- min(combo_mm)
+  micromorts_upper <- max(combo_mm)
 
   # Estimate microlives consumed
   remaining_years <- pmax(85 - age, 1)
@@ -167,11 +192,13 @@ daily_hazard_rate <- function(age, sex = "male") {
     sex = sex,
     daily_prob = daily_prob,
     micromorts = round(micromorts, 1),
+    micromorts_lower = round(micromorts_lower, 1),
+    micromorts_upper = round(micromorts_upper, 1),
     microlives_consumed = microlives_consumed,
     precision_note = "Gompertz-Makeham approximation; treat as order-of-magnitude",
     interpretation = sprintf(
-      "At age %d (%s): ~%.0f micromorts/day baseline risk",
-      age, sex, micromorts
+      "At age %d (%s): ~%.0f micromorts/day baseline risk [%.1f, %.1f]",
+      age, sex, micromorts, micromorts_lower, micromorts_upper
     )
   )
 }

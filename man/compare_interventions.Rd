@@ -43,6 +43,7 @@ compare_interventions(list(
 Other analysis: 
 \code{\link{annual_risk_budget}()},
 \code{\link{daily_hazard_rate}()},
-\code{\link{lifestyle_tradeoff}()}
+\code{\link{lifestyle_tradeoff}()},
+\code{\link{risk_sensitivity}()}
 }
 \concept{analysis}

@@ -16,18 +16,28 @@ A tibble with:
 \describe{
 \item{age}{Input age}
 \item{sex}{Input sex}
-\item{daily_prob}{Daily probability of death}
-\item{micromorts}{Daily baseline risk in micromorts}
+\item{daily_prob}{Daily probability of death (central estimate)}
+\item{micromorts}{Daily baseline risk in micromorts (central estimate)}
+\item{micromorts_lower}{Lower credible bound (micromorts) from ±10\% parameter sensitivity}
+\item{micromorts_upper}{Upper credible bound (micromorts) from ±10\% parameter sensitivity}
 \item{microlives_consumed}{Estimated microlives consumed per day}
+\item{precision_note}{Reminder that Gompertz parameters are approximate}
 \item{interpretation}{Human-readable summary}
 }
 }
 \description{
 Calculates the daily probability of death based on age using
-a simplified Gompertz-Makeham mortality model.
+a simplified Gompertz-Makeham mortality model. Returns a central estimate
+plus credible bounds derived from ±10\% sensitivity on the Gompertz
+parameters \code{a} (background mortality) and \code{b} (initial mortality).
+}
+\details{
+The Gompertz hazard is \code{h(x) = a + b * exp(c * x)}. Bounds are computed by
+varying \code{a} and \code{b} independently by ±10\% (four combinations) and taking
+the min/max across those combinations.
 }
 \examples{
-# Baseline risk at age 30
+# Baseline risk at age 30 with credible bounds
 daily_hazard_rate(30)
 
 # Compare male vs female at age 65
@@ -44,6 +54,7 @@ Human Mortality." Philosophical Transactions of the Royal Society.
 Other analysis: 
 \code{\link{annual_risk_budget}()},
 \code{\link{compare_interventions}()},
-\code{\link{lifestyle_tradeoff}()}
+\code{\link{lifestyle_tradeoff}()},
+\code{\link{risk_sensitivity}()}
 }
 \concept{analysis}
