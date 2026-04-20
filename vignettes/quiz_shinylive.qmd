@@ -128,15 +128,76 @@ leaderboard_js <- "
 var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
 var scoreSubmitted = false;
+
+// ---- Timer (#58) ----
+// Set to Date.now() when the first question renders; null until then.
+var quiz_start_time = null;
+function markQuizStart() {
+  if (quiz_start_time === null) quiz_start_time = Date.now();
+}
+function getElapsedSeconds() {
+  if (quiz_start_time === null) return null;
+  return Math.round((Date.now() - quiz_start_time) / 1000);
+}
+
+// ---- Metadata collection (#58) ----
+// TODO: Google Form fields to add for enriched metadata:
+//   - time_seconds  (integer)
+//   - skipped       (integer)
+//   - language      (text, e.g. 'en-US')
+//   - device        (text, 'desktop' or 'mobile')
+//   - referrer      (text)
+// Until those fields exist, metadata is logged to the console only.
+function collectMetadata(difficulty, nQuestions, nSkipped) {
+  return {
+    difficulty: difficulty || '',
+    num_questions: nQuestions || 0,
+    time_seconds: getElapsedSeconds(),
+    skipped: nSkipped || 0,
+    language: navigator.language || '',
+    device: window.innerWidth > 768 ? 'desktop' : 'mobile',
+    referrer: document.referrer || ''
+  };
+}
+
+// ---- Star rating sanitization (#47) ----
+function sanitizeFeedback(text) {
+  // Strip HTML tags
+  var stripped = text.replace(/<[^>]*>/g, '');
+  // Block dangerous patterns
+  var blocked = /javascript:|<script|eval\\(|document\\.|window\\./i;
+  if (blocked.test(stripped)) return '';
+  // Truncate to 200 chars
+  return stripped.slice(0, 200);
+}
+
+// ---- Submit feedback (#47) ----
+// TODO: Add Google Form fields for:
+//   - star_rating   (integer 1-5)
+//   - feedback_text (text, max 200 chars)
+// Currently logs to console only until form fields are created.
+function submitFeedback(quizType) {
+  var rating = parseInt(document.getElementById('star_rating_value') ? document.getElementById('star_rating_value').value : '0', 10);
+  var rawText = document.getElementById('feedback_text_input') ? document.getElementById('feedback_text_input').value : '';
+  var text = sanitizeFeedback(rawText);
+  if (rating === 0 && text === '') return;
+  console.log('Quiz feedback (' + quizType + '):', { rating: rating, text: text });
+  var btn = document.getElementById('feedback_submit_btn');
+  if (btn) { btn.textContent = 'Thanks!'; btn.disabled = true; }
+}
+
 function resetLeaderboard() {
   scoreSubmitted = false;
+  quiz_start_time = null;
   var btn = document.getElementById('submit_btn');
   if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
   var el = document.getElementById('percentile_text');
   if (el) el.textContent = '';
 }
-function submitScore(score, total, difficulty, nQuestions) {
+function submitScore(score, total, difficulty, nQuestions, nSkipped) {
   if (scoreSubmitted) return;
+  var meta = collectMetadata(difficulty, nQuestions, nSkipped);
+  console.log('Quiz metadata (acute):', meta);
   var btn = document.getElementById('submit_btn');
   if (btn) {
     btn.disabled = true;
@@ -547,6 +608,7 @@ results_summary_ui <- function(state) {
     !is.na(answers[i]) && answers[i] == pairs$answer[i]
   }, logical(1))
   score <- sum(correct)
+  n_skipped <- sum(is.na(answers[seq_len(n)]))
   pct <- score / n * 100
   baseline <- n / 2
 
@@ -570,8 +632,8 @@ results_summary_ui <- function(state) {
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
       tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
-        onclick = sprintf("submitScore(%d, %d, '%s', %d)", score, n,
-                          state$sel_difficulty, state$sel_nq), "Submit Score"),
+        onclick = sprintf("submitScore(%d, %d, '%s', %d, %d)", score, n,
+                          state$sel_difficulty, state$sel_nq, n_skipped), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
           "var pEl=document.getElementById('percentile_text');",
@@ -595,6 +657,33 @@ results_summary_ui <- function(state) {
       tags$br(),
       tags$small(class = "text-muted",
                  "Scores are recorded anonymously (score, total, timestamp only).")),
+    # ---- Star rating + feedback (#47) ----
+    tags$hr(),
+    div(class = "text-center mb-3",
+      tags$p(class = "text-muted mb-2", "How did you find this quiz? (optional)"),
+      tags$input(type = "hidden", id = "star_rating_value", value = "0"),
+      div(style = "font-size: 2rem; cursor: pointer; line-height: 1;",
+        lapply(1:5, function(i) {
+          tags$span(class = "star-btn", "\u2606",
+            style = "color: #6c757d; padding: 0 4px;",
+            onclick = sprintf("setStarRating(%d)", i))
+        })
+      ),
+      tags$small(id = "star_rating_label", class = "text-muted", "")
+    ),
+    div(class = "mx-auto mb-2", style = "max-width: 400px;",
+      tags$textarea(id = "feedback_text_input", class = "form-control",
+        rows = "2", maxlength = "200", placeholder = "Any thoughts? (optional)",
+        oninput = "updateCharCount()", style = "resize: vertical;"),
+      div(class = "text-end",
+        tags$small(id = "feedback_char_count", class = "text-muted", "0/200"))
+    ),
+    div(class = "text-center mb-3",
+      tags$button(id = "feedback_submit_btn", class = "btn btn-outline-secondary btn-sm",
+        onclick = "submitFeedback('acute')", "Submit Feedback")
+    ),
+    tags$hr(),
+    # ---- Streak + navigation ----
     div(id = "streak_display"),
     tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
                              round(pct, 1)))),
@@ -664,6 +753,26 @@ ui <- page_fluid(
         }
         clicked.classList.add('selected');
       }
+      // Timer start handler (#58)
+      Shiny.addCustomMessageHandler('markQuizStart', function(msg) { markQuizStart(); });
+      // Star rating helper (#47)
+      function setStarRating(n) {
+        document.getElementById('star_rating_value').value = n;
+        var stars = document.querySelectorAll('.star-btn');
+        for (var i = 0; i < stars.length; i++) {
+          stars[i].textContent = i < n ? '\\u2605' : '\\u2606';
+          stars[i].style.color = i < n ? '#ffc107' : '#6c757d';
+        }
+        var lbl = document.getElementById('star_rating_label');
+        var labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
+        if (lbl) lbl.textContent = labels[n] || '';
+      }
+      // Feedback char counter (#47)
+      function updateCharCount() {
+        var inp = document.getElementById('feedback_text_input');
+        var ctr = document.getElementById('feedback_char_count');
+        if (inp && ctr) ctr.textContent = inp.value.length + '/200';
+      }
     "))
   ),
   div(class = "container-fluid",
@@ -724,6 +833,8 @@ server <- function(input, output, session) {
     state$revealed <- rep(FALSE, n)
     state$current_q <- 1L
     state$phase <- "question"
+    # Mark quiz start time for time-to-complete (#58)
+    session$sendCustomMessage("markQuizStart", list())
   })
 
   observeEvent(input$choose_left, {
