@@ -210,6 +210,12 @@ document.addEventListener("DOMContentLoaded", function() {
   var valuationIds = ["vsl", "lle", "complementary-metrics"];
   var appliedIds = ["conditional-risks", "data-quality"];
 
+  // Capture parent container BEFORE any DOM moves
+  var firstH2 = document.getElementById("micromorts");
+  var firstSection = firstH2 ? firstH2.closest("section.level2") : null;
+  if (!firstSection || !firstSection.parentNode) return;
+  var parentContainer = firstSection.parentNode;
+
   var riskUnitCollected = collectSections(riskUnitIds);
   var valuationCollected = collectSections(valuationIds);
   var appliedCollected = collectSections(appliedIds);
@@ -257,14 +263,8 @@ document.addEventListener("DOMContentLoaded", function() {
     pageContent.appendChild(pane);
   });
 
-  // Find insertion point: the parent that holds all <section class="level2"> elements
-  var firstH2 = document.getElementById("micromorts");
-  var firstSection = firstH2 ? firstH2.closest("section.level2") : null;
-  if (!firstSection || !firstSection.parentNode) return;
-
-  var parentContainer = firstSection.parentNode;
-
   // Insert pills and tab content before the conclusion section (or at end)
+  // parentContainer was captured BEFORE createTabset moved sections
   var conclusionH2 = document.getElementById("conclusion");
   var conclusionSection = conclusionH2 ? conclusionH2.closest("section.level2") : null;
 
