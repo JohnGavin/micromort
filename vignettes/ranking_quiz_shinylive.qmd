@@ -314,6 +314,42 @@ function updateStreakDisplay(scorePct) {
     (streakHtml ? '<div>' + streakHtml + '</div>' : '') +
     '<div style=\"margin-top:4px;\">' + msg + bestHtml + '</div></div>';
 }
+
+// ---- Score history (#59) ----
+function recordScoreHistory(quizType, scorePct, score, total) {
+  var HISTORY_KEY = 'micromort_quiz_history';
+  var hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  hist.push({ date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total });
+  if (hist.length > 200) hist = hist.slice(-200);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+}
+
+// ---- Per-question stats (#78) ----
+function simpleHash(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return 'q' + Math.abs(h).toString(36);
+}
+function recordQuestionStats(questionKeys, pctArr) {
+  var QSTATS_KEY = 'micromort_quiz_question_stats';
+  var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
+  for (var i = 0; i < questionKeys.length; i++) {
+    var h = questionKeys[i];
+    if (!stats[h]) stats[h] = { sum: 0, total: 0 };
+    stats[h].total += 1;
+    stats[h].sum = (stats[h].sum || 0) + pctArr[i];
+  }
+  localStorage.setItem(QSTATS_KEY, JSON.stringify(stats));
+}
+function getQuestionStat(questionKey) {
+  var QSTATS_KEY = 'micromort_quiz_question_stats';
+  var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
+  var s = stats[questionKey];
+  if (!s || s.total === 0) return null;
+  return { total: s.total, pct: Math.round((s.sum || 0) / s.total) };
+}
 "
 
 # ---- SortableJS initialization ----
@@ -799,10 +835,29 @@ results_summary_ui <- function(state) {
     div(id = "streak_display"),
     tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
                              round(overall_pct, 1)))),
+    tags$script(HTML(sprintf(
+      paste0("(function(){",
+             "recordScoreHistory('ranking', %s, %d, %d);",
+             "var keys=[%s];",
+             "var pcts=[%s];",
+             "recordQuestionStats(keys, pcts);",
+             "})();"),
+      round(overall_pct, 1), total_concordant, total_pairs,
+      paste(sprintf("simpleHash('%s')",
+                    gsub("'", "\\\\'", vapply(seq_len(n), function(i) {
+                      qd <- state$questions[[i]]
+                      paste(sort(qd$item_name), collapse = "|")
+                    }, character(1)))),
+            collapse = ","),
+      paste(round(per_q_pcts), collapse = ",")))),
     div(class = "text-center mt-2",
       tags$a(href = "https://johngavin.github.io/micromort/articles/",
              target = "_blank", class = "text-muted",
-             tags$small("Try a different quiz \u2192")))
+             tags$small("Try a different quiz \u2192")),
+      tags$span(class = "text-muted", " \u00b7 "),
+      tags$a(href = "https://johngavin.github.io/micromort/articles/quiz_analytics.html",
+             target = "_blank", class = "text-muted",
+             tags$small("Your quiz analytics \u2192")))
   )
 }
 
@@ -810,6 +865,11 @@ results_summary_ui <- function(state) {
 results_detail_ui <- function(state) {
   if (is.null(state$questions)) return(div("Loading..."))
   n <- state$n_questions
+
+  q_keys <- vapply(seq_len(n), function(i) {
+    qd <- state$questions[[i]]
+    sprintf("simpleHash('%s')", gsub("'", "\\\\'", paste(sort(qd$item_name), collapse = "|")))
+  }, character(1))
 
   detail_rows <- lapply(seq_len(n), function(i) {
     qd <- state$questions[[i]]
@@ -823,16 +883,21 @@ results_detail_ui <- function(state) {
       user_names <- paste(qd$item_name[user_ord], collapse = " > ")
     }
     correct_names <- paste(qd$item_name[correct_order], collapse = " > ")
-    lle_texts <- paste(sprintf("%s (%s)", qd$item_name[correct_order],
-                               vapply(qd$lle_minutes[correct_order], lle_label, character(1))),
-                       collapse = " > ")
+    stat_id <- sprintf("qstat_%d", i)
     tags$tr(
       tags$td(i),
       tags$td(style = "max-width: 300px; white-space: normal;", user_names),
       tags$td(style = "max-width: 300px; white-space: normal;", correct_names),
       tags$td(sprintf("%d/%d", result$n_concordant, result$max_score)),
-      tags$td(sprintf("%.0f%%", result$pct))
+      tags$td(sprintf("%.0f%%", result$pct)),
+      tags$td(id = stat_id, class = "text-muted", tags$small("..."))
     )
+  })
+
+  stat_scripts <- lapply(seq_len(n), function(i) {
+    tags$script(HTML(sprintf(
+      "(function(){var s=getQuestionStat(%s);var el=document.getElementById('qstat_%d');if(el){el.innerHTML=s?'<small>avg '+s.pct+'%% ('+s.total+' plays)</small>':'<small>1st play</small>';}})()",
+      q_keys[i], i)))
   })
 
   tagList(
@@ -845,8 +910,10 @@ results_detail_ui <- function(state) {
       tags$table(class = "table table-striped table-hover detail-table",
         tags$thead(tags$tr(tags$th("Q"), tags$th("Your Order"),
                            tags$th("Correct Order"),
-                           tags$th("Pairs"), tags$th("Score"))),
-        tags$tbody(detail_rows)))
+                           tags$th("Pairs"), tags$th("Score"),
+                           tags$th("Your history"))),
+        tags$tbody(detail_rows))),
+    tagList(stat_scripts)
   )
 }
 

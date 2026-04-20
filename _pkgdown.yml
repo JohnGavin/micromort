@@ -44,6 +44,8 @@ navbar:
         href: articles/microlife-quiz.html
       - text: "📊 Ranking: instant | Shinylive"
         href: articles/risk-ranking-quiz.html
+      - text: "📈 Your Quiz Analytics"
+        href: articles/quiz_analytics.html
       - text: "---"
       - text: "Storytelling"
       - text: "The Invisible Risk (closeread)"
@@ -87,6 +89,7 @@ articles:
   - quiz_shinylive
   - chronic_quiz_shinylive
   - ranking_quiz_shinylive
+  - quiz_analytics
 
 - title: "Storytelling"
   contents:

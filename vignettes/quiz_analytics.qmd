@@ -1,0 +1,351 @@
+---
+title: "Your Quiz Analytics"
+description: "Personal quiz history and performance stats — reads data stored locally in your browser."
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+    embed-resources: false
+    page-layout: full
+---
+
+```{=html}
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0.5rem; padding-bottom: 0; }
+  .description { margin-bottom: 0.25rem !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+
+  /* Analytics page styles */
+  .analytics-section {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4e;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .analytics-section h3 {
+    color: #e0e0e0;
+    border-bottom: 1px solid #2a2a4e;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.05rem;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .stat-card {
+    background: #16213e;
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    text-align: center;
+  }
+  .stat-card .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #7eb3ff;
+    line-height: 1.1;
+  }
+  .stat-card .stat-label {
+    font-size: 0.75rem;
+    color: #8899bb;
+    margin-top: 0.2rem;
+  }
+  .analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    color: #e0e0e0;
+  }
+  .analytics-table th {
+    background: #16213e;
+    color: #8899bb;
+    font-weight: 600;
+    padding: 6px 10px;
+    text-align: left;
+    border-bottom: 1px solid #2a2a4e;
+  }
+  .analytics-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #252545;
+  }
+  .analytics-table tr:hover td { background: #1e1e3a; }
+  .badge-acute   { background: #2c4e7c; color: #7eb3ff; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
+  .badge-chronic { background: #2c5c3c; color: #7ecf9e; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
+  .badge-ranking { background: #5c3c2c; color: #cfae7e; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
+  .score-bar-wrap { background: #2a2a4e; border-radius: 4px; height: 14px; min-width: 80px; }
+  .score-bar-fill { background: #2c7be5; height: 14px; border-radius: 4px; }
+  .no-data-msg {
+    text-align: center;
+    color: #6677aa;
+    padding: 2rem 1rem;
+    font-size: 0.9rem;
+  }
+  svg.history-chart { overflow: visible; }
+  .chart-dot { cursor: pointer; }
+  .chart-dot:hover { r: 6; }
+  .clear-btn {
+    background: none;
+    border: 1px solid #cc4444;
+    color: #cc4444;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    float: right;
+  }
+  .clear-btn:hover { background: #cc4444; color: #fff; }
+  @media (max-width: 600px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+
+<div id="analytics-root">
+  <div class="no-data-msg">Loading your quiz data...</div>
+</div>
+
+<script>
+(function() {
+  // ---- Keys (must match the quiz vignettes) ----
+  var HISTORY_KEY   = 'micromort_quiz_history';
+  var QSTATS_KEY    = 'micromort_quiz_question_stats';
+  var STREAK_KEY    = 'micromort_quiz_streak';
+  var BEST_KEY      = 'micromort_quiz_best_score';
+
+  // ---- Helpers ----
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  function fmtDate(iso) {
+    try {
+      var d = new Date(iso);
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) { return iso.slice(0, 10); }
+  }
+  function typeBadge(t) {
+    var labels = { acute: 'Micromort', chronic: 'Microlife', ranking: 'Ranking' };
+    return '<span class="badge-' + t + '">' + (labels[t] || t) + '</span>';
+  }
+  function scoreBar(pct) {
+    var p = Math.max(0, Math.min(100, pct));
+    return '<div class="score-bar-wrap"><div class="score-bar-fill" style="width:' + p + '%;"></div></div>';
+  }
+
+  // ---- Load data ----
+  var history   = JSON.parse(localStorage.getItem(HISTORY_KEY)  || '[]');
+  var qstats    = JSON.parse(localStorage.getItem(QSTATS_KEY)   || '{}');
+  var streak    = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  var bestScore = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+
+  var root = document.getElementById('analytics-root');
+
+  // ---- No data ----
+  if (history.length === 0 && Object.keys(qstats).length === 0) {
+    root.innerHTML = '<div class="no-data-msg">' +
+      '<p style="font-size:2rem;">📊</p>' +
+      '<p><strong>No quiz data yet.</strong></p>' +
+      '<p>Complete a quiz to see your personal analytics here.<br>' +
+      'Your data is stored only in this browser — it never leaves your device.</p>' +
+      '<p><a href="quiz_shinylive.html">Micromort Quiz</a> &nbsp;|&nbsp; ' +
+      '<a href="chronic_quiz_shinylive.html">Microlife Quiz</a> &nbsp;|&nbsp; ' +
+      '<a href="ranking_quiz_shinylive.html">Ranking Quiz</a></p>' +
+      '</div>';
+    return;
+  }
+
+  // ---- Compute summary stats ----
+  var totalPlays  = history.length;
+  var scores      = history.map(function(h) { return h.score; });
+  var avgScore    = scores.length ? Math.round(scores.reduce(function(a,b){return a+b;}, 0) / scores.length) : 0;
+  var maxScore    = scores.length ? Math.round(Math.max.apply(null, scores)) : 0;
+  var byType      = {};
+  history.forEach(function(h) {
+    if (!byType[h.type]) byType[h.type] = [];
+    byType[h.type].push(h.score);
+  });
+
+  // ---- 1. Personal stats ----
+  var statsHtml = '<div class="analytics-section">' +
+    '<h3>Your stats' +
+    (totalPlays > 0 ? '<button class="clear-btn" onclick="clearAllData()">Clear data</button>' : '') +
+    '</h3>' +
+    '<div class="stat-grid">' +
+    '<div class="stat-card"><div class="stat-value">' + totalPlays + '</div><div class="stat-label">Quizzes played</div></div>' +
+    '<div class="stat-card"><div class="stat-value">' + avgScore + '%</div><div class="stat-label">Average score</div></div>' +
+    '<div class="stat-card"><div class="stat-value">' + maxScore + '%</div><div class="stat-label">Best score</div></div>' +
+    '<div class="stat-card"><div class="stat-value">' + (streak > 1 ? '🔥 ' + streak : streak) + '</div><div class="stat-label">Day streak</div></div>' +
+    '</div>' +
+    '</div>';
+
+  // ---- 2. Quiz type breakdown ----
+  var typeOrder  = ['acute', 'chronic', 'ranking'];
+  var typeLabels = { acute: 'Micromort', chronic: 'Microlife', ranking: 'Ranking' };
+  var breakdownRows = '';
+  typeOrder.forEach(function(t) {
+    var scores_t = byType[t] || [];
+    if (scores_t.length === 0) return;
+    var avg_t = Math.round(scores_t.reduce(function(a,b){return a+b;},0) / scores_t.length);
+    var best_t = Math.round(Math.max.apply(null, scores_t));
+    breakdownRows += '<tr>' +
+      '<td>' + typeBadge(t) + ' ' + escHtml(typeLabels[t]) + '</td>' +
+      '<td>' + scores_t.length + '</td>' +
+      '<td>' + scoreBar(avg_t) + '</td>' +
+      '<td>' + avg_t + '%</td>' +
+      '<td>' + best_t + '%</td>' +
+      '</tr>';
+  });
+  var breakdownHtml = breakdownRows ? (
+    '<div class="analytics-section"><h3>By quiz type</h3>' +
+    '<table class="analytics-table">' +
+    '<thead><tr><th>Quiz</th><th>Plays</th><th>Avg score</th><th></th><th>Best</th></tr></thead>' +
+    '<tbody>' + breakdownRows + '</tbody></table></div>'
+  ) : '';
+
+  // ---- 3. Score history chart ----
+  var chartHtml = '';
+  if (history.length >= 2) {
+    var W = 600, H = 160, PAD = { l: 36, r: 10, t: 10, b: 30 };
+    var innerW = W - PAD.l - PAD.r;
+    var innerH = H - PAD.t - PAD.b;
+    var n = history.length;
+
+    // Build path
+    var colours = { acute: '#5b9de5', chronic: '#5ec98b', ranking: '#d4a95b' };
+    var pts = history.map(function(h, i) {
+      var x = PAD.l + (n === 1 ? innerW / 2 : i * innerW / (n - 1));
+      var y = PAD.t + innerH * (1 - h.score / 100);
+      return { x: x, y: y, score: h.score, date: h.date, type: h.type };
+    });
+
+    // Grid lines at 0, 50, 100
+    var gridLines = [0, 50, 100].map(function(v) {
+      var y = PAD.t + innerH * (1 - v / 100);
+      return '<line x1="' + PAD.l + '" y1="' + y + '" x2="' + (W - PAD.r) + '" y2="' + y +
+             '" stroke="#2a2a4e" stroke-width="1"/>' +
+             '<text x="' + (PAD.l - 4) + '" y="' + (y + 4) + '" text-anchor="end" fill="#6677aa" font-size="10">' + v + '</text>';
+    }).join('');
+
+    // Polyline
+    var polyPts = pts.map(function(p) { return p.x + ',' + p.y; }).join(' ');
+    var polyLine = '<polyline points="' + polyPts + '" fill="none" stroke="#3a4e7c" stroke-width="1.5"/>';
+
+    // Dots
+    var dots = pts.map(function(p, i) {
+      var col = colours[p.type] || '#7eb3ff';
+      return '<circle class="chart-dot" cx="' + p.x + '" cy="' + p.y + '" r="4" fill="' + col + '"' +
+             ' title="' + escHtml(fmtDate(p.date)) + ': ' + Math.round(p.score) + '% (' + p.type + ')"/>';
+    }).join('');
+
+    // x-axis labels (first, last, and up to 3 in between)
+    var labelIdxs = [0, n - 1];
+    if (n > 4) labelIdxs.splice(1, 0, Math.floor(n / 2));
+    var xLabels = labelIdxs.map(function(i) {
+      var p = pts[i];
+      return '<text x="' + p.x + '" y="' + (H - 6) + '" text-anchor="middle" fill="#6677aa" font-size="9">' +
+             escHtml(fmtDate(history[i].date).replace(/, \d{4}$/, '')) + '</text>';
+    }).join('');
+
+    // Legend
+    var legendItems = Object.keys(colours).filter(function(t) { return byType[t]; });
+    var legendX = PAD.l;
+    var legend = legendItems.map(function(t, i) {
+      var lx = legendX + i * 90;
+      return '<circle cx="' + (lx + 5) + '" cy="' + (PAD.t + 6) + '" r="4" fill="' + colours[t] + '"/>' +
+             '<text x="' + (lx + 12) + '" y="' + (PAD.t + 10) + '" fill="#8899bb" font-size="9">' +
+             escHtml({ acute: 'Micromort', chronic: 'Microlife', ranking: 'Ranking' }[t]) + '</text>';
+    }).join('');
+
+    var svg = '<svg class="history-chart" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:' + W + 'px;">' +
+              gridLines + polyLine + dots + xLabels + legend + '</svg>';
+    chartHtml = '<div class="analytics-section"><h3>Score history (' + n + ' plays)</h3>' + svg + '</div>';
+  } else if (history.length === 1) {
+    chartHtml = '<div class="analytics-section"><h3>Score history</h3>' +
+                '<p style="color:#8899bb;font-size:0.85rem;">Play 2+ quizzes to see your history chart.</p>' +
+                '</div>';
+  }
+
+  // ---- 4. Hardest questions (per-question stats from localStorage) ----
+  var qkeys = Object.keys(qstats);
+  var hardestHtml = '';
+  if (qkeys.length > 0) {
+    var qrows = qkeys.map(function(k) {
+      var s = qstats[k];
+      var pct, total;
+      if (typeof s.sum !== 'undefined') {
+        // ranking quiz: sum of pcts
+        pct = s.total > 0 ? Math.round(s.sum / s.total) : 0;
+        total = s.total;
+      } else {
+        pct = s.total > 0 ? Math.round(100 * s.correct / s.total) : 0;
+        total = s.total;
+      }
+      // decode the key: simpleHash produces opaque keys, so we can't recover labels.
+      // Show the hash short form as an identifier.
+      return { key: k, pct: pct, total: total };
+    }).filter(function(r) { return r.total >= 1; });
+
+    // Sort by pct ascending (hardest first)
+    qrows.sort(function(a, b) { return a.pct - b.pct; });
+
+    var topN = qrows.slice(0, 20);
+    var hardRows = topN.map(function(r, i) {
+      return '<tr>' +
+        '<td>' + (i + 1) + '</td>' +
+        '<td style="font-family:monospace;font-size:0.75rem;color:#6677aa;">' + escHtml(r.key) + '</td>' +
+        '<td>' + r.total + '</td>' +
+        '<td>' + scoreBar(r.pct) + '</td>' +
+        '<td>' + r.pct + '%</td>' +
+        '</tr>';
+    }).join('');
+
+    hardestHtml = '<div class="analytics-section"><h3>Hardest questions (your history, ' + qkeys.length + ' unique)</h3>' +
+      '<p style="color:#8899bb;font-size:0.8rem;">Sorted by your lowest personal accuracy. ' +
+      'Question IDs are browser-local hashes — they identify questions without storing the text.</p>' +
+      '<table class="analytics-table">' +
+      '<thead><tr><th>#</th><th>Question ID</th><th>Plays</th><th>Your accuracy</th><th></th></tr></thead>' +
+      '<tbody>' + hardRows + '</tbody></table></div>';
+  }
+
+  // ---- 5. Recent plays ----
+  var recentRows = history.slice(-20).reverse().map(function(h) {
+    return '<tr>' +
+      '<td>' + escHtml(fmtDate(h.date)) + '</td>' +
+      '<td>' + typeBadge(h.type) + '</td>' +
+      '<td>' + scoreBar(h.score) + '</td>' +
+      '<td>' + Math.round(h.score) + '%</td>' +
+      '</tr>';
+  }).join('');
+  var recentHtml = '<div class="analytics-section"><h3>Recent plays (last 20)</h3>' +
+    '<table class="analytics-table">' +
+    '<thead><tr><th>Date</th><th>Quiz</th><th>Score</th><th></th></tr></thead>' +
+    '<tbody>' + recentRows + '</tbody></table></div>';
+
+  // ---- Render ----
+  root.innerHTML =
+    '<p style="color:#8899bb;font-size:0.8rem;margin:0.25rem 0 1rem;">Your data is stored only in this browser (localStorage). ' +
+    'It is never sent to a server.</p>' +
+    statsHtml +
+    chartHtml +
+    breakdownHtml +
+    recentHtml +
+    hardestHtml;
+
+  // ---- Clear all data function ----
+  window.clearAllData = function() {
+    if (!confirm('Delete all your quiz analytics data from this browser?')) return;
+    ['micromort_quiz_history','micromort_quiz_question_stats',
+     'micromort_quiz_streak','micromort_quiz_last_play','micromort_quiz_best_score'
+    ].forEach(function(k) { localStorage.removeItem(k); });
+    location.reload();
+  };
+})();
+</script>
+```
