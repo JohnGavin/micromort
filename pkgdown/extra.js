@@ -210,14 +210,16 @@ document.addEventListener("DOMContentLoaded", function() {
     subNavs.push(subNav);
   });
 
-  // Insert wrapper before conclusion
-  var conclusionH2 = document.getElementById("conclusion");
-  var conclusionSection = conclusionH2 ? conclusionH2.closest("section.level2") : null;
-  if (conclusionSection) {
-    parent.insertBefore(wrapper, conclusionSection);
-  } else {
-    parent.appendChild(wrapper);
-  }
+  // Insert wrapper before the FIRST section (so nav appears above content)
+  parent.insertBefore(wrapper, firstSection);
+
+  // Move all collected sections INTO the wrapper (so they appear below nav)
+  var contentArea = document.createElement("div");
+  contentArea.id = "intro-content-area";
+  wrapper.appendChild(contentArea);
+  Object.keys(allSectionEls).forEach(function(id) {
+    if (allSectionEls[id]) contentArea.appendChild(allSectionEls[id]);
+  });
 
   // Show initial state: first page, first tab
   function showPage(pageIdx) {
