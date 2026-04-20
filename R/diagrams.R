@@ -50,6 +50,7 @@ mermaid_dark_theme_header <- function() {
     risk_for_duration = "Data", risk_data_sources = "Data",
     acute_risks = "Data", chronic_risks = "Data",
     chronic_disease_risks = "Data",
+    infectious_disease_risks = "Data",
     # Regional
     regional_life_expectancy = "Regional",
     vanguard_regions = "Regional", laggard_regions = "Regional",

@@ -1,0 +1,190 @@
+country_iso3,country_name,cause,year,deaths_per_100k
+ARG,Argentina,Lower respiratory infections,2019,18.5
+ARG,Argentina,Diarrheal diseases,2019,3.2
+ARG,Argentina,Tuberculosis,2019,2.8
+ARG,Argentina,HIV/AIDS,2019,4.1
+ARG,Argentina,Malaria,2019,0.0
+ARG,Argentina,Hepatitis,2019,1.2
+ARG,Argentina,Meningitis,2019,0.8
+AUS,Australia,Lower respiratory infections,2019,14.2
+AUS,Australia,Diarrheal diseases,2019,0.6
+AUS,Australia,Tuberculosis,2019,0.3
+AUS,Australia,HIV/AIDS,2019,0.4
+AUS,Australia,Malaria,2019,0.0
+AUS,Australia,Hepatitis,2019,0.5
+AUS,Australia,Meningitis,2019,0.4
+BGD,Bangladesh,Lower respiratory infections,2019,72.0
+BGD,Bangladesh,Diarrheal diseases,2019,22.0
+BGD,Bangladesh,Tuberculosis,2019,38.0
+BGD,Bangladesh,HIV/AIDS,2019,0.2
+BGD,Bangladesh,Malaria,2019,0.8
+BGD,Bangladesh,Hepatitis,2019,9.5
+BGD,Bangladesh,Meningitis,2019,6.5
+BRA,Brazil,Lower respiratory infections,2019,22.0
+BRA,Brazil,Diarrheal diseases,2019,5.8
+BRA,Brazil,Tuberculosis,2019,8.5
+BRA,Brazil,HIV/AIDS,2019,7.2
+BRA,Brazil,Malaria,2019,1.5
+BRA,Brazil,Hepatitis,2019,2.0
+BRA,Brazil,Meningitis,2019,1.8
+CAN,Canada,Lower respiratory infections,2019,13.0
+CAN,Canada,Diarrheal diseases,2019,0.5
+CAN,Canada,Tuberculosis,2019,0.4
+CAN,Canada,HIV/AIDS,2019,0.6
+CAN,Canada,Malaria,2019,0.0
+CAN,Canada,Hepatitis,2019,0.5
+CAN,Canada,Meningitis,2019,0.3
+CHN,China,Lower respiratory infections,2019,45.0
+CHN,China,Diarrheal diseases,2019,8.0
+CHN,China,Tuberculosis,2019,12.0
+CHN,China,HIV/AIDS,2019,1.8
+CHN,China,Malaria,2019,0.1
+CHN,China,Hepatitis,2019,7.5
+CHN,China,Meningitis,2019,3.2
+DEU,Germany,Lower respiratory infections,2019,18.0
+DEU,Germany,Diarrheal diseases,2019,0.4
+DEU,Germany,Tuberculosis,2019,0.5
+DEU,Germany,HIV/AIDS,2019,0.5
+DEU,Germany,Malaria,2019,0.0
+DEU,Germany,Hepatitis,2019,0.4
+DEU,Germany,Meningitis,2019,0.3
+ESP,Spain,Lower respiratory infections,2019,16.5
+ESP,Spain,Diarrheal diseases,2019,0.4
+ESP,Spain,Tuberculosis,2019,0.6
+ESP,Spain,HIV/AIDS,2019,1.2
+ESP,Spain,Malaria,2019,0.0
+ESP,Spain,Hepatitis,2019,0.4
+ESP,Spain,Meningitis,2019,0.3
+ETH,Ethiopia,Lower respiratory infections,2019,105.0
+ETH,Ethiopia,Diarrheal diseases,2019,55.0
+ETH,Ethiopia,Tuberculosis,2019,60.0
+ETH,Ethiopia,HIV/AIDS,2019,45.0
+ETH,Ethiopia,Malaria,2019,35.0
+ETH,Ethiopia,Hepatitis,2019,12.0
+ETH,Ethiopia,Meningitis,2019,10.0
+FRA,France,Lower respiratory infections,2019,17.0
+FRA,France,Diarrheal diseases,2019,0.4
+FRA,France,Tuberculosis,2019,0.5
+FRA,France,HIV/AIDS,2019,0.8
+FRA,France,Malaria,2019,0.0
+FRA,France,Hepatitis,2019,0.4
+FRA,France,Meningitis,2019,0.3
+GBR,United Kingdom,Lower respiratory infections,2019,20.0
+GBR,United Kingdom,Diarrheal diseases,2019,0.5
+GBR,United Kingdom,Tuberculosis,2019,0.5
+GBR,United Kingdom,HIV/AIDS,2019,0.8
+GBR,United Kingdom,Malaria,2019,0.0
+GBR,United Kingdom,Hepatitis,2019,0.4
+GBR,United Kingdom,Meningitis,2019,0.3
+IDN,Indonesia,Lower respiratory infections,2019,58.0
+IDN,Indonesia,Diarrheal diseases,2019,18.0
+IDN,Indonesia,Tuberculosis,2019,40.0
+IDN,Indonesia,HIV/AIDS,2019,3.5
+IDN,Indonesia,Malaria,2019,4.5
+IDN,Indonesia,Hepatitis,2019,7.0
+IDN,Indonesia,Meningitis,2019,5.5
+IND,India,Lower respiratory infections,2019,65.0
+IND,India,Diarrheal diseases,2019,30.0
+IND,India,Tuberculosis,2019,30.0
+IND,India,HIV/AIDS,2019,1.5
+IND,India,Malaria,2019,3.0
+IND,India,Hepatitis,2019,8.0
+IND,India,Meningitis,2019,5.0
+ITA,Italy,Lower respiratory infections,2019,17.5
+ITA,Italy,Diarrheal diseases,2019,0.4
+ITA,Italy,Tuberculosis,2019,0.5
+ITA,Italy,HIV/AIDS,2019,0.7
+ITA,Italy,Malaria,2019,0.0
+ITA,Italy,Hepatitis,2019,0.5
+ITA,Italy,Meningitis,2019,0.3
+JPN,Japan,Lower respiratory infections,2019,22.0
+JPN,Japan,Diarrheal diseases,2019,0.3
+JPN,Japan,Tuberculosis,2019,1.2
+JPN,Japan,HIV/AIDS,2019,0.2
+JPN,Japan,Malaria,2019,0.0
+JPN,Japan,Hepatitis,2019,0.8
+JPN,Japan,Meningitis,2019,0.2
+KOR,South Korea,Lower respiratory infections,2019,18.5
+KOR,South Korea,Diarrheal diseases,2019,0.5
+KOR,South Korea,Tuberculosis,2019,3.5
+KOR,South Korea,HIV/AIDS,2019,0.3
+KOR,South Korea,Malaria,2019,0.0
+KOR,South Korea,Hepatitis,2019,1.5
+KOR,South Korea,Meningitis,2019,0.3
+MEX,Mexico,Lower respiratory infections,2019,25.0
+MEX,Mexico,Diarrheal diseases,2019,7.5
+MEX,Mexico,Tuberculosis,2019,5.0
+MEX,Mexico,HIV/AIDS,2019,4.5
+MEX,Mexico,Malaria,2019,0.3
+MEX,Mexico,Hepatitis,2019,2.0
+MEX,Mexico,Meningitis,2019,1.2
+NGA,Nigeria,Lower respiratory infections,2019,120.0
+NGA,Nigeria,Diarrheal diseases,2019,70.0
+NGA,Nigeria,Tuberculosis,2019,60.0
+NGA,Nigeria,HIV/AIDS,2019,40.0
+NGA,Nigeria,Malaria,2019,80.0
+NGA,Nigeria,Hepatitis,2019,15.0
+NGA,Nigeria,Meningitis,2019,12.0
+NLD,Netherlands,Lower respiratory infections,2019,15.5
+NLD,Netherlands,Diarrheal diseases,2019,0.4
+NLD,Netherlands,Tuberculosis,2019,0.3
+NLD,Netherlands,HIV/AIDS,2019,0.4
+NLD,Netherlands,Malaria,2019,0.0
+NLD,Netherlands,Hepatitis,2019,0.3
+NLD,Netherlands,Meningitis,2019,0.2
+PAK,Pakistan,Lower respiratory infections,2019,80.0
+PAK,Pakistan,Diarrheal diseases,2019,40.0
+PAK,Pakistan,Tuberculosis,2019,45.0
+PAK,Pakistan,HIV/AIDS,2019,1.5
+PAK,Pakistan,Malaria,2019,6.0
+PAK,Pakistan,Hepatitis,2019,12.0
+PAK,Pakistan,Meningitis,2019,8.0
+PHL,Philippines,Lower respiratory infections,2019,55.0
+PHL,Philippines,Diarrheal diseases,2019,15.0
+PHL,Philippines,Tuberculosis,2019,35.0
+PHL,Philippines,HIV/AIDS,2019,1.2
+PHL,Philippines,Malaria,2019,2.0
+PHL,Philippines,Hepatitis,2019,6.0
+PHL,Philippines,Meningitis,2019,4.5
+POL,Poland,Lower respiratory infections,2019,22.0
+POL,Poland,Diarrheal diseases,2019,0.5
+POL,Poland,Tuberculosis,2019,1.5
+POL,Poland,HIV/AIDS,2019,0.4
+POL,Poland,Malaria,2019,0.0
+POL,Poland,Hepatitis,2019,0.6
+POL,Poland,Meningitis,2019,0.5
+RUS,Russia,Lower respiratory infections,2019,35.0
+RUS,Russia,Diarrheal diseases,2019,2.0
+RUS,Russia,Tuberculosis,2019,8.5
+RUS,Russia,HIV/AIDS,2019,12.0
+RUS,Russia,Malaria,2019,0.0
+RUS,Russia,Hepatitis,2019,3.0
+RUS,Russia,Meningitis,2019,1.2
+SWE,Sweden,Lower respiratory infections,2019,14.0
+SWE,Sweden,Diarrheal diseases,2019,0.3
+SWE,Sweden,Tuberculosis,2019,0.3
+SWE,Sweden,HIV/AIDS,2019,0.3
+SWE,Sweden,Malaria,2019,0.0
+SWE,Sweden,Hepatitis,2019,0.3
+SWE,Sweden,Meningitis,2019,0.2
+TUR,Turkey,Lower respiratory infections,2019,28.0
+TUR,Turkey,Diarrheal diseases,2019,2.5
+TUR,Turkey,Tuberculosis,2019,3.5
+TUR,Turkey,HIV/AIDS,2019,0.5
+TUR,Turkey,Malaria,2019,0.1
+TUR,Turkey,Hepatitis,2019,1.5
+TUR,Turkey,Meningitis,2019,1.0
+USA,United States,Lower respiratory infections,2019,15.0
+USA,United States,Diarrheal diseases,2019,1.2
+USA,United States,Tuberculosis,2019,0.1
+USA,United States,HIV/AIDS,2019,1.5
+USA,United States,Malaria,2019,0.0
+USA,United States,Hepatitis,2019,0.5
+USA,United States,Meningitis,2019,0.2
+ZAF,South Africa,Lower respiratory infections,2019,85.0
+ZAF,South Africa,Diarrheal diseases,2019,25.0
+ZAF,South Africa,Tuberculosis,2019,55.0
+ZAF,South Africa,HIV/AIDS,2019,150.0
+ZAF,South Africa,Malaria,2019,2.0
+ZAF,South Africa,Hepatitis,2019,8.0
+ZAF,South Africa,Meningitis,2019,5.5
