@@ -79,7 +79,8 @@ mermaid_dark_theme_header <- function() {
     launch_chronic_quiz = "Apps", chronic_quiz_pairs = "Apps",
     factor_descriptions = "Apps",
     ranking_quiz_questions = "Apps", ranking_tag_mapping = "Apps",
-    kendall_tau_score = "Apps"
+    kendall_tau_score = "Apps",
+    combined_quiz_pairs = "Quiz", export_combined_quiz_csv = "Quiz"
   )
 }
 

@@ -52,6 +52,7 @@ Other analysis:
 \code{\link{annual_risk_budget}()},
 \code{\link{compare_interventions}()},
 \code{\link{daily_hazard_rate}()},
-\code{\link{lifestyle_tradeoff}()}
+\code{\link{lifestyle_tradeoff}()},
+\code{\link{toxicological_risk}()}
 }
 \concept{analysis}

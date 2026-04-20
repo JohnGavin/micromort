@@ -28,6 +28,7 @@ Other analysis:
 \code{\link{annual_risk_budget}()},
 \code{\link{compare_interventions}()},
 \code{\link{daily_hazard_rate}()},
-\code{\link{risk_sensitivity}()}
+\code{\link{risk_sensitivity}()},
+\code{\link{toxicological_risk}()}
 }
 \concept{analysis}
