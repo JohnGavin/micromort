@@ -221,7 +221,13 @@ This consistency suggests that policy decisions affecting acute risks (transport
 
 ## 5. Loss of Life Expectancy (LLE) {#lle}
 
-**LLE** estimates the average time lost from a lifespan due to a specific risk. For a 1-in-a-million risk (1 micromort), the LLE is approximately 21 minutes (assuming 40 years remaining life).
+**Loss of Life Expectancy (LLE)** estimates the average time lost from a lifespan due to a specific risk. It converts abstract probabilities into a tangible duration — answering "how much life does this cost me on average?"
+
+**Formula:** LLE = probability of death × remaining life expectancy
+
+For a 1-in-a-million risk (1 micromort), assuming 40 years remaining life:
+
+LLE = 1/1,000,000 × 40 years × 525,960 min/year ≈ **21 minutes**
 
 ```{r introduction-chunk-8}
 #| echo: false
@@ -230,25 +236,49 @@ This consistency suggests that policy decisions affecting acute risks (transport
 cat(round(demos$lle_one_micromort, 1), "minutes\n")
 ```
 
+### Worked Examples
+
+| Activity | Micromorts | LLE per exposure | Equivalent time cost |
+|----------|-----------|-----------------|---------------------|
+| Chest X-ray | 0.1 | ~2 minutes | Making a cup of tea |
+| Skydiving (1 jump) | 8 | ~3 hours | Watching a long film |
+| General anaesthetic | 10 | ~3.5 hours | A half-day at work |
+| Motorcycle ride (250 miles) | 40 | ~14 hours | A night's sleep + commute |
+| BASE jumping (1 jump) | 430 | ~6 days | A short holiday |
+
+### Age Sensitivity
+
+LLE depends critically on remaining life expectancy. The same 10-micromort surgery "costs" different amounts depending on age:
+
+| Age | Remaining LE | LLE from 10 micromorts |
+|-----|-------------|----------------------|
+| 20 | ~60 years | 5.3 hours |
+| 40 | ~40 years | 3.5 hours |
+| 60 | ~22 years | 1.9 hours |
+| 80 | ~9 years | 0.8 hours |
+
+Use [`lle(prob, life_expectancy = ...)`](../reference/lle.html) to calculate for any age. See also [`daily_hazard_rate()`](../reference/daily_hazard_rate.html) for converting age-specific mortality into micromorts per day.
+
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity {#complementary-metrics}
 
 Micromorts and microlives focus on mortality. But many conditions (like the common cold) cause significant quality of life loss without being fatal. Complementary metrics capture this morbidity burden.
 
-### QALY (Quality-Adjusted Life Year)
+### [QALY](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case){target="_blank"} (Quality-Adjusted Life Year)
 
-Measures years of life adjusted for quality. **1 QALY = 1 year of perfect health.**
+Measures years of life adjusted for quality. **1 QALY = 1 year of perfect health.** See the [NICE Methods Guide](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case){target="_blank"} for how QALYs are used in health technology assessment.
 
 *   Health states are weighted 0 (death) to 1 (perfect health)
 *   A year with chronic pain at 0.7 quality = 0.7 QALYs
 *   Used to assess cost-effectiveness of medical interventions (e.g., £20,000-30,000 per QALY threshold in UK)
+*   Measured using instruments like the [EQ-5D](https://euroqol.org/eq-5d-instruments/){target="_blank"} (mobility, self-care, usual activities, pain, anxiety)
 
-### DALY (Disability-Adjusted Life Years)
+### [DALY](https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158){target="_blank"} (Disability-Adjusted Life Years)
 
-Measures disease burden as the sum of two components:
+Measures disease burden as the sum of two components. Defined by the [WHO Global Burden of Disease](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates/global-health-estimates-leading-causes-of-dalys){target="_blank"} study.
 
 *   **DALY = YLL + YLD**, where:
     *   **YLL (Years of Life Lost):** From premature mortality
-    *   **YLD (Years Lived with Disability):** From morbidity, weighted by disability severity
+    *   **YLD (Years Lived with Disability):** From morbidity, weighted by [disability weights](https://ghdx.healthdata.org/record/ihme-data/gbd-2019-disability-weights){target="_blank"}
 
 For fatal diseases like COVID-19, YLL dominates. For non-fatal conditions like the common cold, YLD dominates.
 
