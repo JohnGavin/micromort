@@ -1,0 +1,41 @@
+"factor_id","factor","category","microlives_per_day","direction","description","synergy_tag"
+"smoking_20_cigarettes","Smoking 20 cigarettes","Smoking",-10,"loss","Heavy smoking accelerates aging to 29 hours/day","smoking"
+"smoking_10_cigarettes","Smoking 10 cigarettes","Smoking",-5,"loss","Moderate smoking","smoking"
+"smoking_2_cigarettes","Smoking 2 cigarettes","Smoking",-1,"loss","Each cigarette costs ~15 minutes","smoking"
+"being_5_kg_overweight","Being 5 kg overweight","Weight",-1,"loss","Per 5 kg above optimum BMI weight","obesity"
+"being_10_kg_overweight","Being 10 kg overweight","Weight",-2,"loss","Cumulative effect of excess weight","obesity"
+"being_15_kg_overweight","Being 15 kg overweight","Weight",-3,"loss","Cumulative effect of excess weight","obesity"
+"glass_of_wine_daily","Glass of wine daily","Alcohol",-1,"loss","Chronic cancer/liver risk from daily wine (Wikipedia 0.5mm/day); not an acute per-glass risk","alcohol"
+"2nd_3rd_alcoholic_drink","2nd-3rd alcoholic drink","Alcohol",-1,"loss","After first drink, additional drinks cost","alcohol"
+"4th_5th_alcoholic_drink","4th-5th alcoholic drink","Alcohol",-2,"loss","Heavy drinking costs more","alcohol"
+"red_meat_1_portion_day_","Red meat (1 portion/day)","Diet",-1,"loss","Daily red meat consumption",NA
+"processed_meat_1_portion_day_","Processed meat (1 portion/day)","Diet",-1,"loss","Bacon, sausages, etc. (cancer risk)",NA
+"low_fiber_diet","Low fiber diet","Diet",-1,"loss","Less than 25g fiber daily (colorectal cancer risk)",NA
+"high_sugar_diet","High sugar diet","Diet",-1,"loss","Excess refined sugar (diabetes, CVD risk)",NA
+"2_hours_tv_watching","2 hours TV watching","Sedentary",-1,"loss","Prolonged sitting/inactivity",NA
+"sitting_8_hours_day","Sitting 8+ hours/day","Sedentary",-2,"loss","Office work without breaks (CVD risk)",NA
+"living_with_a_smoker","Living with a smoker","Environment",-1,"loss","Second-hand smoke exposure",NA
+"air_pollution_high_","Air pollution (high)","Environment",-1,"loss","Living in polluted urban area",NA
+"untreated_hypertension","Untreated hypertension","Cardiovascular",-4,"loss","Systolic BP >140 mmHg untreated",NA
+"type_2_diabetes_poorly_controlled_","Type 2 diabetes (poorly controlled)","Cardiovascular",-3,"loss","HbA1c >8% increases CVD risk",NA
+"high_ldl_cholesterol_untreated_","High LDL cholesterol (untreated)","Cardiovascular",-2,"loss","LDL >160 mg/dL without statins",NA
+"family_history_of_heart_disease","Family history of heart disease","Cardiovascular",-2,"loss","First-degree relative with CVD <55y",NA
+"family_history_of_cancer","Family history of cancer","Cancer",-1,"loss","First-degree relative with cancer",NA
+"low_physical_activity","Low physical activity","Cancer",-1,"loss","Less than 150 min exercise/week (cancer risk)",NA
+"excessive_alcohol_cancer_","Excessive alcohol (cancer)","Cancer",-1,"loss","More than 2 drinks/day increases cancer risk","alcohol"
+"2_3_cups_coffee_men_","2-3 cups coffee (men)","Diet",-1,"loss","Heavy coffee consumption (men only)",NA
+"being_male_vs_female_","Being male (vs female)","Demographics",-4,"loss","Male sex disadvantage",NA
+"chronic_stress_poor_sleep","Chronic stress/poor sleep","Mental Health",-1,"loss","Cortisol elevation, inflammation",NA
+"first_alcoholic_drink","First alcoholic drink","Alcohol",1,"gain","Moderate alcohol has protective effect","alcohol"
+"20_min_moderate_exercise","20 min moderate exercise","Exercise",2,"gain","Daily moderate physical activity",NA
+"150_min_weekly_exercise","150 min weekly exercise","Exercise",3,"gain","Meeting WHO recommendations (CVD/cancer prevention)",NA
+"5_servings_fruit_veg","5 servings fruit/veg","Diet",4,"gain","Daily fruit and vegetable intake",NA
+"high_fiber_diet","High fiber diet","Diet",2,"gain","25g+ fiber daily (colorectal cancer prevention)",NA
+"mediterranean_diet","Mediterranean diet","Diet",2,"gain","Reduces CVD and cancer risk",NA
+"statin_therapy_if_indicated_","Statin therapy (if indicated)","Medical",1,"gain","Cholesterol-lowering medication",NA
+"blood_pressure_control","Blood pressure control","Medical",2,"gain","Achieving target BP <130/80 mmHg",NA
+"cancer_screening_age_appropriate_","Cancer screening (age-appropriate)","Medical",1,"gain","Early detection improves outcomes",NA
+"being_female_vs_male_","Being female (vs male)","Demographics",4,"gain","Female sex advantage",NA
+"living_in_2010_vs_1910","Living in 2010 vs 1910","Historical",15,"gain","Medical/social progress",NA
+"living_in_sweden_vs_russia_male_","Living in Sweden vs Russia (male)","Demographics",21,"gain","Geographic health advantage",NA
+"average_cancer_diagnosis","Average cancer diagnosis","Cancer",-6,"loss","~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)",NA

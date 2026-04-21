@@ -44,6 +44,8 @@ navbar:
         href: articles/microlife-quiz.html
       - text: "📊 Ranking: instant | Shinylive"
         href: articles/risk-ranking-quiz.html
+      - text: "🎯 Risk Portfolio Builder"
+        href: articles/portfolio_shinylive.html
       - text: "📈 Your Quiz Analytics"
         href: articles/quiz_analytics.html
       - text: "---"
@@ -90,6 +92,7 @@ articles:
   - chronic_quiz_shinylive
   - ranking_quiz_shinylive
   - quiz_analytics
+  - portfolio_shinylive
 
 - title: "Storytelling"
   contents:

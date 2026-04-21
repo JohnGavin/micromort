@@ -1,0 +1,389 @@
+---
+title: "Risk Portfolio Builder"
+description: "Build your personal risk portfolio — select activities and see cumulative annual risk."
+format:
+  html:
+    embed-resources: false
+    page-layout: full
+filters:
+  - shinylive
+---
+
+```{=html}
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  .description { margin-bottom: 0 !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+  .shinylive-wrapper { width: 100% !important; }
+</style>
+```
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 1200
+
+library(shiny)
+library(bslib)
+
+acts <- read.csv("portfolio_activities.csv", stringsAsFactors = FALSE)
+chrs <- read.csv("portfolio_chronic.csv", stringsAsFactors = FALSE)
+categories <- sort(unique(acts$category))
+
+gompertz_annual_mm <- function(age, sex = "male") {
+  if (sex == "male") { a <- 0.0001; b <- 0.00005; cc <- 0.085 }
+  else               { a <- 0.00008; b <- 0.00003; cc <- 0.080 }
+  round((a + b * exp(cc * age)) * 1e6, 1)
+}
+
+combine_portfolio <- function(mm_vec) {
+  pos <- mm_vec[mm_vec > 0]
+  if (length(pos) == 0) return(0)
+  round((1 - prod(1 - pmin(pos * 1e-6, 0.9999))) * 1e6, 1)
+}
+
+SYNERGY_PAIRS <- list(
+  list(tags = c("alcohol", "smoking"),
+       msg = "Alcohol + smoking: synergistic cancer risk (SI 3.78)."),
+  list(tags = c("alcohol", "obesity"),
+       msg = "Alcohol + obesity: compounded liver disease risk (SI 1.55).")
+)
+
+check_synergies <- function(sel_acts, sel_chrs, acts_df, chrs_df) {
+  atags <- na.omit(acts_df$synergy_tag[acts_df$activity_id %in% sel_acts])
+  ctags <- na.omit(chrs_df$synergy_tag[chrs_df$factor_id %in% sel_chrs])
+  active <- unique(c(atags, ctags))
+  msgs <- character(0)
+  for (pair in SYNERGY_PAIRS) {
+    if (all(pair$tags %in% active)) msgs <- c(msgs, pair$msg)
+  }
+  msgs
+}
+
+pcss <- "body{background:#0d0d1a;color:#e0e0e0}.pcard{background:#1a1a2e;border:1px solid #2a2a4e;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem}.pheader{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.5rem;text-align:center}.bprev{text-align:center;color:#8a8aaa;font-size:.9rem;margin-bottom:1rem;padding:.5rem;background:#16213e;border-radius:6px}.irow{display:flex;gap:1rem;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}.irow label{color:#aaa}.irow input[type=number]{background:#16213e;color:#e0e0e0;border:1px solid #444;width:80px;text-align:center;border-radius:4px;padding:4px 8px}.cbg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}.cb{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem}.cb:hover{background:#3a3a5e}.cb.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}.alist{max-height:350px;overflow-y:auto}.arow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid #1e1e3a;font-size:.88rem}.arow:hover{background:#1e1e3a}.arow input[type=checkbox]{accent-color:#4a90d9;width:16px;height:16px}.aname{flex:1}.amm{color:#888;width:80px;text-align:right}.afreq input{background:#16213e;color:#e0e0e0;border:1px solid #444;width:55px;text-align:center;border-radius:3px;padding:2px 4px}.aflbl{color:#666;font-size:.75rem;width:80px}.crow{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.88rem}.crow:hover{background:#1e1e3a}.dloss{color:#e74c3c;font-weight:700}.dgain{color:#27ae60;font-weight:700}.cml{color:#888;width:80px;text-align:right}.scount{text-align:center;color:#8a8aaa;padding:.5rem;font-size:.9rem}.bbtn{display:block;margin:.75rem auto;padding:10px 32px;background:#4a90d9;color:#fff;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer}.bbtn:hover{background:#3a80c9}.bbtn:disabled{background:#444;color:#888;cursor:not-allowed}.backb{background:none;border:1px solid #4a90d9;color:#4a90d9;border-radius:6px;padding:6px 16px;cursor:pointer;margin-bottom:1rem}.backb:hover{background:#16213e}.sbox{background:#16213e;border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}.stotal{font-size:1.8rem;font-weight:700;color:#4a90d9}.ssub{color:#888;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}.drow{display:flex;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a2e}.dlbl{width:42%;text-align:right;padding-right:12px;font-size:.82rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dtrk{width:42%;position:relative;height:20px}.dax{position:absolute;bottom:9px;left:0;right:0;height:1px;background:#333}.dot{position:absolute;bottom:4px;width:12px;height:12px;border-radius:50%;background:#4a90d9;transform:translateX(-50%)}.dtot{background:#e74c3c}.dgrn{background:#27ae60}.dval{width:16%;font-size:.8rem;color:#888;padding-left:8px}.drowt .dlbl{font-weight:700;color:#e74c3c}.drowt .dval{font-weight:700;color:#e74c3c}.synw{border-left:3px solid #e67e22;padding:8px 12px;margin:.5rem 0;background:#1e1a10;border-radius:0 6px 6px 0;font-size:.85rem;color:#ddd}.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#666;line-height:1.5}.stit{font-size:1rem;font-weight:600;color:#aaa;margin:.75rem 0 .5rem;border-bottom:1px solid #2a2a4e;padding-bottom:4px}"
+
+pjs <- "function selCat(c,el){var bs=document.querySelectorAll('.cb:not(.sb)');for(var i=0;i<bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sel_cat',c,{priority:'event'})}\nfunction selSex(s,el){var bs=document.querySelectorAll('.sb');for(var i=0;i<bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sex_click',s,{priority:'event'})}"
+
+builder_ui <- function(st, acts_df, chrs_df, cats) {
+  age <- st$age; sex <- st$sex; bl <- gompertz_annual_mm(age, sex)
+  sc <- st$sel_category
+  filt <- if (sc == "All") acts_df else acts_df[acts_df$category == sc, ]
+  cat_btns <- lapply(c("All", cats), function(cat) {
+    cls <- if (cat == sc) "cb sel" else "cb"
+    tags$button(class = cls, cat, onclick = sprintf("selCat('%s',this)", cat))
+  })
+  act_rows <- lapply(seq_len(nrow(filt)), function(i) {
+    r <- filt[i, ]; aid <- r$activity_id
+    is_sel <- aid %in% names(st$selections)
+    fv <- if (is_sel) st$selections[[aid]] else r$default_freq
+    tags$div(class = "arow",
+      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
+        onchange = sprintf("Shiny.setInputValue('cb_%s',this.checked,{priority:'event'})", aid)),
+      tags$span(class = "aname", r$activity),
+      tags$span(class = "amm", paste0(r$micromorts, " mm")),
+      tags$span(class = "afreq", tags$input(type = "number", value = fv, min = 0,
+        max = r$freq_max, step = 1,
+        onchange = sprintf("Shiny.setInputValue('fr_%s',parseInt(this.value)||0,{priority:'event'})", aid))),
+      tags$span(class = "aflbl", r$freq_label))
+  })
+  chr_rows <- lapply(seq_len(nrow(chrs_df)), function(i) {
+    r <- chrs_df[i, ]; is_sel <- r$factor_id %in% st$chronic_sel
+    dc <- if (r$direction == "gain") "dgain" else "dloss"
+    di <- if (r$direction == "gain") "\u2191" else "\u2193"
+    ml <- paste0(ifelse(r$microlives_per_day > 0, "+", ""), r$microlives_per_day, " ml/day")
+    tags$div(class = "crow",
+      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
+        onchange = sprintf("Shiny.setInputValue('cc_%s',this.checked,{priority:'event'})", r$factor_id)),
+      tags$span(class = dc, di), tags$span(class = "aname", r$factor),
+      tags$span(class = "cml", ml),
+      tags$span(style = "color:#666;font-size:.75rem;flex:0 0 180px;", r$description))
+  })
+  ns <- length(st$selections); nc <- length(st$chronic_sel)
+  tagList(
+    tags$div(class = "pcard",
+      tags$div(class = "pheader", "Build Your Risk Portfolio"),
+      tags$div(class = "irow", tags$label("Age:"),
+        tags$input(type = "number", value = age, min = 18, max = 100, step = 1,
+          onchange = "Shiny.setInputValue('age_in',parseInt(this.value)||35,{priority:'event'})"),
+        tags$span(style = "width:24px"),
+        tags$button(class = paste("cb sb", if (sex == "male") "sel" else ""), "Male",
+          onclick = "selSex('male',this)"),
+        tags$button(class = paste("cb sb", if (sex == "female") "sel" else ""), "Female",
+          onclick = "selSex('female',this)")),
+      tags$div(class = "bprev", paste0("Background mortality at age ", age, " (", sex,
+        "): ~", format(bl, big.mark = ","), " micromorts/year"))),
+    tags$div(class = "pcard", tags$div(class = "stit", "Acute Risks"),
+      tags$div(class = "cbg", cat_btns), tags$div(class = "alist", act_rows)),
+    tags$div(class = "pcard", tags$div(class = "stit", "Chronic Factors (microlives/day)"),
+      tags$div(class = "alist", style = "max-height:250px;", chr_rows)),
+    tags$div(class = "scount", paste0("Selected: ", ns, " activit",
+      ifelse(ns == 1, "y", "ies"), ", ", nc, " chronic factor", ifelse(nc == 1, "", "s"))),
+    tags$button(class = "bbtn", disabled = if (ns + nc == 0) NA else NULL,
+      onclick = "Shiny.setInputValue('build',Math.random(),{priority:'event'})",
+      "Build Portfolio \u2192"))
+}
+
+results_ui <- function(st) {
+  df <- st$result_df; te <- st$total_mm; ta <- st$total_additive
+  ae <- ta - te; ap <- if (te > 0) round(ae / te * 100, 1) else 0
+  ri <- df[df$annual_mm > 0, ]; gi <- df[df$annual_mm < 0, ]
+  ri <- ri[order(-ri$annual_mm), ]; if (nrow(gi) > 0) gi <- gi[order(gi$annual_mm), ]
+  mx <- max(c(ri$annual_mm, te, 1))
+  drows <- lapply(seq_len(nrow(ri)), function(i) {
+    r <- ri[i, ]; pct <- min(round(r$annual_mm / mx * 80, 1), 80)
+    tags$div(class = "drow", tags$span(class = "dlbl", r$label),
+      tags$div(class = "dtrk", tags$div(class = "dax"),
+        tags$div(class = "dot", style = paste0("left:", pct, "%"))),
+      tags$span(class = "dval", paste0(format(round(r$annual_mm), big.mark = ","), " mm")))
+  })
+  tpct <- min(round(te / mx * 80, 1), 80)
+  trow <- tags$div(class = "drow drowt", tags$span(class = "dlbl", "TOTAL (exact)"),
+    tags$div(class = "dtrk", tags$div(class = "dax"),
+      tags$div(class = "dot dtot", style = paste0("left:", tpct, "%"))),
+    tags$span(class = "dval", paste0(format(te, big.mark = ","), " mm")))
+  grows <- if (nrow(gi) > 0) { mg <- max(abs(gi$annual_mm), 1)
+    lapply(seq_len(nrow(gi)), function(i) {
+      r <- gi[i, ]; pct <- min(round(abs(r$annual_mm) / mg * 60, 1), 60)
+      tags$div(class = "drow", tags$span(class = "dlbl", paste0(r$label, " (benefit)")),
+        tags$div(class = "dtrk", tags$div(class = "dax"),
+          tags$div(class = "dot dgrn", style = paste0("left:", pct, "%"))),
+        tags$span(class = "dval", style = "color:#27ae60",
+          paste0("-", format(round(abs(r$annual_mm)), big.mark = ","), " mm eq.")))
+    })
+  }
+  syu <- if (length(st$synergy_flags) > 0) lapply(st$synergy_flags, function(m)
+    tags$div(class = "synw", paste0("\u26a0 ", m)))
+  tagList(
+    tags$button(class = "backb",
+      onclick = "Shiny.setInputValue('back',Math.random(),{priority:'event'})", "\u2190 Edit Portfolio"),
+    tags$div(class = "pcard sbox",
+      tags$div(class = "stotal", paste0(format(te, big.mark = ","), " micromorts/year")),
+      tags$div(class = "ssub", paste0("Additive: ", format(ta, big.mark = ","),
+        " mm (error: +", round(ae), " mm, ", ap, "%)")),
+      tags$div(class = "eqrow", style = "margin-top:.5rem",
+        paste0("\u2248 ", round(te/8), " skydives, or ", round(te/7), " marathons"))),
+    tags$div(class = "pcard", tags$div(class = "stit", "Risk Contributions (dot chart)"),
+      tags$div(drows, trow),
+      if (!is.null(grows)) tagList(tags$div(class = "stit", style = "color:#27ae60",
+        "Protective Factors"), tags$div(grows))),
+    if (!is.null(syu)) tags$div(class = "pcard", syu),
+    tags$div(class = "cavs",
+      tags$p("Assumes independent risks. Known synergies flagged above."),
+      tags$p("Population-average rates. Individual risk varies."),
+      tags$p("Acute and chronic risks combined on common annual scale."),
+      tags$p(tags$strong("Educational only"), " \u2014 not clinical decision support.")))
+}
+
+ui <- fluidPage(theme = bslib::bs_theme(version = 5, bootswatch = "darkly"),
+  tags$head(tags$style(HTML(pcss)), tags$script(HTML(pjs))), uiOutput("main_ui"))
+
+server <- function(input, output, session) {
+  st <- reactiveValues(phase = "builder", age = 35L, sex = "male", sel_category = "All",
+    selections = list(), chronic_sel = character(),
+    result_df = NULL, total_mm = NULL, total_additive = NULL, synergy_flags = NULL)
+  observeEvent(input$age_in, {
+    v <- input$age_in; if (!is.null(v) && is.numeric(v) && v >= 18 && v <= 100) st$age <- as.integer(v) })
+  observeEvent(input$sex_click, { st$sex <- input$sex_click })
+  observeEvent(input$sel_cat, { st$sel_category <- input$sel_cat })
+  observe({ for (i in seq_len(nrow(acts))) { local({
+    aid <- acts$activity_id[i]; df <- acts$default_freq[i]
+    observeEvent(input[[paste0("cb_", aid)]], {
+      if (isTRUE(input[[paste0("cb_", aid)]])) {
+        fr <- input[[paste0("fr_", aid)]]; if (is.null(fr) || !is.numeric(fr)) fr <- df
+        st$selections[[aid]] <- fr
+      } else st$selections[[aid]] <- NULL }, ignoreInit = TRUE)
+    observeEvent(input[[paste0("fr_", aid)]], {
+      if (aid %in% names(st$selections) && !is.null(input[[paste0("fr_", aid)]]))
+        st$selections[[aid]] <- as.numeric(input[[paste0("fr_", aid)]]) }, ignoreInit = TRUE)
+  })} })
+  observe({ for (i in seq_len(nrow(chrs))) { local({
+    fid <- chrs$factor_id[i]
+    observeEvent(input[[paste0("cc_", fid)]], {
+      if (isTRUE(input[[paste0("cc_", fid)]])) st$chronic_sel <- union(st$chronic_sel, fid)
+      else st$chronic_sel <- setdiff(st$chronic_sel, fid) }, ignoreInit = TRUE)
+  })} })
+  observeEvent(input$build, {
+    bl <- gompertz_annual_mm(st$age, st$sex)
+    arows <- lapply(names(st$selections), function(aid) {
+      fr <- st$selections[[aid]]; r <- acts[acts$activity_id == aid, ]
+      if (nrow(r) == 0) return(NULL)
+      data.frame(label=r$activity[1], annual_mm=r$micromorts[1]*fr,
+        category=r$category[1], type="acute", stringsAsFactors=FALSE) })
+    adf <- do.call(rbind, Filter(Negate(is.null), arows))
+    if (is.null(adf)) adf <- data.frame(label=character(), annual_mm=numeric(),
+      category=character(), type=character(), stringsAsFactors=FALSE)
+    crows <- lapply(st$chronic_sel, function(fid) {
+      r <- chrs[chrs$factor_id == fid, ]; if (nrow(r) == 0) return(NULL)
+      data.frame(label=r$factor[1], annual_mm=-r$microlives_per_day[1]*365,
+        category=r$category[1], type="chronic", stringsAsFactors=FALSE) })
+    cdf <- do.call(rbind, Filter(Negate(is.null), crows))
+    if (is.null(cdf)) cdf <- data.frame(label=character(), annual_mm=numeric(),
+      category=character(), type=character(), stringsAsFactors=FALSE)
+    rdf <- rbind(data.frame(label=sprintf("Baseline (age %d, %s)", st$age, st$sex),
+      annual_mm=bl, category="Background", type="baseline", stringsAsFactors=FALSE), adf, cdf)
+    pos <- rdf$annual_mm[rdf$annual_mm > 0]
+    st$total_mm <- combine_portfolio(pos); st$total_additive <- round(sum(pos), 1)
+    st$result_df <- rdf
+    st$synergy_flags <- check_synergies(names(st$selections), st$chronic_sel, acts, chrs)
+    st$phase <- "results" })
+  observeEvent(input$back, { st$phase <- "builder" })
+  output$main_ui <- renderUI({ switch(st$phase,
+    builder = builder_ui(st, acts, chrs, categories), results = results_ui(st)) })
+}
+shinyApp(ui, server)
+
+## file: portfolio_activities.csv
+## type: text
+"activity_id","activity","category","micromorts","period_type","default_freq","freq_label","freq_max","synergy_tag"
+"covid_19_infection_unvaccinated","COVID-19 infection (unvaccinated)","COVID-19",10000,"event",5,"times per year",100,NA
+"living_in_us_during_covid_19_jul_2020","Living in US during COVID-19 (Jul 2020)","COVID-19",500,"month",12,"months per year",12,NA
+"covid_19_unvaccinated_age_80","COVID-19 unvaccinated (age 80+)","COVID-19",234,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_65_79","COVID-19 unvaccinated (age 65-79)","COVID-19",76,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_80","COVID-19 monovalent vaccine (age 80+)","COVID-19",55,"period",5,"times per year",100,NA
+"living_in_nyc_covid_19_mar_may_2020","Living in NYC COVID-19 (Mar-May 2020)","COVID-19",50,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_80","COVID-19 bivalent booster (age 80+)","COVID-19",23,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_all_ages","COVID-19 unvaccinated (all ages)","COVID-19",20,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_65_79","COVID-19 monovalent vaccine (age 65-79)","COVID-19",9,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_50_64","COVID-19 unvaccinated (age 50-64)","COVID-19",8,"period",5,"times per year",100,NA
+"living_in_maryland_covid_19_mar_may_2020","Living in Maryland COVID-19 (Mar-May 2020)","COVID-19",7,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_all_ages","COVID-19 monovalent vaccine (all ages)","COVID-19",4,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_65_79","COVID-19 bivalent booster (age 65-79)","COVID-19",3,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_50_64","COVID-19 monovalent vaccine (age 50-64)","COVID-19",2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_50_64","COVID-19 bivalent booster (age 50-64)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_all_ages","COVID-19 bivalent booster (all ages)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_18_49","COVID-19 unvaccinated (age 18-49)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_18_49","COVID-19 monovalent vaccine (age 18-49)","COVID-19",0.2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_18_49","COVID-19 bivalent booster (age 18-49)","COVID-19",0.05,"period",5,"times per year",100,NA
+"living_one_day_age_90","Living (one day, age 90)","Daily Life",463,"day",365,"days per year",365,NA
+"first_day_of_life_newborn","First day of life (newborn)","Daily Life",430,"day",365,"days per year",365,NA
+"living_one_day_age_75","Living (one day, age 75)","Daily Life",105,"day",365,"days per year",365,NA
+"living_one_day_under_age_1","Living (one day, under age 1)","Daily Life",15,"day",365,"days per year",365,NA
+"living_one_day_age_45","Living (one day, age 45)","Daily Life",6,"day",365,"days per year",365,NA
+"living_one_day_age_50","Living (one day, age 50)","Daily Life",4,"day",365,"days per year",365,NA
+"living_one_day_age_20","Living (one day, age 20)","Daily Life",1,"day",365,"days per year",365,NA
+"living_one_day_age_30","Living (one day, age 30)","Daily Life",1,"day",365,"days per year",365,NA
+"taking_a_bath","Taking a bath","Daily Life",0.07,"event",5,"times per year",100,NA
+"bath_age","Taking a bath (age-conditioned)","Daily Life",0.07,"event",5,"times per year",100,NA
+"working_in_an_office_8_hours","Working in an office (8 hours)","Daily Life",0.03,"day",365,"days per year",365,NA
+"crossing_a_road","Crossing a road","Daily Life",0.02,"event",5,"times per year",100,NA
+"cup_of_coffee","Cup of coffee","Daily Life",0.01,"event",5,"times per year",100,NA
+"bed_fall","Bed fall (per night)","Daily Life",0.004,"day",365,"days per year",365,NA
+"eating_100_charbroiled_steaks_cumulative_benzopyrene","Eating 100 charbroiled steaks (cumulative benzopyrene)","Diet",1,"event",5,"times per year",100,NA
+"eating_1000_bananas_radiation","Eating 1000 bananas (radiation)","Diet",1,"event",5,"times per year",100,NA
+"eating_40_tbsp_peanut_butter_aflatoxin","Eating 40 tbsp peanut butter (aflatoxin)","Diet",1,"event",5,"times per year",100,NA
+"spanish_flu_infection","Spanish flu infection","Disease",3000,"event",5,"times per year",100,NA
+"heroin_use_per_dose","Heroin use (per dose)","Drugs",30,"event",5,"times per year",100,NA
+"ecstasy_mdma_per_dose","Ecstasy/MDMA (per dose)","Drugs",13,"event",5,"times per year",100,NA
+"living_2_months_with_a_smoker","Living 2 months with a smoker","Environment",1,"event",5,"times per year",100,NA
+"background_radiation_annual","Normal background radiation","Environment",0.12,"year",1,"(annual rate)",1,NA
+"granite_resident_annual","Granite resident (annual radon)","Environment",0.1,"year",1,"(annual rate)",1,NA
+"high_altitude_resident_annual","High-altitude resident (annual cosmic)","Environment",0.035,"year",1,"(annual rate)",1,NA
+"caesarean_birth_mother","Caesarean birth (mother)","Medical",170,"event",5,"times per year",100,NA
+"vaginal_birth_mother","Vaginal birth (mother)","Medical",120,"event",5,"times per year",100,NA
+"night_in_hospital","Night in hospital","Medical",75,"day",365,"days per year",365,NA
+"ct_scan_abdomen_radiation_per_scan","CT scan abdomen (radiation per scan)","Medical",10,"event",5,"times per year",100,NA
+"general_anesthesia_emergency","General anesthesia (emergency)","Medical",10,"event",5,"times per year",100,NA
+"ct_scan_chest_radiation_per_scan","CT scan chest (radiation per scan)","Medical",7,"event",5,"times per year",100,NA
+"coronary_angiogram_radiation_per_scan","Coronary angiogram (radiation per scan)","Medical",5,"event",5,"times per year",100,NA
+"barium_enema_radiation_per_scan","Barium enema (radiation per scan)","Medical",3,"event",5,"times per year",100,NA
+"ct_scan_head_radiation_per_scan","CT scan head (radiation per scan)","Medical",2,"event",5,"times per year",100,NA
+"anaesthesia_elective","General anaesthesia (elective)","Medical",2,"event",5,"times per year",100,NA
+"chest_x_ray_radiation_per_scan","Chest X-ray (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"mammogram_radiation_per_scan","Mammogram (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"dental_x_ray_radiation_per_scan","Dental X-ray (radiation per scan)","Medical",0.05,"event",5,"times per year",100,NA
+"us_military_in_afghanistan_2010","US military in Afghanistan (2010)","Military",25,"day",365,"days per year",365,NA
+"mt_everest_ascent","Mt. Everest ascent","Mountaineering",37932,"event",5,"times per year",100,NA
+"himalayan_mountaineering","Himalayan mountaineering","Mountaineering",12000,"event",5,"times per year",100,NA
+"matterhorn_ascent","Matterhorn ascent","Mountaineering",2840,"event",5,"times per year",100,NA
+"logging_work_day","Logging (per work day)","Occupation",3.3,"day",365,"days per year",365,NA
+"fishing_work_day","Commercial fishing (per work day)","Occupation",3,"day",365,"days per year",365,NA
+"roofing_work_day","Roofing (per work day)","Occupation",1.9,"day",365,"days per year",365,NA
+"ironworker_work_day","Structural iron/steel work (per work day)","Occupation",1.5,"day",365,"days per year",365,NA
+"truck_driving_work_day","Truck driving (per work day)","Occupation",1.2,"day",365,"days per year",365,NA
+"1_hour_in_a_coal_mine","1 hour in a coal mine","Occupation",1,"hour",100,"hours per year",2000,NA
+"mining_work_day","Mining (per work day)","Occupation",0.9,"day",365,"days per year",365,NA
+"agriculture_work_day","Agriculture (per work day)","Occupation",0.7,"day",365,"days per year",365,NA
+"construction_work_day","Construction (all trades, per work day)","Occupation",0.5,"day",365,"days per year",365,NA
+"interventional_cardiologist_annual","Interventional cardiologist (annual radiation)","Occupation",0.175,"year",1,"(annual rate)",1,NA
+"all_workers_baseline","All US workers baseline (per work day)","Occupation",0.15,"day",365,"days per year",365,NA
+"airline_pilot_annual","Airline pilot (annual radiation)","Occupation",0.15,"year",1,"(annual rate)",1,NA
+"nuclear_worker_annual","Nuclear plant worker (annual radiation)","Occupation",0.1,"year",1,"(annual rate)",1,NA
+"xray_tech_annual","X-ray technician (annual radiation)","Occupation",0.05,"year",1,"(annual rate)",1,NA
+"dental_radiographer_annual","Dental radiographer (annual radiation)","Occupation",0.01,"year",1,"(annual rate)",1,NA
+"base_jumping_per_jump","Base jumping (per jump)","Sport",430,"event",5,"times per year",100,NA
+"scuba_diving_trained_yearly","Scuba diving, trained (yearly)","Sport",164,"year",1,"(annual rate)",1,NA
+"american_football","American football","Sport",20,"event",5,"times per year",100,NA
+"swimming","Swimming","Sport",12,"event",5,"times per year",100,NA
+"skydiving_per_jump","Skydiving (per jump)","Sport",10,"event",5,"times per year",100,NA
+"skydiving_uk","Skydiving (UK)","Sport",8,"event",5,"times per year",100,NA
+"skydiving_us","Skydiving (US)","Sport",8,"event",5,"times per year",100,NA
+"hang_gliding_per_flight","Hang gliding (per flight)","Sport",8,"event",5,"times per year",100,NA
+"running_a_marathon","Running a marathon","Sport",7,"event",5,"times per year",100,NA
+"scuba_diving_trained_per_dive","Scuba diving, trained (per dive)","Sport",5,"event",5,"times per year",100,NA
+"rock_climbing_per_day","Rock climbing (per day)","Sport",3,"day",365,"days per year",365,NA
+"skiing","Skiing","Sport",0.7,"day",365,"days per year",365,NA
+"horse_riding","Horse riding","Sport",0.5,"event",5,"times per year",100,NA
+"motorcycling_60_miles","Motorcycling (60 miles)","Travel",10,"event",5,"times per year",100,NA
+"flying_12h","Flying (12h ultra-long-haul)","Travel",6.6,"event",5,"times per year",100,NA
+"flying_8h","Flying (8h long-haul)","Travel",3.9,"event",5,"times per year",100,NA
+"flying_5h","Flying (5h medium-haul)","Travel",1.75,"event",5,"times per year",100,NA
+"flying_2h","Flying (2h short-haul)","Travel",1.1,"event",5,"times per year",100,NA
+"driving_230_miles","Driving (230 miles)","Travel",1,"event",5,"times per year",100,NA
+"train_1000_miles","Train (1000 miles)","Travel",1,"event",5,"times per year",100,NA
+"walking_20_miles","Walking (20 miles)","Travel",1,"event",5,"times per year",100,NA
+"executive_flyer_annual","Frequent executive flyer (annual cosmic)","Travel",0.15,"year",1,"(annual rate)",1,NA
+"commuting_by_car_30_min","Commuting by car (30 min)","Travel",0.13,"event",5,"times per year",100,NA
+"commuting_by_bicycle_30_min","Commuting by bicycle (30 min)","Travel",0.12,"event",5,"times per year",100,NA
+"walking_1_trip_nyc","Walking (1 trip, NYC)","Travel",0.09,"event",5,"times per year",100,NA
+"business_traveller_annual","Business traveller (annual cosmic)","Travel",0.0375,"year",1,"(annual rate)",1,NA
+"annual_tourist_annual","Annual tourist flyer (annual cosmic)","Travel",0.006,"year",1,"(annual rate)",1,NA
+"kangaroo_encounter","Kangaroo encounter","Wildlife",0.1,"event",5,"times per year",100,NA
+"shark_encounter","Shark encounter (ocean swim)","Wildlife",0.06,"event",5,"times per year",100,NA
+"bee_sting_general","Bee/wasp sting (general)","Wildlife",0.03,"event",5,"times per year",100,NA
+
+## file: portfolio_chronic.csv
+## type: text
+"factor_id","factor","category","microlives_per_day","direction","description","synergy_tag"
+"smoking_20_cigarettes","Smoking 20 cigarettes","Smoking",-10,"loss","Heavy smoking accelerates aging to 29 hours/day","smoking"
+"smoking_10_cigarettes","Smoking 10 cigarettes","Smoking",-5,"loss","Moderate smoking","smoking"
+"smoking_2_cigarettes","Smoking 2 cigarettes","Smoking",-1,"loss","Each cigarette costs ~15 minutes","smoking"
+"being_5_kg_overweight","Being 5 kg overweight","Weight",-1,"loss","Per 5 kg above optimum BMI weight","obesity"
+"being_10_kg_overweight","Being 10 kg overweight","Weight",-2,"loss","Cumulative effect of excess weight","obesity"
+"being_15_kg_overweight","Being 15 kg overweight","Weight",-3,"loss","Cumulative effect of excess weight","obesity"
+"glass_of_wine_daily","Glass of wine daily","Alcohol",-1,"loss","Chronic cancer/liver risk from daily wine (Wikipedia 0.5mm/day); not an acute per-glass risk","alcohol"
+"2nd_3rd_alcoholic_drink","2nd-3rd alcoholic drink","Alcohol",-1,"loss","After first drink, additional drinks cost","alcohol"
+"4th_5th_alcoholic_drink","4th-5th alcoholic drink","Alcohol",-2,"loss","Heavy drinking costs more","alcohol"
+"red_meat_1_portion_day_","Red meat (1 portion/day)","Diet",-1,"loss","Daily red meat consumption",NA
+"processed_meat_1_portion_day_","Processed meat (1 portion/day)","Diet",-1,"loss","Bacon, sausages, etc. (cancer risk)",NA
+"low_fiber_diet","Low fiber diet","Diet",-1,"loss","Less than 25g fiber daily (colorectal cancer risk)",NA
+"high_sugar_diet","High sugar diet","Diet",-1,"loss","Excess refined sugar (diabetes, CVD risk)",NA
+"2_hours_tv_watching","2 hours TV watching","Sedentary",-1,"loss","Prolonged sitting/inactivity",NA
+"sitting_8_hours_day","Sitting 8+ hours/day","Sedentary",-2,"loss","Office work without breaks (CVD risk)",NA
+"living_with_a_smoker","Living with a smoker","Environment",-1,"loss","Second-hand smoke exposure",NA
+"air_pollution_high_","Air pollution (high)","Environment",-1,"loss","Living in polluted urban area",NA
+"untreated_hypertension","Untreated hypertension","Cardiovascular",-4,"loss","Systolic BP >140 mmHg untreated",NA
+"type_2_diabetes_poorly_controlled_","Type 2 diabetes (poorly controlled)","Cardiovascular",-3,"loss","HbA1c >8% increases CVD risk",NA
+"high_ldl_cholesterol_untreated_","High LDL cholesterol (untreated)","Cardiovascular",-2,"loss","LDL >160 mg/dL without statins",NA
+"family_history_of_heart_disease","Family history of heart disease","Cardiovascular",-2,"loss","First-degree relative with CVD <55y",NA
+"family_history_of_cancer","Family history of cancer","Cancer",-1,"loss","First-degree relative with cancer",NA
+"low_physical_activity","Low physical activity","Cancer",-1,"loss","Less than 150 min exercise/week (cancer risk)",NA
+"excessive_alcohol_cancer_","Excessive alcohol (cancer)","Cancer",-1,"loss","More than 2 drinks/day increases cancer risk","alcohol"
+"2_3_cups_coffee_men_","2-3 cups coffee (men)","Diet",-1,"loss","Heavy coffee consumption (men only)",NA
+"being_male_vs_female_","Being male (vs female)","Demographics",-4,"loss","Male sex disadvantage",NA
+"chronic_stress_poor_sleep","Chronic stress/poor sleep","Mental Health",-1,"loss","Cortisol elevation, inflammation",NA
+"first_alcoholic_drink","First alcoholic drink","Alcohol",1,"gain","Moderate alcohol has protective effect","alcohol"
+"20_min_moderate_exercise","20 min moderate exercise","Exercise",2,"gain","Daily moderate physical activity",NA
+"150_min_weekly_exercise","150 min weekly exercise","Exercise",3,"gain","Meeting WHO recommendations (CVD/cancer prevention)",NA
+"5_servings_fruit_veg","5 servings fruit/veg","Diet",4,"gain","Daily fruit and vegetable intake",NA
+"high_fiber_diet","High fiber diet","Diet",2,"gain","25g+ fiber daily (colorectal cancer prevention)",NA
+"mediterranean_diet","Mediterranean diet","Diet",2,"gain","Reduces CVD and cancer risk",NA
+"statin_therapy_if_indicated_","Statin therapy (if indicated)","Medical",1,"gain","Cholesterol-lowering medication",NA
+"blood_pressure_control","Blood pressure control","Medical",2,"gain","Achieving target BP <130/80 mmHg",NA
+"cancer_screening_age_appropriate_","Cancer screening (age-appropriate)","Medical",1,"gain","Early detection improves outcomes",NA
+"being_female_vs_male_","Being female (vs male)","Demographics",4,"gain","Female sex advantage",NA
+"living_in_2010_vs_1910","Living in 2010 vs 1910","Historical",15,"gain","Medical/social progress",NA
+"living_in_sweden_vs_russia_male_","Living in Sweden vs Russia (male)","Demographics",21,"gain","Geographic health advantage",NA
+"average_cancer_diagnosis","Average cancer diagnosis","Cancer",-6,"loss","~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)",NA
+
+```

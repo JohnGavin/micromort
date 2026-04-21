@@ -1,0 +1,106 @@
+"activity_id","activity","category","micromorts","period_type","default_freq","freq_label","freq_max","synergy_tag"
+"covid_19_infection_unvaccinated","COVID-19 infection (unvaccinated)","COVID-19",10000,"event",5,"times per year",100,NA
+"living_in_us_during_covid_19_jul_2020","Living in US during COVID-19 (Jul 2020)","COVID-19",500,"month",12,"months per year",12,NA
+"covid_19_unvaccinated_age_80","COVID-19 unvaccinated (age 80+)","COVID-19",234,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_65_79","COVID-19 unvaccinated (age 65-79)","COVID-19",76,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_80","COVID-19 monovalent vaccine (age 80+)","COVID-19",55,"period",5,"times per year",100,NA
+"living_in_nyc_covid_19_mar_may_2020","Living in NYC COVID-19 (Mar-May 2020)","COVID-19",50,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_80","COVID-19 bivalent booster (age 80+)","COVID-19",23,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_all_ages","COVID-19 unvaccinated (all ages)","COVID-19",20,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_65_79","COVID-19 monovalent vaccine (age 65-79)","COVID-19",9,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_50_64","COVID-19 unvaccinated (age 50-64)","COVID-19",8,"period",5,"times per year",100,NA
+"living_in_maryland_covid_19_mar_may_2020","Living in Maryland COVID-19 (Mar-May 2020)","COVID-19",7,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_all_ages","COVID-19 monovalent vaccine (all ages)","COVID-19",4,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_65_79","COVID-19 bivalent booster (age 65-79)","COVID-19",3,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_50_64","COVID-19 monovalent vaccine (age 50-64)","COVID-19",2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_50_64","COVID-19 bivalent booster (age 50-64)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_all_ages","COVID-19 bivalent booster (all ages)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_18_49","COVID-19 unvaccinated (age 18-49)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_18_49","COVID-19 monovalent vaccine (age 18-49)","COVID-19",0.2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_18_49","COVID-19 bivalent booster (age 18-49)","COVID-19",0.05,"period",5,"times per year",100,NA
+"living_one_day_age_90","Living (one day, age 90)","Daily Life",463,"day",365,"days per year",365,NA
+"first_day_of_life_newborn","First day of life (newborn)","Daily Life",430,"day",365,"days per year",365,NA
+"living_one_day_age_75","Living (one day, age 75)","Daily Life",105,"day",365,"days per year",365,NA
+"living_one_day_under_age_1","Living (one day, under age 1)","Daily Life",15,"day",365,"days per year",365,NA
+"living_one_day_age_45","Living (one day, age 45)","Daily Life",6,"day",365,"days per year",365,NA
+"living_one_day_age_50","Living (one day, age 50)","Daily Life",4,"day",365,"days per year",365,NA
+"living_one_day_age_20","Living (one day, age 20)","Daily Life",1,"day",365,"days per year",365,NA
+"living_one_day_age_30","Living (one day, age 30)","Daily Life",1,"day",365,"days per year",365,NA
+"taking_a_bath","Taking a bath","Daily Life",0.07,"event",5,"times per year",100,NA
+"bath_age","Taking a bath (age-conditioned)","Daily Life",0.07,"event",5,"times per year",100,NA
+"working_in_an_office_8_hours","Working in an office (8 hours)","Daily Life",0.03,"day",365,"days per year",365,NA
+"crossing_a_road","Crossing a road","Daily Life",0.02,"event",5,"times per year",100,NA
+"cup_of_coffee","Cup of coffee","Daily Life",0.01,"event",5,"times per year",100,NA
+"bed_fall","Bed fall (per night)","Daily Life",0.004,"day",365,"days per year",365,NA
+"eating_100_charbroiled_steaks_cumulative_benzopyrene","Eating 100 charbroiled steaks (cumulative benzopyrene)","Diet",1,"event",5,"times per year",100,NA
+"eating_1000_bananas_radiation","Eating 1000 bananas (radiation)","Diet",1,"event",5,"times per year",100,NA
+"eating_40_tbsp_peanut_butter_aflatoxin","Eating 40 tbsp peanut butter (aflatoxin)","Diet",1,"event",5,"times per year",100,NA
+"spanish_flu_infection","Spanish flu infection","Disease",3000,"event",5,"times per year",100,NA
+"heroin_use_per_dose","Heroin use (per dose)","Drugs",30,"event",5,"times per year",100,NA
+"ecstasy_mdma_per_dose","Ecstasy/MDMA (per dose)","Drugs",13,"event",5,"times per year",100,NA
+"living_2_months_with_a_smoker","Living 2 months with a smoker","Environment",1,"event",5,"times per year",100,NA
+"background_radiation_annual","Normal background radiation","Environment",0.12,"year",1,"(annual rate)",1,NA
+"granite_resident_annual","Granite resident (annual radon)","Environment",0.1,"year",1,"(annual rate)",1,NA
+"high_altitude_resident_annual","High-altitude resident (annual cosmic)","Environment",0.035,"year",1,"(annual rate)",1,NA
+"caesarean_birth_mother","Caesarean birth (mother)","Medical",170,"event",5,"times per year",100,NA
+"vaginal_birth_mother","Vaginal birth (mother)","Medical",120,"event",5,"times per year",100,NA
+"night_in_hospital","Night in hospital","Medical",75,"day",365,"days per year",365,NA
+"ct_scan_abdomen_radiation_per_scan","CT scan abdomen (radiation per scan)","Medical",10,"event",5,"times per year",100,NA
+"general_anesthesia_emergency","General anesthesia (emergency)","Medical",10,"event",5,"times per year",100,NA
+"ct_scan_chest_radiation_per_scan","CT scan chest (radiation per scan)","Medical",7,"event",5,"times per year",100,NA
+"coronary_angiogram_radiation_per_scan","Coronary angiogram (radiation per scan)","Medical",5,"event",5,"times per year",100,NA
+"barium_enema_radiation_per_scan","Barium enema (radiation per scan)","Medical",3,"event",5,"times per year",100,NA
+"ct_scan_head_radiation_per_scan","CT scan head (radiation per scan)","Medical",2,"event",5,"times per year",100,NA
+"anaesthesia_elective","General anaesthesia (elective)","Medical",2,"event",5,"times per year",100,NA
+"chest_x_ray_radiation_per_scan","Chest X-ray (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"mammogram_radiation_per_scan","Mammogram (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"dental_x_ray_radiation_per_scan","Dental X-ray (radiation per scan)","Medical",0.05,"event",5,"times per year",100,NA
+"us_military_in_afghanistan_2010","US military in Afghanistan (2010)","Military",25,"day",365,"days per year",365,NA
+"mt_everest_ascent","Mt. Everest ascent","Mountaineering",37932,"event",5,"times per year",100,NA
+"himalayan_mountaineering","Himalayan mountaineering","Mountaineering",12000,"event",5,"times per year",100,NA
+"matterhorn_ascent","Matterhorn ascent","Mountaineering",2840,"event",5,"times per year",100,NA
+"logging_work_day","Logging (per work day)","Occupation",3.3,"day",365,"days per year",365,NA
+"fishing_work_day","Commercial fishing (per work day)","Occupation",3,"day",365,"days per year",365,NA
+"roofing_work_day","Roofing (per work day)","Occupation",1.9,"day",365,"days per year",365,NA
+"ironworker_work_day","Structural iron/steel work (per work day)","Occupation",1.5,"day",365,"days per year",365,NA
+"truck_driving_work_day","Truck driving (per work day)","Occupation",1.2,"day",365,"days per year",365,NA
+"1_hour_in_a_coal_mine","1 hour in a coal mine","Occupation",1,"hour",100,"hours per year",2000,NA
+"mining_work_day","Mining (per work day)","Occupation",0.9,"day",365,"days per year",365,NA
+"agriculture_work_day","Agriculture (per work day)","Occupation",0.7,"day",365,"days per year",365,NA
+"construction_work_day","Construction (all trades, per work day)","Occupation",0.5,"day",365,"days per year",365,NA
+"interventional_cardiologist_annual","Interventional cardiologist (annual radiation)","Occupation",0.175,"year",1,"(annual rate)",1,NA
+"all_workers_baseline","All US workers baseline (per work day)","Occupation",0.15,"day",365,"days per year",365,NA
+"airline_pilot_annual","Airline pilot (annual radiation)","Occupation",0.15,"year",1,"(annual rate)",1,NA
+"nuclear_worker_annual","Nuclear plant worker (annual radiation)","Occupation",0.1,"year",1,"(annual rate)",1,NA
+"xray_tech_annual","X-ray technician (annual radiation)","Occupation",0.05,"year",1,"(annual rate)",1,NA
+"dental_radiographer_annual","Dental radiographer (annual radiation)","Occupation",0.01,"year",1,"(annual rate)",1,NA
+"base_jumping_per_jump","Base jumping (per jump)","Sport",430,"event",5,"times per year",100,NA
+"scuba_diving_trained_yearly","Scuba diving, trained (yearly)","Sport",164,"year",1,"(annual rate)",1,NA
+"american_football","American football","Sport",20,"event",5,"times per year",100,NA
+"swimming","Swimming","Sport",12,"event",5,"times per year",100,NA
+"skydiving_per_jump","Skydiving (per jump)","Sport",10,"event",5,"times per year",100,NA
+"skydiving_uk","Skydiving (UK)","Sport",8,"event",5,"times per year",100,NA
+"skydiving_us","Skydiving (US)","Sport",8,"event",5,"times per year",100,NA
+"hang_gliding_per_flight","Hang gliding (per flight)","Sport",8,"event",5,"times per year",100,NA
+"running_a_marathon","Running a marathon","Sport",7,"event",5,"times per year",100,NA
+"scuba_diving_trained_per_dive","Scuba diving, trained (per dive)","Sport",5,"event",5,"times per year",100,NA
+"rock_climbing_per_day","Rock climbing (per day)","Sport",3,"day",365,"days per year",365,NA
+"skiing","Skiing","Sport",0.7,"day",365,"days per year",365,NA
+"horse_riding","Horse riding","Sport",0.5,"event",5,"times per year",100,NA
+"motorcycling_60_miles","Motorcycling (60 miles)","Travel",10,"event",5,"times per year",100,NA
+"flying_12h","Flying (12h ultra-long-haul)","Travel",6.6,"event",5,"times per year",100,NA
+"flying_8h","Flying (8h long-haul)","Travel",3.9,"event",5,"times per year",100,NA
+"flying_5h","Flying (5h medium-haul)","Travel",1.75,"event",5,"times per year",100,NA
+"flying_2h","Flying (2h short-haul)","Travel",1.1,"event",5,"times per year",100,NA
+"driving_230_miles","Driving (230 miles)","Travel",1,"event",5,"times per year",100,NA
+"train_1000_miles","Train (1000 miles)","Travel",1,"event",5,"times per year",100,NA
+"walking_20_miles","Walking (20 miles)","Travel",1,"event",5,"times per year",100,NA
+"executive_flyer_annual","Frequent executive flyer (annual cosmic)","Travel",0.15,"year",1,"(annual rate)",1,NA
+"commuting_by_car_30_min","Commuting by car (30 min)","Travel",0.13,"event",5,"times per year",100,NA
+"commuting_by_bicycle_30_min","Commuting by bicycle (30 min)","Travel",0.12,"event",5,"times per year",100,NA
+"walking_1_trip_nyc","Walking (1 trip, NYC)","Travel",0.09,"event",5,"times per year",100,NA
+"business_traveller_annual","Business traveller (annual cosmic)","Travel",0.0375,"year",1,"(annual rate)",1,NA
+"annual_tourist_annual","Annual tourist flyer (annual cosmic)","Travel",0.006,"year",1,"(annual rate)",1,NA
+"kangaroo_encounter","Kangaroo encounter","Wildlife",0.1,"event",5,"times per year",100,NA
+"shark_encounter","Shark encounter (ocean swim)","Wildlife",0.06,"event",5,"times per year",100,NA
+"bee_sting_general","Bee/wasp sting (general)","Wildlife",0.03,"event",5,"times per year",100,NA
