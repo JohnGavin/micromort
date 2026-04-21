@@ -126,67 +126,153 @@ check_synergies &lt;- function(sel_acts, sel_chrs, acts_df, chrs_df) {
   msgs
 }
 
-pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}.pcard{background:#1a1a2e;border:1px solid #2a2a4e;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem}.pheader{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.5rem;text-align:center}.bprev{text-align:center;color:#8a8aaa;font-size:.9rem;margin-bottom:1rem;padding:.5rem;background:#16213e;border-radius:6px}.irow{display:flex;gap:1rem;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}.irow label{color:#aaa}.irow input[type=number]{background:#16213e;color:#e0e0e0;border:1px solid #444;width:80px;text-align:center;border-radius:4px;padding:4px 8px}.cbg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}.cb{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem}.cb:hover{background:#3a3a5e}.cb.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}.alist{max-height:350px;overflow-y:auto}.arow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid #1e1e3a;font-size:.88rem}.arow:hover{background:#1e1e3a}.arow input[type=checkbox]{accent-color:#4a90d9;width:16px;height:16px}.aname{flex:1}.amm{color:#888;width:80px;text-align:right}.afreq input{background:#16213e;color:#e0e0e0;border:1px solid #444;width:55px;text-align:center;border-radius:3px;padding:2px 4px}.aflbl{color:#666;font-size:.75rem;width:80px}.crow{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.88rem}.crow:hover{background:#1e1e3a}.dloss{color:#e74c3c;font-weight:700}.dgain{color:#27ae60;font-weight:700}.cml{color:#888;width:80px;text-align:right}.scount{text-align:center;color:#8a8aaa;padding:.5rem;font-size:.9rem}.bbtn{display:block;margin:.75rem auto;padding:10px 32px;background:#4a90d9;color:#fff;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer}.bbtn:hover{background:#3a80c9}.bbtn:disabled{background:#444;color:#888;cursor:not-allowed}.backb{background:none;border:1px solid #4a90d9;color:#4a90d9;border-radius:6px;padding:6px 16px;cursor:pointer;margin-bottom:1rem}.backb:hover{background:#16213e}.sbox{background:#16213e;border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}.stotal{font-size:1.8rem;font-weight:700;color:#4a90d9}.ssub{color:#888;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}.drow{display:flex;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a2e}.dlbl{width:42%;text-align:right;padding-right:12px;font-size:.82rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dtrk{width:42%;position:relative;height:20px}.dax{position:absolute;bottom:9px;left:0;right:0;height:1px;background:#333}.dot{position:absolute;bottom:4px;width:12px;height:12px;border-radius:50%;background:#4a90d9;transform:translateX(-50%)}.dtot{background:#e74c3c}.dgrn{background:#27ae60}.dval{width:16%;font-size:.8rem;color:#888;padding-left:8px}.drowt .dlbl{font-weight:700;color:#e74c3c}.drowt .dval{font-weight:700;color:#e74c3c}.synw{border-left:3px solid #e67e22;padding:8px 12px;margin:.5rem 0;background:#1e1a10;border-radius:0 6px 6px 0;font-size:.85rem;color:#ddd}.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#666;line-height:1.5}.stit{font-size:1rem;font-weight:600;color:#aaa;margin:.75rem 0 .5rem;border-bottom:1px solid #2a2a4e;padding-bottom:4px}"
+pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}
+.pcard{background:#1a1a2e;border:1px solid #2a2a4e;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem}
+.pheader-btn{font-size:1.5rem;font-weight:700;color:#fff;text-align:center;display:block;width:100%;padding:12px 24px;background:#4a90d9;border:none;border-radius:8px;cursor:pointer;margin-bottom:.5rem}
+.pheader-btn:hover{background:#3a80c9}
+.pheader-btn.disabled{background:#2a2a4e;color:#888;cursor:not-allowed}
+.pheader-err{text-align:center;color:#e74c3c;font-size:.85rem;margin-top:.25rem;display:none}
+.bprev{text-align:center;color:#8a8aaa;font-size:.9rem;margin-bottom:.5rem;padding:.5rem;background:#16213e;border-radius:6px}
+.irow{display:flex;gap:1rem;align-items:center;justify-content:center;margin-bottom:.5rem;flex-wrap:wrap}
+.irow label{color:#aaa}.irow input[type=number]{background:#16213e;color:#e0e0e0;border:1px solid #444;width:80px;text-align:center;border-radius:4px;padding:4px 8px}
+.scount{text-align:center;color:#8a8aaa;padding:.25rem;font-size:.9rem;margin-bottom:.5rem}
+.cbg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}
+.cb{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem}
+.cb:hover{background:#3a3a5e}.cb.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.desel-btn{background:#3a1a1a;color:#e74c3c;border:1px solid #e74c3c;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem;margin-left:auto}
+.desel-btn:hover{background:#5a2a2a}
+.tab-row{display:flex;gap:0;margin-bottom:.75rem}
+.tab-btn{flex:1;padding:8px 0;text-align:center;background:#16213e;color:#888;border:1px solid #2a2a4e;cursor:pointer;font-size:.9rem;font-weight:600}
+.tab-btn:first-child{border-radius:6px 0 0 6px}.tab-btn:last-child{border-radius:0 6px 6px 0}
+.tab-btn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.alist{max-height:350px;overflow-y:auto}
+.arow{display:flex;align-items:center;gap:4px;padding:4px 6px;border-bottom:1px solid #1e1e3a;font-size:.85rem}
+.arow:hover{background:#1e1e3a}
+.abtn{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.83rem;text-align:left;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abtn:hover{background:#3a3a5e}.abtn.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.amm{color:#888;width:55px;text-align:right;font-size:.8rem;flex-shrink:0}
+.afreq input{background:#16213e;color:#e0e0e0;border:1px solid #444;width:50px;text-align:center;border-radius:3px;padding:2px 4px;font-size:.8rem}
+.aflbl{color:#666;font-size:.72rem;width:70px;flex-shrink:0}
+.crow{display:flex;align-items:center;gap:4px;padding:4px 6px;font-size:.85rem}
+.crow:hover{background:#1e1e3a}
+.cbtn{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.83rem;text-align:left;flex:1}
+.cbtn:hover{background:#3a3a5e}.cbtn.sel-loss{background:#5a1a1a;color:#e74c3c;border-color:#e74c3c}.cbtn.sel-gain{background:#1a3a1a;color:#27ae60;border-color:#27ae60}
+.cml{color:#888;width:70px;text-align:right;font-size:.8rem;flex-shrink:0}
+.cdesc{color:#666;font-size:.72rem;flex:0 0 150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.backb{background:none;border:1px solid #4a90d9;color:#4a90d9;border-radius:6px;padding:6px 16px;cursor:pointer;margin-bottom:1rem}
+.backb:hover{background:#16213e}
+.sbox{background:#16213e;border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
+.stotal{font-size:1.8rem;font-weight:700;color:#4a90d9}
+.ssub{color:#888;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}
+.drow{display:flex;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a2e}
+.dlbl{width:42%;text-align:right;padding-right:12px;font-size:.82rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dtrk{width:42%;position:relative;height:20px}
+.dax{position:absolute;bottom:9px;left:0;right:0;height:1px;background:#333}
+.dot{position:absolute;bottom:4px;width:12px;height:12px;border-radius:50%;background:#4a90d9;transform:translateX(-50%)}
+.dtot{background:#e74c3c}.dgrn{background:#27ae60}
+.dval{width:16%;font-size:.8rem;color:#888;padding-left:8px}
+.drowt .dlbl{font-weight:700;color:#e74c3c}.drowt .dval{font-weight:700;color:#e74c3c}
+.synw{border-left:3px solid #e67e22;padding:8px 12px;margin:.5rem 0;background:#1e1a10;border-radius:0 6px 6px 0;font-size:.85rem;color:#ddd}
+.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#666;line-height:1.5}
+.stit{font-size:1rem;font-weight:600;color:#aaa;margin:.75rem 0 .5rem;border-bottom:1px solid #2a2a4e;padding-bottom:4px}"
 
-pjs &lt;- "function selCat(c,el){var bs=document.querySelectorAll('.cb:not(.sb)');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sel_cat',c,{priority:'event'})}\nfunction selSex(s,el){var bs=document.querySelectorAll('.sb');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sex_click',s,{priority:'event'})}"
+pjs &lt;- "
+function selCat(c,el){var bs=document.querySelectorAll('.cb:not(.sb)');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sel_cat',c,{priority:'event'})}
+function selSex(s,el){var bs=document.querySelectorAll('.sb');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sex_click',s,{priority:'event'})}
+function selTab(tab,el){var bs=document.querySelectorAll('.tab-btn');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('active');el.classList.add('active');Shiny.setInputValue('sel_tab',tab,{priority:'event'})}
+function togAct(aid,el){el.classList.toggle('sel');Shiny.setInputValue('tog_'+aid,el.classList.contains('sel'),{priority:'event'})}
+function togChr(fid,dir,el){var cls=dir==='gain'?'sel-gain':'sel-loss';if(el.classList.contains(cls)){el.classList.remove(cls);Shiny.setInputValue('ctog_'+fid,false,{priority:'event'})}else{el.classList.add(cls);Shiny.setInputValue('ctog_'+fid,true,{priority:'event'})}}
+function tryBuild(){var e=document.getElementById('pheader-err');if(e)e.style.display='block';setTimeout(function(){if(e)e.style.display='none'},3000)}
+"
 
 builder_ui &lt;- function(st, acts_df, chrs_df, cats) {
   age &lt;- st$age; sex &lt;- st$sex; bl &lt;- gompertz_annual_mm(age, sex)
-  sc &lt;- st$sel_category
+  sc &lt;- st$sel_category; active_tab &lt;- st$active_tab
   filt &lt;- if (sc == "All") acts_df else acts_df[acts_df$category == sc, ]
+  ns &lt;- length(st$selections); nc &lt;- length(st$chronic_sel)
+  has_sel &lt;- ns + nc &gt; 0
+
   cat_btns &lt;- lapply(c("All", cats), function(cat) {
     cls &lt;- if (cat == sc) "cb sel" else "cb"
     tags$button(class = cls, cat, onclick = sprintf("selCat('%s',this)", cat))
   })
+
   act_rows &lt;- lapply(seq_len(nrow(filt)), function(i) {
     r &lt;- filt[i, ]; aid &lt;- r$activity_id
     is_sel &lt;- aid %in% names(st$selections)
     fv &lt;- if (is_sel) st$selections[[aid]] else r$default_freq
     tags$div(class = "arow",
-      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
-        onchange = sprintf("Shiny.setInputValue('cb_%s',this.checked,{priority:'event'})", aid)),
-      tags$span(class = "aname", r$activity),
+      tags$button(class = paste("abtn", if (is_sel) "sel" else ""), r$activity,
+        onclick = sprintf("togAct('%s',this)", aid)),
       tags$span(class = "amm", paste0(r$micromorts, " mm")),
       tags$span(class = "afreq", tags$input(type = "number", value = fv, min = 0,
         max = r$freq_max, step = 1,
         onchange = sprintf("Shiny.setInputValue('fr_%s',parseInt(this.value)||0,{priority:'event'})", aid))),
       tags$span(class = "aflbl", r$freq_label))
   })
+
   chr_rows &lt;- lapply(seq_len(nrow(chrs_df)), function(i) {
     r &lt;- chrs_df[i, ]; is_sel &lt;- r$factor_id %in% st$chronic_sel
-    dc &lt;- if (r$direction == "gain") "dgain" else "dloss"
-    di &lt;- if (r$direction == "gain") "\u2191" else "\u2193"
+    dir &lt;- r$direction
+    sel_cls &lt;- if (is_sel &amp;&amp; dir == "gain") "sel-gain" else if (is_sel) "sel-loss" else ""
     ml &lt;- paste0(ifelse(r$microlives_per_day &gt; 0, "+", ""), r$microlives_per_day, " ml/day")
     tags$div(class = "crow",
-      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
-        onchange = sprintf("Shiny.setInputValue('cc_%s',this.checked,{priority:'event'})", r$factor_id)),
-      tags$span(class = dc, di), tags$span(class = "aname", r$factor),
+      tags$button(class = paste("cbtn", sel_cls), r$factor,
+        onclick = sprintf("togChr('%s','%s',this)", r$factor_id, dir)),
       tags$span(class = "cml", ml),
-      tags$span(style = "color:#666;font-size:.75rem;flex:0 0 180px;", r$description))
+      tags$span(class = "cdesc", r$description))
   })
-  ns &lt;- length(st$selections); nc &lt;- length(st$chronic_sel)
+
+  # Tabset content
+  acute_panel &lt;- tagList(
+    tags$div(style = "display:flex;align-items:center;gap:6px;margin-bottom:.5rem",
+      tags$div(class = "cbg", style = "flex:1;margin-bottom:0", cat_btns),
+      if (ns &gt; 0) tags$button(class = "desel-btn",
+        onclick = "Shiny.setInputValue('desel_acute',Math.random(),{priority:'event'})",
+        paste0("Deselect all (", ns, ")"))
+    ),
+    tags$div(class = "alist", act_rows))
+
+  chronic_panel &lt;- tagList(
+    if (nc &gt; 0) tags$div(style = "margin-bottom:.5rem",
+      tags$button(class = "desel-btn",
+        onclick = "Shiny.setInputValue('desel_chronic',Math.random(),{priority:'event'})",
+        paste0("Deselect all (", nc, ")"))),
+    tags$div(class = "alist", style = "max-height:300px;", chr_rows))
+
   tagList(
     tags$div(class = "pcard",
-      tags$div(class = "pheader", "Build Your Risk Portfolio"),
+      # Header is the Build button
+      tags$button(class = paste("pheader-btn", if (!has_sel) "disabled" else ""),
+        onclick = if (has_sel) "Shiny.setInputValue('build',Math.random(),{priority:'event'})" else "tryBuild()",
+        paste0("Build Your Risk Portfolio",
+          if (has_sel) paste0(" \u2192 (", ns + nc, " selected)") else "")),
+      tags$div(id = "pheader-err", class = "pheader-err",
+        "Select at least one activity or chronic factor first"),
+      # Selection count + age/sex row
+      tags$div(class = "scount", paste0(ns, " activit", ifelse(ns == 1, "y", "ies"),
+        ", ", nc, " chronic factor", ifelse(nc == 1, "", "s"))),
       tags$div(class = "irow", tags$label("Age:"),
         tags$input(type = "number", value = age, min = 18, max = 100, step = 1,
           onchange = "Shiny.setInputValue('age_in',parseInt(this.value)||35,{priority:'event'})"),
-        tags$span(style = "width:24px"),
+        tags$span(style = "width:16px"),
         tags$button(class = paste("cb sb", if (sex == "male") "sel" else ""), "Male",
           onclick = "selSex('male',this)"),
         tags$button(class = paste("cb sb", if (sex == "female") "sel" else ""), "Female",
           onclick = "selSex('female',this)")),
-      tags$div(class = "bprev", paste0("Background mortality at age ", age, " (", sex,
-        "): ~", format(bl, big.mark = ","), " micromorts/year"))),
-    tags$div(class = "pcard", tags$div(class = "stit", "Acute Risks"),
-      tags$div(class = "cbg", cat_btns), tags$div(class = "alist", act_rows)),
-    tags$div(class = "pcard", tags$div(class = "stit", "Chronic Factors (microlives/day)"),
-      tags$div(class = "alist", style = "max-height:250px;", chr_rows)),
-    tags$div(class = "scount", paste0("Selected: ", ns, " activit",
-      ifelse(ns == 1, "y", "ies"), ", ", nc, " chronic factor", ifelse(nc == 1, "", "s"))),
-    tags$button(class = "bbtn", disabled = if (ns + nc == 0) NA else NULL,
-      onclick = "Shiny.setInputValue('build',Math.random(),{priority:'event'})",
-      "Build Portfolio \u2192"))
+      tags$div(class = "bprev", paste0("Baseline at age ", age, " (", sex,
+        "): ~", format(bl, big.mark = ","), " mm/year"))
+    ),
+    tags$div(class = "pcard",
+      # Tabset
+      tags$div(class = "tab-row",
+        tags$button(class = paste("tab-btn", if (active_tab == "acute") "active" else ""),
+          "Acute Risks", onclick = "selTab('acute',this)"),
+        tags$button(class = paste("tab-btn", if (active_tab == "chronic") "active" else ""),
+          "Chronic Factors", onclick = "selTab('chronic',this)")),
+      if (active_tab == "acute") acute_panel else chronic_panel
+    )
+  )
 }
 
 results_ui &lt;- function(st) {
@@ -245,16 +331,18 @@ ui &lt;- fluidPage(theme = bslib::bs_theme(version = 5, bootswatch = "darkly"),
 
 server &lt;- function(input, output, session) {
   st &lt;- reactiveValues(phase = "builder", age = 35L, sex = "male", sel_category = "All",
-    selections = list(), chronic_sel = character(),
+    active_tab = "acute", selections = list(), chronic_sel = character(),
     result_df = NULL, total_mm = NULL, total_additive = NULL, synergy_flags = NULL)
   observeEvent(input$age_in, {
     v &lt;- input$age_in; if (!is.null(v) &amp;&amp; is.numeric(v) &amp;&amp; v &gt;= 18 &amp;&amp; v &lt;= 100) st$age &lt;- as.integer(v) })
   observeEvent(input$sex_click, { st$sex &lt;- input$sex_click })
   observeEvent(input$sel_cat, { st$sel_category &lt;- input$sel_cat })
+  observeEvent(input$sel_tab, { st$active_tab &lt;- input$sel_tab })
+  # Activity toggle buttons
   observe({ for (i in seq_len(nrow(acts))) { local({
     aid &lt;- acts$activity_id[i]; df &lt;- acts$default_freq[i]
-    observeEvent(input[[paste0("cb_", aid)]], {
-      if (isTRUE(input[[paste0("cb_", aid)]])) {
+    observeEvent(input[[paste0("tog_", aid)]], {
+      if (isTRUE(input[[paste0("tog_", aid)]])) {
         fr &lt;- input[[paste0("fr_", aid)]]; if (is.null(fr) || !is.numeric(fr)) fr &lt;- df
         st$selections[[aid]] &lt;- fr
       } else st$selections[[aid]] &lt;- NULL }, ignoreInit = TRUE)
@@ -262,12 +350,16 @@ server &lt;- function(input, output, session) {
       if (aid %in% names(st$selections) &amp;&amp; !is.null(input[[paste0("fr_", aid)]]))
         st$selections[[aid]] &lt;- as.numeric(input[[paste0("fr_", aid)]]) }, ignoreInit = TRUE)
   })} })
+  # Chronic toggle buttons
   observe({ for (i in seq_len(nrow(chrs))) { local({
     fid &lt;- chrs$factor_id[i]
-    observeEvent(input[[paste0("cc_", fid)]], {
-      if (isTRUE(input[[paste0("cc_", fid)]])) st$chronic_sel &lt;- union(st$chronic_sel, fid)
+    observeEvent(input[[paste0("ctog_", fid)]], {
+      if (isTRUE(input[[paste0("ctog_", fid)]])) st$chronic_sel &lt;- union(st$chronic_sel, fid)
       else st$chronic_sel &lt;- setdiff(st$chronic_sel, fid) }, ignoreInit = TRUE)
   })} })
+  # Deselect all buttons
+  observeEvent(input$desel_acute, { st$selections &lt;- list() })
+  observeEvent(input$desel_chronic, { st$chronic_sel &lt;- character() })
   observeEvent(input$build, {
     bl &lt;- gompertz_annual_mm(st$age, st$sex)
     arows &lt;- lapply(names(st$selections), function(aid) {
