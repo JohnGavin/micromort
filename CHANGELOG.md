@@ -1,5 +1,50 @@
 # Changelog
 
+## 2026-04-21
+
+### Completed
+
+**Issues closed: 3** (#30, #63, #82)
+**Issues created: 4** (#84, #85, #86, #87)
+
+#### Portfolio Risk Builder (#30, #63 merged)
+- New Shinylive vignette: `portfolio_shinylive.qmd` — users select acute activities (with frequency) and chronic factors to build cumulative annual risk portfolio
+- Exact survival multiplication: `1 - prod(1 - p_i)` with additive approximation error displayed
+- Synergy detection for alcohol+smoking (SI 3.78) and alcohol+obesity (SI 1.55)
+- Gompertz baseline comparison by age and sex
+- Cleveland dot chart (pure HTML/CSS, no plotly)
+- 105 acute activities + 40 chronic factors from `atomic_risks()` and `chronic_risks()`
+- CSV generation: `data-raw/generate_portfolio_csv.R`
+
+#### Risk Perception (#82)
+- Added Ropeik framework sections (The Perception Gap, Calibrating Intuition) to introduction vignette
+- 5th "Risk Perception" dashboard tab in extra.js
+- Cites Ropeik 2002/2010, Slovic 2000, Fischhoff 1978
+
+#### Vignette quality
+- Added captions to 13 uncaptioned plots and tables (confounding: 5, chronic_vs_acute: 4, what-is-a-micromort: 3, introduction: 1)
+- Merged telemetry.qmd into architecture.qmd (-109 lines, -1 vignette)
+- Trimmed introduction §8 to 4-line pointer to data_reliability (-51 lines)
+- Trimmed data_reliability §3 to 10-line pointer to confounding (-30 lines)
+- Built 6 missing reference pages (chronic_disease_risks, infectious_disease_risks, toxicological_risk, combined_quiz_pairs, export_combined_quiz_csv, risk_sensitivity)
+
+#### Infrastructure
+- Added `shinylive` to DESCRIPTION Suggests + regenerated `default.nix`
+- Added `units` to `default.nix` (was in DESCRIPTION but missing from nix)
+- Fixed CI: built missing `quiz_analytics.html`
+
+### Known Issues (raised)
+- #84: chronic_vs_acute rendering — heading/content mismatch, vertical gaps, raw `#>` output, font size mismatch
+- #85: global rule needed for acronym expansion (CVD, LRI, etc.) with hover tooltip + external link
+- #86: raw R console output (`#>`) leaking into all 10 narrative vignettes (42-65 occurrences each)
+- #87: font sizing inconsistency between Closeread narrative text and embedded tables
+
+### Lessons Learned
+- **Closeread CSS specificity**: pkgdown Bootstrap 5 + Closeread CSS + extra.css creates 3-layer specificity. Must test in deployed context, not local render. Previous font-size fixes failed because local render doesn't load pkgdown's Bootstrap.
+- **`show_target()` caption parameter**: can pass `caption = "..."` to add DT captions at render time without modifying targets. Compliant with "targets return data.frame, not DT" rule.
+- **`shinylive` R package**: required in nix shell for quarto to render Shinylive vignettes. The quarto extension alone is insufficient — the R package bridges quarto filter → R session.
+- **`knitr::opts_chunk$set(comment = "#>")` in setup chunks**: causes ALL R output to get `#>` prefix, including `show_target()` output that should render as DT. Likely root cause of #86.
+
 ## 2026-04-20
 
 ### Completed
