@@ -36,7 +36,7 @@ a { color: #6ea8fe; }
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(collapse = TRUE, comment = "")
 
 if (requireNamespace("micromort", quietly = TRUE)) {
   library(micromort)
@@ -51,7 +51,7 @@ source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
 
 :::{.cr-section}
 
-## One skydive
+## The invisible risk
 
 A heroin dose carries **30 micromorts**. Base jumping: **430**. These feel dangerous because they're *chosen* and *visible*.
 
@@ -100,7 +100,7 @@ show_target("vig_chronic_acute_waterfall_acute",
 
 :::
 
-[UK cancer alone accumulates over **1,400 micromorts per year**. CVD adds another **1,200**. Together, that's the equivalent of climbing the Matterhorn — every single year.]{highlight="cr-waterfall"}
+[UK cancer alone accumulates over **1,400 micromorts per year**. [Cardiovascular disease (CVD)](https://www.who.int/health-topics/cardiovascular-diseases) adds another **1,200**. Together, that's the equivalent of climbing the Matterhorn — every single year.]{highlight="cr-waterfall"}
 
 [Yet we fear the mountain, not the mundane.]{highlight="cr-waterfall"}
 
@@ -125,7 +125,7 @@ show_target("vig_chronic_acute_country_display",
 
 [**Diarrheal disease** jumps from 0.02 mm/day in the UK to 0.88 mm/day in Nigeria — a 44x difference driven by clean water and sanitation infrastructure.]{highlight="cr-country"}
 
-[**CVD** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
+[**<abbr title="Cardiovascular disease: diseases of the heart and blood vessels">CVD</abbr>** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
 
 [These are the confounders that population-average micromort tables hide. See the [confounding vignette](confounding.html) for the full geographic and demographic analysis.]{highlight="cr-country"}
 

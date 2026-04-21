@@ -18,7 +18,7 @@ body .container-fluid { max-width: 95vw; }
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = ""
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {

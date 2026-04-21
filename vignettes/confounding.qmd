@@ -13,7 +13,7 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = ""
 )
 
 if (requireNamespace("micromort", quietly = TRUE)) {
@@ -170,7 +170,7 @@ The leading causes of death vary dramatically by country — and not just for in
 ```{r disease-by-country}
 #| echo: false
 show_target("vig_confounding_disease_by_country",
-  caption = "Daily micromorts by disease cause and country (IHME GBD 2023). CVD leads everywhere; diarrheal disease shows 68x UK-India gap driven by sanitation infrastructure. Source: atomic_risks() Parts 11a-11d.")
+  caption = "Daily micromorts by disease cause and country (IHME GBD 2023). Cardiovascular disease (CVD) leads everywhere; diarrheal disease shows 68x UK-India gap driven by sanitation infrastructure. Source: atomic_risks() Parts 11a-11d.")
 ```
 
 ```{r disease-dynamic, echo=FALSE}
@@ -193,7 +193,7 @@ if (!is.null(disease_data)) {
 
 Key findings:
 
-- **Cardiovascular disease** is the leading killer everywhere, at `r uk_cvd` mm/day in the UK and `r in_cvd` mm/day in India (`r cvd_ratio`x ratio). For context, a single skydive is 8 mm — less than 3 days of background CVD risk in India.
+- **[Cardiovascular disease (CVD)](https://www.who.int/health-topics/cardiovascular-diseases)** is the leading killer everywhere, at `r uk_cvd` mm/day in the UK and `r in_cvd` mm/day in India (`r cvd_ratio`x ratio). For context, a single skydive is 8 mm — less than 3 days of background <abbr title="Cardiovascular disease">CVD</abbr> risk in India.
 - **Diarrheal diseases** show the starkest gap: `r uk_diarrheal` mm/day in the UK vs `r in_diarrheal` mm/day in India — a `r format(diarrheal_ratio, big.mark=",")`x difference driven by clean water and sanitation infrastructure.
 - **Cancer** is *higher* in the UK (`r uk_cancer` mm/day) than India (`r in_cancer` mm/day) — a counterintuitive finding. As the [OWID data insight](https://ourworldindata.org/data-insights/richer-countries-dont-just-avoid-infectious-disease-they-also-have-lower-rates-of-chronic-disease-deaths) notes, richer countries avoid both infectious *and* chronic disease deaths, but cancer is the exception where age structure and screening detection inflate high-income rates.
 
