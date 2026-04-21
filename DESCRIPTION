@@ -47,6 +47,7 @@ Suggests:
     rmarkdown,
     rprojroot,
     shiny,
+    shinylive,
     targets,
     quarto,
     testthat (>= 3.0.0),

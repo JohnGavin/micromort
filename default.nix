@@ -50,6 +50,7 @@ let
       rprojroot
       scales
       shiny
+      shinylive
       spelling
       stringr
       styler

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Build your personal risk portfolio — select activities and see cumulative annual risk.">
+
+<title>Risk Portfolio Builder</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="portfolio_shinylive_files/libs/clipboard/clipboard.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/popper.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/anchor.min.js"></script>
+<link href="portfolio_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="portfolio_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="portfolio_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="portfolio_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="portfolio_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<meta name="shinylive:serviceworker_dir" content=".">
+<script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<link href="portfolio_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
+
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Risk Portfolio Builder</h1>
+</div>
+
+<div>
+  <div class="description">
+    Build your personal risk portfolio — select activities and see cumulative annual risk.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta column-page">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<style>
+  .quarto-title-meta { display: none; }
+  header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  .description { margin-bottom: 0 !important; }
+  main.content { max-width: 100% !important; padding: 0 10px; }
+  #quarto-content { padding: 0; }
+  .shinylive-wrapper { width: 100% !important; }
+</style>
+<pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
+#|   shinylive does not work in self-contained HTML documents.
+#|   Please set `embed-resources: false` in your metadata.
+#| standalone: true
+#| viewerHeight: 1200
+
+library(shiny)
+library(bslib)
+
+acts &lt;- read.csv("portfolio_activities.csv", stringsAsFactors = FALSE)
+chrs &lt;- read.csv("portfolio_chronic.csv", stringsAsFactors = FALSE)
+categories &lt;- sort(unique(acts$category))
+
+gompertz_annual_mm &lt;- function(age, sex = "male") {
+  if (sex == "male") { a &lt;- 0.0001; b &lt;- 0.00005; cc &lt;- 0.085 }
+  else               { a &lt;- 0.00008; b &lt;- 0.00003; cc &lt;- 0.080 }
+  round((a + b * exp(cc * age)) * 1e6, 1)
+}
+
+combine_portfolio &lt;- function(mm_vec) {
+  pos &lt;- mm_vec[mm_vec &gt; 0]
+  if (length(pos) == 0) return(0)
+  round((1 - prod(1 - pmin(pos * 1e-6, 0.9999))) * 1e6, 1)
+}
+
+SYNERGY_PAIRS &lt;- list(
+  list(tags = c("alcohol", "smoking"),
+       msg = "Alcohol + smoking: synergistic cancer risk (SI 3.78)."),
+  list(tags = c("alcohol", "obesity"),
+       msg = "Alcohol + obesity: compounded liver disease risk (SI 1.55).")
+)
+
+check_synergies &lt;- function(sel_acts, sel_chrs, acts_df, chrs_df) {
+  atags &lt;- na.omit(acts_df$synergy_tag[acts_df$activity_id %in% sel_acts])
+  ctags &lt;- na.omit(chrs_df$synergy_tag[chrs_df$factor_id %in% sel_chrs])
+  active &lt;- unique(c(atags, ctags))
+  msgs &lt;- character(0)
+  for (pair in SYNERGY_PAIRS) {
+    if (all(pair$tags %in% active)) msgs &lt;- c(msgs, pair$msg)
+  }
+  msgs
+}
+
+pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}.pcard{background:#1a1a2e;border:1px solid #2a2a4e;border-radius:8px;padding:1rem 1.25rem;margin-bottom:1rem}.pheader{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.5rem;text-align:center}.bprev{text-align:center;color:#8a8aaa;font-size:.9rem;margin-bottom:1rem;padding:.5rem;background:#16213e;border-radius:6px}.irow{display:flex;gap:1rem;align-items:center;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}.irow label{color:#aaa}.irow input[type=number]{background:#16213e;color:#e0e0e0;border:1px solid #444;width:80px;text-align:center;border-radius:4px;padding:4px 8px}.cbg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}.cb{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem}.cb:hover{background:#3a3a5e}.cb.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}.alist{max-height:350px;overflow-y:auto}.arow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid #1e1e3a;font-size:.88rem}.arow:hover{background:#1e1e3a}.arow input[type=checkbox]{accent-color:#4a90d9;width:16px;height:16px}.aname{flex:1}.amm{color:#888;width:80px;text-align:right}.afreq input{background:#16213e;color:#e0e0e0;border:1px solid #444;width:55px;text-align:center;border-radius:3px;padding:2px 4px}.aflbl{color:#666;font-size:.75rem;width:80px}.crow{display:flex;align-items:center;gap:8px;padding:6px 8px;font-size:.88rem}.crow:hover{background:#1e1e3a}.dloss{color:#e74c3c;font-weight:700}.dgain{color:#27ae60;font-weight:700}.cml{color:#888;width:80px;text-align:right}.scount{text-align:center;color:#8a8aaa;padding:.5rem;font-size:.9rem}.bbtn{display:block;margin:.75rem auto;padding:10px 32px;background:#4a90d9;color:#fff;border:none;border-radius:6px;font-size:1rem;font-weight:600;cursor:pointer}.bbtn:hover{background:#3a80c9}.bbtn:disabled{background:#444;color:#888;cursor:not-allowed}.backb{background:none;border:1px solid #4a90d9;color:#4a90d9;border-radius:6px;padding:6px 16px;cursor:pointer;margin-bottom:1rem}.backb:hover{background:#16213e}.sbox{background:#16213e;border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}.stotal{font-size:1.8rem;font-weight:700;color:#4a90d9}.ssub{color:#888;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}.drow{display:flex;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a2e}.dlbl{width:42%;text-align:right;padding-right:12px;font-size:.82rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dtrk{width:42%;position:relative;height:20px}.dax{position:absolute;bottom:9px;left:0;right:0;height:1px;background:#333}.dot{position:absolute;bottom:4px;width:12px;height:12px;border-radius:50%;background:#4a90d9;transform:translateX(-50%)}.dtot{background:#e74c3c}.dgrn{background:#27ae60}.dval{width:16%;font-size:.8rem;color:#888;padding-left:8px}.drowt .dlbl{font-weight:700;color:#e74c3c}.drowt .dval{font-weight:700;color:#e74c3c}.synw{border-left:3px solid #e67e22;padding:8px 12px;margin:.5rem 0;background:#1e1a10;border-radius:0 6px 6px 0;font-size:.85rem;color:#ddd}.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#666;line-height:1.5}.stit{font-size:1rem;font-weight:600;color:#aaa;margin:.75rem 0 .5rem;border-bottom:1px solid #2a2a4e;padding-bottom:4px}"
+
+pjs &lt;- "function selCat(c,el){var bs=document.querySelectorAll('.cb:not(.sb)');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sel_cat',c,{priority:'event'})}\nfunction selSex(s,el){var bs=document.querySelectorAll('.sb');for(var i=0;i&lt;bs.length;i++)bs[i].classList.remove('sel');el.classList.add('sel');Shiny.setInputValue('sex_click',s,{priority:'event'})}"
+
+builder_ui &lt;- function(st, acts_df, chrs_df, cats) {
+  age &lt;- st$age; sex &lt;- st$sex; bl &lt;- gompertz_annual_mm(age, sex)
+  sc &lt;- st$sel_category
+  filt &lt;- if (sc == "All") acts_df else acts_df[acts_df$category == sc, ]
+  cat_btns &lt;- lapply(c("All", cats), function(cat) {
+    cls &lt;- if (cat == sc) "cb sel" else "cb"
+    tags$button(class = cls, cat, onclick = sprintf("selCat('%s',this)", cat))
+  })
+  act_rows &lt;- lapply(seq_len(nrow(filt)), function(i) {
+    r &lt;- filt[i, ]; aid &lt;- r$activity_id
+    is_sel &lt;- aid %in% names(st$selections)
+    fv &lt;- if (is_sel) st$selections[[aid]] else r$default_freq
+    tags$div(class = "arow",
+      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
+        onchange = sprintf("Shiny.setInputValue('cb_%s',this.checked,{priority:'event'})", aid)),
+      tags$span(class = "aname", r$activity),
+      tags$span(class = "amm", paste0(r$micromorts, " mm")),
+      tags$span(class = "afreq", tags$input(type = "number", value = fv, min = 0,
+        max = r$freq_max, step = 1,
+        onchange = sprintf("Shiny.setInputValue('fr_%s',parseInt(this.value)||0,{priority:'event'})", aid))),
+      tags$span(class = "aflbl", r$freq_label))
+  })
+  chr_rows &lt;- lapply(seq_len(nrow(chrs_df)), function(i) {
+    r &lt;- chrs_df[i, ]; is_sel &lt;- r$factor_id %in% st$chronic_sel
+    dc &lt;- if (r$direction == "gain") "dgain" else "dloss"
+    di &lt;- if (r$direction == "gain") "\u2191" else "\u2193"
+    ml &lt;- paste0(ifelse(r$microlives_per_day &gt; 0, "+", ""), r$microlives_per_day, " ml/day")
+    tags$div(class = "crow",
+      tags$input(type = "checkbox", checked = if (is_sel) NA else NULL,
+        onchange = sprintf("Shiny.setInputValue('cc_%s',this.checked,{priority:'event'})", r$factor_id)),
+      tags$span(class = dc, di), tags$span(class = "aname", r$factor),
+      tags$span(class = "cml", ml),
+      tags$span(style = "color:#666;font-size:.75rem;flex:0 0 180px;", r$description))
+  })
+  ns &lt;- length(st$selections); nc &lt;- length(st$chronic_sel)
+  tagList(
+    tags$div(class = "pcard",
+      tags$div(class = "pheader", "Build Your Risk Portfolio"),
+      tags$div(class = "irow", tags$label("Age:"),
+        tags$input(type = "number", value = age, min = 18, max = 100, step = 1,
+          onchange = "Shiny.setInputValue('age_in',parseInt(this.value)||35,{priority:'event'})"),
+        tags$span(style = "width:24px"),
+        tags$button(class = paste("cb sb", if (sex == "male") "sel" else ""), "Male",
+          onclick = "selSex('male',this)"),
+        tags$button(class = paste("cb sb", if (sex == "female") "sel" else ""), "Female",
+          onclick = "selSex('female',this)")),
+      tags$div(class = "bprev", paste0("Background mortality at age ", age, " (", sex,
+        "): ~", format(bl, big.mark = ","), " micromorts/year"))),
+    tags$div(class = "pcard", tags$div(class = "stit", "Acute Risks"),
+      tags$div(class = "cbg", cat_btns), tags$div(class = "alist", act_rows)),
+    tags$div(class = "pcard", tags$div(class = "stit", "Chronic Factors (microlives/day)"),
+      tags$div(class = "alist", style = "max-height:250px;", chr_rows)),
+    tags$div(class = "scount", paste0("Selected: ", ns, " activit",
+      ifelse(ns == 1, "y", "ies"), ", ", nc, " chronic factor", ifelse(nc == 1, "", "s"))),
+    tags$button(class = "bbtn", disabled = if (ns + nc == 0) NA else NULL,
+      onclick = "Shiny.setInputValue('build',Math.random(),{priority:'event'})",
+      "Build Portfolio \u2192"))
+}
+
+results_ui &lt;- function(st) {
+  df &lt;- st$result_df; te &lt;- st$total_mm; ta &lt;- st$total_additive
+  ae &lt;- ta - te; ap &lt;- if (te &gt; 0) round(ae / te * 100, 1) else 0
+  ri &lt;- df[df$annual_mm &gt; 0, ]; gi &lt;- df[df$annual_mm &lt; 0, ]
+  ri &lt;- ri[order(-ri$annual_mm), ]; if (nrow(gi) &gt; 0) gi &lt;- gi[order(gi$annual_mm), ]
+  mx &lt;- max(c(ri$annual_mm, te, 1))
+  drows &lt;- lapply(seq_len(nrow(ri)), function(i) {
+    r &lt;- ri[i, ]; pct &lt;- min(round(r$annual_mm / mx * 80, 1), 80)
+    tags$div(class = "drow", tags$span(class = "dlbl", r$label),
+      tags$div(class = "dtrk", tags$div(class = "dax"),
+        tags$div(class = "dot", style = paste0("left:", pct, "%"))),
+      tags$span(class = "dval", paste0(format(round(r$annual_mm), big.mark = ","), " mm")))
+  })
+  tpct &lt;- min(round(te / mx * 80, 1), 80)
+  trow &lt;- tags$div(class = "drow drowt", tags$span(class = "dlbl", "TOTAL (exact)"),
+    tags$div(class = "dtrk", tags$div(class = "dax"),
+      tags$div(class = "dot dtot", style = paste0("left:", tpct, "%"))),
+    tags$span(class = "dval", paste0(format(te, big.mark = ","), " mm")))
+  grows &lt;- if (nrow(gi) &gt; 0) { mg &lt;- max(abs(gi$annual_mm), 1)
+    lapply(seq_len(nrow(gi)), function(i) {
+      r &lt;- gi[i, ]; pct &lt;- min(round(abs(r$annual_mm) / mg * 60, 1), 60)
+      tags$div(class = "drow", tags$span(class = "dlbl", paste0(r$label, " (benefit)")),
+        tags$div(class = "dtrk", tags$div(class = "dax"),
+          tags$div(class = "dot dgrn", style = paste0("left:", pct, "%"))),
+        tags$span(class = "dval", style = "color:#27ae60",
+          paste0("-", format(round(abs(r$annual_mm)), big.mark = ","), " mm eq.")))
+    })
+  }
+  syu &lt;- if (length(st$synergy_flags) &gt; 0) lapply(st$synergy_flags, function(m)
+    tags$div(class = "synw", paste0("\u26a0 ", m)))
+  tagList(
+    tags$button(class = "backb",
+      onclick = "Shiny.setInputValue('back',Math.random(),{priority:'event'})", "\u2190 Edit Portfolio"),
+    tags$div(class = "pcard sbox",
+      tags$div(class = "stotal", paste0(format(te, big.mark = ","), " micromorts/year")),
+      tags$div(class = "ssub", paste0("Additive: ", format(ta, big.mark = ","),
+        " mm (error: +", round(ae), " mm, ", ap, "%)")),
+      tags$div(class = "eqrow", style = "margin-top:.5rem",
+        paste0("\u2248 ", round(te/8), " skydives, or ", round(te/7), " marathons"))),
+    tags$div(class = "pcard", tags$div(class = "stit", "Risk Contributions (dot chart)"),
+      tags$div(drows, trow),
+      if (!is.null(grows)) tagList(tags$div(class = "stit", style = "color:#27ae60",
+        "Protective Factors"), tags$div(grows))),
+    if (!is.null(syu)) tags$div(class = "pcard", syu),
+    tags$div(class = "cavs",
+      tags$p("Assumes independent risks. Known synergies flagged above."),
+      tags$p("Population-average rates. Individual risk varies."),
+      tags$p("Acute and chronic risks combined on common annual scale."),
+      tags$p(tags$strong("Educational only"), " \u2014 not clinical decision support.")))
+}
+
+ui &lt;- fluidPage(theme = bslib::bs_theme(version = 5, bootswatch = "darkly"),
+  tags$head(tags$style(HTML(pcss)), tags$script(HTML(pjs))), uiOutput("main_ui"))
+
+server &lt;- function(input, output, session) {
+  st &lt;- reactiveValues(phase = "builder", age = 35L, sex = "male", sel_category = "All",
+    selections = list(), chronic_sel = character(),
+    result_df = NULL, total_mm = NULL, total_additive = NULL, synergy_flags = NULL)
+  observeEvent(input$age_in, {
+    v &lt;- input$age_in; if (!is.null(v) &amp;&amp; is.numeric(v) &amp;&amp; v &gt;= 18 &amp;&amp; v &lt;= 100) st$age &lt;- as.integer(v) })
+  observeEvent(input$sex_click, { st$sex &lt;- input$sex_click })
+  observeEvent(input$sel_cat, { st$sel_category &lt;- input$sel_cat })
+  observe({ for (i in seq_len(nrow(acts))) { local({
+    aid &lt;- acts$activity_id[i]; df &lt;- acts$default_freq[i]
+    observeEvent(input[[paste0("cb_", aid)]], {
+      if (isTRUE(input[[paste0("cb_", aid)]])) {
+        fr &lt;- input[[paste0("fr_", aid)]]; if (is.null(fr) || !is.numeric(fr)) fr &lt;- df
+        st$selections[[aid]] &lt;- fr
+      } else st$selections[[aid]] &lt;- NULL }, ignoreInit = TRUE)
+    observeEvent(input[[paste0("fr_", aid)]], {
+      if (aid %in% names(st$selections) &amp;&amp; !is.null(input[[paste0("fr_", aid)]]))
+        st$selections[[aid]] &lt;- as.numeric(input[[paste0("fr_", aid)]]) }, ignoreInit = TRUE)
+  })} })
+  observe({ for (i in seq_len(nrow(chrs))) { local({
+    fid &lt;- chrs$factor_id[i]
+    observeEvent(input[[paste0("cc_", fid)]], {
+      if (isTRUE(input[[paste0("cc_", fid)]])) st$chronic_sel &lt;- union(st$chronic_sel, fid)
+      else st$chronic_sel &lt;- setdiff(st$chronic_sel, fid) }, ignoreInit = TRUE)
+  })} })
+  observeEvent(input$build, {
+    bl &lt;- gompertz_annual_mm(st$age, st$sex)
+    arows &lt;- lapply(names(st$selections), function(aid) {
+      fr &lt;- st$selections[[aid]]; r &lt;- acts[acts$activity_id == aid, ]
+      if (nrow(r) == 0) return(NULL)
+      data.frame(label=r$activity[1], annual_mm=r$micromorts[1]*fr,
+        category=r$category[1], type="acute", stringsAsFactors=FALSE) })
+    adf &lt;- do.call(rbind, Filter(Negate(is.null), arows))
+    if (is.null(adf)) adf &lt;- data.frame(label=character(), annual_mm=numeric(),
+      category=character(), type=character(), stringsAsFactors=FALSE)
+    crows &lt;- lapply(st$chronic_sel, function(fid) {
+      r &lt;- chrs[chrs$factor_id == fid, ]; if (nrow(r) == 0) return(NULL)
+      data.frame(label=r$factor[1], annual_mm=-r$microlives_per_day[1]*365,
+        category=r$category[1], type="chronic", stringsAsFactors=FALSE) })
+    cdf &lt;- do.call(rbind, Filter(Negate(is.null), crows))
+    if (is.null(cdf)) cdf &lt;- data.frame(label=character(), annual_mm=numeric(),
+      category=character(), type=character(), stringsAsFactors=FALSE)
+    rdf &lt;- rbind(data.frame(label=sprintf("Baseline (age %d, %s)", st$age, st$sex),
+      annual_mm=bl, category="Background", type="baseline", stringsAsFactors=FALSE), adf, cdf)
+    pos &lt;- rdf$annual_mm[rdf$annual_mm &gt; 0]
+    st$total_mm &lt;- combine_portfolio(pos); st$total_additive &lt;- round(sum(pos), 1)
+    st$result_df &lt;- rdf
+    st$synergy_flags &lt;- check_synergies(names(st$selections), st$chronic_sel, acts, chrs)
+    st$phase &lt;- "results" })
+  observeEvent(input$back, { st$phase &lt;- "builder" })
+  output$main_ui &lt;- renderUI({ switch(st$phase,
+    builder = builder_ui(st, acts, chrs, categories), results = results_ui(st)) })
+}
+shinyApp(ui, server)
+
+## file: portfolio_activities.csv
+## type: text
+"activity_id","activity","category","micromorts","period_type","default_freq","freq_label","freq_max","synergy_tag"
+"covid_19_infection_unvaccinated","COVID-19 infection (unvaccinated)","COVID-19",10000,"event",5,"times per year",100,NA
+"living_in_us_during_covid_19_jul_2020","Living in US during COVID-19 (Jul 2020)","COVID-19",500,"month",12,"months per year",12,NA
+"covid_19_unvaccinated_age_80","COVID-19 unvaccinated (age 80+)","COVID-19",234,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_65_79","COVID-19 unvaccinated (age 65-79)","COVID-19",76,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_80","COVID-19 monovalent vaccine (age 80+)","COVID-19",55,"period",5,"times per year",100,NA
+"living_in_nyc_covid_19_mar_may_2020","Living in NYC COVID-19 (Mar-May 2020)","COVID-19",50,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_80","COVID-19 bivalent booster (age 80+)","COVID-19",23,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_all_ages","COVID-19 unvaccinated (all ages)","COVID-19",20,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_65_79","COVID-19 monovalent vaccine (age 65-79)","COVID-19",9,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_50_64","COVID-19 unvaccinated (age 50-64)","COVID-19",8,"period",5,"times per year",100,NA
+"living_in_maryland_covid_19_mar_may_2020","Living in Maryland COVID-19 (Mar-May 2020)","COVID-19",7,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_all_ages","COVID-19 monovalent vaccine (all ages)","COVID-19",4,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_65_79","COVID-19 bivalent booster (age 65-79)","COVID-19",3,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_50_64","COVID-19 monovalent vaccine (age 50-64)","COVID-19",2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_50_64","COVID-19 bivalent booster (age 50-64)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_all_ages","COVID-19 bivalent booster (all ages)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_unvaccinated_age_18_49","COVID-19 unvaccinated (age 18-49)","COVID-19",1,"period",5,"times per year",100,NA
+"covid_19_monovalent_vaccine_age_18_49","COVID-19 monovalent vaccine (age 18-49)","COVID-19",0.2,"period",5,"times per year",100,NA
+"covid_19_bivalent_booster_age_18_49","COVID-19 bivalent booster (age 18-49)","COVID-19",0.05,"period",5,"times per year",100,NA
+"living_one_day_age_90","Living (one day, age 90)","Daily Life",463,"day",365,"days per year",365,NA
+"first_day_of_life_newborn","First day of life (newborn)","Daily Life",430,"day",365,"days per year",365,NA
+"living_one_day_age_75","Living (one day, age 75)","Daily Life",105,"day",365,"days per year",365,NA
+"living_one_day_under_age_1","Living (one day, under age 1)","Daily Life",15,"day",365,"days per year",365,NA
+"living_one_day_age_45","Living (one day, age 45)","Daily Life",6,"day",365,"days per year",365,NA
+"living_one_day_age_50","Living (one day, age 50)","Daily Life",4,"day",365,"days per year",365,NA
+"living_one_day_age_20","Living (one day, age 20)","Daily Life",1,"day",365,"days per year",365,NA
+"living_one_day_age_30","Living (one day, age 30)","Daily Life",1,"day",365,"days per year",365,NA
+"taking_a_bath","Taking a bath","Daily Life",0.07,"event",5,"times per year",100,NA
+"bath_age","Taking a bath (age-conditioned)","Daily Life",0.07,"event",5,"times per year",100,NA
+"working_in_an_office_8_hours","Working in an office (8 hours)","Daily Life",0.03,"day",365,"days per year",365,NA
+"crossing_a_road","Crossing a road","Daily Life",0.02,"event",5,"times per year",100,NA
+"cup_of_coffee","Cup of coffee","Daily Life",0.01,"event",5,"times per year",100,NA
+"bed_fall","Bed fall (per night)","Daily Life",0.004,"day",365,"days per year",365,NA
+"eating_100_charbroiled_steaks_cumulative_benzopyrene","Eating 100 charbroiled steaks (cumulative benzopyrene)","Diet",1,"event",5,"times per year",100,NA
+"eating_1000_bananas_radiation","Eating 1000 bananas (radiation)","Diet",1,"event",5,"times per year",100,NA
+"eating_40_tbsp_peanut_butter_aflatoxin","Eating 40 tbsp peanut butter (aflatoxin)","Diet",1,"event",5,"times per year",100,NA
+"spanish_flu_infection","Spanish flu infection","Disease",3000,"event",5,"times per year",100,NA
+"heroin_use_per_dose","Heroin use (per dose)","Drugs",30,"event",5,"times per year",100,NA
+"ecstasy_mdma_per_dose","Ecstasy/MDMA (per dose)","Drugs",13,"event",5,"times per year",100,NA
+"living_2_months_with_a_smoker","Living 2 months with a smoker","Environment",1,"event",5,"times per year",100,NA
+"background_radiation_annual","Normal background radiation","Environment",0.12,"year",1,"(annual rate)",1,NA
+"granite_resident_annual","Granite resident (annual radon)","Environment",0.1,"year",1,"(annual rate)",1,NA
+"high_altitude_resident_annual","High-altitude resident (annual cosmic)","Environment",0.035,"year",1,"(annual rate)",1,NA
+"caesarean_birth_mother","Caesarean birth (mother)","Medical",170,"event",5,"times per year",100,NA
+"vaginal_birth_mother","Vaginal birth (mother)","Medical",120,"event",5,"times per year",100,NA
+"night_in_hospital","Night in hospital","Medical",75,"day",365,"days per year",365,NA
+"ct_scan_abdomen_radiation_per_scan","CT scan abdomen (radiation per scan)","Medical",10,"event",5,"times per year",100,NA
+"general_anesthesia_emergency","General anesthesia (emergency)","Medical",10,"event",5,"times per year",100,NA
+"ct_scan_chest_radiation_per_scan","CT scan chest (radiation per scan)","Medical",7,"event",5,"times per year",100,NA
+"coronary_angiogram_radiation_per_scan","Coronary angiogram (radiation per scan)","Medical",5,"event",5,"times per year",100,NA
+"barium_enema_radiation_per_scan","Barium enema (radiation per scan)","Medical",3,"event",5,"times per year",100,NA
+"ct_scan_head_radiation_per_scan","CT scan head (radiation per scan)","Medical",2,"event",5,"times per year",100,NA
+"anaesthesia_elective","General anaesthesia (elective)","Medical",2,"event",5,"times per year",100,NA
+"chest_x_ray_radiation_per_scan","Chest X-ray (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"mammogram_radiation_per_scan","Mammogram (radiation per scan)","Medical",0.1,"event",5,"times per year",100,NA
+"dental_x_ray_radiation_per_scan","Dental X-ray (radiation per scan)","Medical",0.05,"event",5,"times per year",100,NA
+"us_military_in_afghanistan_2010","US military in Afghanistan (2010)","Military",25,"day",365,"days per year",365,NA
+"mt_everest_ascent","Mt. Everest ascent","Mountaineering",37932,"event",5,"times per year",100,NA
+"himalayan_mountaineering","Himalayan mountaineering","Mountaineering",12000,"event",5,"times per year",100,NA
+"matterhorn_ascent","Matterhorn ascent","Mountaineering",2840,"event",5,"times per year",100,NA
+"logging_work_day","Logging (per work day)","Occupation",3.3,"day",365,"days per year",365,NA
+"fishing_work_day","Commercial fishing (per work day)","Occupation",3,"day",365,"days per year",365,NA
+"roofing_work_day","Roofing (per work day)","Occupation",1.9,"day",365,"days per year",365,NA
+"ironworker_work_day","Structural iron/steel work (per work day)","Occupation",1.5,"day",365,"days per year",365,NA
+"truck_driving_work_day","Truck driving (per work day)","Occupation",1.2,"day",365,"days per year",365,NA
+"1_hour_in_a_coal_mine","1 hour in a coal mine","Occupation",1,"hour",100,"hours per year",2000,NA
+"mining_work_day","Mining (per work day)","Occupation",0.9,"day",365,"days per year",365,NA
+"agriculture_work_day","Agriculture (per work day)","Occupation",0.7,"day",365,"days per year",365,NA
+"construction_work_day","Construction (all trades, per work day)","Occupation",0.5,"day",365,"days per year",365,NA
+"interventional_cardiologist_annual","Interventional cardiologist (annual radiation)","Occupation",0.175,"year",1,"(annual rate)",1,NA
+"all_workers_baseline","All US workers baseline (per work day)","Occupation",0.15,"day",365,"days per year",365,NA
+"airline_pilot_annual","Airline pilot (annual radiation)","Occupation",0.15,"year",1,"(annual rate)",1,NA
+"nuclear_worker_annual","Nuclear plant worker (annual radiation)","Occupation",0.1,"year",1,"(annual rate)",1,NA
+"xray_tech_annual","X-ray technician (annual radiation)","Occupation",0.05,"year",1,"(annual rate)",1,NA
+"dental_radiographer_annual","Dental radiographer (annual radiation)","Occupation",0.01,"year",1,"(annual rate)",1,NA
+"base_jumping_per_jump","Base jumping (per jump)","Sport",430,"event",5,"times per year",100,NA
+"scuba_diving_trained_yearly","Scuba diving, trained (yearly)","Sport",164,"year",1,"(annual rate)",1,NA
+"american_football","American football","Sport",20,"event",5,"times per year",100,NA
+"swimming","Swimming","Sport",12,"event",5,"times per year",100,NA
+"skydiving_per_jump","Skydiving (per jump)","Sport",10,"event",5,"times per year",100,NA
+"skydiving_uk","Skydiving (UK)","Sport",8,"event",5,"times per year",100,NA
+"skydiving_us","Skydiving (US)","Sport",8,"event",5,"times per year",100,NA
+"hang_gliding_per_flight","Hang gliding (per flight)","Sport",8,"event",5,"times per year",100,NA
+"running_a_marathon","Running a marathon","Sport",7,"event",5,"times per year",100,NA
+"scuba_diving_trained_per_dive","Scuba diving, trained (per dive)","Sport",5,"event",5,"times per year",100,NA
+"rock_climbing_per_day","Rock climbing (per day)","Sport",3,"day",365,"days per year",365,NA
+"skiing","Skiing","Sport",0.7,"day",365,"days per year",365,NA
+"horse_riding","Horse riding","Sport",0.5,"event",5,"times per year",100,NA
+"motorcycling_60_miles","Motorcycling (60 miles)","Travel",10,"event",5,"times per year",100,NA
+"flying_12h","Flying (12h ultra-long-haul)","Travel",6.6,"event",5,"times per year",100,NA
+"flying_8h","Flying (8h long-haul)","Travel",3.9,"event",5,"times per year",100,NA
+"flying_5h","Flying (5h medium-haul)","Travel",1.75,"event",5,"times per year",100,NA
+"flying_2h","Flying (2h short-haul)","Travel",1.1,"event",5,"times per year",100,NA
+"driving_230_miles","Driving (230 miles)","Travel",1,"event",5,"times per year",100,NA
+"train_1000_miles","Train (1000 miles)","Travel",1,"event",5,"times per year",100,NA
+"walking_20_miles","Walking (20 miles)","Travel",1,"event",5,"times per year",100,NA
+"executive_flyer_annual","Frequent executive flyer (annual cosmic)","Travel",0.15,"year",1,"(annual rate)",1,NA
+"commuting_by_car_30_min","Commuting by car (30 min)","Travel",0.13,"event",5,"times per year",100,NA
+"commuting_by_bicycle_30_min","Commuting by bicycle (30 min)","Travel",0.12,"event",5,"times per year",100,NA
+"walking_1_trip_nyc","Walking (1 trip, NYC)","Travel",0.09,"event",5,"times per year",100,NA
+"business_traveller_annual","Business traveller (annual cosmic)","Travel",0.0375,"year",1,"(annual rate)",1,NA
+"annual_tourist_annual","Annual tourist flyer (annual cosmic)","Travel",0.006,"year",1,"(annual rate)",1,NA
+"kangaroo_encounter","Kangaroo encounter","Wildlife",0.1,"event",5,"times per year",100,NA
+"shark_encounter","Shark encounter (ocean swim)","Wildlife",0.06,"event",5,"times per year",100,NA
+"bee_sting_general","Bee/wasp sting (general)","Wildlife",0.03,"event",5,"times per year",100,NA
+
+## file: portfolio_chronic.csv
+## type: text
+"factor_id","factor","category","microlives_per_day","direction","description","synergy_tag"
+"smoking_20_cigarettes","Smoking 20 cigarettes","Smoking",-10,"loss","Heavy smoking accelerates aging to 29 hours/day","smoking"
+"smoking_10_cigarettes","Smoking 10 cigarettes","Smoking",-5,"loss","Moderate smoking","smoking"
+"smoking_2_cigarettes","Smoking 2 cigarettes","Smoking",-1,"loss","Each cigarette costs ~15 minutes","smoking"
+"being_5_kg_overweight","Being 5 kg overweight","Weight",-1,"loss","Per 5 kg above optimum BMI weight","obesity"
+"being_10_kg_overweight","Being 10 kg overweight","Weight",-2,"loss","Cumulative effect of excess weight","obesity"
+"being_15_kg_overweight","Being 15 kg overweight","Weight",-3,"loss","Cumulative effect of excess weight","obesity"
+"glass_of_wine_daily","Glass of wine daily","Alcohol",-1,"loss","Chronic cancer/liver risk from daily wine (Wikipedia 0.5mm/day); not an acute per-glass risk","alcohol"
+"2nd_3rd_alcoholic_drink","2nd-3rd alcoholic drink","Alcohol",-1,"loss","After first drink, additional drinks cost","alcohol"
+"4th_5th_alcoholic_drink","4th-5th alcoholic drink","Alcohol",-2,"loss","Heavy drinking costs more","alcohol"
+"red_meat_1_portion_day_","Red meat (1 portion/day)","Diet",-1,"loss","Daily red meat consumption",NA
+"processed_meat_1_portion_day_","Processed meat (1 portion/day)","Diet",-1,"loss","Bacon, sausages, etc. (cancer risk)",NA
+"low_fiber_diet","Low fiber diet","Diet",-1,"loss","Less than 25g fiber daily (colorectal cancer risk)",NA
+"high_sugar_diet","High sugar diet","Diet",-1,"loss","Excess refined sugar (diabetes, CVD risk)",NA
+"2_hours_tv_watching","2 hours TV watching","Sedentary",-1,"loss","Prolonged sitting/inactivity",NA
+"sitting_8_hours_day","Sitting 8+ hours/day","Sedentary",-2,"loss","Office work without breaks (CVD risk)",NA
+"living_with_a_smoker","Living with a smoker","Environment",-1,"loss","Second-hand smoke exposure",NA
+"air_pollution_high_","Air pollution (high)","Environment",-1,"loss","Living in polluted urban area",NA
+"untreated_hypertension","Untreated hypertension","Cardiovascular",-4,"loss","Systolic BP &gt;140 mmHg untreated",NA
+"type_2_diabetes_poorly_controlled_","Type 2 diabetes (poorly controlled)","Cardiovascular",-3,"loss","HbA1c &gt;8% increases CVD risk",NA
+"high_ldl_cholesterol_untreated_","High LDL cholesterol (untreated)","Cardiovascular",-2,"loss","LDL &gt;160 mg/dL without statins",NA
+"family_history_of_heart_disease","Family history of heart disease","Cardiovascular",-2,"loss","First-degree relative with CVD &lt;55y",NA
+"family_history_of_cancer","Family history of cancer","Cancer",-1,"loss","First-degree relative with cancer",NA
+"low_physical_activity","Low physical activity","Cancer",-1,"loss","Less than 150 min exercise/week (cancer risk)",NA
+"excessive_alcohol_cancer_","Excessive alcohol (cancer)","Cancer",-1,"loss","More than 2 drinks/day increases cancer risk","alcohol"
+"2_3_cups_coffee_men_","2-3 cups coffee (men)","Diet",-1,"loss","Heavy coffee consumption (men only)",NA
+"being_male_vs_female_","Being male (vs female)","Demographics",-4,"loss","Male sex disadvantage",NA
+"chronic_stress_poor_sleep","Chronic stress/poor sleep","Mental Health",-1,"loss","Cortisol elevation, inflammation",NA
+"first_alcoholic_drink","First alcoholic drink","Alcohol",1,"gain","Moderate alcohol has protective effect","alcohol"
+"20_min_moderate_exercise","20 min moderate exercise","Exercise",2,"gain","Daily moderate physical activity",NA
+"150_min_weekly_exercise","150 min weekly exercise","Exercise",3,"gain","Meeting WHO recommendations (CVD/cancer prevention)",NA
+"5_servings_fruit_veg","5 servings fruit/veg","Diet",4,"gain","Daily fruit and vegetable intake",NA
+"high_fiber_diet","High fiber diet","Diet",2,"gain","25g+ fiber daily (colorectal cancer prevention)",NA
+"mediterranean_diet","Mediterranean diet","Diet",2,"gain","Reduces CVD and cancer risk",NA
+"statin_therapy_if_indicated_","Statin therapy (if indicated)","Medical",1,"gain","Cholesterol-lowering medication",NA
+"blood_pressure_control","Blood pressure control","Medical",2,"gain","Achieving target BP &lt;130/80 mmHg",NA
+"cancer_screening_age_appropriate_","Cancer screening (age-appropriate)","Medical",1,"gain","Early detection improves outcomes",NA
+"being_female_vs_male_","Being female (vs male)","Demographics",4,"gain","Female sex advantage",NA
+"living_in_2010_vs_1910","Living in 2010 vs 1910","Historical",15,"gain","Medical/social progress",NA
+"living_in_sweden_vs_russia_male_","Living in Sweden vs Russia (male)","Demographics",21,"gain","Geographic health advantage",NA
+"average_cancer_diagnosis","Average cancer diagnosis","Cancer",-6,"loss","~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)",NA
+</code></pre>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
