@@ -90,9 +90,13 @@ plan_vignette_outputs <- list(
           paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
           font = list(color = "#e0e0e0", size = 13),
           annotations = list(list(
-            text = "1 mm = one-in-a-million chance of death",
-            x = 0.5, y = -0.12, xref = "paper", yref = "paper",
-            showarrow = FALSE, font = list(size = 11, color = "#888888")))
+            text = paste0(
+              "Horizontal bar chart of mundane daily activities ranked by micromorts (mm, x-axis). ",
+              "1 mm = one-in-a-million chance of death. ",
+              "Commuting by car (0.13 mm) slightly exceeds cycling (0.12 mm); both dwarf coffee (0.01 mm). ",
+              "Source: common_risks() from atomic_risks(), cross-referenced with CDC/DfT data."),
+            x = 0.5, y = -0.15, xref = "paper", yref = "paper",
+            showarrow = FALSE, font = list(size = 9, color = "#888888")))
         ) |> plotly::config(displayModeBar = FALSE)
     }
   ),
@@ -126,7 +130,15 @@ plan_vignette_outputs <- list(
           margin = list(l = 220),
           paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
           font = list(color = "#e0e0e0", size = 13),
-          legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0"))
+          legend = list(bgcolor = "#1a1a2e", font = list(color = "#e0e0e0")),
+          annotations = list(list(
+            text = paste0(
+              "Cleveland dot chart of top 35 activities by micromorts (mm, x-axis, log scale), coloured by category. ",
+              "Spans 6 orders of magnitude: from coffee (0.01 mm) to Mt Everest (37,932 mm). ",
+              "Mountaineering and COVID-19 dominate; most daily activities cluster below 1 mm. ",
+              "Source: common_risks() aggregating atomic_risks()."),
+            x = 0.5, y = -0.06, xref = "paper", yref = "paper",
+            showarrow = FALSE, font = list(size = 9, color = "#888888")))
         ) |> plotly::config(displayModeBar = FALSE)
     }
   ),
@@ -163,9 +175,13 @@ plan_vignette_outputs <- list(
           paper_bgcolor = "#1a1a2e", plot_bgcolor = "#1a1a2e",
           font = list(color = "#e0e0e0", size = 13),
           annotations = list(list(
-            text = "1 ml = 30 min of life expectancy. Red = lose, Green = gain.",
+            text = paste0(
+              "Horizontal bar chart of chronic lifestyle factors ranked by microlives/day (ml/day, x-axis). ",
+              "1 microlife = 30 minutes of life expectancy; red bars = loss, green = gain. ",
+              "Smoking 20 cigarettes (-10 ml/day) is the largest single loss; living in Sweden vs Russia (+21 ml/day) the largest gain. ",
+              "Source: chronic_risks(). Spiegelhalter (2012), BMJ."),
             x = 0.5, y = -0.08, xref = "paper", yref = "paper",
-            showarrow = FALSE, font = list(size = 11, color = "#888888")))
+            showarrow = FALSE, font = list(size = 9, color = "#888888")))
         ) |> plotly::config(displayModeBar = FALSE)
     }
   ),

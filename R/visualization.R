@@ -407,11 +407,15 @@ plot_risks_interactive <- function(risks = common_risks()) {
       margin = list(l = 200, r = 50, t = 80, b = 120),
       annotations = list(
         list(
-          text = "Sources: Wikipedia, CDC MMWR",
+          text = paste0(
+            "Interactive bar chart of all activities by micromorts (mm, x-axis, log scale), ",
+            "coloured by category. Click legend entries to filter. ",
+            nrow(risks), " activities spanning from coffee (0.01 mm) to Mt Everest (37,932 mm). ",
+            "Sources: Wikipedia, CDC MMWR, DfT, BLS CFOI. See common_risks()."),
           xref = "paper", yref = "paper",
           x = 0, y = -0.22,
           showarrow = FALSE,
-          font = list(color = "#999999", size = 10),
+          font = list(color = "#999999", size = 9),
           xanchor = "left"
         )
       ),

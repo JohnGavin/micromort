@@ -61,7 +61,8 @@ But what if the bigger risk is something you can't see, can't feel, and can't op
 
 ```{r equiv-table}
 #| echo: false
-show_target("vig_chronic_acute_heroin_table")
+show_target("vig_chronic_acute_heroin_table",
+  caption = "Days of chronic disease risk equivalent to one acute event (micromorts). 9 days of UK CVD risk equals one heroin dose (30 mm). Source: common_risks() and chronic_disease_risks().")
 ```
 
 :::
@@ -85,14 +86,16 @@ Over a full year, chronic disease risk dwarfs any one-off activity. Here's the U
 
 ```{r waterfall-chronic}
 #| echo: false
-show_target("vig_chronic_acute_waterfall_chronic")
+show_target("vig_chronic_acute_waterfall_chronic",
+  caption = "UK annual chronic disease micromorts. Cancer (~1,400 mm/yr) and CVD (~1,200 mm/yr) together equal climbing the Matterhorn annually. Source: chronic_disease_risks(country='GBR').")
 ```
 
 ### Acute one-off risks for comparison
 
 ```{r waterfall-acute}
 #| echo: false
-show_target("vig_chronic_acute_waterfall_acute")
+show_target("vig_chronic_acute_waterfall_acute",
+  caption = "Acute one-off risks for comparison (micromorts per event). Skydiving (8 mm) and marathons (7 mm) are dwarfed by annual chronic disease totals. Source: common_risks().")
 ```
 
 :::
@@ -114,7 +117,8 @@ The chronic burden is not fixed — it depends enormously on where you live. Swi
 
 ```{r country-shift}
 #| echo: false
-show_target("vig_chronic_acute_country_display")
+show_target("vig_chronic_acute_country_display",
+  caption = "Daily disease micromorts: UK vs Nigeria. Diarrheal disease 44x higher in Nigeria; CVD doubles. Geography is the dominant confounder in chronic risk. Source: common_risks() with country profiles.")
 ```
 
 :::
