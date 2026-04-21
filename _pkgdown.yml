@@ -64,12 +64,10 @@ navbar:
         href: articles/data_reliability.html
       - text: "---"
       - text: "Developer"
-      - text: "Architecture Overview"
+      - text: "Architecture & Telemetry"
         href: articles/architecture.html
       - text: "REST API"
         href: articles/rest_api.html
-      - text: "Project Telemetry"
-        href: articles/telemetry.html
 
 articles:
 - title: "Concepts"
@@ -109,7 +107,6 @@ articles:
   contents:
   - architecture
   - rest_api
-  - telemetry
 
 reference:
 - title: "Datasets"

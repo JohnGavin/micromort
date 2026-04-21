@@ -133,6 +133,73 @@ Auto-generated dependency graph of the full targets pipeline.
 show_target("vig_arch_tar_visnetwork")
 ```
 
+## Pipeline Telemetry
+
+### Dependency Graph
+
+```{r telemetry-dep-graph}
+#| echo: false
+#| results: asis
+#| fig-cap: "Target dependency graph showing data flow across the micromort pipeline. Nodes represent individual targets; edges show upstream dependencies. Built from targets::tar_network() edges."
+#| fig-alt: "Directed graph of targets pipeline dependencies."
+show_target("vig_pipeline_dependency_graph")
+```
+
+### Plans and Targets
+
+```{r telemetry-plans-targets}
+#| echo: false
+#| results: asis
+show_target("vig_pipeline_summary",
+  caption = "Pipeline plans and target counts. Each plan file contributes a set of targets to the directed acyclic graph. Source: targets::tar_manifest().")
+```
+
+### Top 5 Targets by Storage Size
+
+```{r telemetry-top-by-size}
+#| echo: false
+#| results: asis
+show_target("vig_telemetry_top_by_size",
+  caption = "Largest targets by serialised RDS size (bytes). Large targets may indicate opportunities for compression or lazy evaluation. Source: targets::tar_meta().")
+```
+
+### Top 5 Targets by Compute Time
+
+```{r telemetry-top-by-time}
+#| echo: false
+#| results: asis
+show_target("vig_telemetry_top_by_time",
+  caption = "Slowest targets by wall-clock build time (seconds). Bottleneck targets are candidates for crew parallelisation. Source: targets::tar_meta().")
+```
+
+### Commit Velocity
+
+```{r telemetry-commit-velocity}
+#| echo: false
+#| results: asis
+#| fig-cap: "Weekly commit frequency over the last 26 weeks. Each bar represents commits merged in a calendar week. Source: gert::git_log()."
+#| fig-alt: "Bar chart showing number of commits per week over the last 6 months."
+show_target("vig_telemetry_commit_velocity_chart")
+```
+
+### Issues and Pull Requests
+
+```{r telemetry-github-activity}
+#| echo: false
+#| results: asis
+show_target("vig_github_activity",
+  caption = "GitHub issues and pull requests summary. Open, closed, and merged counts. Source: gh::gh() API.")
+```
+
+### Codebase Metrics
+
+```{r telemetry-codebase-metrics}
+#| echo: false
+#| results: asis
+show_target("vig_codebase_metrics",
+  caption = "Package codebase summary: R files, lines of code, exported functions, test files, and vignettes. Source: fs::dir_info() and NAMESPACE parsing.")
+```
+
 ## Reproducibility
 
 ```{r architecture-session-info, eval=TRUE}

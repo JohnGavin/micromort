@@ -66,45 +66,21 @@ safe_tar_read("vig_reliability_validation_defs") |> knitr::kable()
 safe_tar_read("vig_reliability_validation_summary") |> knitr::kable()
 ```
 
-## 3. Geographic Conditioning: The Biggest Source of Variation
+## 3. Geographic and Health Profile Conditioning
 
-The same animal encounter can produce dramatically different micromort values depending on location and healthcare access:
+Geography is the biggest source of variation in risk data — the same snake bite ranges from 0.5 mm (US, with antivenom) to 18.5 mm (rural sub-Saharan Africa) �� a 37x difference. Health profile conditioning shows similar magnitude: a bee sting is 0.03 mm for the general population but 31 mm for someone with a known allergy (1,000x).
 
-```{r geography-table}
-#| echo: false
-#| tbl-cap: "Geographic conditioning: same encounter, different risk"
-safe_tar_read("vig_reliability_geography") |> knitr::kable(digits = 1)
-```
+For the full analysis of how geography and demographics reshuffle risk rankings, including disease mortality by country (IHME GBD data) and age-conditioned confounders (bed falls, anaesthesia), see the [Confounding Variables](confounding.html) vignette.
 
-Snake bite: **0.5 mm** (US, with antivenom) vs **18.5 mm** (rural Africa) — a **37x difference**.
-Dog bite: **6.7 mm** (US, with rabies PEP) vs **160 mm** (rabies-endemic, no treatment) — a **24x difference**.
-
-### The hedgeability asymmetry
-
-Geography is a **hedgeable conditional risk** — but only for some people:
-
-- A **tourist** can hedge: choose destination, get travel vaccines, carry antivenom kit, buy travel insurance
-- A **resident** cannot hedge: they live there, and may lack healthcare infrastructure, vaccines, or economic choice
-
-This parallels the existing health profile conditioning. A bee sting is 0.03 mm for someone who is not allergic, but **31 mm** for someone with a known allergy — a 1,000x difference. The allergic person can hedge (carry an epinephrine auto-injector), but they cannot eliminate the underlying vulnerability.
-
-```{r health-conditioning}
-#| echo: false
-#| tbl-cap: "Health profile conditioning: same sting, different risk"
-safe_tar_read("vig_reliability_health_conditioning") |> knitr::kable(digits = 2)
-```
-
-### Using geographic filtering
+The `common_risks()` function supports profile-based filtering:
 
 ```r
-# Default: returns high-income estimates
-common_risks() |> filter(category == "Wildlife")
+# Default: returns high-income, all-ages estimates
+common_risks()
 
-# Explicitly request low-income geography
-common_risks(profile = list(geography = "low_income")) |> filter(category == "Wildlife")
-
-# Combine with health profile
-common_risks(profile = list(geography = "low_income", health_profile = "allergic"))
+# Geographic and health profile conditioning
+common_risks(profile = list(country = "NG"))
+common_risks(profile = list(health_profile = "allergic"))
 ```
 
 ## 4. Cross-Validation Methods
