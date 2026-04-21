@@ -145,6 +145,10 @@ document.addEventListener("DOMContentLoaded", function() {
       { id: "conditional-risks", label: "Conditional Risks" },
       { id: "data-quality", label: "Data Quality" }
     ]},
+    { label: "Risk Perception", tabs: [
+      { id: "perception-gap", label: "The Perception Gap" },
+      { id: "calibrating-intuition", label: "Calibrating Intuition" }
+    ]},
     { label: "Notes", tabs: [
       { id: "conclusion", label: "Conclusion" },
       { id: "reproducibility", label: "Reproducibility" }

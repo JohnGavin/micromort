@@ -175,6 +175,13 @@ reference:
   - lle
   - value_of_micromort
 
+- title: "Disease Risk Data"
+  desc: "Chronic and infectious disease risks from GBD data, plus toxicological LD50 profiles"
+  contents:
+  - chronic_disease_risks
+  - infectious_disease_risks
+  - toxicological_risk
+
 - title: "Analysis Functions"
   desc: "Risk analysis and modeling"
   contents:
@@ -182,6 +189,7 @@ reference:
   - lifestyle_tradeoff
   - daily_hazard_rate
   - annual_risk_budget
+  - risk_sensitivity
 
 - title: "Visualization"
   desc: "Risk visualization"
@@ -208,6 +216,8 @@ reference:
   - ranking_quiz_questions
   - ranking_tag_mapping
   - kendall_tau_score
+  - combined_quiz_pairs
+  - export_combined_quiz_csv
 
 footer:
   structure:

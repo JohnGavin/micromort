@@ -461,7 +461,34 @@ Some risks are genuinely **background hazards** where the exposure is simply *be
 
 These are valid "per year" figures because the denominator is the entire population and the exposure is unavoidable. The problem arises when a per-year population rate is presented for an activity that only a fraction of the population engages in.
 
-## 9. Conclusion {#conclusion}
+## 10. The Perception Gap {#perception-gap}
+
+Why do people fear flying (0.05 micromorts per flight) more than driving to the airport (1--3 micromorts)? David Ropeik's *Risk: A Practical Guide for Deciding What's Really Safe and What's Really Dangerous* (2002) identifies a set of psychological factors that systematically distort risk perception away from statistical reality.
+
+**Ropeik's key factors:**
+
+-   **Dread:** Risks that evoke vivid suffering (cancer, plane crashes) feel larger than equivalent-mortality risks that kill quietly (heart disease, falls)
+-   **Control:** Voluntary risks (skiing, smoking) feel smaller than imposed risks (pollution, food additives) even at equal micromort levels
+-   **Familiarity:** Novel risks (vaping, CRISPR) trigger more fear than longstanding ones (alcohol, driving) regardless of the evidence
+-   **Catastrophic potential:** A single event killing 200 people generates more fear than 200 separate events each killing one person, though the mortality is identical
+
+These factors explain a persistent pattern in this package's data: **the activities people worry about most are rarely the ones with the highest micromort counts**.
+
+Consider the cancer example from `cancer_risks()`: cancer accounts for roughly 25% of UK deaths, yet surveys consistently rank it as the *most feared* cause of death --- ahead of cardiovascular disease, which kills more people ([Ropeik 2010](https://doi.org/10.1111/j.1539-6924.2010.01412.x)). The `chronic_disease_risks()` data confirms that cardiovascular daily micromorts exceed cancer daily micromorts in every country in the dataset.
+
+## 11. Calibrating Intuition {#calibrating-intuition}
+
+The practical goal of the `micromort` package is to help calibrate intuition against evidence. Ropeik's framework suggests three strategies:
+
+1.  **Anchor on familiar risks.** When evaluating a new risk, compare it to something you already accept. The quiz vignettes do exactly this --- presenting pairs like "one skydive vs. 2.5 days of UK cardiovascular risk" to build intuitive anchors.
+
+2.  **Separate frequency from dread.** A risk that feels terrifying (shark attack: 0.001 micromorts/beach visit) may be statistically negligible compared to a risk that feels mundane (driving: 0.3 micromorts per 100 km). The `atomic_risks()` function puts both on the same scale.
+
+3.  **Account for chronic accumulation.** Ropeik emphasises that people consistently underestimate slow, cumulative risks relative to dramatic one-off events. The `combined_quiz_pairs()` function is designed to make this comparison explicit: one acute micromort event vs. the equivalent number of days of chronic exposure.
+
+For further reading, see Slovic's *The Perception of Risk* ([2000](https://doi.org/10.4324/9781315661773)) and Fischhoff et al.'s foundational psychometric work ([1978](https://doi.org/10.1016/0032-5910(78)80030-X)), which provide the empirical basis for Ropeik's framework.
+
+## 12. Conclusion {#conclusion}
 
 The `micromort` package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts), chronic risks (microlives), and quality-of-life metrics (QALYs, DALYs), individuals and policymakers can make more informed choices about risk trade-offs.
 
