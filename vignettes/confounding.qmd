@@ -170,7 +170,7 @@ The leading causes of death vary dramatically by country — and not just for in
 ```{r disease-by-country}
 #| echo: false
 show_target("vig_confounding_disease_by_country",
-  caption = "Daily micromorts by disease cause and country (IHME GBD 2023). Cardiovascular disease (CVD) leads everywhere; diarrheal disease shows 68x UK-India gap driven by sanitation infrastructure. Source: atomic_risks() Parts 11a-11d.")
+  caption = "Daily micromorts by disease cause and country (IHME Global Burden of Disease 2023). Cardiovascular disease (CVD) leads everywhere; diarrheal disease shows 68x UK-India gap driven by sanitation infrastructure. Source: atomic_risks() Parts 11a-11d.")
 ```
 
 ```{r disease-dynamic, echo=FALSE}

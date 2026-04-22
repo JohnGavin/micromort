@@ -70,7 +70,7 @@ safe_tar_read("vig_reliability_validation_summary") |> knitr::kable()
 
 Geography is the biggest source of variation in risk data — the same snake bite ranges from 0.5 mm (US, with antivenom) to 18.5 mm (rural sub-Saharan Africa) �� a 37x difference. Health profile conditioning shows similar magnitude: a bee sting is 0.03 mm for the general population but 31 mm for someone with a known allergy (1,000x).
 
-For the full analysis of how geography and demographics reshuffle risk rankings, including disease mortality by country (IHME GBD data) and age-conditioned confounders (bed falls, anaesthesia), see the [Confounding Variables](confounding.html) vignette.
+For the full analysis of how geography and demographics reshuffle risk rankings, including disease mortality by country (<abbr title="Institute for Health Metrics and Evaluation">IHME</abbr> <abbr title="Global Burden of Disease study">GBD</abbr> data) and age-conditioned confounders (bed falls, anaesthesia), see the [Confounding Variables](confounding.html) vignette.
 
 The `common_risks()` function supports profile-based filtering:
 
@@ -91,10 +91,10 @@ We use five methods to assess data reliability:
 
 Compare the same risk across independent sources. For wildlife risks, we cross-reference:
 
-- **OWID** annual death counts (numerator)
-- **CDC** injury surveillance (US denominator)
-- **WHO** fact sheets (global denominator)
-- **ISAF** shark attack database (species-specific data)
+- **[OWID](https://ourworldindata.org/)** (Our World in Data) annual death counts (numerator)
+- **[CDC](https://www.cdc.gov/)** (Centers for Disease Control and Prevention) injury surveillance (US denominator)
+- **[WHO](https://www.who.int/)** (World Health Organization) fact sheets (global denominator)
+- **[ISAF](https://www.floridamuseum.ufl.edu/shark-attacks/)** (International Shark Attack File) species-specific data
 
 ### Denominator audit
 
@@ -119,7 +119,7 @@ Do US, UK, and global estimates agree within an order of magnitude? Large discre
 
 Is the number physically plausible? A micromort value that implies more deaths than the population can support is a red flag.
 
-## 5. Worked Example: Animal Risks from OWID
+## 5. Worked Example: Animal Risks from <abbr title="Our World in Data">OWID</abbr>
 
 Our World in Data reports annual deaths by animal. Converting to per-encounter micromorts requires:
 
@@ -127,11 +127,11 @@ $$\text{micromorts} = \frac{\text{deaths per year}}{\text{encounters per year}} 
 
 ```{r owid-conversion}
 #| echo: false
-#| tbl-cap: "Converting OWID annual counts to per-encounter micromorts"
+#| tbl-cap: "Converting Our World in Data (OWID) annual counts to per-encounter micromorts"
 safe_tar_read("vig_reliability_owid_conversion") |> knitr::kable()
 ```
 
-Mosquito, crocodile, and elephant fail our inclusion criteria: there is no defensible per-encounter denominator. Mosquito bites are ubiquitous in endemic regions, making a per-bite risk meaningless. We cite OWID for context but do not include these as micromort entries.
+Mosquito, crocodile, and elephant fail our inclusion criteria: there is no defensible per-encounter denominator. Mosquito bites are ubiquitous in endemic regions, making a per-bite risk meaningless. We cite <abbr title="Our World in Data">OWID</abbr> for context but do not include these as micromort entries.
 
 ## 6. Estimate Ranges
 
