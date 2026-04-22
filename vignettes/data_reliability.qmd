@@ -70,7 +70,7 @@ safe_tar_read("vig_reliability_validation_summary") |> knitr::kable()
 
 Geography is the biggest source of variation in risk data — the same snake bite ranges from 0.5 mm (US, with antivenom) to 18.5 mm (rural sub-Saharan Africa) �� a 37x difference. Health profile conditioning shows similar magnitude: a bee sting is 0.03 mm for the general population but 31 mm for someone with a known allergy (1,000x).
 
-For the full analysis of how geography and demographics reshuffle risk rankings, including disease mortality by country (<abbr title="Institute for Health Metrics and Evaluation">IHME</abbr> <abbr title="Global Burden of Disease study">GBD</abbr> data) and age-conditioned confounders (bed falls, anaesthesia), see the [Confounding Variables](confounding.html) vignette.
+For the full analysis of how geography and demographics reshuffle risk rankings, including disease mortality by country (<a href="https://www.healthdata.org/"><abbr title="Institute for Health Metrics and Evaluation">IHME</abbr></a> <a href="https://www.healthdata.org/research-analysis/gbd"><abbr title="Global Burden of Disease study">GBD</abbr></a> data) and age-conditioned confounders (bed falls, anaesthesia), see the [Confounding Variables](confounding.html) vignette.
 
 The `common_risks()` function supports profile-based filtering:
 
@@ -119,7 +119,7 @@ Do US, UK, and global estimates agree within an order of magnitude? Large discre
 
 Is the number physically plausible? A micromort value that implies more deaths than the population can support is a red flag.
 
-## 5. Worked Example: Animal Risks from <abbr title="Our World in Data">OWID</abbr>
+## 5. Worked Example: Animal Risks from <a href="https://ourworldindata.org/"><abbr title="Our World in Data">OWID</abbr></a>
 
 Our World in Data reports annual deaths by animal. Converting to per-encounter micromorts requires:
 
@@ -131,7 +131,7 @@ $$\text{micromorts} = \frac{\text{deaths per year}}{\text{encounters per year}} 
 safe_tar_read("vig_reliability_owid_conversion") |> knitr::kable()
 ```
 
-Mosquito, crocodile, and elephant fail our inclusion criteria: there is no defensible per-encounter denominator. Mosquito bites are ubiquitous in endemic regions, making a per-bite risk meaningless. We cite <abbr title="Our World in Data">OWID</abbr> for context but do not include these as micromort entries.
+Mosquito, crocodile, and elephant fail our inclusion criteria: there is no defensible per-encounter denominator. Mosquito bites are ubiquitous in endemic regions, making a per-bite risk meaningless. We cite <a href="https://ourworldindata.org/"><abbr title="Our World in Data">OWID</abbr></a> for context but do not include these as micromort entries.
 
 ## 6. Estimate Ranges
 

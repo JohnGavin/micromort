@@ -125,7 +125,7 @@ show_target("vig_chronic_acute_country_display",
 
 [**Diarrheal disease** jumps from 0.02 mm/day in the UK to 0.88 mm/day in Nigeria — a 44x difference driven by clean water and sanitation infrastructure.]{highlight="cr-country"}
 
-[**<abbr title="Cardiovascular disease: diseases of the heart and blood vessels">CVD</abbr>** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
+[**<a href="https://www.who.int/health-topics/cardiovascular-diseases"><abbr title="Cardiovascular disease: diseases of the heart and blood vessels">CVD</abbr></a>** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
 
 [These are the confounders that population-average micromort tables hide. See the [confounding vignette](confounding.html) for the full geographic and demographic analysis.]{highlight="cr-country"}
 

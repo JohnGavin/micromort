@@ -439,7 +439,7 @@ For further reading, see Slovic's *The Perception of Risk* ([2000](https://doi.o
 
 ## 12. Conclusion {#conclusion}
 
-The `micromort` package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts), chronic risks (microlives), and quality-of-life metrics (<abbr title="Quality-adjusted life year: 1 QALY = 1 year in perfect health">QALYs</abbr>, <abbr title="Disability-adjusted life year: 1 DALY = 1 year of healthy life lost">DALYs</abbr>), individuals and policymakers can make more informed choices about risk trade-offs.
+The `micromort` package helps translate abstract probabilities into concrete units for better decision-making. By comparing acute risks (micromorts), chronic risks (microlives), and quality-of-life metrics (<a href="https://www.nice.org.uk/glossary?letter=q"><abbr title="Quality-adjusted life year: 1 QALY = 1 year in perfect health">QALYs</abbr></a>, <a href="https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158"><abbr title="Disability-adjusted life year: 1 DALY = 1 year of healthy life lost">DALYs</abbr></a>), individuals and policymakers can make more informed choices about risk trade-offs.
 
 The new conditional risk functions enable:
 
