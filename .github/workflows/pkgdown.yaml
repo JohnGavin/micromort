@@ -105,7 +105,32 @@ jobs:
           done
 
           if [ $ERRORS -gt 0 ]; then
-            echo "::warning::$ERRORS deployed URL(s) returned non-200 status"
+            echo "::error::$ERRORS deployed URL(s) returned non-200 status"
+            exit 1
           else
-            echo "All deployed URLs verified"
+            echo "All deployed URLs verified (HTTP 200)"
           fi
+
+      - name: Check deployed HTML for error patterns
+        if: success()
+        run: |
+          SITE_URL="${{ steps.deployment.outputs.page_url }}"
+          SITE_URL="${SITE_URL%/}"
+          ERRORS=0
+          sleep 15
+          for article in $(grep -o 'articles/[a-z_-]*\.html' _pkgdown.yml | sort -u); do
+            URL="${SITE_URL}/${article}"
+            CONTENT=$(curl -s --retry 3 --retry-delay 10 "$URL")
+            for pattern in "not available" "not found in targets" "MISSING EVIDENCE" "Error in" "Error:"; do
+              COUNT=$(echo "$CONTENT" | grep -ci "$pattern" || true)
+              if [ "$COUNT" -gt 0 ]; then
+                echo "::error::${article}: ${COUNT} hits for '${pattern}'"
+                ERRORS=$((ERRORS + COUNT))
+              fi
+            done
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::${ERRORS} error pattern(s) found in deployed HTML"
+            exit 1
+          fi
+          echo "All deployed articles pass content QA"

@@ -231,6 +231,70 @@ plan_qa_gates <- list(
     cue = targets::tar_cue(mode = "always")
   ),
 
+  # Deployed HTML content check: curl deployed URLs, grep for error patterns
+  targets::tar_target(
+    qa_deployed_html,
+    {
+      desc <- tryCatch(read.dcf("DESCRIPTION"), error = function(e) NULL)
+      if (is.null(desc)) return(data.frame(article = character(), pattern = character(),
+        count = integer(), stringsAsFactors = FALSE))
+
+      urls_field <- if ("URL" %in% colnames(desc)) desc[, "URL"] else ""
+      base_url <- trimws(strsplit(urls_field, ",")[[1]][1])
+      if (!nzchar(base_url) || !grepl("^https?://", base_url)) {
+        cli::cli_alert_info("No pkgdown URL in DESCRIPTION — skipping deployed QA")
+        return(data.frame(article = character(), pattern = character(),
+          count = integer(), stringsAsFactors = FALSE))
+      }
+      base_url <- sub("/$", "", base_url)
+
+      yml <- tryCatch(yaml::read_yaml("_pkgdown.yml"), error = function(e) NULL)
+      if (is.null(yml)) return(data.frame(article = character(), pattern = character(),
+        count = integer(), stringsAsFactors = FALSE))
+
+      # Extract article slugs from navbar
+      navbar_text <- readLines("_pkgdown.yml", warn = FALSE)
+      slugs <- regmatches(navbar_text,
+        regexpr("articles/[a-z_-]+\\.html", navbar_text))
+      slugs <- unique(slugs)
+
+      patterns <- c("not available", "not found in targets",
+                     "MISSING EVIDENCE", "Error in", "Error:")
+      results <- lapply(slugs, function(slug) {
+        url <- paste0(base_url, "/", slug)
+        body <- tryCatch({
+          resp <- httr2::request(url) |>
+            httr2::req_timeout(15) |>
+            httr2::req_perform()
+          httr2::resp_body_string(resp)
+        }, error = function(e) "")
+        if (!nzchar(body)) return(NULL)
+        hits <- vapply(patterns, function(p) {
+          m <- gregexpr(p, body, ignore.case = TRUE)[[1]]
+          if (m[1] == -1L) 0L else length(m)
+        }, integer(1))
+        if (sum(hits) == 0L) return(NULL)
+        data.frame(article = slug, pattern = names(hits[hits > 0]),
+          count = hits[hits > 0], stringsAsFactors = FALSE)
+      })
+      result_df <- do.call(rbind, Filter(Negate(is.null), results))
+      if (is.null(result_df)) result_df <- data.frame(
+        article = character(), pattern = character(),
+        count = integer(), stringsAsFactors = FALSE)
+
+      n_fail <- nrow(result_df)
+      if (n_fail > 0) {
+        cli::cli_warn(c(
+          "!" = "{n_fail} error pattern(s) in deployed HTML",
+          "i" = "Run targets::tar_read(qa_deployed_html) for details"))
+      } else {
+        cli::cli_alert_success("All {length(slugs)} deployed articles pass content QA")
+      }
+      result_df
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
   # Quality gate: weighted score (6 components + vignette compliance)
   targets::tar_target(
     qa_quality_gate,
