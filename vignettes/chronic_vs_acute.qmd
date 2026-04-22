@@ -118,7 +118,7 @@ The chronic burden is not fixed — it depends enormously on where you live. Swi
 ```{r country-shift}
 #| echo: false
 show_target("vig_chronic_acute_country_display",
-  caption = "Daily disease micromorts: UK vs Nigeria. Diarrheal disease 44x higher in Nigeria; CVD doubles. Geography is the dominant confounder in chronic risk. Source: common_risks() with country profiles.")
+  caption = "Daily disease micromorts: UK vs Nigeria. Diarrheal disease 44x higher in Nigeria; cardiovascular disease (CVD) doubles. Geography is the dominant confounder in chronic risk. Source: common_risks() with country profiles.")
 ```
 
 :::
