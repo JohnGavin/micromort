@@ -1,30 +1,27 @@
 # Current Work
 
-## Session: 2026-04-05 to 2026-04-06
+## Session: 2026-04-24
 
 ### Branch: main
 
 ### Completed
+- OWID/GBD gap analysis vs micromort package
+- Discovered OWID catalog URLs all return 404 (licensing change)
+- Created 5 issues: #90 (GBD update), #91 (injuries), #92 (trends), #93 (treemap), #94 (OWID→IHME migration)
+- Updated CHANGELOG.md
 
-#### Data Quality Fixes
-1. **Bicycle commuting**: 0.50 → 0.12 mm per 30-min trip (Cycling UK 2024: 9-11M trips per fatality, cross-checked with DfT/NTS)
-2. **Wine (glass)**: Relabelled from acute "per event" to "per day (chronic)" — Wikipedia's 0.5 mm figure mixes chronic cancer/liver effects with acute risk. Confidence downgraded to low.
+### Pending (from prior sessions)
+- Glossary on reference page: check acronym coverage, add hover popups
+- Text selectability: `user-select: none` preventing copy/paste in tables
+- "Click to expand" broken on reference page
+- Rebuild confounding, data_reliability, introduction articles (acronym link fixes)
+- #84 CSS changes need visual browser verification
+- #89 CI template for all pkgdown projects
 
-### Failed Approaches
-- Searched for DfT RAS30 tables directly — data is in downloadable ODS files not web pages. Used Cycling UK summary statistics instead.
-
-### Accuracy / Metrics
-- Tests: 615 passing
-- Bicycle micromort corrected from 5x overestimate to evidence-based range (0.09-0.14 mm)
+### Blocked
+- #90, #91, #92 all blocked by #94 (need IHME account + manual download)
+- #93 (treemap vignette) can start with existing data
 
 ### Known Limitations
-- Closeread scroll effects still not activating (CSS loads but layout doesn't trigger)
-- Wine entry remains in acute dataset with chronic label — could be moved to chronic_risks() entirely
-- Substack article (rootofall) not relevant to project (motivational, not quantitative)
-
-### Pipeline: 116 targets, 615 tests
-
-### Next Session
-- Review other "per event" entries for similar chronic/acute conflation
-- Consider full audit of Wikipedia-sourced micromort values against primary sources
-- Closeread scroll debugging
+- Bundled disease data frozen at GBD 2019
+- OWID catalog defunct — `data-raw/owid_chronic_deaths.R` download script non-functional

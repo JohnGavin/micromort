@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-04-24
+
+### Completed
+
+**Issues created: 5** (#90, #91, #92, #93, #94)
+
+#### OWID/GBD gap analysis
+- Compared OWID "What do people die from in different countries?" against micromort package coverage
+- Found strong overlap (same IHME/GBD source, same disease categories, ~54 countries)
+- Identified 4 gaps: GBD version (2019→2023), injuries as population cause, temporal trends, proportional death-share visualization
+
+#### Data source investigation
+- Discovered OWID catalog URLs now return 404 (all dates from 2024-05-20 through 2026-02-11)
+- OWID restricted GBD redistribution due to IHME licensing changes
+- Existing bundled CSVs still work (local snapshots) but download scripts cannot refresh
+- Mapped new data access path: IHME GBD Results Tool (free account, 100k row limit)
+- Identified additional OWID datasets: risk-attributable deaths, cancer-specific, HALE, DALYs
+
+#### Issues raised
+- #90: Update OWID data to GBD 2023
+- #91: Add injuries as population-level cause of death
+- #92: Add temporal trends (1990-2023)
+- #93: Proportional death-share treemap vignette
+- #94: OWID catalog URLs return 404 — migrate to IHME direct download (blocks #90-92)
+
+### Failed Approaches
+- Tried probing 15 OWID catalog date variants (2024-05-20 through 2026-02-11) — all return 404. The entire catalog.ourworldindata.org/garden/ihme_gbd/ path is defunct.
+- OWID grapher CSV download pattern also returns 404 for GBD charts specifically (licensing restriction, not general breakage)
+
+### Known Limitations
+- #94 blocks #90, #91, #92 — all need manual IHME account creation + download
+- Existing bundled data frozen at GBD 2019 (via 2024-05-20 OWID snapshot)
+- Pending from prior sessions: glossary/reference page fixes, text selectability, "click to expand" broken, article rebuilds for acronym link fixes
+
 ## 2026-04-21
 
 ### Completed
