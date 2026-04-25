@@ -52,6 +52,8 @@ navbar:
       - text: "Storytelling"
       - text: "The Invisible Risk (closeread)"
         href: articles/chronic_vs_acute.html
+      - text: "🌍 Death Shares by Country"
+        href: articles/death_shares_shinylive.html
       - text: "---"
       - text: "Analysis"
       - text: "Risk Equivalence"
@@ -91,6 +93,7 @@ articles:
   - ranking_quiz_shinylive
   - quiz_analytics
   - portfolio_shinylive
+  - death_shares_shinylive
 
 - title: "Storytelling"
   contents:
