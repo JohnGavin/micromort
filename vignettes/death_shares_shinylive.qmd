@@ -314,7 +314,6 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-```
 
 ## file: death_shares.csv
 country,iso3,category,cause,year,deaths_per_100k,share_pct
@@ -689,3 +688,4 @@ United States,USA,Non-communicable,Diabetes mellitus,2019,18.6,4.7
 United States,USA,Non-communicable,Digestive diseases,2019,18.4,4.6
 United States,USA,Non-communicable,Chronic liver disease,2019,15.8,4
 United States,USA,Non-communicable,Chronic kidney disease,2019,14.2,3.6
+```
