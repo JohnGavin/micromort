@@ -271,12 +271,11 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Causes of Death page: load external JS + JSON data
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   if (!document.getElementById('cod-app')) return;
   var base = window.location.href.replace(/[^/]*$/, '');
+  window._COD_DATA_URL = base + 'causes_of_death_data.json';
   var script = document.createElement('script');
   script.src = base + 'causes_of_death_app.js';
-  // Store the data URL for the app to fetch
-  window._COD_DATA_URL = base + 'causes_of_death_data.json';
   document.body.appendChild(script);
-})();
+});

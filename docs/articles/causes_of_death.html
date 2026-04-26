@@ -136,8 +136,8 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 .cod-table td.num{text-align:right;font-variant-numeric:tabular-nums}
 .cod-table a{color:#4a90d9;text-decoration:none}.cod-table a:hover{text-decoration:underline}
 .notes{padding:1rem;line-height:1.7}
-.notes h3{color:#fff;margin:1.5rem 0 .5rem;font-size:1.15rem;border-bottom:1px solid #2a2a4e;padding-bottom:.25rem}
-.notes h3:first-child{margin-top:0}
+.notes-heading{color:#fff;margin:1.5rem 0 .5rem;font-size:1.15rem;font-weight:700;border-bottom:1px solid #2a2a4e;padding-bottom:.25rem}
+.notes-heading:first-child{margin-top:0}
 .notes ul{padding-left:1.5rem;margin:.25rem 0}
 .notes li{margin:.25rem 0}
 .notes a{color:#4a90d9}
@@ -174,7 +174,7 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 <div id="panel-notes" class="cod-panel">
 <div class="notes">
 
-<h3>Data summary</h3>
+<div class="notes-heading">Data summary</div>
 <ul>
 <li>
 <strong>26 countries</strong> — top 20 by population plus <a href="https://www.oecd.org/about/members-and-partners/" class="external-link">OECD</a> member states</li>
@@ -187,7 +187,7 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 <strong>Source:</strong> <a href="https://www.healthdata.org/research-analysis/gbd" class="external-link"><abbr title="Institute for Health Metrics and Evaluation">IHME</abbr> Global Burden of Disease</a> 2019, via <a href="https://ourworldindata.org/causes-of-death" class="external-link"><abbr title="Our World in Data">OWID</abbr></a> catalog (snapshot <code>2024-05-20</code>)</li>
   <li>Percentage shares are relative to these 14 tracked causes only — <strong>not</strong> 100% of all-cause mortality</li>
 </ul>
-<h3>Exclusions</h3>
+<div class="notes-heading">Exclusions</div>
 <ul>
 <li>
 <strong>Ireland</strong> — listed in the download script's country filter (<code>IRL</code>) but absent from the bundled OWID snapshot. Requires <a href="https://www.healthdata.org/data-tools-practices/interactive-visuals/gbd-results" class="external-link">IHME GBD Results Tool</a> direct download — see <a href="https://github.com/JohnGavin/micromort/issues/94" class="external-link">#94</a>
@@ -205,7 +205,7 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 OWID catalog date: <strong>2024-05-20</strong> — this URL now returns HTTP 404. OWID restricted GBD redistribution due to IHME licensing changes.<br><a href="https://ghdx.healthdata.org/record/ihme-data/gbd-2023-cause-specific-mortality-1990-2023" class="external-link">GBD 2023</a> is available from IHME (free account required) — see <a href="https://github.com/JohnGavin/micromort/issues/90" class="external-link">#90</a>.
 </div>
 
-<h3>Glossary</h3>
+<div class="notes-heading">Glossary</div>
 <ul>
 <li>
 <a href="https://www.healthdata.org/research-analysis/gbd" class="external-link"><abbr title="Global Burden of Disease study: comprehensive assessment of mortality and disability from diseases, injuries, and risk factors">GBD</abbr></a> — Global Burden of Disease study (IHME)</li>
@@ -222,7 +222,7 @@ OWID catalog date: <strong>2024-05-20</strong> — this URL now returns HTTP 404
   <li>
 <a href="https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158" class="external-link"><abbr title="Disability-adjusted life year: 1 DALY = 1 year of healthy life lost to illness, disability, or death">DALY</abbr></a> — Disability-adjusted life year</li>
 </ul>
-<h3>References</h3>
+<div class="notes-heading">References</div>
 <ul>
 <li>IHME. <em>Global Burden of Disease Study 2019 (GBD 2019) Results.</em> Seattle: Institute for Health Metrics and Evaluation, 2020. <a href="https://vizhub.healthdata.org/gbd-results/" class="external-link">GBD Results Tool</a>
 </li>
@@ -339,8 +339,7 @@ fetch('causes_of_death_data.json')
       }
     }
   });
-  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+  </script></main>
 </div>
 
 
