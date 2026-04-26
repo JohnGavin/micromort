@@ -31,6 +31,8 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 .tm-label{font-weight:600;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.7);line-height:1.2}
 .tm-val{font-size:1.1rem;font-weight:700;color:#fff;margin-top:4px}
 .tm-rate{font-size:.75rem;color:rgba(255,255,255,.8)}
+.tm-caption{color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5;background:#16213e;border-radius:0 0 8px 8px;margin-top:-1px}
+.tm-caption a{color:#4a90d9}
 #tooltip{position:fixed;display:none;background:#16213e;border:1px solid #4a90d9;border-radius:8px;padding:12px 16px;color:#e0e0e0;font-size:.9rem;max-width:320px;z-index:1000;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 #tooltip .tt-cause{font-weight:700;font-size:1.05rem;color:#fff;margin-bottom:4px}
 #tooltip .tt-cat{color:#4a90d9;font-size:.85rem;margin-bottom:6px}
@@ -146,6 +148,24 @@ OWID catalog date: <strong>2024-05-20</strong> — this URL now returns HTTP 404
 </script>
 
 <script>
+// Display labels: common names for GBD technical terms
+const DISPLAY = {
+  "Cardiovascular diseases": "Heart disease",
+  "Neoplasms": "Cancer",
+  "Chronic respiratory diseases": "Lung disease (chronic)",
+  "Diabetes mellitus": "Diabetes",
+  "Chronic kidney disease": "Kidney disease",
+  "Chronic liver disease": "Liver disease",
+  "Digestive diseases": "Digestive diseases",
+  "Lower respiratory infections": "Pneumonia & LRI",
+  "Diarrheal diseases": "Diarrhoeal diseases",
+  "Tuberculosis": "Tuberculosis",
+  "HIV/AIDS": "HIV/AIDS",
+  "Malaria": "Malaria",
+  "Hepatitis": "Hepatitis",
+  "Meningitis": "Meningitis"
+};
+function label(cause) { return DISPLAY[cause] || cause; }
 const CAUSE_URLS = {
   "Cardiovascular diseases": "https://www.who.int/health-topics/cardiovascular-diseases",
   "Neoplasms": "https://www.who.int/health-topics/cancer",
@@ -166,16 +186,17 @@ const CAT_URLS = {
   "Non-communicable": "https://www.who.int/health-topics/noncommunicable-diseases",
   "Infectious": "https://www.who.int/health-topics/infectious-diseases"
 };
+// Darkened colours — no pastels, all contrast well against white text
 const NCD_COLS = {
-  "Cardiovascular diseases":"#e41a1c","Neoplasms":"#ff7f00",
-  "Chronic respiratory diseases":"#fdbf6f","Diabetes mellitus":"#a6cee3",
-  "Digestive diseases":"#cab2d6","Chronic liver disease":"#fb9a99",
-  "Chronic kidney disease":"#b2df8a"
+  "Cardiovascular diseases":"#b71c1c","Neoplasms":"#cc6600",
+  "Chronic respiratory diseases":"#8d6e00","Diabetes mellitus":"#1565c0",
+  "Digestive diseases":"#6a1b9a","Chronic liver disease":"#ad1457",
+  "Chronic kidney disease":"#2e7d32"
 };
 const INF_COLS = {
-  "Lower respiratory infections":"#1f78b4","Diarrheal diseases":"#33a02c",
-  "Tuberculosis":"#6a3d9a","HIV/AIDS":"#b15928","Malaria":"#ffff99",
-  "Hepatitis":"#a6d854","Meningitis":"#66c2a5"
+  "Lower respiratory infections":"#0d47a1","Diarrheal diseases":"#1b5e20",
+  "Tuberculosis":"#4a148c","HIV/AIDS":"#7f3000","Malaria":"#827717",
+  "Hepatitis":"#33691e","Meningitis":"#00695c"
 };
 const ALL_COLS = Object.assign({}, NCD_COLS, INF_COLS);
 
@@ -224,29 +245,37 @@ function renderTreemap(container, data) {
   if (!data.length) { container.innerHTML = '<p style="color:#888;text-align:center">No data</p>'; return; }
   const total = data.reduce((s,d) => s + d.rate, 0);
   const country = data[0].country;
-  let html = '<div class="tm-header">' + country + ' — ' + data.length + ' causes, ' +
-    Math.round(total) + ' deaths/100k (14 tracked causes)</div><div class="tm-grid">';
+  const top = data[0];
+  let html = '<div class="tm-header">' + country + ' — ' + Math.round(total) +
+    ' deaths per 100,000 across ' + data.length + ' causes (GBD 2019)</div><div class="tm-grid">';
   data.forEach(d => {
     const col = ALL_COLS[d.cause] || '#666';
     const basis = Math.max(8, d.pct);
     const fsize = Math.max(0.7, Math.min(1.4, 0.7 + d.pct / 40));
     const url = CAUSE_URLS[d.cause] || '#';
     html += '<div class="tm-cell" style="flex-basis:' + basis.toFixed(1) + '%;background:' + col + '"' +
-      ' data-cause="' + d.cause + '" data-cat="' + d.category + '" data-rate="' + d.rate +
+      ' data-cause="' + label(d.cause) + '" data-gbd="' + d.cause + '" data-cat="' + d.category + '" data-rate="' + d.rate +
       '" data-pct="' + d.pct + '" data-url="' + url + '"' +
       ' onmouseenter="showTip(event,this)" onmouseleave="hideTip()" onclick="window.open(this.dataset.url,\'_blank\')">' +
-      '<div class="tm-label" style="font-size:' + fsize.toFixed(2) + 'rem">' + d.cause + '</div>' +
+      '<div class="tm-label" style="font-size:' + fsize.toFixed(2) + 'rem">' + label(d.cause) + '</div>' +
       '<div class="tm-val">' + d.pct.toFixed(1) + '%</div>' +
       '<div class="tm-rate">' + d.rate.toFixed(1) + '/100k</div></div>';
   });
   html += '</div>';
+  html += '<div class="tm-caption">Proportional causes of death in ' + country +
+    '. Area represents share of deaths. Leading cause: ' + label(top.cause) + ' (' + top.pct.toFixed(1) +
+    '%, ' + top.rate.toFixed(1) + ' per 100k). ' +
+    'Covers 7 non-communicable and 7 infectious causes; excludes injuries, maternal, and neonatal deaths. ' +
+    'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
+    '<a href="https://ourworldindata.org/causes-of-death">OWID</a>. Click any cell for more detail.</div>';
   container.innerHTML = html;
 }
 
 function showTip(ev, el) {
   const tip = document.getElementById('tooltip');
   tip.querySelector('.tt-cause').textContent = el.dataset.cause;
-  tip.querySelector('.tt-cat').textContent = el.dataset.cat;
+  const gbd = el.dataset.gbd;
+  tip.querySelector('.tt-cat').textContent = el.dataset.cat + (gbd && gbd !== el.dataset.cause ? ' (GBD: ' + gbd + ')' : '');
   document.getElementById('tt-rate').textContent = parseFloat(el.dataset.rate).toFixed(1);
   document.getElementById('tt-pct').textContent = parseFloat(el.dataset.pct).toFixed(1) + '%';
   tip.style.display = 'block';
@@ -284,7 +313,7 @@ function renderTable(data, label) {
     html += '<tr>' +
       '<td class="num">' + d.rank + '</td>' +
       '<td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + col +
-      ';vertical-align:middle;margin-right:6px"></span><a href="' + causeUrl + '" target="_blank">' + d.cause + '</a></td>' +
+      ';vertical-align:middle;margin-right:6px"></span><a href="' + causeUrl + '" target="_blank">' + label(d.cause) + '</a></td>' +
       '<td><a href="' + catUrl + '" target="_blank">' + d.category + '</a></td>' +
       '<td class="num">' + d.rate.toFixed(1) + '</td>' +
       '<td class="num" style="font-weight:600">' + d.pct.toFixed(1) + '%</td></tr>';
@@ -334,8 +363,19 @@ function render() {
     tbody += renderTable([...d1], null);
   }
 
+  // Dynamic caption
+  const topCause = d1.length ? d1[0] : null;
+  const c1name = document.getElementById('country1').value;
+  let capText = 'Age-standardised death rates per 100,000 (GBD 2019). ';
+  if (topCause) capText += 'In ' + c1name + ', ' + label(topCause.cause) + ' is the leading cause at ' +
+    topCause.rate.toFixed(1) + ' per 100k (' + topCause.pct.toFixed(1) + '%). ';
+  capText += 'Covers 7 non-communicable and 7 infectious causes; excludes injuries, maternal, and neonatal deaths. ' +
+    'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
+    '<a href="https://ourworldindata.org/causes-of-death">OWID</a>. Click any cause name for the WHO fact sheet.';
+
   document.getElementById('table-wrap').innerHTML =
-    '<table class="cod-table"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+    '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
+    capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
 }
 
 document.addEventListener('DOMContentLoaded', init);
