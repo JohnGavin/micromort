@@ -233,4 +233,9 @@ function render() {
     capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// Init immediately if DOM already loaded (script loaded dynamically via extra.js)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
