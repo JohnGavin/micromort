@@ -145,6 +145,10 @@ document.addEventListener("DOMContentLoaded", function() {
       { id: "conditional-risks", label: "Conditional Risks" },
       { id: "data-quality", label: "Data Quality" }
     ]},
+    { label: "Risk Perception", tabs: [
+      { id: "perception-gap", label: "The Perception Gap" },
+      { id: "calibrating-intuition", label: "Calibrating Intuition" }
+    ]},
     { label: "Notes", tabs: [
       { id: "conclusion", label: "Conclusion" },
       { id: "reproducibility", label: "Reproducibility" }
@@ -265,3 +269,14 @@ document.addEventListener("DOMContentLoaded", function() {
     pre.style.display = "none";
   });
 });
+
+// Causes of Death page: load external JS + JSON data
+(function() {
+  if (!document.getElementById('cod-app')) return;
+  var base = window.location.href.replace(/[^/]*$/, '');
+  var script = document.createElement('script');
+  script.src = base + 'causes_of_death_app.js';
+  // Store the data URL for the app to fetch
+  window._COD_DATA_URL = base + 'causes_of_death_data.json';
+  document.body.appendChild(script);
+})();
