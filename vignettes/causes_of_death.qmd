@@ -1,0 +1,343 @@
+---
+title: "Causes of Death by Country"
+description: "What kills people? Interactive breakdown of 14 major causes of death across 26 countries (GBD 2019)."
+format:
+  html:
+    embed-resources: false
+    page-layout: full
+---
+
+```{=html}
+<style>
+.quarto-title-meta{display:none}
+header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;margin-left:auto;margin-right:auto}
+.description{margin-bottom:0!important}
+#cod-app{max-width:1100px;margin:0 auto;padding:12px 20px;font-family:inherit;color:#e0e0e0}
+.cod-tabs{display:flex;gap:0;margin-bottom:1rem}
+.cod-tab{flex:1;padding:10px 0;text-align:center;background:#16213e;color:#888;border:1px solid #2a2a4e;cursor:pointer;font-size:1rem;font-weight:600;transition:background .2s}
+.cod-tab:first-child{border-radius:8px 0 0 8px}.cod-tab:last-child{border-radius:0 8px 8px 0}
+.cod-tab.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.cod-panel{display:none}.cod-panel.active{display:block}
+.cod-ctrl{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem;padding:0.75rem 1rem;background:#16213e;border-radius:8px}
+.cod-ctrl label{color:#aaa;font-weight:600;font-size:.95rem}
+.cod-ctrl select{background:#1a1a2e;color:#e0e0e0;border:1px solid #444;border-radius:6px;padding:6px 12px;font-size:1rem;min-width:200px}
+.cod-ctrl button{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:6px 16px;cursor:pointer;font-size:.9rem}
+.cod-ctrl button:hover{background:#3a3a5e}
+.cod-ctrl button.on{background:#4a90d9;color:#fff;border-color:#4a90d9}
+.tm-header{font-size:1.1rem;font-weight:700;color:#fff;padding:.6rem 1rem;background:#16213e;border-radius:8px 8px 0 0;border-bottom:2px solid #4a90d9}
+.tm-grid{display:flex;flex-wrap:wrap;gap:3px;padding:6px;background:#1a1a2e;border-radius:0 0 8px 8px}
+.tm-cell{flex-grow:1;min-height:80px;min-width:60px;border-radius:6px;padding:8px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:transform .15s,box-shadow .15s}
+.tm-cell:hover{transform:scale(1.04);box-shadow:0 0 14px rgba(74,144,217,.6);z-index:10}
+.tm-label{font-weight:600;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,.7);line-height:1.2}
+.tm-val{font-size:1.1rem;font-weight:700;color:#fff;margin-top:4px}
+.tm-rate{font-size:.75rem;color:rgba(255,255,255,.8)}
+#tooltip{position:fixed;display:none;background:#16213e;border:1px solid #4a90d9;border-radius:8px;padding:12px 16px;color:#e0e0e0;font-size:.9rem;max-width:320px;z-index:1000;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#tooltip .tt-cause{font-weight:700;font-size:1.05rem;color:#fff;margin-bottom:4px}
+#tooltip .tt-cat{color:#4a90d9;font-size:.85rem;margin-bottom:6px}
+#tooltip .tt-row{display:flex;justify-content:space-between;gap:12px;margin:2px 0}
+#tooltip .tt-lbl{color:#888}#tooltip .tt-val{color:#fff;font-weight:600}
+.cod-table{width:100%;border-collapse:collapse;font-size:.95rem}
+.cod-table th{background:#16213e;color:#aaa;padding:10px 12px;text-align:left;border-bottom:2px solid #444;cursor:pointer;user-select:none;white-space:nowrap}
+.cod-table th:hover{color:#4a90d9}
+.cod-table th .sort-arrow{margin-left:4px;font-size:.7rem}
+.cod-table td{padding:8px 12px;border-bottom:1px solid #2a2a4e}
+.cod-table tr:hover{background:#1e1e3a}
+.cod-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.cod-table a{color:#4a90d9;text-decoration:none}.cod-table a:hover{text-decoration:underline}
+.notes{padding:1rem;line-height:1.7}
+.notes h3{color:#fff;margin:1.5rem 0 .5rem;font-size:1.15rem;border-bottom:1px solid #2a2a4e;padding-bottom:.25rem}
+.notes h3:first-child{margin-top:0}
+.notes ul{padding-left:1.5rem;margin:.25rem 0}
+.notes li{margin:.25rem 0}
+.notes a{color:#4a90d9}
+.notes .stale{background:#3a1a1a;border:1px solid #5a2a2a;border-radius:6px;padding:.75rem 1rem;margin:.75rem 0}
+.notes .stale strong{color:#e74c3c}
+.notes code{background:#1a1a2e;padding:2px 6px;border-radius:3px;font-size:.85rem}
+.notes abbr{border-bottom:1px dotted #888;cursor:help}
+</style>
+
+<div id="cod-app">
+
+<div class="cod-ctrl">
+  <label for="country1">Country:</label>
+  <select id="country1"></select>
+  <button id="cmp-btn" onclick="toggleCompare()">Compare two countries</button>
+  <span id="cmp-wrap" style="display:none">
+    <label for="country2">vs:</label>
+    <select id="country2"></select>
+  </span>
+</div>
+
+<div class="cod-tabs">
+  <div class="cod-tab active" onclick="showTab('chart')">Chart</div>
+  <div class="cod-tab" onclick="showTab('table')">Table</div>
+  <div class="cod-tab" onclick="showTab('notes')">Notes</div>
+</div>
+
+<div id="panel-chart" class="cod-panel active">
+  <div id="treemap1"></div>
+  <div id="treemap2" style="margin-top:1rem"></div>
+</div>
+
+<div id="panel-table" class="cod-panel">
+  <div id="table-wrap"></div>
+</div>
+
+<div id="panel-notes" class="cod-panel">
+<div class="notes">
+
+<h3>Data summary</h3>
+<ul>
+  <li><strong>26 countries</strong> — top 20 by population plus <a href="https://www.oecd.org/about/members-and-partners/">OECD</a> member states</li>
+  <li><strong>14 causes of death</strong> — 7 <a href="https://www.who.int/health-topics/noncommunicable-diseases">non-communicable</a> + 7 <a href="https://www.who.int/health-topics/infectious-diseases">infectious</a></li>
+  <li><strong>Metric:</strong> age-standardised death rate per 100,000 population</li>
+  <li><strong>Source:</strong> <a href="https://www.healthdata.org/research-analysis/gbd"><abbr title="Institute for Health Metrics and Evaluation">IHME</abbr> Global Burden of Disease</a> 2019, via <a href="https://ourworldindata.org/causes-of-death"><abbr title="Our World in Data">OWID</abbr></a> catalog (snapshot <code>2024-05-20</code>)</li>
+  <li>Percentage shares are relative to these 14 tracked causes only — <strong>not</strong> 100% of all-cause mortality</li>
+</ul>
+
+<h3>Exclusions</h3>
+<ul>
+  <li><strong>Ireland</strong> — listed in the download script's country filter (<code>IRL</code>) but absent from the bundled OWID snapshot. Requires <a href="https://www.healthdata.org/data-tools-practices/interactive-visuals/gbd-results">IHME GBD Results Tool</a> direct download — see <a href="https://github.com/JohnGavin/micromort/issues/94">#94</a></li>
+  <li><strong>Injuries</strong> (road accidents, self-harm, violence, falls, drowning) — a major cause-of-death category, especially in younger age groups. Not yet included — see <a href="https://github.com/JohnGavin/micromort/issues/91">#91</a></li>
+  <li><strong>Maternal and neonatal deaths</strong> — account for ~10% of deaths in low-income countries. Not yet included</li>
+  <li><strong>Other <abbr title="Non-communicable diseases">NCD</abbr>s</strong> (neurological, mental, musculoskeletal) — not in the 7 tracked NCD categories</li>
+</ul>
+
+<div class="stale">
+<strong>Data staleness warning</strong><br>
+<a href="https://www.healthdata.org/research-analysis/gbd"><abbr title="Global Burden of Disease study">GBD</abbr></a> data year: <strong>2019</strong> — the most recent year in the bundled snapshot.<br>
+OWID catalog date: <strong>2024-05-20</strong> — this URL now returns HTTP 404. OWID restricted GBD redistribution due to IHME licensing changes.<br>
+<a href="https://ghdx.healthdata.org/record/ihme-data/gbd-2023-cause-specific-mortality-1990-2023">GBD 2023</a> is available from IHME (free account required) — see <a href="https://github.com/JohnGavin/micromort/issues/90">#90</a>.
+</div>
+
+<h3>Glossary</h3>
+<ul>
+  <li><a href="https://www.healthdata.org/research-analysis/gbd"><abbr title="Global Burden of Disease study: comprehensive assessment of mortality and disability from diseases, injuries, and risk factors">GBD</abbr></a> — Global Burden of Disease study (IHME)</li>
+  <li><a href="https://www.healthdata.org/"><abbr title="Institute for Health Metrics and Evaluation: independent research centre at the University of Washington">IHME</abbr></a> — Institute for Health Metrics and Evaluation</li>
+  <li><a href="https://ourworldindata.org/"><abbr title="Our World in Data: research and data platform covering global development">OWID</abbr></a> — Our World in Data</li>
+  <li><a href="https://www.who.int/health-topics/noncommunicable-diseases"><abbr title="Non-communicable diseases: chronic conditions not transmitted between people (CVD, cancer, diabetes, chronic respiratory)">NCD</abbr></a> — Non-communicable diseases</li>
+  <li><a href="https://www.who.int/health-topics/cardiovascular-diseases"><abbr title="Cardiovascular disease: diseases of the heart and blood vessels — leading cause of death globally">CVD</abbr></a> — Cardiovascular disease</li>
+  <li><a href="https://www.who.int/news-room/fact-sheets/detail/pneumonia"><abbr title="Lower respiratory infections: pneumonia and bronchiolitis — leading infectious killer">LRI</abbr></a> — Lower respiratory infections</li>
+  <li><a href="https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158"><abbr title="Disability-adjusted life year: 1 DALY = 1 year of healthy life lost to illness, disability, or death">DALY</abbr></a> — Disability-adjusted life year</li>
+</ul>
+
+<h3>References</h3>
+<ul>
+  <li>IHME. <em>Global Burden of Disease Study 2019 (GBD 2019) Results.</em> Seattle: Institute for Health Metrics and Evaluation, 2020. <a href="https://vizhub.healthdata.org/gbd-results/">GBD Results Tool</a></li>
+  <li>Ritchie H, Spooner F, Roser M. <em>Causes of death.</em> Our World in Data, 2018 (updated 2024). <a href="https://ourworldindata.org/causes-of-death">ourworldindata.org/causes-of-death</a></li>
+  <li>Roth GA et al. <em>Global burden of 369 diseases and injuries, 1990–2019.</em> Lancet 2020; 396:1204–22. <a href="https://doi.org/10.1016/S0140-6736(20)30925-9">doi:10.1016/S0140-6736(20)30925-9</a></li>
+</ul>
+
+</div>
+</div>
+
+<div id="tooltip">
+  <div class="tt-cause"></div>
+  <div class="tt-cat"></div>
+  <div class="tt-row"><span class="tt-lbl">Deaths/100k:</span><span class="tt-val" id="tt-rate"></span></div>
+  <div class="tt-row"><span class="tt-lbl">Share:</span><span class="tt-val" id="tt-pct"></span></div>
+  <div style="margin-top:6px;font-size:.8rem;color:#888">Click for more on this cause →</div>
+</div>
+
+</div>
+
+<script type="application/json" id="death-data">
+[{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":18.5,"pct":4.3},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":4.1,"pct":0.9},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":3.2,"pct":0.7},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":2.8,"pct":0.6},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Hepatitis","year":2019,"rate":1.2,"pct":0.3},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.8,"pct":0.2},{"country":"Argentina","iso3":"ARG","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":178.6,"pct":41.1},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":124.2,"pct":28.6},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":38.6,"pct":8.9},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":18.4,"pct":4.2},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":16.8,"pct":3.9},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":14.2,"pct":3.3},{"country":"Argentina","iso3":"ARG","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":12.8,"pct":2.9},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":14.2,"pct":4.5},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.6,"pct":0.2},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.5,"pct":0.2},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.4,"pct":0.1},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.4,"pct":0.1},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.3,"pct":0.1},{"country":"Australia","iso3":"AUS","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":128.4,"pct":40.3},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":98.6,"pct":30.9},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":30.4,"pct":9.5},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":12.8,"pct":4.0},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":12.8,"pct":4.0},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":10.4,"pct":3.3},{"country":"Australia","iso3":"AUS","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":9.2,"pct":2.9},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":72.0,"pct":11.1},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":38.0,"pct":5.9},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":22.0,"pct":3.4},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Hepatitis","year":2019,"rate":9.5,"pct":1.5},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Meningitis","year":2019,"rate":6.5,"pct":1.0},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"Malaria","year":2019,"rate":0.8,"pct":0.1},{"country":"Bangladesh","iso3":"BGD","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.2,"pct":0.0},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":248.2,"pct":38.3},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":82.4,"pct":12.7},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":78.6,"pct":12.1},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":28.8,"pct":4.4},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":22.8,"pct":3.5},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":22.4,"pct":3.5},{"country":"Bangladesh","iso3":"BGD","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":16.4,"pct":2.5},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":22.0,"pct":4.7},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":8.5,"pct":1.8},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":7.2,"pct":1.5},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":5.8,"pct":1.2},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Hepatitis","year":2019,"rate":2.0,"pct":0.4},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Meningitis","year":2019,"rate":1.8,"pct":0.4},{"country":"Brazil","iso3":"BRA","category":"Infectious","cause":"Malaria","year":2019,"rate":1.5,"pct":0.3},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":186.4,"pct":39.7},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":108.2,"pct":23.0},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":42.8,"pct":9.1},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":28.6,"pct":6.1},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":20.4,"pct":4.3},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":18.2,"pct":3.9},{"country":"Brazil","iso3":"BRA","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":16.4,"pct":3.5},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":13.0,"pct":3.9},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.6,"pct":0.2},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.5,"pct":0.2},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.5,"pct":0.2},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.4,"pct":0.1},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Canada","iso3":"CAN","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":128.6,"pct":38.6},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":104.2,"pct":31.3},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":34.2,"pct":10.3},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":14.4,"pct":4.3},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":13.4,"pct":4.0},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":12.6,"pct":3.8},{"country":"Canada","iso3":"CAN","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":10.2,"pct":3.1},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":45.0,"pct":7.3},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":12.0,"pct":1.9},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":8.0,"pct":1.3},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Hepatitis","year":2019,"rate":7.5,"pct":1.2},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Meningitis","year":2019,"rate":3.2,"pct":0.5},{"country":"China","iso3":"CHN","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.8,"pct":0.3},{"country":"China","iso3":"CHN","category":"Infectious","cause":"Malaria","year":2019,"rate":0.1,"pct":0.0},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":248.6,"pct":40.1},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":152.4,"pct":24.6},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":68.4,"pct":11.0},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":24.6,"pct":4.0},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":22.8,"pct":3.7},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":14.8,"pct":2.4},{"country":"China","iso3":"CHN","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":10.4,"pct":1.7},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":105.0,"pct":11.7},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":60.0,"pct":6.7},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":55.0,"pct":6.1},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":45.0,"pct":5.0},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Malaria","year":2019,"rate":35.0,"pct":3.9},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Hepatitis","year":2019,"rate":12.0,"pct":1.3},{"country":"Ethiopia","iso3":"ETH","category":"Infectious","cause":"Meningitis","year":2019,"rate":10.0,"pct":1.1},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":294.6,"pct":32.7},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":88.4,"pct":9.8},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":72.4,"pct":8.0},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":46.8,"pct":5.2},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":32.4,"pct":3.6},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":24.8,"pct":2.8},{"country":"Ethiopia","iso3":"ETH","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":18.6,"pct":2.1},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":17.0,"pct":5.2},{"country":"France","iso3":"FRA","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.8,"pct":0.2},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.5,"pct":0.2},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.4,"pct":0.1},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.4,"pct":0.1},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"France","iso3":"FRA","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":136.4,"pct":41.4},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":95.2,"pct":28.9},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":24.6,"pct":7.5},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":22.4,"pct":6.8},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":14.2,"pct":4.3},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":9.4,"pct":2.9},{"country":"France","iso3":"FRA","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":7.8,"pct":2.4},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":18.0,"pct":4.8},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.5,"pct":0.1},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.5,"pct":0.1},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.4,"pct":0.1},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.4,"pct":0.1},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Germany","iso3":"DEU","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":132.4,"pct":35.2},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":130.8,"pct":34.8},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":32.6,"pct":8.7},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":18.4,"pct":4.9},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":16.8,"pct":4.5},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":14.2,"pct":3.8},{"country":"Germany","iso3":"DEU","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":10.8,"pct":2.9},{"country":"India","iso3":"IND","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":65.0,"pct":9.1},{"country":"India","iso3":"IND","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":30.0,"pct":4.2},{"country":"India","iso3":"IND","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":30.0,"pct":4.2},{"country":"India","iso3":"IND","category":"Infectious","cause":"Hepatitis","year":2019,"rate":8.0,"pct":1.1},{"country":"India","iso3":"IND","category":"Infectious","cause":"Meningitis","year":2019,"rate":5.0,"pct":0.7},{"country":"India","iso3":"IND","category":"Infectious","cause":"Malaria","year":2019,"rate":3.0,"pct":0.4},{"country":"India","iso3":"IND","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.5,"pct":0.2},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":278.4,"pct":39.0},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":96.2,"pct":13.5},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":84.6,"pct":11.9},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":38.4,"pct":5.4},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":28.6,"pct":4.0},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":26.4,"pct":3.7},{"country":"India","iso3":"IND","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":18.8,"pct":2.6},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":58.0,"pct":9.3},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":40.0,"pct":6.4},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":18.0,"pct":2.9},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Hepatitis","year":2019,"rate":7.0,"pct":1.1},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Meningitis","year":2019,"rate":5.5,"pct":0.9},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"Malaria","year":2019,"rate":4.5,"pct":0.7},{"country":"Indonesia","iso3":"IDN","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":3.5,"pct":0.6},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":226.4,"pct":36.4},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":98.6,"pct":15.8},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":72.4,"pct":11.6},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":28.6,"pct":4.6},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":24.6,"pct":4.0},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":18.4,"pct":3.0},{"country":"Indonesia","iso3":"IDN","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":16.8,"pct":2.7},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":17.5,"pct":5.2},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.7,"pct":0.2},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.5,"pct":0.1},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.5,"pct":0.1},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.4,"pct":0.1},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Italy","iso3":"ITA","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":134.2,"pct":40.0},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":108.6,"pct":32.4},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":24.2,"pct":7.2},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":14.6,"pct":4.4},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":12.4,"pct":3.7},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":11.4,"pct":3.4},{"country":"Italy","iso3":"ITA","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":9.8,"pct":2.9},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":22.0,"pct":8.2},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":1.2,"pct":0.4},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.8,"pct":0.3},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.3,"pct":0.1},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.2,"pct":0.1},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.2,"pct":0.1},{"country":"Japan","iso3":"JPN","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":118.2,"pct":44.0},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":75.4,"pct":28.1},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":18.2,"pct":6.8},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":11.4,"pct":4.2},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":9.8,"pct":3.6},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":6.8,"pct":2.5},{"country":"Japan","iso3":"JPN","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":4.2,"pct":1.6},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":25.0,"pct":4.8},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":7.5,"pct":1.4},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":5.0,"pct":1.0},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":4.5,"pct":0.9},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Hepatitis","year":2019,"rate":2.0,"pct":0.4},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Meningitis","year":2019,"rate":1.2,"pct":0.2},{"country":"Mexico","iso3":"MEX","category":"Infectious","cause":"Malaria","year":2019,"rate":0.3,"pct":0.1},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":184.6,"pct":35.1},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":98.4,"pct":18.7},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":62.8,"pct":12.0},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":46.2,"pct":8.8},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":32.6,"pct":6.2},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":28.4,"pct":5.4},{"country":"Mexico","iso3":"MEX","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":26.8,"pct":5.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":15.5,"pct":4.6},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.4,"pct":0.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.4,"pct":0.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.3,"pct":0.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.2,"pct":0.1},{"country":"Netherlands","iso3":"NLD","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":142.6,"pct":42.0},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":102.8,"pct":30.2},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":30.4,"pct":8.9},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":14.2,"pct":4.2},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":13.8,"pct":4.1},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":10.6,"pct":3.1},{"country":"Netherlands","iso3":"NLD","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":8.4,"pct":2.5},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":120.0,"pct":11.3},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Malaria","year":2019,"rate":80.0,"pct":7.5},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":70.0,"pct":6.6},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":60.0,"pct":5.6},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":40.0,"pct":3.8},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Hepatitis","year":2019,"rate":15.0,"pct":1.4},{"country":"Nigeria","iso3":"NGA","category":"Infectious","cause":"Meningitis","year":2019,"rate":12.0,"pct":1.1},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":312.8,"pct":29.4},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":106.4,"pct":10.0},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":84.6,"pct":8.0},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":52.4,"pct":4.9},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":48.6,"pct":4.6},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":32.4,"pct":3.0},{"country":"Nigeria","iso3":"NGA","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":28.8,"pct":2.7},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":80.0,"pct":11.0},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":45.0,"pct":6.2},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":40.0,"pct":5.5},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Hepatitis","year":2019,"rate":12.0,"pct":1.6},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Meningitis","year":2019,"rate":8.0,"pct":1.1},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"Malaria","year":2019,"rate":6.0,"pct":0.8},{"country":"Pakistan","iso3":"PAK","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.5,"pct":0.2},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":264.8,"pct":36.3},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":82.6,"pct":11.3},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":76.4,"pct":10.5},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":34.2,"pct":4.7},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":32.4,"pct":4.4},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":24.6,"pct":3.4},{"country":"Pakistan","iso3":"PAK","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":22.8,"pct":3.1},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":55.0,"pct":9.2},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":35.0,"pct":5.8},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":15.0,"pct":2.5},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Hepatitis","year":2019,"rate":6.0,"pct":1.0},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Meningitis","year":2019,"rate":4.5,"pct":0.7},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"Malaria","year":2019,"rate":2.0,"pct":0.3},{"country":"Philippines","iso3":"PHL","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.2,"pct":0.2},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":242.4,"pct":40.4},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":92.6,"pct":15.4},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":62.4,"pct":10.4},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":26.8,"pct":4.5},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":22.6,"pct":3.8},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":18.4,"pct":3.1},{"country":"Philippines","iso3":"PHL","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":16.2,"pct":2.7},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":22.0,"pct":4.3},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":1.5,"pct":0.3},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.6,"pct":0.1},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.5,"pct":0.1},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.5,"pct":0.1},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.4,"pct":0.1},{"country":"Poland","iso3":"POL","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":224.8,"pct":43.8},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":152.4,"pct":29.7},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":36.8,"pct":7.2},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":24.6,"pct":4.8},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":20.4,"pct":4.0},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":16.4,"pct":3.2},{"country":"Poland","iso3":"POL","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":12.8,"pct":2.5},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":35.0,"pct":4.9},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":12.0,"pct":1.7},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":8.5,"pct":1.2},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Hepatitis","year":2019,"rate":3.0,"pct":0.4},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":2.0,"pct":0.3},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Meningitis","year":2019,"rate":1.2,"pct":0.2},{"country":"Russia","iso3":"RUS","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":348.6,"pct":49.3},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":148.4,"pct":21.0},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":52.4,"pct":7.4},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":38.4,"pct":5.4},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":28.6,"pct":4.0},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":16.2,"pct":2.3},{"country":"Russia","iso3":"RUS","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":12.8,"pct":1.8},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":150.0,"pct":45.4},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":85.0,"pct":25.7},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":55.0,"pct":16.6},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":25.0,"pct":7.6},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Hepatitis","year":2019,"rate":8.0,"pct":2.4},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Meningitis","year":2019,"rate":5.5,"pct":1.7},{"country":"South Africa","iso3":"ZAF","category":"Infectious","cause":"Malaria","year":2019,"rate":2.0,"pct":0.6},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":18.5,"pct":5.5},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":3.5,"pct":1.0},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Hepatitis","year":2019,"rate":1.5,"pct":0.4},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.5,"pct":0.1},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.3,"pct":0.1},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"South Korea","iso3":"KOR","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":152.6,"pct":45.3},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":88.4,"pct":26.2},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":24.6,"pct":7.3},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":14.8,"pct":4.4},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":14.2,"pct":4.2},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":10.8,"pct":3.2},{"country":"South Korea","iso3":"KOR","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":7.2,"pct":2.1},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":16.5,"pct":5.1},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.2,"pct":0.4},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.6,"pct":0.2},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.4,"pct":0.1},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.4,"pct":0.1},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Spain","iso3":"ESP","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":130.8,"pct":40.6},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":96.4,"pct":29.9},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":26.4,"pct":8.2},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":16.4,"pct":5.1},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":13.6,"pct":4.2},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":10.8,"pct":3.4},{"country":"Spain","iso3":"ESP","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":8.2,"pct":2.5},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":14.0,"pct":4.4},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.3,"pct":0.1},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.3,"pct":0.1},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.3,"pct":0.1},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.3,"pct":0.1},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.2,"pct":0.1},{"country":"Sweden","iso3":"SWE","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":126.4,"pct":39.7},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":108.2,"pct":34.0},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":24.8,"pct":7.8},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":13.2,"pct":4.1},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":11.2,"pct":3.5},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":10.8,"pct":3.4},{"country":"Sweden","iso3":"SWE","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":8.6,"pct":2.7},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":28.0,"pct":5.7},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":3.5,"pct":0.7},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":2.5,"pct":0.5},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Hepatitis","year":2019,"rate":1.5,"pct":0.3},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Meningitis","year":2019,"rate":1.0,"pct":0.2},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.5,"pct":0.1},{"country":"Turkey","iso3":"TUR","category":"Infectious","cause":"Malaria","year":2019,"rate":0.1,"pct":0.0},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":216.4,"pct":43.9},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":124.8,"pct":25.3},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":42.6,"pct":8.6},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":22.4,"pct":4.5},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":18.4,"pct":3.7},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":16.2,"pct":3.3},{"country":"Turkey","iso3":"TUR","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":14.8,"pct":3.0},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":20.0,"pct":5.5},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":0.8,"pct":0.2},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":0.5,"pct":0.1},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.5,"pct":0.1},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.4,"pct":0.1},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.3,"pct":0.1},{"country":"United Kingdom","iso3":"GBR","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":136.2,"pct":37.7},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":120.5,"pct":33.4},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":35.8,"pct":9.9},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":15.6,"pct":4.3},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":12.1,"pct":3.3},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":10.2,"pct":2.8},{"country":"United Kingdom","iso3":"GBR","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":8.4,"pct":2.3},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Lower respiratory infections","year":2019,"rate":15.0,"pct":3.8},{"country":"United States","iso3":"USA","category":"Infectious","cause":"HIV/AIDS","year":2019,"rate":1.5,"pct":0.4},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Diarrheal diseases","year":2019,"rate":1.2,"pct":0.3},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Hepatitis","year":2019,"rate":0.5,"pct":0.1},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Meningitis","year":2019,"rate":0.2,"pct":0.1},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Tuberculosis","year":2019,"rate":0.1,"pct":0.0},{"country":"United States","iso3":"USA","category":"Infectious","cause":"Malaria","year":2019,"rate":0.0,"pct":0.0},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Cardiovascular diseases","year":2019,"rate":150.8,"pct":37.8},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Neoplasms","year":2019,"rate":120.5,"pct":30.2},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Chronic respiratory diseases","year":2019,"rate":42.3,"pct":10.6},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Diabetes mellitus","year":2019,"rate":18.6,"pct":4.7},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Digestive diseases","year":2019,"rate":18.4,"pct":4.6},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Chronic liver disease","year":2019,"rate":15.8,"pct":4.0},{"country":"United States","iso3":"USA","category":"Non-communicable","cause":"Chronic kidney disease","year":2019,"rate":14.2,"pct":3.6}]
+</script>
+
+<script>
+const CAUSE_URLS = {
+  "Cardiovascular diseases": "https://www.who.int/health-topics/cardiovascular-diseases",
+  "Neoplasms": "https://www.who.int/health-topics/cancer",
+  "Chronic respiratory diseases": "https://www.who.int/health-topics/chronic-respiratory-diseases",
+  "Diabetes mellitus": "https://www.who.int/health-topics/diabetes",
+  "Chronic kidney disease": "https://www.who.int/health-topics/kidney-diseases",
+  "Chronic liver disease": "https://www.who.int/health-topics/hepatitis",
+  "Digestive diseases": "https://www.who.int/health-topics/noncommunicable-diseases",
+  "Lower respiratory infections": "https://www.who.int/news-room/fact-sheets/detail/pneumonia",
+  "Diarrheal diseases": "https://www.who.int/news-room/fact-sheets/detail/diarrhoeal-disease",
+  "Tuberculosis": "https://www.who.int/health-topics/tuberculosis",
+  "HIV/AIDS": "https://www.who.int/health-topics/hiv-aids",
+  "Malaria": "https://www.who.int/health-topics/malaria",
+  "Hepatitis": "https://www.who.int/health-topics/hepatitis",
+  "Meningitis": "https://www.who.int/health-topics/meningitis"
+};
+const CAT_URLS = {
+  "Non-communicable": "https://www.who.int/health-topics/noncommunicable-diseases",
+  "Infectious": "https://www.who.int/health-topics/infectious-diseases"
+};
+const NCD_COLS = {
+  "Cardiovascular diseases":"#e41a1c","Neoplasms":"#ff7f00",
+  "Chronic respiratory diseases":"#fdbf6f","Diabetes mellitus":"#a6cee3",
+  "Digestive diseases":"#cab2d6","Chronic liver disease":"#fb9a99",
+  "Chronic kidney disease":"#b2df8a"
+};
+const INF_COLS = {
+  "Lower respiratory infections":"#1f78b4","Diarrheal diseases":"#33a02c",
+  "Tuberculosis":"#6a3d9a","HIV/AIDS":"#b15928","Malaria":"#ffff99",
+  "Hepatitis":"#a6d854","Meningitis":"#66c2a5"
+};
+const ALL_COLS = Object.assign({}, NCD_COLS, INF_COLS);
+
+let DATA = [];
+let comparing = false;
+let sortCol = 'pct', sortAsc = false;
+
+function init() {
+  DATA = JSON.parse(document.getElementById('death-data').textContent);
+  const countries = [...new Set(DATA.map(d => d.country))].sort();
+  const s1 = document.getElementById('country1');
+  const s2 = document.getElementById('country2');
+  countries.forEach(c => {
+    s1.add(new Option(c, c));
+    s2.add(new Option(c, c));
+  });
+  s1.value = countries.includes('United Kingdom') ? 'United Kingdom' : countries[0];
+  s2.value = countries.includes('Nigeria') ? 'Nigeria' : countries[1] || countries[0];
+  s1.onchange = render;
+  s2.onchange = render;
+  render();
+}
+
+function showTab(name) {
+  document.querySelectorAll('.cod-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['chart','table','notes'][i] === name);
+  });
+  document.querySelectorAll('.cod-panel').forEach((p,i) => {
+    p.classList.toggle('active', ['chart','table','notes'][i] === name);
+  });
+}
+
+function toggleCompare() {
+  comparing = !comparing;
+  document.getElementById('cmp-btn').classList.toggle('on', comparing);
+  document.getElementById('cmp-wrap').style.display = comparing ? 'inline' : 'none';
+  document.getElementById('treemap2').style.display = comparing ? 'block' : 'none';
+  render();
+}
+
+function getCountryData(country) {
+  return DATA.filter(d => d.country === country).sort((a,b) => b.pct - a.pct);
+}
+
+function renderTreemap(container, data) {
+  if (!data.length) { container.innerHTML = '<p style="color:#888;text-align:center">No data</p>'; return; }
+  const total = data.reduce((s,d) => s + d.rate, 0);
+  const country = data[0].country;
+  let html = '<div class="tm-header">' + country + ' — ' + data.length + ' causes, ' +
+    Math.round(total) + ' deaths/100k (14 tracked causes)</div><div class="tm-grid">';
+  data.forEach(d => {
+    const col = ALL_COLS[d.cause] || '#666';
+    const basis = Math.max(8, d.pct);
+    const fsize = Math.max(0.7, Math.min(1.4, 0.7 + d.pct / 40));
+    const url = CAUSE_URLS[d.cause] || '#';
+    html += '<div class="tm-cell" style="flex-basis:' + basis.toFixed(1) + '%;background:' + col + '"' +
+      ' data-cause="' + d.cause + '" data-cat="' + d.category + '" data-rate="' + d.rate +
+      '" data-pct="' + d.pct + '" data-url="' + url + '"' +
+      ' onmouseenter="showTip(event,this)" onmouseleave="hideTip()" onclick="window.open(this.dataset.url,\'_blank\')">' +
+      '<div class="tm-label" style="font-size:' + fsize.toFixed(2) + 'rem">' + d.cause + '</div>' +
+      '<div class="tm-val">' + d.pct.toFixed(1) + '%</div>' +
+      '<div class="tm-rate">' + d.rate.toFixed(1) + '/100k</div></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function showTip(ev, el) {
+  const tip = document.getElementById('tooltip');
+  tip.querySelector('.tt-cause').textContent = el.dataset.cause;
+  tip.querySelector('.tt-cat').textContent = el.dataset.cat;
+  document.getElementById('tt-rate').textContent = parseFloat(el.dataset.rate).toFixed(1);
+  document.getElementById('tt-pct').textContent = parseFloat(el.dataset.pct).toFixed(1) + '%';
+  tip.style.display = 'block';
+  const r = el.getBoundingClientRect();
+  let left = r.right + 12, top = r.top;
+  if (left + 320 > window.innerWidth) left = r.left - 332;
+  if (top + 140 > window.innerHeight) top = window.innerHeight - 150;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+function hideTip() { document.getElementById('tooltip').style.display = 'none'; }
+
+function renderTable(data, label) {
+  const cols = [
+    {key:'rank',label:'#',cls:'num'},
+    {key:'cause',label:'Cause'},
+    {key:'category',label:'Category'},
+    {key:'rate',label:'Deaths/100k',cls:'num'},
+    {key:'pct',label:'Share (%)',cls:'num'}
+  ];
+  // Sort
+  data.sort((a,b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return sortAsc ? va - vb : vb - va;
+  });
+  data.forEach((d,i) => d.rank = i + 1);
+
+  let html = '';
+  if (label) html += '<tr><td colspan="5" style="background:#0d0d1a;color:#4a90d9;font-weight:700;padding:10px">' + label + '</td></tr>';
+  data.forEach(d => {
+    const causeUrl = CAUSE_URLS[d.cause] || '#';
+    const catUrl = CAT_URLS[d.category] || '#';
+    const col = ALL_COLS[d.cause] || '#666';
+    html += '<tr>' +
+      '<td class="num">' + d.rank + '</td>' +
+      '<td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + col +
+      ';vertical-align:middle;margin-right:6px"></span><a href="' + causeUrl + '" target="_blank">' + d.cause + '</a></td>' +
+      '<td><a href="' + catUrl + '" target="_blank">' + d.category + '</a></td>' +
+      '<td class="num">' + d.rate.toFixed(1) + '</td>' +
+      '<td class="num" style="font-weight:600">' + d.pct.toFixed(1) + '%</td></tr>';
+  });
+  return html;
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = col === 'cause' || col === 'category'; }
+  render();
+}
+
+function render() {
+  const c1 = document.getElementById('country1').value;
+  const d1 = getCountryData(c1);
+  renderTreemap(document.getElementById('treemap1'), d1);
+
+  const tm2 = document.getElementById('treemap2');
+  if (comparing) {
+    const c2 = document.getElementById('country2').value;
+    const d2 = getCountryData(c2);
+    renderTreemap(tm2, d2);
+    tm2.style.display = 'block';
+  } else {
+    tm2.style.display = 'none';
+  }
+
+  // Table
+  const cols = ['rank','cause','category','rate','pct'];
+  const labels = ['#','Cause','Category','Deaths/100k','Share (%)'];
+  const cls = ['num','','','num','num'];
+  let thead = '<tr>';
+  cols.forEach((c,i) => {
+    const arrow = sortCol === c ? (sortAsc ? ' ▲' : ' ▼') : '';
+    thead += '<th class="' + cls[i] + '" onclick="sortBy(\'' + c + '\')">' + labels[i] +
+      '<span class="sort-arrow">' + arrow + '</span></th>';
+  });
+  thead += '</tr>';
+
+  let tbody = '';
+  if (comparing) {
+    const c2 = document.getElementById('country2').value;
+    tbody += renderTable([...d1], c1);
+    tbody += renderTable([...getCountryData(c2)], c2);
+  } else {
+    tbody += renderTable([...d1], null);
+  }
+
+  document.getElementById('table-wrap').innerHTML =
+    '<table class="cod-table"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+```
