@@ -270,12 +270,6 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-// Causes of Death page: load external JS + JSON data
-document.addEventListener('DOMContentLoaded', function() {
-  if (!document.getElementById('cod-app')) return;
-  var base = window.location.href.replace(/[^/]*$/, '');
-  window._COD_DATA_URL = base + 'causes_of_death_data.json';
-  var script = document.createElement('script');
-  script.src = base + 'causes_of_death_app.js';
-  document.body.appendChild(script);
-});
+// Causes of Death page: JS+JSON injected directly into the HTML
+// (no dynamic loading needed — Quarto strips <script> from {=html} blocks,
+// so we inject at build time via Python post-processing)
