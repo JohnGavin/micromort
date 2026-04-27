@@ -250,13 +250,7 @@ OWID catalog date: <strong>2024-05-20</strong> — this URL now returns HTTP 404
 
 
 
-<script src="causes_of_death_data.json" type="application/json" id="death-data-src"></script><script>
-// Load JSON data then initialize
-fetch('causes_of_death_data.json')
-  .then(function(r){return r.json()})
-  .then(function(data){window._COD_DATA=data})
-  .catch(function(e){console.error('data load failed',e)});
-</script><script src="causes_of_death_app.js"></script><script id="quarto-html-after-body" type="application/javascript">
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);

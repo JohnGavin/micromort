@@ -6,11 +6,9 @@ format:
     embed-resources: false
     page-layout: full
     toc: false
-    include-after-body: causes_of_death_include.html
 resources:
   - causes_of_death_data.json
   - causes_of_death_app.js
-  - causes_of_death_include.html
 ---
 
 ```{=html}
