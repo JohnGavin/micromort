@@ -72,15 +72,30 @@ function initUI() {
   s2.value = countries.includes('Nigeria') ? 'Nigeria' : countries[1] || countries[0];
   s1.onchange = render;
   s2.onchange = render;
+
+  // Populate cause selector for All Countries tab
+  var causes = [...new Set(DATA.map(d => d.cause))];
+  causes.sort((a,b) => {
+    var aRate = DATA.filter(d => d.cause === a).reduce((s,d) => s + d.rate, 0);
+    var bRate = DATA.filter(d => d.cause === b).reduce((s,d) => s + d.rate, 0);
+    return bRate - aRate;
+  });
+  var cs = document.getElementById('cause-select');
+  causes.forEach(c => cs.add(new Option(label(c), c)));
+  cs.onchange = renderAllCountries;
+
   render();
+  renderAllCountries();
 }
 
+var TABS = ['chart','table','allcountries','notes'];
 function showTab(name) {
   document.querySelectorAll('.cod-tab').forEach((t,i) => {
-    t.classList.toggle('active', ['chart','table','notes'][i] === name);
+    t.classList.toggle('active', TABS[i] === name);
   });
-  document.querySelectorAll('.cod-panel').forEach((p,i) => {
-    p.classList.toggle('active', ['chart','table','notes'][i] === name);
+  TABS.forEach(tab => {
+    var panel = document.getElementById('panel-' + tab);
+    if (panel) panel.classList.toggle('active', tab === name);
   });
 }
 
@@ -231,11 +246,48 @@ function render() {
   var tableHtml = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
     capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
 
-  // Render table in both the Table tab and below the Chart
   var tw = document.getElementById('table-wrap');
   if (tw) tw.innerHTML = tableHtml;
-  var ctw = document.getElementById('chart-table-wrap');
-  if (ctw) ctw.innerHTML = tableHtml;
+}
+
+function renderAllCountries() {
+  var cs = document.getElementById('cause-select');
+  if (!cs) return;
+  var cause = cs.value;
+  var causeUrl = CAUSE_URLS[cause] || '#';
+  var catUrl = CAT_URLS[DATA.find(d => d.cause === cause)?.category] || '#';
+
+  // Get all countries for this cause, sorted by rate descending
+  var rows = DATA.filter(d => d.cause === cause).sort((a,b) => b.rate - a.rate);
+  rows.forEach((d,i) => d.rank = i + 1);
+
+  var col = ALL_COLS[cause] || '#666';
+  var topCountry = rows.length ? rows[0] : null;
+  var bottomCountry = rows.length ? rows[rows.length - 1] : null;
+
+  var capText = label(cause) + ' death rates across ' + rows.length + ' countries (GBD 2019). ';
+  if (topCountry) capText += 'Highest: ' + topCountry.country + ' (' + topCountry.rate.toFixed(1) + '/100k). ';
+  if (bottomCountry && bottomCountry.rate > 0) capText += 'Lowest: ' + bottomCountry.country + ' (' + bottomCountry.rate.toFixed(1) + '/100k). ';
+  capText += 'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
+    '<a href="https://ourworldindata.org/causes-of-death">OWID</a>.';
+
+  var thead = '<tr><th class="num">#</th><th>Country</th>' +
+    '<th><a href="' + causeUrl + '" target="_blank" style="color:#4a90d9">' + label(cause) + '</a></th>' +
+    '<th class="num">Deaths/100k</th><th class="num">Share (%)</th></tr>';
+
+  var tbody = '';
+  rows.forEach(d => {
+    tbody += '<tr>' +
+      '<td class="num">' + d.rank + '</td>' +
+      '<td>' + d.country + '</td>' +
+      '<td><a href="' + catUrl + '" target="_blank">' + d.category + '</a></td>' +
+      '<td class="num">' + d.rate.toFixed(1) + '</td>' +
+      '<td class="num" style="font-weight:600">' + d.pct.toFixed(1) + '%</td></tr>';
+  });
+
+  var wrap = document.getElementById('allcountries-wrap');
+  if (wrap) wrap.innerHTML = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
+    capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
 }
 
 // Init immediately if DOM already loaded (script loaded dynamically via extra.js)

@@ -77,17 +77,25 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 <div class="cod-tabs">
   <div class="cod-tab active" onclick="showTab('chart')">Chart</div>
   <div class="cod-tab" onclick="showTab('table')">Table</div>
+  <div class="cod-tab" onclick="showTab('allcountries')">All Countries</div>
   <div class="cod-tab" onclick="showTab('notes')">Notes</div>
 </div>
 
 <div id="panel-chart" class="cod-panel active">
   <div id="treemap1"></div>
   <div id="treemap2" style="margin-top:1rem"></div>
-  <div id="chart-table-wrap" style="margin-top:1rem"></div>
 </div>
 
 <div id="panel-table" class="cod-panel">
   <div id="table-wrap"></div>
+</div>
+
+<div id="panel-allcountries" class="cod-panel">
+  <div class="cod-ctrl">
+    <label for="cause-select">Cause:</label>
+    <select id="cause-select"></select>
+  </div>
+  <div id="allcountries-wrap"></div>
 </div>
 
 <div id="panel-notes" class="cod-panel">
