@@ -224,5 +224,7 @@ reference:
 
 footer:
   structure:
-    left: developed_by
+    left: package
     right: built_with
+  components:
+    package: <span id="pkg-footer">micromort 0.2.0</span>

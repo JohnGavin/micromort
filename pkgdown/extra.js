@@ -273,3 +273,18 @@ document.addEventListener("DOMContentLoaded", function() {
 // Causes of Death page: JS+JSON injected directly into the HTML
 // (no dynamic loading needed — Quarto strips <script> from {=html} blocks,
 // so we inject at build time via Python post-processing)
+
+// Footer: replace "micromort 0.2.0" with build info + SHA link
+document.addEventListener('DOMContentLoaded', function() {
+  var el = document.getElementById('pkg-footer');
+  if (!el) {
+    // Fallback: find the pkgdown-footer-left and replace its content
+    var fl = document.querySelector('.pkgdown-footer-left p');
+    if (fl) el = fl;
+  }
+  if (el) {
+    el.innerHTML = 'micromort 0.2.0 | ' +
+      '<a href="https://github.com/JohnGavin/micromort/commit/11086c76c1ea23ae2ae7d0c2dc723d288a76cb91">11086c7</a>' +
+      ' | Built 2026-04-30';
+  }
+});

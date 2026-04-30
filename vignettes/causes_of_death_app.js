@@ -228,9 +228,14 @@ function render() {
     'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
     '<a href="https://ourworldindata.org/causes-of-death">OWID</a>. Click any cause name for the WHO fact sheet.';
 
-  document.getElementById('table-wrap').innerHTML =
-    '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
+  var tableHtml = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
     capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+
+  // Render table in both the Table tab and below the Chart
+  var tw = document.getElementById('table-wrap');
+  if (tw) tw.innerHTML = tableHtml;
+  var ctw = document.getElementById('chart-table-wrap');
+  if (ctw) ctw.innerHTML = tableHtml;
 }
 
 // Init immediately if DOM already loaded (script loaded dynamically via extra.js)

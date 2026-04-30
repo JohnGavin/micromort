@@ -83,6 +83,7 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 <div id="panel-chart" class="cod-panel active">
   <div id="treemap1"></div>
   <div id="treemap2" style="margin-top:1rem"></div>
+  <div id="chart-table-wrap" style="margin-top:1rem"></div>
 </div>
 
 <div id="panel-table" class="cod-panel">
