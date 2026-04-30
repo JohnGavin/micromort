@@ -21,7 +21,6 @@
 <meta property="og:description" content="A data package providing curated datasets of micromort (acute risk) and microlife (chronic risk) values from authoritative sources.
 ">
 <meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
@@ -32,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="index.html">micromort</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,20 +53,22 @@
     <li><a class="dropdown-item" href="articles/micromort-quiz.html">☠️ Micromort: instant | Shinylive</a></li>
     <li><a class="dropdown-item" href="articles/microlife-quiz.html">⏳ Microlife: instant | Shinylive</a></li>
     <li><a class="dropdown-item" href="articles/risk-ranking-quiz.html">📊 Ranking: instant | Shinylive</a></li>
+    <li><a class="dropdown-item" href="articles/portfolio_shinylive.html">🎯 Risk Portfolio Builder</a></li>
+    <li><a class="dropdown-item" href="articles/quiz_analytics.html">📈 Your Quiz Analytics</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Storytelling</h6></li>
     <li><a class="dropdown-item" href="articles/chronic_vs_acute.html">The Invisible Risk (closeread)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Analysis</h6></li>
+    <li><a class="dropdown-item" href="articles/causes_of_death.html">Causes of Death by Country</a></li>
     <li><a class="dropdown-item" href="articles/risk_equivalence.html">Risk Equivalence</a></li>
     <li><a class="dropdown-item" href="articles/regional_variation.html">Regional Variation</a></li>
     <li><a class="dropdown-item" href="articles/confounding.html">Confounding Variables</a></li>
     <li><a class="dropdown-item" href="articles/data_reliability.html">Data Reliability</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Developer</h6></li>
-    <li><a class="dropdown-item" href="articles/architecture.html">Architecture Overview</a></li>
+    <li><a class="dropdown-item" href="articles/architecture.html">Architecture &amp; Telemetry</a></li>
     <li><a class="dropdown-item" href="articles/rest_api.html">REST API</a></li>
-    <li><a class="dropdown-item" href="articles/telemetry.html">Project Telemetry</a></li>
   </ul>
 </li>
       </ul>
@@ -97,7 +98,7 @@
 <h3 id="load-the-datasets">Load the Datasets<a class="anchor" aria-label="anchor" href="#load-the-datasets"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://johngavin.github.io/micromort/">micromort</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">micromort</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load acute risks (micromorts per event)</span></span>
 <span><span class="va">acute</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_acute_risks.html">load_acute_risks</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -289,7 +290,7 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 Using with rix
 </summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/rix/" class="external-link">rix</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://docs.ropensci.org/rix/reference/rix.html" class="external-link">rix</a></span><span class="op">(</span></span>
+<span><span class="fu">rix</span><span class="op">(</span></span>
 <span>  r_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span><span class="op">)</span>,</span>
 <span>  git_pkgs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    package_name <span class="op">=</span> <span class="st">"micromort"</span>,</span>
