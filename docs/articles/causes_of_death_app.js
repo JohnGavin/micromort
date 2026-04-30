@@ -143,7 +143,7 @@ function showTip(ev, el) {
 }
 function hideTip() { document.getElementById('tooltip').style.display = 'none'; }
 
-function renderTable(data, label) {
+function renderTable(data, groupLabel) {
   const cols = [
     {key:'rank',label:'#',cls:'num'},
     {key:'cause',label:'Cause'},
@@ -160,7 +160,7 @@ function renderTable(data, label) {
   data.forEach((d,i) => d.rank = i + 1);
 
   let html = '';
-  if (label) html += '<tr><td colspan="5" style="background:#0d0d1a;color:#4a90d9;font-weight:700;padding:10px">' + label + '</td></tr>';
+  if (groupLabel) html += '<tr><td colspan="5" style="background:#0d0d1a;color:#4a90d9;font-weight:700;padding:10px">' + groupLabel + '</td></tr>';
   data.forEach(d => {
     const causeUrl = CAUSE_URLS[d.cause] || '#';
     const catUrl = CAT_URLS[d.category] || '#';
