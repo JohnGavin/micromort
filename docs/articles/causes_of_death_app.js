@@ -158,32 +158,32 @@ function showTip(ev, el) {
 }
 function hideTip() { document.getElementById('tooltip').style.display = 'none'; }
 
-function renderTable(data, groupLabel) {
-  const cols = [
-    {key:'rank',label:'#',cls:'num'},
-    {key:'cause',label:'Cause'},
-    {key:'category',label:'Category'},
-    {key:'rate',label:'Deaths/100k',cls:'num'},
-    {key:'pct',label:'Share (%)',cls:'num'}
-  ];
-  // Sort
+function sortValue(d, col) {
+  if (col === 'cause') return label(d.cause);
+  if (col === 'category') return d.category;
+  return d[col];
+}
+
+function sortData(data, col, asc) {
   data.sort((a,b) => {
-    let va = a[sortCol], vb = b[sortCol];
-    if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-    return sortAsc ? va - vb : vb - va;
+    let va = sortValue(a, col), vb = sortValue(b, col);
+    if (typeof va === 'string') return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return asc ? va - vb : vb - va;
   });
   data.forEach((d,i) => d.rank = i + 1);
+}
+
+function renderTable(data, groupLabel) {
+  sortData(data, sortCol, sortAsc);
 
   let html = '';
   if (groupLabel) html += '<tr><td colspan="5" style="background:#0d0d1a;color:#4a90d9;font-weight:700;padding:10px">' + groupLabel + '</td></tr>';
   data.forEach(d => {
     const causeUrl = CAUSE_URLS[d.cause] || '#';
     const catUrl = CAT_URLS[d.category] || '#';
-    const col = ALL_COLS[d.cause] || '#666';
     html += '<tr>' +
       '<td class="num">' + d.rank + '</td>' +
-      '<td><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + col +
-      ';vertical-align:middle;margin-right:6px"></span><a href="' + causeUrl + '" target="_blank">' + label(d.cause) + '</a></td>' +
+      '<td><a href="' + causeUrl + '" target="_blank">' + label(d.cause) + '</a></td>' +
       '<td><a href="' + catUrl + '" target="_blank">' + d.category + '</a></td>' +
       '<td class="num">' + d.rate.toFixed(1) + '</td>' +
       '<td class="num" style="font-weight:600">' + d.pct.toFixed(1) + '%</td></tr>';
@@ -250,6 +250,14 @@ function render() {
   if (tw) tw.innerHTML = tableHtml;
 }
 
+var acSortCol = 'rate', acSortAsc = false;
+
+function acSortBy(col) {
+  if (acSortCol === col) acSortAsc = !acSortAsc;
+  else { acSortCol = col; acSortAsc = col === 'country'; }
+  renderAllCountries();
+}
+
 function renderAllCountries() {
   var cs = document.getElementById('cause-select');
   if (!cs) return;
@@ -257,23 +265,39 @@ function renderAllCountries() {
   var causeUrl = CAUSE_URLS[cause] || '#';
   var catUrl = CAT_URLS[DATA.find(d => d.cause === cause)?.category] || '#';
 
-  // Get all countries for this cause, sorted by rate descending
-  var rows = DATA.filter(d => d.cause === cause).sort((a,b) => b.rate - a.rate);
+  var rows = DATA.filter(d => d.cause === cause);
+
+  // Sort
+  var col = acSortCol;
+  rows.sort((a,b) => {
+    var va = col === 'country' ? a.country : a[col];
+    var vb = col === 'country' ? b.country : b[col];
+    if (typeof va === 'string') return acSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return acSortAsc ? va - vb : vb - va;
+  });
   rows.forEach((d,i) => d.rank = i + 1);
 
-  var col = ALL_COLS[cause] || '#666';
   var topCountry = rows.length ? rows[0] : null;
   var bottomCountry = rows.length ? rows[rows.length - 1] : null;
 
   var capText = label(cause) + ' death rates across ' + rows.length + ' countries (GBD 2019). ';
-  if (topCountry) capText += 'Highest: ' + topCountry.country + ' (' + topCountry.rate.toFixed(1) + '/100k). ';
-  if (bottomCountry && bottomCountry.rate > 0) capText += 'Lowest: ' + bottomCountry.country + ' (' + bottomCountry.rate.toFixed(1) + '/100k). ';
+  if (acSortCol === 'rate' && !acSortAsc && topCountry) {
+    capText += 'Highest: ' + topCountry.country + ' (' + topCountry.rate.toFixed(1) + '/100k). ';
+    if (bottomCountry && bottomCountry.rate > 0) capText += 'Lowest: ' + bottomCountry.country + ' (' + bottomCountry.rate.toFixed(1) + '/100k). ';
+  }
   capText += 'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
     '<a href="https://ourworldindata.org/causes-of-death">OWID</a>.';
 
-  var thead = '<tr><th class="num">#</th><th>Country</th>' +
-    '<th><a href="' + causeUrl + '" target="_blank" style="color:#4a90d9">' + label(cause) + '</a></th>' +
-    '<th class="num">Deaths/100k</th><th class="num">Share (%)</th></tr>';
+  var acCols = ['rank','country','category','rate','pct'];
+  var acLabels = ['#','Country','Category','Deaths/100k','Share (%)'];
+  var acCls = ['num','','','num','num'];
+  var thead = '<tr>';
+  acCols.forEach((c,i) => {
+    var arrow = acSortCol === c ? (acSortAsc ? ' ▲' : ' ▼') : '';
+    thead += '<th class="' + acCls[i] + '" onclick="acSortBy(\'' + c + '\')">' + acLabels[i] +
+      '<span class="sort-arrow">' + arrow + '</span></th>';
+  });
+  thead += '</tr>';
 
   var tbody = '';
   rows.forEach(d => {
