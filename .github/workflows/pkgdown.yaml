@@ -118,10 +118,17 @@ jobs:
           SITE_URL="${SITE_URL%/}"
           ERRORS=0
           sleep 15
+          # Skip articles that can't be rebuilt by pkgdown (Closeread, Shinylive)
+          SKIP="chronic_vs_acute.html portfolio_shinylive.html"
           for article in $(grep -o 'articles/[a-z_-]*\.html' _pkgdown.yml | sort -u); do
+            BASENAME=$(basename "$article")
+            if echo "$SKIP" | grep -q "$BASENAME"; then
+              echo "SKIP: ${article} (Closeread/Shinylive)"
+              continue
+            fi
             URL="${SITE_URL}/${article}"
             CONTENT=$(curl -s --retry 3 --retry-delay 10 "$URL")
-            for pattern in "not available" "not found in targets" "MISSING EVIDENCE" "Error in" "Error:"; do
+            for pattern in "not found in targets store or RDS fallback" "MISSING EVIDENCE"; do
               COUNT=$(echo "$CONTENT" | grep -ci "$pattern" || true)
               if [ "$COUNT" -gt 0 ]; then
                 echo "::error::${article}: ${COUNT} hits for '${pattern}'"

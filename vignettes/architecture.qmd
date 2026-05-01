@@ -179,7 +179,7 @@ show_target("vig_telemetry_top_by_time",
 #| results: asis
 #| fig-cap: "Weekly commit frequency over the last 26 weeks. Each bar represents commits merged in a calendar week. Source: gert::git_log()."
 #| fig-alt: "Bar chart showing number of commits per week over the last 6 months."
-show_target("vig_telemetry_commit_velocity_chart")
+show_target("vig_commit_velocity")
 ```
 
 ### Issues and Pull Requests
