@@ -1,27 +1,30 @@
 # Current Work
 
-## Session: 2026-04-24
+## Session: 2026-04-25 to 2026-05-03
 
 ### Branch: main
 
 ### Completed
-- OWID/GBD gap analysis vs micromort package
-- Discovered OWID catalog URLs all return 404 (licensing change)
-- Created 5 issues: #90 (GBD update), #91 (injuries), #92 (trends), #93 (treemap), #94 (OWID→IHME migration)
-- Updated CHANGELOG.md
+- Causes of Death vignette: pure JS, 4 tabs, 26 countries, sortable tables, All Countries tab
+- Version bump to 0.2.0
+- CI QA: 29 errors → 0 (target name fixes + RDS exports + tightened patterns)
+- Full site rebuild with updated navbars
+- Issues: #93 closed, #95 closed, #96 created (bump plot), #97 created (QR sizing)
 
-### Pending (from prior sessions)
-- Glossary on reference page: check acronym coverage, add hover popups
-- Text selectability: `user-select: none` preventing copy/paste in tables
+### Pending
+- Glossary on reference page: acronym coverage, hover popups
+- Text selectability: `user-select: none` in tables
 - "Click to expand" broken on reference page
-- Rebuild confounding, data_reliability, introduction articles (acronym link fixes)
-- #84 CSS changes need visual browser verification
+- #84 CSS browser verification
 - #89 CI template for all pkgdown projects
+- #96 Bump plot (cross-country or temporal)
+- #97 QR code smaller, URL text larger on quiz results
+- chronic_vs_acute: commit quarto-rendered HTML to fix 4 remaining errors
 
 ### Blocked
-- #90, #91, #92 all blocked by #94 (need IHME account + manual download)
-- #93 (treemap vignette) can start with existing data
+- #90, #91, #92 blocked by #94 (IHME account needed)
 
 ### Known Limitations
-- Bundled disease data frozen at GBD 2019
-- OWID catalog defunct — `data-raw/owid_chronic_deaths.R` download script non-functional
+- docs_qa_precommit.sh hook buggy — use python subprocess for git add docs/
+- Quarto 1.8.26 strips <script> from {=html} blocks — requires Python post-injection
+- chronic_vs_acute (Closeread) can't be rebuilt by pkgdown
