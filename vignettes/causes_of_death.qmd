@@ -60,6 +60,16 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
 .notes .stale strong{color:#e74c3c}
 .notes code{background:#1a1a2e;padding:2px 6px;border-radius:3px;font-size:.85rem}
 .notes abbr{border-bottom:1px dotted #888;cursor:help}
+#bump-chart svg { width: 100%; }
+#bump-chart .bump-line { fill: none; stroke-width: 2.5; opacity: 0.7; cursor: pointer; transition: opacity 0.2s; }
+#bump-chart .bump-line.dim { opacity: 0.12; }
+#bump-chart .bump-line.highlight { opacity: 1; stroke-width: 4; }
+#bump-chart .bump-dot { r: 4; opacity: 0.8; }
+#bump-chart .bump-label { font-size: 0.75rem; fill: #888; }
+#bump-chart .bump-axis-label { font-size: 0.7rem; fill: #aaa; }
+#bump-chart .income-band { opacity: 0.06; }
+#bump-chart .bump-caption { color: #aaa; font-size: 0.85rem; padding: 8px 12px; line-height: 1.5; }
+#bump-chart .bump-caption a { color: #4a90d9; }
 </style>
 
 <div id="cod-app">
@@ -78,6 +88,7 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
   <div class="cod-tab active" onclick="showTab('chart')">Chart</div>
   <div class="cod-tab" onclick="showTab('table')">Table</div>
   <div class="cod-tab" onclick="showTab('allcountries')">All Countries</div>
+  <div class="cod-tab" onclick="showTab('rankings')">Rankings</div>
   <div class="cod-tab" onclick="showTab('notes')">Notes</div>
 </div>
 
@@ -96,6 +107,10 @@ header#title-block-header{margin-bottom:0;padding-bottom:0;max-width:1100px;marg
     <select id="cause-select"></select>
   </div>
   <div id="allcountries-wrap"></div>
+</div>
+
+<div id="panel-rankings" class="cod-panel">
+  <div id="bump-chart"></div>
 </div>
 
 <div id="panel-notes" class="cod-panel">

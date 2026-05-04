@@ -50,6 +50,24 @@ const INF_COLS = {
 };
 const ALL_COLS = Object.assign({}, NCD_COLS, INF_COLS);
 
+var INCOME_GROUP = {
+  // High income
+  "Australia":"High","Canada":"High","France":"High","Germany":"High",
+  "Italy":"High","Japan":"High","Netherlands":"High","Poland":"High",
+  "South Korea":"High","Spain":"High","Sweden":"High","United Kingdom":"High",
+  "United States":"High",
+  // Upper-middle
+  "Argentina":"Upper-middle","Brazil":"Upper-middle","China":"Upper-middle",
+  "Mexico":"Upper-middle","Russia":"Upper-middle","South Africa":"Upper-middle",
+  "Turkey":"Upper-middle",
+  // Lower-middle
+  "Bangladesh":"Lower-middle","India":"Lower-middle","Indonesia":"Lower-middle",
+  "Nigeria":"Lower-middle","Pakistan":"Lower-middle","Philippines":"Lower-middle",
+  // Low
+  "Ethiopia":"Low"
+};
+var INCOME_ORDER = ["High","Upper-middle","Lower-middle","Low"];
+
 let DATA = [];
 let comparing = false;
 let sortCol = 'pct', sortAsc = false;
@@ -86,9 +104,10 @@ function initUI() {
 
   render();
   renderAllCountries();
+  renderBumpChart();
 }
 
-var TABS = ['chart','table','allcountries','notes'];
+var TABS = ['chart','table','allcountries','rankings','notes'];
 function showTab(name) {
   document.querySelectorAll('.cod-tab').forEach((t,i) => {
     t.classList.toggle('active', TABS[i] === name);
@@ -312,6 +331,138 @@ function renderAllCountries() {
   var wrap = document.getElementById('allcountries-wrap');
   if (wrap) wrap.innerHTML = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
     capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
+}
+
+function renderBumpChart() {
+  var wrap = document.getElementById('bump-chart');
+  if (!wrap || !DATA.length) return;
+
+  // Sort countries: by income group order, then alphabetical within group
+  var countries = [...new Set(DATA.map(d => d.country))];
+  countries.sort(function(a, b) {
+    var ia = INCOME_ORDER.indexOf(INCOME_GROUP[a] || 'Low');
+    var ib = INCOME_ORDER.indexOf(INCOME_GROUP[b] || 'Low');
+    if (ia !== ib) return ia - ib;
+    return a.localeCompare(b);
+  });
+
+  // All causes (sorted by total rate desc for stable legend order)
+  var causes = [...new Set(DATA.map(d => d.cause))];
+  causes.sort(function(a, b) {
+    var aRate = DATA.filter(d => d.cause === a).reduce((s,d) => s + d.rate, 0);
+    var bRate = DATA.filter(d => d.cause === b).reduce((s,d) => s + d.rate, 0);
+    return bRate - aRate;
+  });
+
+  // Build rank matrix: ranks[country][cause] = rank (1=highest rate)
+  var ranks = {};
+  countries.forEach(function(country) {
+    var cData = DATA.filter(d => d.country === country);
+    // Sort by rate descending
+    cData.sort((a, b) => b.rate - a.rate);
+    ranks[country] = {};
+    cData.forEach(function(d, i) { ranks[country][d.cause] = i + 1; });
+  });
+
+  // SVG dimensions
+  var marginL = 130, marginR = 20, marginT = 55, marginB = 70;
+  var totalW = 900; // viewBox width
+  var totalH = 500;
+  var chartW = totalW - marginL - marginR;
+  var chartH = totalH - marginT - marginB;
+  var nCountries = countries.length;
+  var nRanks = causes.length; // 14
+
+  function xPos(i) { return marginL + (i / (nCountries - 1)) * chartW; }
+  function yPos(rank) { return marginT + ((rank - 1) / (nRanks - 1)) * chartH; }
+
+  var svg = '<svg viewBox="0 0 ' + totalW + ' ' + totalH + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // Income group bands (alternating background)
+  var bandColors = ['#4a90d9','#e67e22','#2ecc71','#e74c3c'];
+  INCOME_ORDER.forEach(function(grp, gi) {
+    var members = countries.filter(c => INCOME_GROUP[c] === grp);
+    if (!members.length) return;
+    var firstIdx = countries.indexOf(members[0]);
+    var lastIdx = countries.indexOf(members[members.length - 1]);
+    var x1 = xPos(firstIdx) - chartW / (nCountries - 1) * 0.5;
+    var x2 = xPos(lastIdx) + chartW / (nCountries - 1) * 0.5;
+    x1 = Math.max(marginL, x1);
+    x2 = Math.min(marginL + chartW, x2);
+    svg += '<rect class="income-band" x="' + x1 + '" y="' + marginT + '" width="' + (x2 - x1) + '" height="' + chartH + '" fill="' + bandColors[gi] + '"/>';
+    // Income group label above chart
+    var cx = (x1 + x2) / 2;
+    svg += '<text x="' + cx + '" y="' + (marginT - 8) + '" text-anchor="middle" class="bump-axis-label" style="font-size:0.65rem;fill:' + bandColors[gi] + ';font-weight:600">' + grp + '</text>';
+  });
+
+  // Y-axis rank labels (left side)
+  for (var r = 1; r <= nRanks; r++) {
+    svg += '<text x="' + (marginL - 6) + '" y="' + (yPos(r) + 4) + '" text-anchor="end" class="bump-label">' + r + '</text>';
+  }
+
+  // X-axis country labels (rotated 45 degrees)
+  countries.forEach(function(c, i) {
+    var x = xPos(i);
+    var y = marginT + chartH + 8;
+    svg += '<text transform="rotate(45,' + x + ',' + y + ')" x="' + x + '" y="' + y + '" text-anchor="start" class="bump-axis-label">' + c + '</text>';
+  });
+
+  // One polyline per cause
+  causes.forEach(function(cause) {
+    var col = ALL_COLS[cause] || '#888';
+    var pts = countries.map(function(c, i) {
+      var rk = ranks[c][cause] || nRanks;
+      return xPos(i) + ',' + yPos(rk);
+    }).join(' ');
+    svg += '<polyline class="bump-line" data-cause="' + cause + '" points="' + pts + '" stroke="' + col + '"' +
+      ' onmouseenter="bumpHighlight(event,\'' + cause.replace(/'/g, "\\'") + '\')" onmouseleave="bumpUnhighlight()"/>';
+  });
+
+  // Dots per cause per country
+  causes.forEach(function(cause) {
+    var col = ALL_COLS[cause] || '#888';
+    countries.forEach(function(c, i) {
+      var rk = ranks[c][cause] || nRanks;
+      svg += '<circle class="bump-dot" cx="' + xPos(i) + '" cy="' + yPos(rk) + '" r="3.5" fill="' + col + '"' +
+        ' onmouseenter="bumpHighlight(event,\'' + cause.replace(/'/g, "\\'") + '\')" onmouseleave="bumpUnhighlight()"/>';
+    });
+  });
+
+  // Cause labels on left margin (rank 1-14 positions at leftmost country)
+  causes.forEach(function(cause) {
+    var col = ALL_COLS[cause] || '#888';
+    var rk = ranks[countries[0]][cause] || nRanks;
+    svg += '<text x="' + (marginL - 10) + '" y="' + (yPos(rk) + 4) + '" text-anchor="end" class="bump-label" fill="' + col + '" style="font-size:0.65rem">' + label(cause) + '</text>';
+  });
+
+  svg += '</svg>';
+
+  // Caption
+  var caption = '<div class="bump-caption">Death cause rankings across 26 countries sorted by ' +
+    '<a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups">World Bank income group</a>' +
+    ' (<a href="https://www.healthdata.org/research-analysis/gbd">GBD</a> 2019). ' +
+    'Rank 1 = highest death rate. Hover a line to highlight.</div>';
+
+  wrap.innerHTML = svg + caption;
+}
+
+function bumpHighlight(ev, cause) {
+  var lines = document.querySelectorAll('#bump-chart .bump-line');
+  lines.forEach(function(l) {
+    var isCause = l.getAttribute('data-cause') === cause;
+    l.classList.toggle('highlight', isCause);
+    l.classList.toggle('dim', !isCause);
+  });
+  // Show cause label in a floating tooltip-like fashion via title on SVG
+  var el = ev.target;
+  el.setAttribute('title', label(cause));
+}
+
+function bumpUnhighlight() {
+  document.querySelectorAll('#bump-chart .bump-line').forEach(function(l) {
+    l.classList.remove('highlight');
+    l.classList.remove('dim');
+  });
 }
 
 // Init immediately if DOM already loaded (script loaded dynamically via extra.js)
