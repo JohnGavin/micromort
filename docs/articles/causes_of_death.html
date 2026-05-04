@@ -593,39 +593,110 @@ function render() {
     tm2.style.display = 'none';
   }
 
-  // Table
-  const cols = ['rank','cause','category','rate','pct'];
-  const labels = ['#','Cause','Category','Deaths/100k','Share (%)'];
-  const cls = ['num','','','num','num'];
-  let thead = '<tr>';
-  cols.forEach((c,i) => {
-    const arrow = sortCol === c ? (sortAsc ? ' ▲' : ' ▼') : '';
-    thead += '<th class="' + cls[i] + '" onclick="sortBy(\'' + c + '\')">' + labels[i] +
-      '<span class="sort-arrow">' + arrow + '</span></th>';
-  });
-  thead += '</tr>';
-
-  let tbody = '';
+  var tableHtml;
+  var c1name = document.getElementById('country1').value;
   if (comparing) {
-    const c2 = document.getElementById('country2').value;
-    tbody += renderTable([...d1], c1);
-    tbody += renderTable([...getCountryData(c2)], c2);
+    var c2name = document.getElementById('country2').value;
+    var d2 = getCountryData(c2name);
+
+    // Build merged data: one row per cause with both countries
+    var allCauses = [...new Set(d1.map(d => d.cause))];
+    var merged = allCauses.map(function(cause) {
+      var r1 = d1.find(d => d.cause === cause) || {rate: 0, pct: 0};
+      var r2 = d2.find(d => d.cause === cause) || {rate: 0, pct: 0};
+      var avg = (r1.rate + r2.rate) / 2;
+      var diff = r1.rate - r2.rate;
+      return {cause: cause, category: r1.category || r2.category,
+              rate1: r1.rate, pct1: r1.pct, rate2: r2.rate, pct2: r2.pct,
+              avg: avg, diff: diff};
+    });
+
+    // Sort merged data
+    merged.sort(function(a, b) {
+      var va, vb;
+      if (sortCol === 'cause') { va = label(a.cause); vb = label(b.cause); }
+      else if (sortCol === 'category') { va = a.category; vb = b.category; }
+      else if (sortCol === 'avg') { va = a.avg; vb = b.avg; }
+      else if (sortCol === 'diff') { va = Math.abs(a.diff); vb = Math.abs(b.diff); }
+      else if (sortCol === 'rate') { va = a.rate1; vb = b.rate1; }
+      else if (sortCol === 'pct') { va = a.pct1; vb = b.pct1; }
+      else { va = a.avg; vb = b.avg; }
+      if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return sortAsc ? va - vb : vb - va;
+    });
+
+    // Build comparison table headers
+    var cmpCols = ['cause','category', c1name, c2name, 'avg','diff'];
+    var cmpLabels = ['Cause','Category', c1name + ' /100k', c2name + ' /100k', 'Average /100k', 'Difference'];
+    var cmpCls = ['','','num','num','num','num'];
+    var cmpSortKeys = ['cause','category','rate','rate','avg','diff'];
+    var thead = '<tr>';
+    cmpCols.forEach(function(c, i) {
+      var arrow = sortCol === cmpSortKeys[i] ? (sortAsc ? ' ▲' : ' ▼') : '';
+      thead += '<th class="' + cmpCls[i] + '" onclick="sortBy(\'' + cmpSortKeys[i] + '\')">' + cmpLabels[i] +
+        '<span class="sort-arrow">' + arrow + '</span></th>';
+    });
+    thead += '</tr>';
+
+    // Build rows: two rows per cause (one per country), grouped
+    var tbody = '';
+    merged.forEach(function(m) {
+      var causeUrl = CAUSE_URLS[m.cause] || '#';
+      var catUrl = CAT_URLS[m.category] || '#';
+      var diffSign = m.diff > 0 ? '+' : '';
+      var diffColor = Math.abs(m.diff) > 20 ? '#e74c3c' : (Math.abs(m.diff) > 5 ? '#e67e22' : '#aaa');
+      // Cause header row
+      tbody += '<tr style="border-top:2px solid #4a90d9">' +
+        '<td rowspan="2" style="vertical-align:middle;font-weight:600"><a href="' + causeUrl + '" target="_blank">' + label(m.cause) + '</a></td>' +
+        '<td rowspan="2" style="vertical-align:middle"><a href="' + catUrl + '" target="_blank">' + m.category + '</a></td>' +
+        '<td class="num" style="font-weight:600">' + m.rate1.toFixed(1) + '</td>' +
+        '<td class="num">' + m.rate2.toFixed(1) + '</td>' +
+        '<td class="num" rowspan="2" style="vertical-align:middle">' + m.avg.toFixed(1) + '</td>' +
+        '<td class="num" rowspan="2" style="vertical-align:middle;color:' + diffColor + ';font-weight:600">' + diffSign + m.diff.toFixed(1) + '</td></tr>';
+      // Share row
+      tbody += '<tr>' +
+        '<td class="num" style="color:#888;font-size:0.85rem">' + m.pct1.toFixed(1) + '%</td>' +
+        '<td class="num" style="color:#888;font-size:0.85rem">' + m.pct2.toFixed(1) + '%</td></tr>';
+    });
+
+    // Caption
+    var topCause = merged.length ? merged[0] : null;
+    var capText = 'Comparison: ' + c1name + ' vs ' + c2name + ' (GBD 2019). ';
+    var biggestDiff = [...merged].sort((a,b) => Math.abs(b.diff) - Math.abs(a.diff))[0];
+    if (biggestDiff) capText += 'Largest difference: ' + label(biggestDiff.cause) + ' (' + (biggestDiff.diff > 0 ? '+' : '') + biggestDiff.diff.toFixed(1) + '/100k). ';
+    capText += 'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via <a href="https://ourworldindata.org/causes-of-death">OWID</a>.';
+
+    tableHtml = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
+      capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
   } else {
-    tbody += renderTable([...d1], null);
+    // Single country: use existing renderTable
+    var d1sorted = [...d1];
+    sortData(d1sorted, sortCol, sortAsc);
+
+    var cols = ['rank','cause','category','rate','pct'];
+    var labels2 = ['#','Cause','Category','Deaths/100k','Share (%)'];
+    var cls = ['num','','','num','num'];
+    var thead = '<tr>';
+    cols.forEach(function(c, i) {
+      var arrow = sortCol === c ? (sortAsc ? ' ▲' : ' ▼') : '';
+      thead += '<th class="' + cls[i] + '" onclick="sortBy(\'' + c + '\')">' + labels2[i] +
+        '<span class="sort-arrow">' + arrow + '</span></th>';
+    });
+    thead += '</tr>';
+
+    var tbody = renderTable(d1sorted, null);
+
+    var topCause = d1sorted.length ? d1sorted[0] : null;
+    var capText = 'Age-standardised death rates per 100,000 (GBD 2019). ';
+    if (topCause) capText += 'In ' + c1name + ', ' + label(topCause.cause) + ' is the leading cause at ' +
+      topCause.rate.toFixed(1) + ' per 100k (' + topCause.pct.toFixed(1) + '%). ';
+    capText += 'Covers 7 non-communicable and 7 infectious causes; excludes injuries, maternal, and neonatal deaths. ' +
+      'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
+      '<a href="https://ourworldindata.org/causes-of-death">OWID</a>. Click any cause name for the WHO fact sheet.';
+
+    tableHtml = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
+      capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
   }
-
-  // Dynamic caption
-  const topCause = d1.length ? d1[0] : null;
-  const c1name = document.getElementById('country1').value;
-  let capText = 'Age-standardised death rates per 100,000 (GBD 2019). ';
-  if (topCause) capText += 'In ' + c1name + ', ' + label(topCause.cause) + ' is the leading cause at ' +
-    topCause.rate.toFixed(1) + ' per 100k (' + topCause.pct.toFixed(1) + '%). ';
-  capText += 'Covers 7 non-communicable and 7 infectious causes; excludes injuries, maternal, and neonatal deaths. ' +
-    'Source: <a href="https://www.healthdata.org/research-analysis/gbd">IHME GBD 2019</a> via ' +
-    '<a href="https://ourworldindata.org/causes-of-death">OWID</a>. Click any cause name for the WHO fact sheet.';
-
-  var tableHtml = '<table class="cod-table"><caption style="caption-side:top;text-align:left;color:#aaa;font-size:.85rem;padding:8px 12px;line-height:1.5">' +
-    capText + '</caption><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table>';
 
   var tw = document.getElementById('table-wrap');
   if (tw) tw.innerHTML = tableHtml;
@@ -757,11 +828,6 @@ function renderBumpChart() {
     svg += '<text x="' + cx + '" y="' + (marginT - 8) + '" text-anchor="middle" class="bump-axis-label" style="font-size:0.65rem;fill:' + bandColors[gi] + ';font-weight:600">' + grp + '</text>';
   });
 
-  // Y-axis rank labels (left side)
-  for (var r = 1; r <= nRanks; r++) {
-    svg += '<text x="' + (marginL - 6) + '" y="' + (yPos(r) + 4) + '" text-anchor="end" class="bump-label">' + r + '</text>';
-  }
-
   // X-axis country labels (rotated 45 degrees)
   countries.forEach(function(c, i) {
     var x = xPos(i);
@@ -794,7 +860,7 @@ function renderBumpChart() {
   causes.forEach(function(cause) {
     var col = ALL_COLS[cause] || '#888';
     var rk = ranks[countries[0]][cause] || nRanks;
-    svg += '<text x="' + (marginL - 10) + '" y="' + (yPos(rk) + 4) + '" text-anchor="end" class="bump-label" fill="' + col + '" style="font-size:0.65rem">' + label(cause) + '</text>';
+    svg += '<text x="' + (marginL - 10) + '" y="' + (yPos(rk) + 4) + '" text-anchor="end" fill="#ffffff" style="font-size:0.8rem;font-weight:600">' + label(cause) + '</text>';
   });
 
   svg += '</svg>';
