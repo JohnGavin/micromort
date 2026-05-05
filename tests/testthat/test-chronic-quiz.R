@@ -196,3 +196,25 @@ test_that("Average cancer diagnosis can appear in chronic_quiz_pairs()", {
   similar <- cr[abs(cr$microlives_per_day) >= 3 & abs(cr$microlives_per_day) <= 12, ]
   expect_gte(nrow(similar), 3L)
 })
+
+
+# ---- air pollution dose-response entries ----
+
+test_that("chronic_risks() has exactly 4 air pollution entries", {
+  cr <- chronic_risks()
+  ap <- cr[grepl("^Air pollution", cr$factor), ]
+  expect_equal(nrow(ap), 4L)
+})
+
+test_that("all 4 air pollution entries have category 'Environment'", {
+  cr <- chronic_risks()
+  ap <- cr[grepl("^Air pollution", cr$factor), ]
+  expect_true(all(ap$category == "Environment"))
+})
+
+test_that("air pollution microlives_per_day values are -0.5, -1, -2, -4", {
+  cr <- chronic_risks()
+  ap <- cr[grepl("^Air pollution", cr$factor), ]
+  ap_sorted <- ap[order(ap$microlives_per_day, decreasing = TRUE), ]
+  expect_equal(ap_sorted$microlives_per_day, c(-0.5, -1, -2, -4))
+})

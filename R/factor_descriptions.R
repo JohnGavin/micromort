@@ -92,9 +92,21 @@ factor_descriptions <- function() {
     "Second-hand smoke exposure increases lung cancer risk by 20-30% and heart disease risk by 25-30%.",
     "https://en.wikipedia.org/wiki/Passive_smoking",
 
-    "Air pollution (high)",
-    "Living in a highly polluted urban area (PM2.5 > 25 ug/m3) causes chronic respiratory and cardiovascular damage.",
-    "https://en.wikipedia.org/wiki/Air_pollution#Health_effects",
+    "Air pollution (PM2.5 ~10 μg/m³)",
+    "Moderate urban air pollution (EU average). PM2.5 at 10 μg/m³ causes chronic cardiovascular and respiratory damage. WHO risk ratio: 1.08 per 10 μg/m³.",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/",
+
+    "Air pollution (PM2.5 ~25 μg/m³)",
+    "US EPA annual standard level. PM2.5 at 25 μg/m³ substantially elevates cardiovascular and lung disease risk. WHO risk ratio: 1.08 per 10 μg/m³.",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/",
+
+    "Air pollution (PM2.5 ~50 μg/m³)",
+    "Indian NAAQS standard, common in many Asian cities. PM2.5 at 50 μg/m³ causes significant chronic disease burden. WHO risk ratio: 1.08 per 10 μg/m³.",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/",
+
+    "Air pollution (PM2.5 ~100 μg/m³)",
+    "Heavily polluted cities such as Delhi average ~100 μg/m³. Risk extrapolated from WHO dose-response curve (RR=1.08 per 10 μg/m³). Confidence: low.",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/",
 
     # Cardiovascular
     "Untreated hypertension",
