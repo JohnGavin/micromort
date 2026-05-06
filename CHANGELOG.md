@@ -1,5 +1,42 @@
 # Changelog
 
+## 2026-05-03 to 2026-05-06
+
+### Completed
+
+**Issues closed: 1** (#96)
+**Issues created: 2** (#98, #99)
+
+#### Rankings bump chart (#96)
+- 5th tab on Causes of Death page: SVG bump chart showing cause rankings across 26 countries
+- Countries sorted by World Bank income group (High → Upper-middle → Lower-middle → Low)
+- 14 cause lines with hover-to-highlight interaction
+- White cause labels at 0.8rem bold (fixed from gray/small)
+
+#### Merged comparison table
+- Table tab in comparison mode: single table grouped by cause (was two separate tables)
+- Columns: Cause, Category, Country1 /100k, Country2 /100k, Average, Difference
+- Difference column colour-coded; sortable by average and difference
+
+#### Air pollution dose-response (#99)
+- Replaced single "Air pollution (high) = -1 ml/day" with 4 PM2.5 level entries
+- Based on WHO 2020 meta-analysis (RR=1.08 per 10μg/m³, 107 studies)
+- Levels: 10/25/50/100 μg/m³ at -0.5/-1/-2/-4 ml/day
+- Confidence tiers: high/high/medium/low
+
+#### Issues raised
+- #98: Life expectancy offset calculator (select harmful habits → see offset options)
+- #99: Evidence review for 12 missing chronic risk factors (GLP-1, vaping, sleep, social connection, diets)
+
+### Accuracy / Metrics
+- Tests: 923 passing, 0 failures
+- CI: passing (green)
+
+### Known Limitations
+- 12 chronic risk factors still missing from #99 (GLP-1, vaping, sleep dose-response, social connection, DASH/MIND diets, nuts, coffee, aspirin, sauna, dancing, HRT)
+- docs_qa_precommit.sh hook still buggy
+- Quarto 1.8.26 strips scripts — requires Python post-injection for causes_of_death
+
 ## 2026-04-25 to 2026-05-03
 
 ### Completed
