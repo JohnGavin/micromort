@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .DS_Store
+Rplots.pdf
 nix-shell-root
 _targets/
 README_files/
