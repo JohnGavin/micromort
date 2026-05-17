@@ -1345,14 +1345,26 @@ streak_js <- function() {
   }
   function updateStreak() {
     var today = localDateKey(new Date());
+    var yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    var yesterday = localDateKey(yest);
     var lastPlay = localStorage.getItem('micromort_last_play');
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    // One-time migration: legacy UTC-derived keys remain valid if they match
+    // either today's or yesterday's LOCAL date when interpreted as UTC.
+    function utcDateKey(d) {
+      return d.toISOString().slice(0, 10);
+    }
+    var todayUtc = utcDateKey(new Date());
+    var yestUtc  = (function() { var y = new Date(); y.setDate(y.getDate() - 1); return utcDateKey(y); })();
+    if (lastPlay === todayUtc) {
+      lastPlay = today;
+    } else if (lastPlay === yestUtc) {
+      lastPlay = yesterday;
+    }
     if (lastPlay === today) {
       // already played today
     } else if (lastPlay) {
-      var yest = new Date();
-      yest.setDate(yest.getDate() - 1);
-      var yesterday = localDateKey(yest);
       if (lastPlay === yesterday) {
         streak += 1;
       } else {
@@ -1450,14 +1462,26 @@ leaderboard_js <- function() {
 
   function updateStreak() {
     var today = localDateKey(new Date());
+    var yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    var yesterday = localDateKey(yest);
     var lastPlay = localStorage.getItem('micromort_last_play');
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
+    // One-time migration: legacy UTC-derived keys remain valid if they match
+    // either today's or yesterday's LOCAL date when interpreted as UTC.
+    function utcDateKey(d) {
+      return d.toISOString().slice(0, 10);
+    }
+    var todayUtc = utcDateKey(new Date());
+    var yestUtc  = (function() { var y = new Date(); y.setDate(y.getDate() - 1); return utcDateKey(y); })();
+    if (lastPlay === todayUtc) {
+      lastPlay = today;
+    } else if (lastPlay === yestUtc) {
+      lastPlay = yesterday;
+    }
     if (lastPlay === today) {
       // already played today
     } else if (lastPlay) {
-      var yest = new Date();
-      yest.setDate(yest.getDate() - 1);
-      var yesterday = localDateKey(yest);
       if (lastPlay === yesterday) {
         streak += 1;
       } else {
