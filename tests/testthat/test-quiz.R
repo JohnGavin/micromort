@@ -342,3 +342,87 @@ test_that("geography_quiz_pairs() produces no Inf/NaN ratio when a side is zero 
                 info = "all ratios must be strictly positive")
   }
 })
+
+test_that("geography_quiz_pairs() zero-divisor fixture: injected zero-mm row is silently skipped (roborev #test-fixture)", {
+  # This test constructs a synthetic common_risks() response that contains
+  # a disease row with micromorts = 0 for BOTH countries, which would produce
+  # Inf or NaN if the guard were absent.  Under the OLD code (no guard), the
+  # ratio computation max(0, x) / min(0, x)  = x / 0 = Inf.
+  #
+  # The test verifies:
+  #  1. The function does not error (zero rows are silently skipped).
+  #  2. No Inf or NaN values appear in the output.
+  #  3. The zero-mm cause ("zero disease mortality risk (UK)") is absent from output.
+
+  make_fake_cr <- function(country) {
+    tibble::tibble(
+      activity        = c(
+        paste0("zero disease mortality risk (", country, ")"),   # micromorts = 0
+        paste0("nonzero disease mortality risk (", country, ")") # micromorts > 0
+      ),
+      micromorts      = c(0, 50),
+      microlives      = c(0, 0),
+      category        = c("Disease", "Disease"),
+      period          = c("annual", "annual"),
+      period_type     = c("annual", "annual"),
+      period_days     = c(365, 365),
+      micromorts_per_day = c(0, 50 / 365),
+      source_url      = c(NA_character_, NA_character_),
+      n_components    = c(1L, 1L),
+      hedgeable_pct   = c(0, 0),
+      confidence      = c("medium", "medium"),
+      estimate_range  = c(NA_character_, NA_character_),
+      source_count    = c(1L, 1L),
+      country         = country
+    )
+  }
+
+  # Stub common_risks() so it returns our fixture regardless of `profile`
+  local_mocked_bindings(
+    common_risks = function(profile = list(), duration_hours = NULL) {
+      cc <- profile[["country"]]
+      if (is.null(cc)) {
+        # acute call (no country) — return a small positive-micromort set
+        tibble::tibble(
+          activity        = "cycling 1 hour",
+          micromorts      = 5,
+          microlives      = 0,
+          category        = "Transport",
+          period          = "per_event",
+          period_type     = "per_event",
+          period_days     = NA_real_,
+          micromorts_per_day = NA_real_,
+          source_url      = NA_character_,
+          n_components    = 1L,
+          hedgeable_pct   = 0,
+          confidence      = "medium",
+          estimate_range  = NA_character_,
+          source_count    = 1L
+        )
+      } else {
+        make_fake_cr(cc)
+      }
+    },
+    .package = "micromort"
+  )
+
+  # Should not error, even though one cause has micromorts = 0 on both sides
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+
+  # Zero-mm row must be absent from output (use word boundary to avoid matching "nonzero")
+  if (nrow(geo) > 0) {
+    expect_false(any(grepl("^zero disease mortality risk", geo$activity_a)),
+                 info = "zero-mm activity_a leaked into output")
+    expect_false(any(grepl("^zero disease mortality risk", geo$activity_b)),
+                 info = "zero-mm activity_b leaked into output")
+    # No Inf / NaN ratios — without the guard these would be Inf
+    expect_false(any(is.infinite(geo$ratio)),
+                 info = "Inf ratio: zero-divisor guard is missing")
+    expect_false(any(is.nan(geo$ratio)),
+                 info = "NaN ratio: zero-divisor guard is missing")
+  }
+  # Under the OLD broken code (guard absent), the loop would attempt
+  # max(0, 0) / min(0, 0) = 0/0 = NaN for the cross-country zero pair, and
+  # max(50, 0) / min(50, 0) = 50/0 = Inf for the mixed pair — both assertions
+  # above would have failed.
+})
