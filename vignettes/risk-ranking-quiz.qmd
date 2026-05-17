@@ -130,6 +130,13 @@ function loadData() {
   S.allTags.forEach(t => S.selTags.add(t));
 }
 
+// ---- Security helpers ----
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
 // ---- Helpers ----
 function shuffle(arr) {
   const a = [...arr];
@@ -153,7 +160,7 @@ function lleLabel(lle) {
   return fmt(lle) + ' min';
 }
 function lleDirLabel(item) {
-  const mag = lleLabel(item.lle_minutes);
+  const mag = escHtml(lleLabel(item.lle_minutes));
   const isGain = item.item_source === 'chronic' &&
                  item.microlives_per_day != null && item.microlives_per_day > 0;
   if (isGain) {
@@ -167,7 +174,12 @@ function toggleLLEHelp(el) {
   if (tip) { tip.remove(); return; }
   tip = document.createElement('div');
   tip.className = 'lle-help-tip';
-  tip.innerHTML = '▲ gain = life added (e.g. exercise). ▼ lose = life shortened (e.g. smoking).<br><small style="color:#6c757d;">Based on Loss of Life Expectancy (LLE) — the standard metric for comparing risks.</small>';
+  tip.appendChild(document.createTextNode('▲ gain = life added (e.g. exercise). ▼ lose = life shortened (e.g. smoking).'));
+  tip.appendChild(document.createElement('br'));
+  const small = document.createElement('small');
+  small.style.color = '#6c757d';
+  small.textContent = 'Based on Loss of Life Expectancy (LLE) — the standard metric for comparing risks.';
+  tip.appendChild(small);
   el.parentElement.appendChild(tip);
   setTimeout(() => tip.remove(), 5000);
 }
@@ -175,10 +187,20 @@ function renderQR(containerId, size) {
   const url = window.location.href.split('?')[0].split('#')[0];
   const el = document.getElementById(containerId);
   if (!el || typeof qrcode === 'undefined') return;
+  const safeSize = Math.max(1, Math.min(20, parseInt(size, 10) || 3));
   const qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
-  el.innerHTML = `<div class="qr-section">${qr.createImgTag(size || 3)}<span class="qr-url">${url}</span></div>`;
+  const img = qr.createImgTag(safeSize);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'qr-section';
+  wrapper.innerHTML = img;
+  const urlSpan = document.createElement('span');
+  urlSpan.className = 'qr-url';
+  urlSpan.textContent = url;
+  wrapper.appendChild(urlSpan);
+  el.innerHTML = '';
+  el.appendChild(wrapper);
 }
 function selectInGroup(grpId, clicked) {
   const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
@@ -456,7 +478,8 @@ function renderQuestion() {
     const d = items[0].difficulty;
     if (!d) return '';
     const colors = {easy:'background:#198754;color:#fff', medium:'background:#b85c0a;color:#fff', hard:'background:#dc3545;color:#fff'};
-    return `<span class="badge me-2" style="${colors[d]}">${d}</span>`;
+    const style = colors[d] || 'background:#6c757d;color:#fff';
+    return `<span class="badge me-2" style="${style}">${escHtml(d)}</span>`;
   })();
 
   // Tally
@@ -575,9 +598,9 @@ function renderDetail() {
     const items = S.questions[i];
     const sc = S.scores[i];
     const correctOrder = [...items].sort((a, b) => a.correct_rank - b.correct_rank);
-    const correctNames = correctOrder.map(it => `${it.item_name} (${lleDirLabel(it)})`).join(' > ');
+    const correctNames = correctOrder.map(it => `${escHtml(it.item_name)} (${lleDirLabel(it)})`).join(' &gt; ');
     const userOrder = S.userOrders[i];
-    const userNames = userOrder.map(idx => items[idx].item_name).join(' > ');
+    const userNames = escHtml(userOrder.map(idx => items[idx].item_name).join(' > '));
     const pct = sc ? sc.pct + '%' : '\u2014';
     rows += `<tr><td>${i+1}</td><td style="white-space:normal;max-width:300px;">${correctNames}</td>
       <td style="white-space:normal;max-width:300px;">${userNames}</td>

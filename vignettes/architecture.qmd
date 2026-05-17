@@ -28,19 +28,28 @@ source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
 
 # Helper: emit mermaid diagram as a script/div pair so pandoc cannot
 # HTML-encode the arrows (-->) or wrap lines in <p> tags.
+# caption and alt_text are HTML-escaped to prevent injection.
+html_escape <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x <- gsub('"', "&quot;", x, fixed = TRUE)
+  x <- gsub("'", "&#39;", x, fixed = TRUE)
+  x
+}
 emit_mermaid <- function(target_name, fallback_msg, caption = NULL, alt_text = NULL) {
   diagram <- safe_tar_read(target_name)
   if (!is.null(diagram)) {
     id <- gsub("[^a-z0-9]", "", target_name)
     if (!is.null(caption)) cat('<figure role="figure">\n')
     cat(sprintf('<pre class="mermaid" id="%s"', id))
-    if (!is.null(alt_text)) cat(sprintf(' aria-label="%s"', alt_text))
+    if (!is.null(alt_text)) cat(sprintf(' aria-label="%s"', html_escape(alt_text)))
     cat('></pre>\n')
     cat(sprintf('<script type="text/plain" data-mermaid="%s">\n', id))
     cat(diagram)
     cat("\n</script>\n")
     if (!is.null(caption)) {
-      cat(sprintf('<figcaption>%s</figcaption>\n</figure>\n', caption))
+      cat(sprintf('<figcaption>%s</figcaption>\n</figure>\n', html_escape(caption)))
     }
   } else {
     cat(paste0("*", fallback_msg, "*\n"))

@@ -121,6 +121,13 @@ function loadData() {
   quizPool = JSON.parse(el.textContent);
 }
 
+// ---- Security helpers ----
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
 // ---- Helpers ----
 function shuffle(arr) {
   const a = [...arr];
@@ -141,13 +148,20 @@ function renderQR(containerId, size) {
   const url = window.location.href.split('?')[0].split('#')[0];
   const el = document.getElementById(containerId);
   if (!el || typeof qrcode === 'undefined') return;
+  const safeSize = Math.max(1, Math.min(20, parseInt(size, 10) || 3));
   const qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
-  el.innerHTML = `<div class="qr-section">
-    ${qr.createImgTag(size || 3)}
-    <span class="qr-url">${url}</span>
-  </div>`;
+  const img = qr.createImgTag(safeSize);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'qr-section';
+  wrapper.innerHTML = img;
+  const urlSpan = document.createElement('span');
+  urlSpan.className = 'qr-url';
+  urlSpan.textContent = url;
+  wrapper.appendChild(urlSpan);
+  el.innerHTML = '';
+  el.appendChild(wrapper);
 }
 function selectInGroup(grpId, clicked) {
   const btns = document.getElementById(grpId).querySelectorAll('.option-btn');
@@ -382,7 +396,8 @@ function renderQuestion() {
     const d = pair.difficulty;
     if (!d) return '';
     const colors = {easy:'background:#198754;color:#fff', medium:'background:#b85c0a;color:#fff', hard:'background:#dc3545;color:#fff'};
-    return `<span class="badge me-2" style="${colors[d]}">${d}</span>`;
+    const style = colors[d] || 'background:#6c757d;color:#fff';
+    return `<span class="badge me-2" style="${style}">${escHtml(d)}</span>`;
   })();
 
   return `
