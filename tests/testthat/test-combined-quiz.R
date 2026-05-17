@@ -95,11 +95,32 @@ test_that("combined_quiz_pairs() ratio is always >= 1", {
 
 # ---- conversion factor ----
 
-test_that("combined_quiz_pairs() acute conversion uses 0.7 factor", {
+test_that("combined_quiz_pairs() acute conversion uses 0.7 factor on effective micromorts", {
   pairs <- combined_quiz_pairs(n = 10, seed = 42)
-  # common_value_a = value_a (micromorts) * 0.7
-  expected <- pairs$value_a * 0.7
+  # common_value_a = effective_micromorts_a * 0.7
+  expected <- pairs$effective_micromorts_a * 0.7
   expect_equal(pairs$common_value_a, expected, tolerance = 1e-9)
+})
+
+test_that("combined_quiz_pairs() event-type rows use raw micromorts as effective", {
+  pairs <- combined_quiz_pairs(n = 20, seed = 42)
+  evt <- pairs[pairs$period_type_a == "event", ]
+  skip_if(nrow(evt) == 0, "No event-type rows in this sample")
+  expect_equal(evt$effective_micromorts_a, evt$value_a, tolerance = 1e-9)
+})
+
+test_that("combined_quiz_pairs() non-event acute rows scale by time_period_days", {
+  pairs_365 <- combined_quiz_pairs(n = 30, time_period_days = 365, seed = 42)
+  pairs_90 <- combined_quiz_pairs(n = 30, time_period_days = 90, seed = 42)
+  common <- intersect(
+    pairs_365$activity_a[pairs_365$period_type_a != "event"],
+    pairs_90$activity_a[pairs_90$period_type_a != "event"]
+  )
+  skip_if(length(common) == 0, "No common non-event acute rows to compare")
+  a <- common[1]
+  v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
+  v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]
+  expect_equal(v90 / v365, 90 / 365, tolerance = 1e-6)
 })
 
 test_that("combined_quiz_pairs() chronic uses abs(microlives_per_day) * time_period_days", {

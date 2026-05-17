@@ -23,12 +23,22 @@ MICROMORT_TO_MICROLIFE <- 0.7
 #'   `abs(microlives_per_day) × time_period_days`.
 #' @param seed Integer or `NULL`. Random seed for reproducibility. Default
 #'   `NULL` (random each call).
+#' Acute risks with `period_type == "event"` (true one-off events such as one
+#' expedition or one base jump) keep their raw micromort value. Acute risks
+#' with any other period type (day, hour, month, year, period) represent a
+#' rate of exposure and are projected to `time_period_days` via
+#' `micromorts_per_day × time_period_days` before conversion to microlives.
+#'
 #' @return A tibble with columns:
-#'   - `activity_a`, `type_a` ("acute"), `value_a`, `unit_a` ("micromorts"),
-#'     `category_a`, `period_a`
+#'   - `activity_a`, `type_a` ("acute"), `value_a` (raw micromorts as stored),
+#'     `unit_a` ("micromorts"), `category_a`, `period_a`,
+#'     `period_type_a` (one of "event", "day", "hour", "month", "year",
+#'     "period"), `effective_micromorts_a` (raw value for "event" rows;
+#'     `micromorts_per_day × time_period_days` otherwise)
 #'   - `factor_b`, `type_b` ("chronic"), `value_b`, `unit_b` ("microlives/day"),
 #'     `category_b`, `direction_b`
-#'   - `common_unit` ("microlives"), `common_value_a`, `common_value_b`
+#'   - `common_unit` ("microlives"), `common_value_a`
+#'     (`effective_micromorts_a × 0.7`), `common_value_b`
 #'   - `correct_answer` ("a" or "b" — whichever has higher impact in common
 #'     unit)
 #'   - `ratio` (larger / smaller common value)
@@ -53,7 +63,21 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   acute <- common_risks()
   acute <- acute[acute$micromorts > 0, ]
 
-  # Convert acute micromorts to microlives using 0.7 factor
+  # Scale acute risk to the comparison window:
+  # - period_type == "event": one-off in the window (e.g. one expedition, one
+  #   jump). Use raw micromorts.
+  # - otherwise (day/hour/month/year/period): rate of exposure. Project to
+  #   `time_period_days` via the pre-computed `micromorts_per_day`.
+  # Without this distinction, chronic-rate rows (e.g. "Living one day in
+  # Lesotho" at 463 µm/day) are silently treated as one-off events and the
+  # acute vs chronic comparison is non-commensurable. See roborev cluster
+  # combined_quiz_pairs-chronic-as-acute (#934 and ~111 duplicates).
+  effective_micromorts <- ifelse(
+    acute$period_type == "event",
+    acute$micromorts,
+    acute$micromorts_per_day * time_period_days
+  )
+
   acute_common <- tibble::tibble(
     activity_a = acute$activity,
     type_a = "acute",
@@ -61,7 +85,9 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
     unit_a = "micromorts",
     category_a = acute$category,
     period_a = acute$period,
-    common_value_a = acute$micromorts * MICROMORT_TO_MICROLIFE
+    period_type_a = acute$period_type,
+    effective_micromorts_a = effective_micromorts,
+    common_value_a = effective_micromorts * MICROMORT_TO_MICROLIFE
   )
 
   # ---- Chronic risks ----
@@ -102,6 +128,8 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
     unit_a = acute_common$unit_a[acute_idx],
     category_a = acute_common$category_a[acute_idx],
     period_a = acute_common$period_a[acute_idx],
+    period_type_a = acute_common$period_type_a[acute_idx],
+    effective_micromorts_a = acute_common$effective_micromorts_a[acute_idx],
     common_value_a = acute_common$common_value_a[acute_idx],
     factor_b = chronic_common$factor_b[chronic_idx],
     type_b = chronic_common$type_b[chronic_idx],
@@ -166,13 +194,24 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   candidates$common_unit <- "microlives"
 
   # ---- Explanation ----
+  acute_phrase <- ifelse(
+    candidates$period_type_a == "event",
+    paste0(
+      candidates$activity_a, " (acute) carries ",
+      round(candidates$value_a, 2), " micromorts (one-off) \u2248 ",
+      round(candidates$common_value_a, 1), " microlives"
+    ),
+    paste0(
+      candidates$activity_a, " (acute, ", candidates$period_a, ") carries ",
+      round(candidates$value_a, 2), " micromorts \u2192 over ",
+      round(time_period_days), " days = ",
+      round(candidates$effective_micromorts_a, 1), " micromorts \u2248 ",
+      round(candidates$common_value_a, 1), " microlives"
+    )
+  )
+
   candidates$explanation <- paste0(
-    candidates$activity_a,
-    " (acute) carries ",
-    round(candidates$value_a, 2),
-    " micromorts \u2248 ",
-    round(candidates$common_value_a, 1),
-    " microlives. ",
+    acute_phrase, ". ",
     candidates$factor_b,
     " (chronic) costs/gains ",
     abs(candidates$value_b),
@@ -194,6 +233,7 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
 
   col_order <- c(
     "activity_a", "type_a", "value_a", "unit_a", "category_a", "period_a",
+    "period_type_a", "effective_micromorts_a",
     "factor_b", "type_b", "value_b", "unit_b", "category_b", "direction_b",
     "common_unit", "common_value_a", "common_value_b",
     "correct_answer", "ratio", "explanation"
