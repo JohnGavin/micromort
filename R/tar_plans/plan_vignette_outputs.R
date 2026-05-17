@@ -102,10 +102,7 @@ plan_vignette_outputs <- list(
   ),
 
   # Mundane risks summary table (data.frame — rendered via DT in vignette)
-  # Same 7 activities as vig_whatis_mundane_plot; values from common_risks().
-  # "Drinking a glass of wine" is a chronic risk not in common_risks(); the
-  # row is retained using its exact value from the Wikipedia source (0.5 mm)
-  # via a manual bind so the table matches the accompanying bar chart narrative.
+  # 6 acute per-event activities from common_risks(); sorted ascending by mm.
   targets::tar_target(
     vig_whatis_mundane_table,
     {
@@ -124,25 +121,14 @@ plan_vignette_outputs <- list(
 
       coffee_mm <- cr$micromorts[cr$activity == "Cup of coffee"]
 
-      wine_row <- tibble::tibble(
-        activity = "Drinking a glass of wine",
-        micromorts = 0.5
-      )
-
-      tbl <- dplyr::bind_rows(
-        cr |> dplyr::mutate(note = ""),
-        wine_row |> dplyr::mutate(note = "chronic, per day")
-      ) |>
-        dplyr::arrange(.data$micromorts) |>
+      cr |>
         dplyr::mutate(
           `Ratio vs coffee` = paste0(round(.data$micromorts / coffee_mm), "x")
         ) |>
         dplyr::rename(
           Activity = "activity",
-          `mm` = "micromorts",
-          Note = "note"
+          `mm` = "micromorts"
         )
-      tbl
     }
   ),
 
