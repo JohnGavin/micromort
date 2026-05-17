@@ -199,12 +199,11 @@ if (!is.null(diagram)) {
   cat("<details>\n<summary>Package architecture (click to expand; renders on GitHub)</summary>\n\n")
   cat("```mermaid\n", diagram, "\n```\n", sep = "")
   cat("\n</details>\n")
+  cat("\nSee the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed diagrams.\n")
 } else {
-  cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html).\n")
+  cat("See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed diagrams.\n")
 }
 ```
-
-See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed diagrams.
 
 ## Data Sources
 
