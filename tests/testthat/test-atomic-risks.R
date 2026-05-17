@@ -679,3 +679,15 @@ test_that("activity_descriptions() has description for NYC walking trip", {
   expect_true(nchar(nyc_desc$description) > 10)
   expect_equal(nyc_desc$help_url, "https://www.nature.com/articles/s44284-025-00383-y")
 })
+
+test_that("atomic_risks() age_conditioned rows have unique component_id (roborev #463)", {
+  ar <- atomic_risks()
+  age_cond <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "age", ]
+  if (nrow(age_cond) > 0) {
+    expect_equal(
+      length(unique(age_cond$component_id)),
+      nrow(age_cond),
+      info = "each age-conditioned row must have a distinct component_id"
+    )
+  }
+})

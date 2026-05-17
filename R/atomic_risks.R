@@ -722,7 +722,7 @@ atomic_risks <- function() {
   ) |>
     dplyr::mutate(
       period_type = parse_period_type(period),
-      component_id = paste0(activity_id, "_", component, "_", condition_value),
+      component_id = paste0(activity_id, "_", component, "_", condition_variable, "_", condition_value),
       duration_hours = NA_real_,
       hedgeable = FALSE,
       hedge_description = NA_character_,
