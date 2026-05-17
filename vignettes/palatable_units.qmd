@@ -45,7 +45,7 @@ The goal of palatable units is to create a common currency for risk. This allows
 
 ### What does 1-in-a-million feel like?
 
-Abstract probabilities are hard to grasp. Spiegelhalter offers a concrete anchor (*The Norm Chronicles*, 2013; [plus.maths.org](https://plus.maths.org/content/os/issue55/features/risk/index)):
+Abstract probabilities are hard to grasp. Spiegelhalter offers a concrete anchor (*The Norm Chronicles*, 2013; [plus.maths.org](https://plus.maths.org/content/os/issue55/features/risk/index/)):
 
 > **Flip a fair coin 20 times. The probability of getting 20 heads in a row is 1 in 1,048,576 — approximately 1 micromort.**
 
