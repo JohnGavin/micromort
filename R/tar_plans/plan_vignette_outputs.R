@@ -63,17 +63,26 @@ plan_vignette_outputs <- list(
   # WHAT-IS-A-MICROMORT VIGNETTE (closeread scrollytelling)
   # ==========================================================================
 
+  # Shared activity allowlist for vig_whatis_mundane_plot and vig_whatis_mundane_table.
+  # Defining once prevents the plot and table from diverging silently.
+  # NOTE: this is a module-level constant, not a tar_target, because both targets
+  # need it at definition time (not as a pipeline dependency).
+
   # Mundane risks bar chart (plotly)
   targets::tar_target(
     vig_whatis_mundane_plot,
     {
+      whatis_mundane_activities <- c(
+        "Cup of coffee",
+        "Crossing a road",
+        "Working in an office (8 hours)",
+        "Taking a bath",
+        "Commuting by car (30 min)",
+        "Commuting by bicycle (30 min)"
+      )
       cr <- common_risks()
       mundane <- cr |>
-        dplyr::filter(activity %in% c(
-          "Cup of coffee", "Crossing a road",
-          "Commuting by car (30 min)", "Commuting by bicycle (30 min)",
-          "Taking a bath", "Working in an office (8 hours)",
-          "Drinking a glass of wine")) |>
+        dplyr::filter(activity %in% whatis_mundane_activities) |>
         dplyr::arrange(micromorts) |>
         dplyr::mutate(activity = factor(activity, levels = activity))
 
@@ -106,7 +115,7 @@ plan_vignette_outputs <- list(
   targets::tar_target(
     vig_whatis_mundane_table,
     {
-      act_names <- c(
+      whatis_mundane_activities <- c(
         "Cup of coffee",
         "Crossing a road",
         "Working in an office (8 hours)",
@@ -115,7 +124,7 @@ plan_vignette_outputs <- list(
         "Commuting by bicycle (30 min)"
       )
       cr <- common_risks() |>
-        dplyr::filter(.data$activity %in% act_names) |>
+        dplyr::filter(.data$activity %in% whatis_mundane_activities) |>
         dplyr::select("activity", "micromorts") |>
         dplyr::arrange(.data$micromorts)
 
