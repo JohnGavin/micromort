@@ -129,14 +129,18 @@ plan_vignette_outputs <- list(
         micromorts = 0.5
       )
 
-      tbl <- dplyr::bind_rows(cr, wine_row) |>
+      tbl <- dplyr::bind_rows(
+        cr |> dplyr::mutate(note = ""),
+        wine_row |> dplyr::mutate(note = "chronic, per day")
+      ) |>
         dplyr::arrange(.data$micromorts) |>
         dplyr::mutate(
           `Ratio vs coffee` = paste0(round(.data$micromorts / coffee_mm), "x")
         ) |>
         dplyr::rename(
           Activity = "activity",
-          `mm` = "micromorts"
+          `mm` = "micromorts",
+          Note = "note"
         )
       tbl
     }
