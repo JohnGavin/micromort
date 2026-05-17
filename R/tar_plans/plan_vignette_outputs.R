@@ -101,6 +101,47 @@ plan_vignette_outputs <- list(
     }
   ),
 
+  # Mundane risks summary table (data.frame — rendered via DT in vignette)
+  # Same 7 activities as vig_whatis_mundane_plot; values from common_risks().
+  # "Drinking a glass of wine" is a chronic risk not in common_risks(); the
+  # row is retained using its exact value from the Wikipedia source (0.5 mm)
+  # via a manual bind so the table matches the accompanying bar chart narrative.
+  targets::tar_target(
+    vig_whatis_mundane_table,
+    {
+      act_names <- c(
+        "Cup of coffee",
+        "Crossing a road",
+        "Working in an office (8 hours)",
+        "Taking a bath",
+        "Commuting by car (30 min)",
+        "Commuting by bicycle (30 min)"
+      )
+      cr <- common_risks() |>
+        dplyr::filter(.data$activity %in% act_names) |>
+        dplyr::select("activity", "micromorts") |>
+        dplyr::arrange(.data$micromorts)
+
+      coffee_mm <- cr$micromorts[cr$activity == "Cup of coffee"]
+
+      wine_row <- tibble::tibble(
+        activity = "Drinking a glass of wine",
+        micromorts = 0.5
+      )
+
+      tbl <- dplyr::bind_rows(cr, wine_row) |>
+        dplyr::arrange(.data$micromorts) |>
+        dplyr::mutate(
+          `Ratio vs coffee` = paste0(round(.data$micromorts / coffee_mm), "x")
+        ) |>
+        dplyr::rename(
+          Activity = "activity",
+          `mm` = "micromorts"
+        )
+      tbl
+    }
+  ),
+
   # Full spectrum dot chart (plotly)
   targets::tar_target(
     vig_whatis_spectrum_plot,

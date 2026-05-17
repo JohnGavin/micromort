@@ -68,15 +68,11 @@ Every morning involves risk. Brewing coffee. Crossing the road. Commuting to wor
 
 A **micromort (mm)** is a one-in-a-million chance of death from a single activity.
 
-| Activity | mm | Ratio vs coffee |
-|----------|:--:|:---:|
-| Cup of coffee | 0.01 | 1x |
-| Crossing a road | 0.02 | 2x |
-| Office work (8 hrs) | 0.03 | 3x |
-| Taking a bath | 0.07 | 7x |
-| Commuting by car | 0.13 | 13x |
-| Glass of wine | 0.50 | 50x |
-| Commuting by bicycle | 0.50 | 50x |
+```{r mundane-table}
+#| echo: false
+show_target("vig_whatis_mundane_table",
+  caption = "Seven mundane activities ranked by micromorts (mm). Ratio vs coffee = mm / 0.01 mm (cup of coffee). Values from common_risks() except wine (Wikipedia/Spiegelhalter source, chronic daily risk). Source: micromort package.")
+```
 
 All of these are **below 1 mm** — risks so small we never perceive them as dangerous. The 50x ratio between wine and coffee sounds alarming, but in absolute terms it is the difference between a 0.01 and 0.5 in a million chance. Both are negligible.
 
