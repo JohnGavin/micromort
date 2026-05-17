@@ -1337,16 +1337,23 @@ quiz_css <- function() {
 #' @noRd
 streak_js <- function() {
   "
+  function localDateKey(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
   function updateStreak() {
-    var today = new Date().toISOString().slice(0, 10);
+    var today = localDateKey(new Date());
     var lastPlay = localStorage.getItem('micromort_last_play');
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
     if (lastPlay === today) {
       // already played today
     } else if (lastPlay) {
-      var yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      if (lastPlay === yesterday.toISOString().slice(0, 10)) {
+      var yest = new Date();
+      yest.setDate(yest.getDate() - 1);
+      var yesterday = localDateKey(yest);
+      if (lastPlay === yesterday) {
         streak += 1;
       } else {
         streak = 1;
@@ -1383,6 +1390,12 @@ streak_js <- function() {
 leaderboard_js <- function() {
   # Google Form POST URL, Sheet JSON endpoint, and streak tracking
   "
+  function localDateKey(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
   var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
   var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
   var scoreSubmitted = false;
@@ -1436,15 +1449,16 @@ leaderboard_js <- function() {
   }
 
   function updateStreak() {
-    var today = new Date().toISOString().slice(0, 10);
+    var today = localDateKey(new Date());
     var lastPlay = localStorage.getItem('micromort_last_play');
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
     if (lastPlay === today) {
       // already played today
     } else if (lastPlay) {
-      var yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      if (lastPlay === yesterday.toISOString().slice(0, 10)) {
+      var yest = new Date();
+      yest.setDate(yest.getDate() - 1);
+      var yesterday = localDateKey(yest);
+      if (lastPlay === yesterday) {
         streak += 1;
       } else {
         streak = 1;
