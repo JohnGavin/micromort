@@ -94,7 +94,10 @@ The targets pipeline processes risk data through five stages.
 Target counts update automatically when plan files change.
 
 ```{r pipeline, results='asis'}
-show_target("vig_arch_pipeline_diagram")
+emit_mermaid("vig_arch_pipeline_diagram",
+             "Pipeline diagram not available. Run `targets::tar_make()` first.",
+             caption = "Figure 1: Data pipeline showing five processing stages from raw risk data through targets to vignette outputs.",
+             alt_text = "Mermaid flowchart showing the five-stage targets data pipeline: raw data ingestion, cleaning, aggregation, modelling, and vignette export.")
 ```
 
 ## 2. Function Hierarchy
