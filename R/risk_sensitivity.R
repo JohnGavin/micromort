@@ -63,24 +63,30 @@ risk_sensitivity <- function(activity = NULL, pct = 20) {
     }
   }
 
-  # Compute base ranks across ALL activities (descending micromorts)
-  all_risks <- all_risks |>
-    dplyr::mutate(
-      micromorts_low  = .data$micromorts * (1 - mult),
-      micromorts_high = .data$micromorts * (1 + mult),
-      rank_base       = dplyr::min_rank(dplyr::desc(.data$micromorts)),
-      rank_at_low     = dplyr::min_rank(dplyr::desc(.data$micromorts_low)),
-      rank_at_high    = dplyr::min_rank(dplyr::desc(.data$micromorts_high)),
-      rank_change     = abs(.data$rank_at_high - .data$rank_at_low)
-    ) |>
-    dplyr::select(
-      "activity",
-      "micromorts_base" = "micromorts",
-      "micromorts_low",
-      "micromorts_high",
-      "rank_base",
-      "rank_change"
-    )
+  # Per-activity perturbation ranks: for each activity i, only x[i] is
+  # scaled by (1 +/- mult); all others stay at baseline. Re-ranking gives
+  # where i would sit if its estimate were at the low or high bound.
+  # (Uniform scaling preserves relative order => rank_change = 0 always.)
+  x <- all_risks[["micromorts"]]
+  n <- length(x)
+  rank_base    <- rank(-x, ties.method = "min")
+  rank_at_low  <- vapply(seq_len(n), function(i) {
+    v <- x; v[i] <- x[i] * (1 - mult)
+    rank(-v, ties.method = "min")[i]
+  }, integer(1L))
+  rank_at_high <- vapply(seq_len(n), function(i) {
+    v <- x; v[i] <- x[i] * (1 + mult)
+    rank(-v, ties.method = "min")[i]
+  }, integer(1L))
+
+  all_risks <- tibble::tibble(
+    activity        = all_risks[["activity"]],
+    micromorts_base = x,
+    micromorts_low  = x * (1 - mult),
+    micromorts_high = x * (1 + mult),
+    rank_base       = rank_base,
+    rank_change     = abs(rank_at_high - rank_at_low)
+  )
 
   # Filter to requested activity if supplied.
   # Capture the parameter into a local to avoid dplyr masking it with the

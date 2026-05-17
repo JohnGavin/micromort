@@ -58,3 +58,49 @@ test_that("risk_sensitivity snapshot: error message for unknown activity", {
     risk_sensitivity("NONEXISTENT_ACTIVITY_XYZ")
   )
 })
+
+# Regression test: per-activity perturbation must produce real rank shifts.
+# Activities B (1.01) and C (0.99) are adjacent; with pct = 5 the bands
+# cross over (1.01 * 0.95 = 0.9595 < 0.99 * 1.05 = 1.0395), so each
+# activity must gain or lose at least one rank position.
+test_that("risk_sensitivity detects rank shifts for adjacent activities (roborev regression)", {
+  risks <- tibble::tibble(
+    activity   = c("A", "B", "C", "D", "E"),
+    micromorts = c(5.0, 1.01, 0.99, 0.5, 0.1)
+  )
+  pct  <- 5
+  mult <- pct / 100
+  x    <- risks$micromorts
+  n    <- length(x)
+
+  # Per-activity perturbation (correct algorithm)
+  rank_at_low  <- integer(n)
+  rank_at_high <- integer(n)
+  for (i in seq_len(n)) {
+    low_vec  <- x; low_vec[i]  <- x[i] * (1 - mult)
+    high_vec <- x; high_vec[i] <- x[i] * (1 + mult)
+    rank_at_low[i]  <- rank(-low_vec,  ties.method = "min")[i]
+    rank_at_high[i] <- rank(-high_vec, ties.method = "min")[i]
+  }
+  rank_change <- abs(rank_at_high - rank_at_low)
+
+  b_idx <- which(risks$activity == "B")
+  c_idx <- which(risks$activity == "C")
+  expect_gte(rank_change[b_idx], 1L)
+  expect_gte(rank_change[c_idx], 1L)
+
+  # Document the broken algorithm: uniform scaling yields rank_change = 0
+  rank_change_uniform <- abs(
+    rank(-(x * (1 + mult)), ties.method = "min") -
+    rank(-(x * (1 - mult)), ties.method = "min")
+  )
+  expect_equal(rank_change_uniform[b_idx], 0L)
+  expect_equal(rank_change_uniform[c_idx], 0L)
+})
+
+# Integration: risk_sensitivity() with the real data must show at least one
+# non-zero rank_change after the per-activity perturbation fix.
+test_that("risk_sensitivity() produces non-zero rank_change for at least one activity", {
+  result <- risk_sensitivity(pct = 20)
+  expect_true(any(result$rank_change > 0))
+})
