@@ -220,13 +220,28 @@ show_target("vig_confounding_bed_fall_age",
 ```
 
 ```{r bed-fall-dynamic, echo=FALSE}
+# Fallback values (documented baseline: CDC Data Brief 532)
+bed_85m_fallback <- 10.2
+bed_u65_fallback <- 0.004
+bed_ratio_fallback <- 2550
+
 bed_age <- safe_tar_read("vig_confounding_bed_fall_age")
 if (!is.null(bed_age)) {
-  bed_85m <- bed_age[bed_age$condition_value == "85_plus_male", "micromorts"]
-  bed_u65 <- bed_age[bed_age$condition_value == "under_65", "micromorts"]
+  rows_85m <- dplyr::filter(bed_age, condition_value == "85_plus_male")
+  rows_u65 <- dplyr::filter(bed_age, condition_value == "under_65")
+  if (nrow(rows_85m) != 1L || nrow(rows_u65) != 1L) {
+    cli::cli_abort(c(
+      "x" = "Expected exactly one row per condition_value in {.code vig_confounding_bed_fall_age}.",
+      "i" = "{.val 85_plus_male}: {nrow(rows_85m)} row(s), {.val under_65}: {nrow(rows_u65)} row(s)."
+    ))
+  }
+  bed_85m <- dplyr::pull(rows_85m, micromorts)
+  bed_u65 <- dplyr::pull(rows_u65, micromorts)
   bed_ratio <- round(bed_85m / bed_u65)
 } else {
-  bed_85m <- 10.2; bed_u65 <- 0.004; bed_ratio <- 2550
+  bed_85m <- bed_85m_fallback
+  bed_u65 <- bed_u65_fallback
+  bed_ratio <- bed_ratio_fallback
 }
 ```
 
@@ -241,15 +256,33 @@ show_target("vig_confounding_demographic_whatif",
 ```
 
 ```{r whatif-dynamic, echo=FALSE}
+# Fallback values (documented baseline: CDC Data Brief 532 / NHSLA)
+anaes_default_fallback <- 2
+anaes_aged_fallback <- 50
+bath_default_fallback <- 0.07
+bath_aged_fallback <- 0.5
+
 whatif <- safe_tar_read("vig_confounding_demographic_whatif")
 if (!is.null(whatif)) {
-  anaes_default <- whatif[whatif$activity == "General anaesthesia (elective)", "default_mm"][[1]]
-  anaes_aged <- whatif[whatif$activity == "General anaesthesia (elective)", "aged_mm"][[1]]
-  bath_default <- whatif[whatif$activity == "Taking a bath (age-conditioned)", "default_mm"][[1]]
-  bath_aged <- whatif[whatif$activity == "Taking a bath (age-conditioned)", "aged_mm"][[1]]
+  .pull1 <- function(df, act, col) {
+    rows <- dplyr::filter(df, activity == act)
+    if (nrow(rows) != 1L) {
+      cli::cli_abort(c(
+        "x" = "Expected exactly one row for {.val {act}} in {.code vig_confounding_demographic_whatif}.",
+        "i" = "Got {nrow(rows)} row(s)."
+      ))
+    }
+    dplyr::pull(rows, !!rlang::sym(col))
+  }
+  anaes_default <- .pull1(whatif, "General anaesthesia (elective)", "default_mm")
+  anaes_aged   <- .pull1(whatif, "General anaesthesia (elective)", "aged_mm")
+  bath_default <- .pull1(whatif, "Taking a bath (age-conditioned)", "default_mm")
+  bath_aged    <- .pull1(whatif, "Taking a bath (age-conditioned)", "aged_mm")
 } else {
-  anaes_default <- 2; anaes_aged <- 50
-  bath_default <- 0.07; bath_aged <- 0.5
+  anaes_default <- anaes_default_fallback
+  anaes_aged    <- anaes_aged_fallback
+  bath_default  <- bath_default_fallback
+  bath_aged     <- bath_aged_fallback
 }
 ```
 
