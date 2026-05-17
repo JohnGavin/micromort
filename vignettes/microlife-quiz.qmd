@@ -126,6 +126,11 @@ function escHtml(s) {
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+function safeHref(u) {
+  u = String(u || '');
+  if (/^(https?:\/\/|mailto:|\/|#)/i.test(u)) return u;
+  return '#';
+}
 
 // ---- Helpers ----
 function shuffle(arr) {
@@ -365,11 +370,11 @@ function renderQuestion() {
       ? '<span class="badge bg-success">gain</span>'
       : '<span class="badge bg-danger">lose</span>';
     const mlText = revealed ? `<strong style="font-size:1.4rem;color:#333;">${fmtML(d.ml)} ml/day</strong>` : '';
-    const helpLink = d.help ? `<a class="help-link" href="${d.help}" target="_blank" onclick="event.stopPropagation()">Learn more &rarr;</a>` : '';
+    const helpLink = d.help ? `<a class="help-link" href="${escHtml(safeHref(d.help))}" target="_blank" onclick="event.stopPropagation()">Learn more &rarr;</a>` : '';
     const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
     return `<div class="${cls}" ${clickAttr}>
-      <span class="activity-name">${formatName(d.factor)}</span>
-      <div><span class="badge bg-secondary me-1">${d.category}</span>${dirBadge}</div>
+      <span class="activity-name">${formatName(escHtml(d.factor))}</span>
+      <div><span class="badge bg-secondary me-1">${escHtml(d.category)}</span>${dirBadge}</div>
       ${mlText}${helpLink}
     </div>`;
   }
@@ -380,11 +385,11 @@ function renderQuestion() {
     const correct = pair.answer;
     const userCorrect = answer === correct;
     if (answer === null) {
-      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2">Skipped! ${pair['factor_' + correct]} has a bigger effect.</div>`;
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2">Skipped! ${escHtml(pair['factor_' + correct])} has a bigger effect.</div>`;
     } else if (userCorrect) {
       resultHtml = `<div class="alert alert-success text-center mt-2 py-2"><strong>Correct!</strong></div>`;
     } else {
-      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2"><strong>Incorrect!</strong> ${pair['factor_' + correct]} has a bigger effect.</div>`;
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2"><strong>Incorrect!</strong> ${escHtml(pair['factor_' + correct])} has a bigger effect.</div>`;
     }
     // Explanation
     const bigger = pair.answer, smaller = bigger === 'a' ? 'b' : 'a';
@@ -393,9 +398,9 @@ function renderQuestion() {
     const annualBigger = biggerAnnual ? ` (${Math.abs(Math.round(biggerAnnual * 365))} days/year)` : '';
     const annualSmaller = smallerAnnual ? ` (${Math.abs(Math.round(smallerAnnual * 365))} days/year)` : '';
     resultHtml += `<div class="explanation-panel mt-2">
-      <p><strong>${pair['factor_' + bigger]}</strong> ${pair['direction_' + bigger] === 'gain' ? 'gains' : 'loses'} ${fmtMLabs(Math.abs(pair['microlives_' + bigger]))} ml/day${annualBigger}: ${pair['description_' + bigger] || ''}</p>
-      <p><strong>${pair['factor_' + smaller]}</strong> ${pair['direction_' + smaller] === 'gain' ? 'gains' : 'loses'} ${fmtMLabs(Math.abs(pair['microlives_' + smaller]))} ml/day${annualSmaller}: ${pair['description_' + smaller] || ''}</p>
-      <p>${pair['factor_' + bigger]} has ${pair.ratio.toFixed(1)}x the effect of ${pair['factor_' + smaller]}.</p>
+      <p><strong>${escHtml(pair['factor_' + bigger])}</strong> ${pair['direction_' + bigger] === 'gain' ? 'gains' : 'loses'} ${fmtMLabs(Math.abs(pair['microlives_' + bigger]))} ml/day${annualBigger}: ${escHtml(pair['description_' + bigger] || '')}</p>
+      <p><strong>${escHtml(pair['factor_' + smaller])}</strong> ${pair['direction_' + smaller] === 'gain' ? 'gains' : 'loses'} ${fmtMLabs(Math.abs(pair['microlives_' + smaller]))} ml/day${annualSmaller}: ${escHtml(pair['description_' + smaller] || '')}</p>
+      <p>${escHtml(pair['factor_' + bigger])} has ${pair.ratio.toFixed(1)}x the effect of ${escHtml(pair['factor_' + smaller])}.</p>
     </div>`;
   }
 
@@ -494,11 +499,11 @@ function renderDetail() {
   let rows = '';
   for (let i = 0; i < n; i++) {
     const p = S.pairs[i], ans = S.answers[i];
-    const userAns = ans === null ? 'Skipped' : p['factor_' + ans];
-    const correctAns = p['factor_' + p.answer];
+    const userAns = ans === null ? 'Skipped' : escHtml(p['factor_' + ans]);
+    const correctAns = escHtml(p['factor_' + p.answer]);
     const result = ans === null ? '\u2014' : (ans === p.answer ? '\u2713' : '\u2717');
-    const linkA = p.help_url_a ? `<a href="${p.help_url_a}" target="_blank">${p.factor_a}</a>` : p.factor_a;
-    const linkB = p.help_url_b ? `<a href="${p.help_url_b}" target="_blank">${p.factor_b}</a>` : p.factor_b;
+    const linkA = p.help_url_a ? `<a href="${escHtml(safeHref(p.help_url_a))}" target="_blank">${escHtml(p.factor_a)}</a>` : escHtml(p.factor_a);
+    const linkB = p.help_url_b ? `<a href="${escHtml(safeHref(p.help_url_b))}" target="_blank">${escHtml(p.factor_b)}</a>` : escHtml(p.factor_b);
     rows += `<tr><td>${i+1}</td><td>${linkA}</td><td>${fmtML(p.microlives_a)}</td>
       <td>${linkB}</td><td>${fmtML(p.microlives_b)}</td>
       <td>${userAns}</td><td>${correctAns}</td><td>${result}</td></tr>`;

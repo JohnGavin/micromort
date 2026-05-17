@@ -136,6 +136,11 @@ function escHtml(s) {
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+function safeHref(u) {
+  u = String(u || '');
+  if (/^(https?:\/\/|mailto:|\/|#)/i.test(u)) return u;
+  return '#';
+}
 
 // ---- Helpers ----
 function shuffle(arr) {
@@ -332,7 +337,7 @@ function render() {
 function renderInstructions() {
   const enc = ENCOURAGEMENTS[Math.floor(Math.random() * ENCOURAGEMENTS.length)];
   const tagBtns = S.allTags.map(t =>
-    `<span class="tag-btn${S.selTags.has(t) ? ' selected' : ''}" data-tag="${t}" onclick="toggleTag(this)">${t}</span>`
+    `<span class="tag-btn${S.selTags.has(t) ? ' selected' : ''}" data-tag="${escHtml(t)}" onclick="toggleTag(this)">${escHtml(t)}</span>`
   ).join('');
 
   return `
@@ -434,8 +439,8 @@ function renderQuestion() {
           : '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>');
       rankHtml += `<div class="rank-item" data-idx="${idx}">
         <span class="drag-handle">\u2630</span>
-        <span class="item-name">${formatName(item.item_name)}</span>
-        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
+        <span class="item-name">${formatName(escHtml(item.item_name))}</span>
+        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${escHtml(item.category)}</span></div>
       </div>`;
     });
     rankHtml += '</div>';
@@ -458,8 +463,8 @@ function renderQuestion() {
       const userPosText = !isCorrectPos ? ` (you: #${userRankOfItem + 1})` : '';
       rankHtml += `<div class="${cls}">
         <span class="drag-handle">${icon}</span>
-        <span class="item-name">${formatName(item.item_name)}</span>
-        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${item.category}</span></div>
+        <span class="item-name">${formatName(escHtml(item.item_name))}</span>
+        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${escHtml(item.category)}</span></div>
         <span class="lle-reveal"><span class="lle-tap" onclick="toggleLLEHelp(this)" title="Tap for details" style="cursor:help;">${lleDirLabel(item)}</span>${userPosText}</span>
       </div>`;
     });

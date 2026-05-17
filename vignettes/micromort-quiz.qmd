@@ -127,6 +127,11 @@ function escHtml(s) {
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+function safeHref(u) {
+  u = String(u || '');
+  if (/^(https?:\/\/|mailto:|\/|#)/i.test(u)) return u;
+  return '#';
+}
 
 // ---- Helpers ----
 function shuffle(arr) {
@@ -357,11 +362,11 @@ function renderQuestion() {
 
   function btnContent(d, s, cls) {
     const mmText = revealed ? `<strong style="font-size:1.4rem;color:#333;">${fmtMM(d.mm)} mm</strong>` : '';
-    const helpLink = d.help ? `<a class="help-link" href="${d.help}" target="_blank" onclick="event.stopPropagation()">Learn more →</a>` : '';
+    const helpLink = d.help ? `<a class="help-link" href="${escHtml(safeHref(d.help))}" target="_blank" onclick="event.stopPropagation()">Learn more →</a>` : '';
     const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
     return `<div class="${cls}" ${clickAttr}>
-      <span class="activity-name">${formatName(d.activity)}</span>
-      <div><span class="badge bg-secondary me-1">${d.category}</span><span class="badge" style="background:#0dcaf0;color:#000">${d.period}</span></div>
+      <span class="activity-name">${formatName(escHtml(d.activity))}</span>
+      <div><span class="badge bg-secondary me-1">${escHtml(d.category)}</span><span class="badge" style="background:#0dcaf0;color:#000">${escHtml(d.period)}</span></div>
       ${mmText}${helpLink}
     </div>`;
   }
@@ -372,18 +377,18 @@ function renderQuestion() {
     const correct = pair.answer;
     const userCorrect = answer === correct;
     if (answer === null) {
-      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2">Skipped! ${pair['activity_' + correct]} is riskier.</div>`;
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2">Skipped! ${escHtml(pair['activity_' + correct])} is riskier.</div>`;
     } else if (userCorrect) {
       resultHtml = `<div class="alert alert-success text-center mt-2 py-2"><strong>Correct!</strong></div>`;
     } else {
-      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2"><strong>Incorrect!</strong> ${pair['activity_' + correct]} is riskier.</div>`;
+      resultHtml = `<div class="alert alert-danger text-center mt-2 py-2"><strong>Incorrect!</strong> ${escHtml(pair['activity_' + correct])} is riskier.</div>`;
     }
     // Explanation
     const riskier = pair.answer, safer = riskier === 'a' ? 'b' : 'a';
     resultHtml += `<div class="explanation-panel mt-2">
-      <p><strong>${pair['activity_' + riskier]}</strong> has ${fmtMM(pair['micromorts_' + riskier])} mm: ${pair['description_' + riskier] || ''}</p>
-      <p><strong>${pair['activity_' + safer]}</strong> has ${fmtMM(pair['micromorts_' + safer])} mm: ${pair['description_' + safer] || ''}</p>
-      <p>${pair['activity_' + riskier]} is ${pair.ratio.toFixed(1)}x riskier than ${pair['activity_' + safer]}.</p>
+      <p><strong>${escHtml(pair['activity_' + riskier])}</strong> has ${fmtMM(pair['micromorts_' + riskier])} mm: ${escHtml(pair['description_' + riskier] || '')}</p>
+      <p><strong>${escHtml(pair['activity_' + safer])}</strong> has ${fmtMM(pair['micromorts_' + safer])} mm: ${escHtml(pair['description_' + safer] || '')}</p>
+      <p>${escHtml(pair['activity_' + riskier])} is ${pair.ratio.toFixed(1)}x riskier than ${escHtml(pair['activity_' + safer])}.</p>
     </div>`;
   }
 
@@ -482,11 +487,11 @@ function renderDetail() {
   let rows = '';
   for (let i = 0; i < n; i++) {
     const p = S.pairs[i], ans = S.answers[i];
-    const userAns = ans === null ? 'Skipped' : p['activity_' + ans];
-    const correctAns = p['activity_' + p.answer];
+    const userAns = ans === null ? 'Skipped' : escHtml(p['activity_' + ans]);
+    const correctAns = escHtml(p['activity_' + p.answer]);
     const result = ans === null ? '—' : (ans === p.answer ? '✓' : '✗');
-    const linkA = p.help_url_a ? `<a href="${p.help_url_a}" target="_blank">${p.activity_a}</a>` : p.activity_a;
-    const linkB = p.help_url_b ? `<a href="${p.help_url_b}" target="_blank">${p.activity_b}</a>` : p.activity_b;
+    const linkA = p.help_url_a ? `<a href="${escHtml(safeHref(p.help_url_a))}" target="_blank">${escHtml(p.activity_a)}</a>` : escHtml(p.activity_a);
+    const linkB = p.help_url_b ? `<a href="${escHtml(safeHref(p.help_url_b))}" target="_blank">${escHtml(p.activity_b)}</a>` : escHtml(p.activity_b);
     rows += `<tr><td>${i+1}</td><td>${linkA}</td><td>${fmtMM(p.micromorts_a)}</td>
       <td>${linkB}</td><td>${fmtMM(p.micromorts_b)}</td>
       <td>${userAns}</td><td>${correctAns}</td><td>${result}</td></tr>`;
