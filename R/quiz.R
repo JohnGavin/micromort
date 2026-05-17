@@ -462,6 +462,9 @@ geography_quiz_pairs <- function(countries = c("UK", "NG"),
     for (cause in common_causes) {
       a <- r1[r1$cause == cause, ][1, ]
       b <- r2[r2$cause == cause, ][1, ]
+      # Guard: skip pairs where either side is zero or NA (avoids Inf/NaN ratio)
+      if (is.na(a$micromorts) || is.na(b$micromorts) ||
+          min(a$micromorts, b$micromorts) <= 0) next
       ratio <- max(a$micromorts, b$micromorts) / min(a$micromorts, b$micromorts)
       if (ratio >= 1.1) {
         cross_pairs[[length(cross_pairs) + 1L]] <- tibble::tibble(
@@ -494,6 +497,9 @@ geography_quiz_pairs <- function(countries = c("UK", "NG"),
       d <- disease_activities[i, ]
       for (j in seq_len(nrow(acute))) {
         a <- acute[j, ]
+        # Guard: skip pairs where either side is zero or NA (avoids Inf/NaN ratio)
+        if (is.na(d$micromorts) || is.na(a$micromorts) ||
+            min(d$micromorts, a$micromorts) <= 0) next
         ratio <- max(d$micromorts, a$micromorts) / min(d$micromorts, a$micromorts)
         if (ratio >= 1.5 && ratio <= 10) {
           acute_pairs[[length(acute_pairs) + 1L]] <- tibble::tibble(

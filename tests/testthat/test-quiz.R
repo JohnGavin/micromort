@@ -328,3 +328,17 @@ test_that("snapshot: geography_quiz_pairs cross-country activities", {
   pairs <- paste(geo$activity_a, "vs", geo$activity_b)
   expect_snapshot(sort(pairs))
 })
+
+test_that("geography_quiz_pairs() produces no Inf/NaN ratio when a side is zero (roborev #557)", {
+  # The guard in geography_quiz_pairs() skips pairs where min(micromorts) <= 0.
+  # If the guard were absent, a zero micromort value would produce Inf/NaN.
+  geo <- geography_quiz_pairs(countries = c("UK", "NG"), seed = 42)
+  if (nrow(geo) > 0) {
+    expect_false(any(is.infinite(geo$ratio)),
+                 info = "ratio must not be Inf (zero-divisor guard failed)")
+    expect_false(any(is.nan(geo$ratio)),
+                 info = "ratio must not be NaN (zero-divisor guard failed)")
+    expect_true(all(geo$ratio > 0),
+                info = "all ratios must be strictly positive")
+  }
+})
