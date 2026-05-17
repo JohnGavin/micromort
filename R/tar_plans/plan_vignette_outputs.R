@@ -1503,6 +1503,7 @@ plan_vignette_outputs <- list(
     {
       pairs <- vig_quiz_pairs
       json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      json_str <- gsub("</script>", "<\\/script>", json_str, fixed = TRUE)
       sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
     }
   ),
@@ -1513,6 +1514,7 @@ plan_vignette_outputs <- list(
     {
       pairs <- vig_chronic_pairs
       json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      json_str <- gsub("</script>", "<\\/script>", json_str, fixed = TRUE)
       sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
     }
   ),
@@ -1523,6 +1525,7 @@ plan_vignette_outputs <- list(
     {
       pairs <- vig_ranking_questions
       json_str <- jsonlite::toJSON(pairs, dataframe = "rows", auto_unbox = TRUE)
+      json_str <- gsub("</script>", "<\\/script>", json_str, fixed = TRUE)
       sprintf('<script id="quiz-data" type="application/json">%s</script>', json_str)
     }
   ),
