@@ -61,7 +61,7 @@ Everyday activities expressed in chest X-ray equivalents:
 #| fig-alt: "Horizontal bar chart comparing everyday activities to chest X-ray dose equivalents. Activities ordered from least to most radiation-equivalent, with blue bars."
 #| echo: false
 #| results: asis
-show_target("vig_equiv_everyday")
+show_target("vig_equiv_everyday_chart")
 ```
 
 
@@ -76,7 +76,7 @@ Flying is a composite risk: crash + deep vein thrombosis (DVT) + cosmic radiatio
 #| fig-alt: "Dotplot showing flight micromorts by duration and component. Each row is a flight duration ordered by total risk. Dots are coloured by component: crash, DVT, and cosmic radiation."
 #| echo: false
 #| results: asis
-show_target("vig_equiv_flight_duration")
+show_target("vig_equiv_flight_duration_chart")
 ```
 
 Key observations:
@@ -101,7 +101,7 @@ show_target("vig_equiv_flight_components")
 ```{r flight-components}
 #| echo: false
 #| results: asis
-show_target("vig_equiv_flight_duration")
+show_target("vig_equiv_flight_duration_chart")
 ```
 
 
@@ -147,7 +147,7 @@ How many chest X-rays equal one CT scan?
 #| fig-alt: "Horizontal bar chart of medical radiation procedures in chest X-ray equivalents. Red bars show procedures from dental X-ray (lowest) to CT abdomen (highest, ~200 equivalents)."
 #| echo: false
 #| results: asis
-show_target("vig_equiv_medical_focus")
+show_target("vig_equiv_medical_exchange_chart")
 ```
 
 
@@ -172,7 +172,7 @@ Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 #| fig-alt: "Dotplot of flight micromorts by duration, coloured green for hedgeable components (DVT) and red for non-hedgeable (crash, cosmic radiation), ordered by total risk per flight duration."
 #| echo: false
 #| results: asis
-show_target("vig_equiv_hedgeable_summary")
+show_target("vig_equiv_hedgeable_chart")
 ```
 
 
@@ -213,7 +213,7 @@ Cumulative radiation exposure over a 40-year career:
 #| fig-alt: "Line chart of cumulative micromorts vs years of exposure. Multiple lines for different radiation scenarios (dental, X-ray tech, CT patient, annual cosmic). Lines diverge over time showing compounding differences."
 #| echo: false
 #| results: asis
-show_target("vig_equiv_landmarks")
+show_target("vig_equiv_radiation_timeline_chart")
 ```
 
 ### Regulatory Context
