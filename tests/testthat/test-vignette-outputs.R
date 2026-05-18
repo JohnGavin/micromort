@@ -18,8 +18,12 @@ test_that("vig_whatis_mundane_plot and vig_whatis_mundane_table use the same act
 
 test_that("docs/articles/*.html is not stale relative to vignettes/*.qmd", {
   testthat::skip_on_cran()
-  testthat::skip_if_not(file.exists(".git"),
-    "test only runs inside a git checkout (needs git log timestamps)")
+  testthat::skip_if_not(
+    rprojroot::find_root(rprojroot::is_r_package) |>
+      file.path(".git") |>
+      file.exists(),
+    "test only runs inside a git checkout (needs git log timestamps)"
+  )
 
   pkg_root <- rprojroot::find_root(rprojroot::is_r_package)
   vig_dir  <- file.path(pkg_root, "vignettes")
