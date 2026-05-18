@@ -835,21 +835,24 @@ results_summary_ui <- function(state) {
     div(id = "streak_display"),
     tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
                              round(overall_pct, 1)))),
-    tags$script(HTML(sprintf(
-      paste0("(function(){",
-             "recordScoreHistory('ranking', %s, %d, %d);",
-             "var keys=[%s];",
-             "var pcts=[%s];",
-             "recordQuestionStats(keys, pcts);",
-             "})();"),
-      round(overall_pct, 1), total_concordant, total_pairs,
-      paste(sprintf("simpleHash('%s')",
-                    gsub("'", "\\\\'", vapply(seq_len(n), function(i) {
-                      qd <- state$questions[[i]]
-                      paste(sort(qd$item_name), collapse = "|")
-                    }, character(1)))),
-            collapse = ","),
-      paste(round(per_q_pcts), collapse = ",")))),
+    if (!isTRUE(state$attempt_logged)) {
+      state$attempt_logged <- TRUE
+      tags$script(HTML(sprintf(
+        paste0("(function(){",
+               "recordScoreHistory('ranking', %s, %d, %d);",
+               "var keys=[%s];",
+               "var pcts=[%s];",
+               "recordQuestionStats(keys, pcts);",
+               "})();"),
+        round(overall_pct, 1), total_concordant, total_pairs,
+        paste(sprintf("simpleHash('%s')",
+                      gsub("'", "\\\\'", vapply(seq_len(n), function(i) {
+                        qd <- state$questions[[i]]
+                        paste(sort(qd$item_name), collapse = "|")
+                      }, character(1)))),
+              collapse = ","),
+        paste(round(per_q_pcts), collapse = ","))))
+    },
     div(class = "text-center mt-2",
       tags$a(href = "https://johngavin.github.io/micromort/articles/",
              target = "_blank", class = "text-muted",
@@ -1021,7 +1024,7 @@ server <- function(input, output, session) {
     questions = NULL, user_orders = NULL, display_order = NULL,
     revealed = NULL, sel_difficulty = "mixed", sel_nq = 5L,
     sel_items_per_q = 3L, seen_questions = character(),
-    tag_error = FALSE)
+    tag_error = FALSE, attempt_logged = FALSE)
 
   # Tag error message (inline, above Start button)
   output$tag_error_msg <- renderUI({
@@ -1090,6 +1093,7 @@ server <- function(input, output, session) {
     })
     state$revealed <- rep(FALSE, n)
     state$current_q <- 1L
+    state$attempt_logged <- FALSE
     state$phase <- "question"
     # Mark quiz start time for time-to-complete (#58)
     session$sendCustomMessage("markQuizStart", list())

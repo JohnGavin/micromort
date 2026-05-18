@@ -723,19 +723,22 @@ results_summary_ui <- function(state) {
     div(id = "streak_display"),
     tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
                              round(pct, 1)))),
-    tags$script(HTML(sprintf(
-      paste0("(function(){",
-             "recordScoreHistory('chronic', %s, %d, %d);",
-             "var keys=[%s];",
-             "var corr=[%s];",
-             "recordQuestionStats(keys, corr);",
-             "})();"),
-      round(pct, 1), score, n,
-      paste(sprintf("simpleHash('%s|%s')",
-                    gsub("'", "\\\\'", pairs$factor_a[seq_len(n)]),
-                    gsub("'", "\\\\'", pairs$factor_b[seq_len(n)])),
-            collapse = ","),
-      paste(tolower(as.character(correct)), collapse = ",")))),
+    if (!isTRUE(state$attempt_logged)) {
+      state$attempt_logged <- TRUE
+      tags$script(HTML(sprintf(
+        paste0("(function(){",
+               "recordScoreHistory('chronic', %s, %d, %d);",
+               "var keys=[%s];",
+               "var corr=[%s];",
+               "recordQuestionStats(keys, corr);",
+               "})();"),
+        round(pct, 1), score, n,
+        paste(sprintf("simpleHash('%s|%s')",
+                      gsub("'", "\\\\'", pairs$factor_a[seq_len(n)]),
+                      gsub("'", "\\\\'", pairs$factor_b[seq_len(n)])),
+              collapse = ","),
+        paste(tolower(as.character(correct)), collapse = ","))))
+    },
     div(class = "text-center mt-2",
       tags$a(href = "https://johngavin.github.io/micromort/articles/",
              target = "_blank", class = "text-muted",
@@ -852,7 +855,7 @@ server <- function(input, output, session) {
     phase = "instructions", n_questions = 5L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
     sel_difficulty = "mixed", sel_nq = 5L,
-    seen_pairs = character())
+    seen_pairs = character(), attempt_logged = FALSE)
 
   # Difficulty button handlers
   observeEvent(input$diff_easy, { state$sel_difficulty <- "easy" })
@@ -899,6 +902,7 @@ server <- function(input, output, session) {
     state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
     state$revealed <- rep(FALSE, n)
     state$current_q <- 1L
+    state$attempt_logged <- FALSE
     state$phase <- "question"
     # Mark quiz start time for time-to-complete (#58)
     session$sendCustomMessage("markQuizStart", list())
