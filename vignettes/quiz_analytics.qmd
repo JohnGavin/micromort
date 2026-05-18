@@ -111,10 +111,11 @@ format:
 <script>
 (function() {
   // ---- Keys (must match the quiz vignettes) ----
-  var HISTORY_KEY   = 'micromort_quiz_history';
-  var QSTATS_KEY    = 'micromort_quiz_question_stats';
-  var STREAK_KEY    = 'micromort_quiz_streak';
-  var BEST_KEY      = 'micromort_quiz_best_score';
+  var HISTORY_KEY        = 'micromort_quiz_history';
+  var QSTATS_BINARY_KEY  = 'micromort_quiz_question_stats_binary';
+  var QSTATS_RANKING_KEY = 'micromort_quiz_question_stats_ranking';
+  var STREAK_KEY         = 'micromort_quiz_streak';
+  var BEST_KEY           = 'micromort_quiz_best_score';
 
   // ---- Helpers ----
   function escHtml(s) {
@@ -140,15 +141,26 @@ format:
   }
 
   // ---- Load data ----
-  var history   = JSON.parse(localStorage.getItem(HISTORY_KEY)  || '[]');
-  var qstats    = JSON.parse(localStorage.getItem(QSTATS_KEY)   || '{}');
-  var streak    = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
-  var bestScore = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  var history        = JSON.parse(localStorage.getItem(HISTORY_KEY)        || '[]');
+  var qstatsBinary   = JSON.parse(localStorage.getItem(QSTATS_BINARY_KEY)  || '{}');
+  var qstatsRanking  = JSON.parse(localStorage.getItem(QSTATS_RANKING_KEY) || '{}');
+  var streak         = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  var bestScore      = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  // Merge both stores into a unified array with a 'type' tag for the reader
+  var qstatsMerged = [];
+  Object.keys(qstatsBinary).forEach(function(k) {
+    var s = qstatsBinary[k];
+    qstatsMerged.push({ key: k, type: 'binary', correct: s.correct, total: s.total });
+  });
+  Object.keys(qstatsRanking).forEach(function(k) {
+    var s = qstatsRanking[k];
+    qstatsMerged.push({ key: k, type: 'ranking', sum: s.sum, total: s.total });
+  });
 
   var root = document.getElementById('analytics-root');
 
   // ---- No data ----
-  if (history.length === 0 && Object.keys(qstats).length === 0) {
+  if (history.length === 0 && qstatsMerged.length === 0) {
     root.innerHTML = '<div class="no-data-msg">' +
       '<p style="font-size:2rem;">📊</p>' +
       '<p><strong>No quiz data yet.</strong></p>' +
@@ -273,44 +285,41 @@ format:
   }
 
   // ---- 4. Hardest questions (per-question stats from localStorage) ----
-  var qkeys = Object.keys(qstats);
   var hardestHtml = '';
-  if (qkeys.length > 0) {
-    var qrows = qkeys.map(function(k) {
-      var s = qstats[k];
-      var pct, total;
-      if (typeof s.sum !== 'undefined') {
-        // ranking quiz: sum of pcts
-        pct = s.total > 0 ? Math.round(s.sum / s.total) : 0;
-        total = s.total;
+  if (qstatsMerged.length > 0) {
+    var qrows = qstatsMerged.map(function(entry) {
+      var pct;
+      if (entry.type === 'ranking') {
+        // ranking: sum of placement pcts / total attempts
+        pct = entry.total > 0 ? Math.round(entry.sum / entry.total) : 0;
       } else {
-        pct = s.total > 0 ? Math.round(100 * s.correct / s.total) : 0;
-        total = s.total;
+        // binary: correct / total
+        pct = entry.total > 0 ? Math.round(100 * entry.correct / entry.total) : 0;
       }
-      // decode the key: simpleHash produces opaque keys, so we can't recover labels.
-      // Show the hash short form as an identifier.
-      return { key: k, pct: pct, total: total };
+      return { key: entry.key, type: entry.type, pct: pct, total: entry.total };
     }).filter(function(r) { return r.total >= 1; });
 
     // Sort by pct ascending (hardest first)
     qrows.sort(function(a, b) { return a.pct - b.pct; });
 
     var topN = qrows.slice(0, 20);
+    var typeLabel = { binary: 'Binary', ranking: 'Ranking' };
     var hardRows = topN.map(function(r, i) {
       return '<tr>' +
         '<td>' + (i + 1) + '</td>' +
         '<td style="font-family:monospace;font-size:0.75rem;color:#6677aa;">' + escHtml(r.key) + '</td>' +
+        '<td>' + escHtml(typeLabel[r.type] || r.type) + '</td>' +
         '<td>' + r.total + '</td>' +
         '<td>' + scoreBar(r.pct) + '</td>' +
         '<td>' + r.pct + '%</td>' +
         '</tr>';
     }).join('');
 
-    hardestHtml = '<div class="analytics-section"><h3>Hardest questions (your history, ' + qkeys.length + ' unique)</h3>' +
+    hardestHtml = '<div class="analytics-section"><h3>Hardest questions (your history, ' + qstatsMerged.length + ' unique)</h3>' +
       '<p style="color:#8899bb;font-size:0.8rem;">Sorted by your lowest personal accuracy. ' +
       'Question IDs are browser-local hashes — they identify questions without storing the text.</p>' +
       '<table class="analytics-table">' +
-      '<thead><tr><th>#</th><th>Question ID</th><th>Plays</th><th>Your accuracy</th><th></th></tr></thead>' +
+      '<thead><tr><th>#</th><th>Question ID</th><th>Type</th><th>Plays</th><th>Your accuracy</th><th></th></tr></thead>' +
       '<tbody>' + hardRows + '</tbody></table></div>';
   }
 
@@ -341,7 +350,8 @@ format:
   // ---- Clear all data function ----
   window.clearAllData = function() {
     if (!confirm('Delete all your quiz analytics data from this browser?')) return;
-    ['micromort_quiz_history','micromort_quiz_question_stats',
+    ['micromort_quiz_history',
+     'micromort_quiz_question_stats_binary','micromort_quiz_question_stats_ranking',
      'micromort_quiz_streak','micromort_quiz_last_play','micromort_quiz_best_score'
     ].forEach(function(k) { localStorage.removeItem(k); });
     location.reload();

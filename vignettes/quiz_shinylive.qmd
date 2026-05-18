@@ -348,7 +348,7 @@ function simpleHash(str) {
   return 'q' + Math.abs(h).toString(36);
 }
 function recordQuestionStats(questionKeys, wasCorrectArr) {
-  var QSTATS_KEY = 'micromort_quiz_question_stats';
+  var QSTATS_KEY = 'micromort_quiz_question_stats_binary';
   var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
   for (var i = 0; i < questionKeys.length; i++) {
     var h = questionKeys[i];
@@ -359,7 +359,7 @@ function recordQuestionStats(questionKeys, wasCorrectArr) {
   localStorage.setItem(QSTATS_KEY, JSON.stringify(stats));
 }
 function getQuestionStat(questionKey) {
-  var QSTATS_KEY = 'micromort_quiz_question_stats';
+  var QSTATS_KEY = 'micromort_quiz_question_stats_binary';
   var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
   var s = stats[questionKey];
   if (!s || s.total === 0) return null;
