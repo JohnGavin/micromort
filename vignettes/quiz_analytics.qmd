@@ -145,7 +145,10 @@ format:
   var qstatsBinary   = JSON.parse(localStorage.getItem(QSTATS_BINARY_KEY)  || '{}');
   var qstatsRanking  = JSON.parse(localStorage.getItem(QSTATS_RANKING_KEY) || '{}');
   var streak         = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
-  var bestScore      = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  var bestScoreRaw   = localStorage.getItem(BEST_KEY);
+  var bestScore      = bestScoreRaw !== null
+    ? parseFloat(bestScoreRaw)
+    : (history.length > 0 ? Math.max.apply(null, history.map(function(h) { return h.score; })) : 0);
   // Merge both stores into a unified array with a 'type' tag for the reader
   var qstatsMerged = [];
   Object.keys(qstatsBinary).forEach(function(k) {
@@ -192,7 +195,7 @@ format:
     '<div class="stat-grid">' +
     '<div class="stat-card"><div class="stat-value">' + totalPlays + '</div><div class="stat-label">Quizzes played</div></div>' +
     '<div class="stat-card"><div class="stat-value">' + avgScore + '%</div><div class="stat-label">Average score</div></div>' +
-    '<div class="stat-card"><div class="stat-value">' + maxScore + '%</div><div class="stat-label">Best score</div></div>' +
+    '<div class="stat-card"><div class="stat-value">' + Math.round(bestScore) + '%</div><div class="stat-label">Best score</div></div>' +
     '<div class="stat-card"><div class="stat-value">' + (streak > 1 ? '🔥 ' + streak : streak) + '</div><div class="stat-label">Day streak</div></div>' +
     '</div>' +
     '</div>';
