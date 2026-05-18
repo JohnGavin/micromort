@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
-<meta charset="utf-8">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="generator" content="quarto-1.8.26">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="description" content="Interactive quiz comparing everyday risks measured in micromorts — a one-in-a-million chance of death.">
-
 <title>Which lifestyle event is more likely to kill you?</title>
 <style>
 code{white-space: pre-wrap;}
@@ -22,37 +19,19 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-
-
-<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script>
-<link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-html/popper.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script><script src="quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script><link href="quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script><link href="quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
-<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
-<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
-<link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script><script src="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script><link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
 <link href="quiz_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
-
-
 </head>
-
 <body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 
-<main class="content column-page" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
+<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <h1 class="title">Which lifestyle event is more likely to kill you?</h1>
 </div>
 
@@ -72,10 +51,7 @@ ul.task-list li input[type="checkbox"] {
   
 
 
-</header>
-
-
-<style>
+</header><style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
   .description { margin-bottom: 0 !important; }
@@ -349,27 +325,46 @@ function renderQR(containerId, size) {
     '&lt;span style=\"font-size:0.85rem;color:#6c757d;word-break:break-all;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
 }
 setTimeout(function() { renderQR('qr-results', 3); }, 500);
+function localDateKey(d) {
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function utcDateKey(d) { return d.toISOString().slice(0, 10); }
 function updateStreakDisplay(scorePct) {
   var STREAK_KEY = 'micromort_quiz_streak';
   var LAST_PLAY_KEY = 'micromort_quiz_last_play';
   var BEST_KEY = 'micromort_quiz_best_score';
   var now = new Date();
+  var today = localDateKey(now);
+  var yestD = new Date(); yestD.setDate(yestD.getDate() - 1);
+  var yest = localDateKey(yestD);
+  var todayUtc = utcDateKey(now);
+  var yestUtc = utcDateKey(yestD);
   var lastPlay = localStorage.getItem(LAST_PLAY_KEY);
   var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  // One-time migration: UTC date strings or ISO timestamps → local date key
   if (lastPlay) {
-    var diffHours = (now - new Date(lastPlay)) / 1000 / 3600;
-    if (diffHours &lt; 24) {
-      if (streak === 0) streak = 1;
-    } else if (diffHours &lt; 48) {
-      streak = streak + 1;
-    } else {
-      streak = 1;
+    if (lastPlay === todayUtc) { lastPlay = today; }
+    else if (lastPlay === yestUtc) { lastPlay = yest; }
+    else if (/^\d+$/.test(lastPlay)) {
+      var asNum = parseInt(lastPlay, 10);
+      if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
+    } else if (lastPlay.length &gt; 10) {
+      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      lastPlay = localDateKey(new Date(lastPlay));
     }
+  }
+  if (lastPlay === today) {
+    if (streak === 0) streak = 1;
+  } else if (lastPlay === yest) {
+    streak = streak + 1;
   } else {
     streak = 1;
   }
   localStorage.setItem(STREAK_KEY, streak);
-  localStorage.setItem(LAST_PLAY_KEY, now.toISOString());
+  localStorage.setItem(LAST_PLAY_KEY, today);
   var best = parseFloat(localStorage.getItem(BEST_KEY) || '0');
   if (scorePct &gt; best) {
     best = scorePct;
@@ -1154,8 +1149,7 @@ shinyApp(ui, server)
 "Swimming","COVID-19 unvaccinated (all ages)",20,"COVID-19",0,"11 weeks (2022)",12,"Sport",0,"per swim",1.66666666666667,"hard","a","Population-average COVID-19 mortality risk for unvaccinated individuals in 2022.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Drowning risk per swim session, higher for open water and unsupervised settings.","https://en.wikipedia.org/wiki/Drowning"
 "Working in an office (8 hours)","COVID-19 bivalent booster (age 18-49)",0.05,"COVID-19",0,"11 weeks (2022)",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Bivalent-boosted young adults had near-baseline COVID-19 mortality.","https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"
 "Working in an office (8 hours)","Dental X-ray (radiation per scan)",0.05,"Medical",0,"per event",0.03,"Daily Life",0,"per day",1.66666666666667,"hard","a","Extremely low radiation dose (~0.005 mSv) for dental diagnostics.","https://en.wikipedia.org/wiki/Dental_radiography","Background mortality rate during sedentary office work.","https://en.wikipedia.org/wiki/Mortality_rate"</code></pre>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script><div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var el = document.getElementById('qr-container');
@@ -1168,15 +1162,12 @@ document.addEventListener('DOMContentLoaded', function() {
       '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
   }
 });
-</script>
-<div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
+</script><div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
   <a href="https://github.com/JohnGavin/micromort" style="color:#6c757d;">micromort</a> |
   <a href="https://johngavin.github.io/micromort/" style="color:#6c757d;">docs</a>
 </div>
 
-</main>
-<!-- /main column -->
-<script id="quarto-html-after-body" type="application/javascript">
+</main><!-- /main column --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -1581,4 +1572,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-</body></html>
+</body>
+</html>
