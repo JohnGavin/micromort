@@ -1,5 +1,62 @@
 # Changelog
 
+## 2026-05-17 to 2026-05-18
+
+### Completed — Roborev backlog burn-down (21 commits, range `17d1fea..6ade077`)
+
+**Backlog at session start:** 167 open findings. **Backlog at session end:** ~30 open (mostly stale duplicates from pre-fix commits awaiting auto-cleanup on next refine).
+
+**Cluster A — combined_quiz period_type scaling (`17d1fea`):**
+- Root-cause fix for ~112 backlog duplicates. `combined_quiz_pairs()` now scales acute risks by `period_type`: `event` rows kept raw, all others projected via `micromorts_per_day × time_period_days`.
+- Added `period_type_a` and `effective_micromorts_a` output columns.
+
+**Cluster G — R correctness:**
+- `R/quiz.R:465` guarded against zero-divisor in cross-country ratio (`ed43cc5`).
+- `R/atomic_risks.R:725` made `component_id` unique by including `condition_variable` (`5ea457c`).
+- `R/risk_sensitivity.R` algorithmic rewrite: per-activity perturbation against unchanged baseline so `rank_change` is meaningful (`fedea3d`). Old uniform-scale version had `rank_change ≡ 0`.
+
+**Cluster C + Round 3A — XSS security sweep:**
+- Escaped `</script>` (case-insensitive after `396aa77`) in 3 JSON data targets (`5165b82`, `396aa77`).
+- Sanitized innerHTML across 4 quiz vignettes via `escHtml()` helper (`2877802`).
+- Round 3: complete XSS audit + `safeHref()` URL allowlist — 16 additional interpolation sites in 3 quiz vignettes (`53cac6b`).
+
+**Cluster F — bed_age extraction (`2e69eba`):**
+- Replaced fragile `df[df$col == val, "x"]` with `dplyr::filter()` + `nrow() != 1L` assertion + `dplyr::pull()` in both `bed-fall-dynamic` and `whatif-dynamic` chunks.
+
+**Cluster I — quick wins:**
+- Dedupe Architecture link in README.qmd (`2c0717c`).
+- URL trailing slash in palatable_units.qmd (`f0de563`).
+- Replace hardcoded mundane-risks table with dynamic target → drop wine entirely after follow-up review (`a878fd7`, `539fc10`, `2640de5`).
+
+**Round 4 — Site sync:**
+- Architecture vignette: restored `emit_mermaid()` for pipeline diagram (`38afdaa`).
+- Quiz streak: UTC → local-date (`62c3b65`) + one-time legacy key migration (`b4461ad`).
+- Shared activity allowlist between mundane plot and table (`6ade077`).
+- Real zero-divisor test fixture using `local_mocked_bindings()` (`92e00cb`).
+
+**Roborev DB cleanup:** 14 findings closed with audit-trail comments (#11, #232, #558, #928, #570, #59-69 H cluster, #235-247 B cluster). All marked stale/false-positive/by-design.
+
+### Failed Approaches
+
+- **Direct opus Edit/Write for code:** `auto-delegation` rule was clarified mid-session to require subagent delegation for all R/code/config edits. Bounded exceptions are prose-only (CLAUDE.md, rules, memory, CHANGELOG). Forced re-spawning of `r-debugger` after one attempt hit org monthly budget cap.
+- **Single `r-debugger` agent for Cluster G first attempt:** hit org monthly usage limit after 10 min / 81 tool calls with no commits. Retry with tightened prompt (≤200-word deliverable, run suite only once at end) succeeded in 4.5 min.
+- **`quick-fix` (haiku) for tasks requiring commits:** haiku agent has no Bash tool, so edits land in worktree but commits cannot be created by the agent. Orchestrator must commit on its behalf. Use `fixer` (sonnet) when a commit step is needed.
+- **`roborev refine` (codex agent):** ran 3 of 10 iterations then hit rate limit, gemini fallback also failed. Produced zero fix commits. Replaced with targeted per-cluster `fixer` agents.
+- **Mass `roborev close` against backlog IDs:** some IDs in `backlog.md` don't exist as roborev job IDs (e.g. #570). `roborev comment` still records the audit trail, but `roborev close` returns 404 for those. Workaround: comment-only path is acceptable for findings without matching job rows.
+
+### Accuracy / Metrics
+
+- **Test count:** ~1000 → ~1031+ (snapshot test for combined-quiz columns, 3 risk-sensitivity regression tests, real zero-divisor fixture, atomic-risks component_id uniqueness, bed_age cardinality assertions).
+- **Bug correctness:** `risk_sensitivity()` `rank_change` was provably 0 for all activities under the old uniform-scale algorithm; new per-activity perturbation produces real rank shifts (verified via regression test with B=1.01, C=0.99, pct=5).
+- **XSS surface:** 7 paths sanitized in Cluster C + 16 paths in Round 3A across 3 quiz vignettes. `safeHref()` URL allowlist now blocks `javascript:`, `data:`, `vbscript:` injection vectors.
+
+### Known Limitations
+
+- **`docs/articles/what-is-a-micromort.{md,html}` are stale relative to source.** Task #21 (docs rebuild) hit org budget cap before commit. Site shows old 7-row wine table; source has 6-row table with bicycle/coffee prose. Next session: run `pkgdown::build_article("what-is-a-micromort")` or full `pkgdown::build_site()`.
+- **Hardcoded numeric literals in prose** at `vignettes/what-is-a-micromort.qmd:74,77` (`0.01`, `0.12`, `12x`). Violates `dynamic-prose-values` rule. Fix: precompute the comparison sentence in a target.
+- **No regression check enforces plot/table activity consistency.** Both `vig_whatis_mundane_plot` and `vig_whatis_mundane_table` now use identical inline vectors but a `qa_*` target or testthat test would prevent future drift.
+- **`docs/articles/*.html` may be stale for other articles** too — design review flagged this as a general process gap. Next session should sweep all `vig_*` source changes and ensure corresponding `docs/articles/*.html` are regenerated.
+
 ## 2026-05-03 to 2026-05-06
 
 ### Completed
