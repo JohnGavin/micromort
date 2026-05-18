@@ -453,7 +453,10 @@ shinyApp(ui, server)
 "2_hours_tv_watching","2 hours TV watching","Sedentary",-1,"loss","Prolonged sitting/inactivity",NA
 "sitting_8_hours_day","Sitting 8+ hours/day","Sedentary",-2,"loss","Office work without breaks (CVD risk)",NA
 "living_with_a_smoker","Living with a smoker","Environment",-1,"loss","Second-hand smoke exposure",NA
-"air_pollution_high_","Air pollution (high)","Environment",-1,"loss","Living in polluted urban area",NA
+"air_pollution_pm2_5_10_g_m_","Air pollution (PM2.5 ~10 μg/m³)","Environment",-0.5,"loss","Moderate urban area (EU average). WHO RR=1.08/10μg/m³",NA
+"air_pollution_pm2_5_25_g_m_","Air pollution (PM2.5 ~25 μg/m³)","Environment",-1,"loss","US EPA standard level. WHO RR=1.08/10μg/m³",NA
+"air_pollution_pm2_5_50_g_m_","Air pollution (PM2.5 ~50 μg/m³)","Environment",-2,"loss","Indian NAAQS level, many Asian cities. WHO RR=1.08/10μg/m³",NA
+"air_pollution_pm2_5_100_g_m_","Air pollution (PM2.5 ~100 μg/m³)","Environment",-4,"loss","Heavily polluted (Delhi average). WHO RR=1.08/10μg/m³, extrapolated",NA
 "untreated_hypertension","Untreated hypertension","Cardiovascular",-4,"loss","Systolic BP >140 mmHg untreated",NA
 "type_2_diabetes_poorly_controlled_","Type 2 diabetes (poorly controlled)","Cardiovascular",-3,"loss","HbA1c >8% increases CVD risk",NA
 "high_ldl_cholesterol_untreated_","High LDL cholesterol (untreated)","Cardiovascular",-2,"loss","LDL >160 mg/dL without statins",NA
