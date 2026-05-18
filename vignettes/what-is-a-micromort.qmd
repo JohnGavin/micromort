@@ -71,10 +71,14 @@ A **micromort (mm)** is a one-in-a-million chance of death from a single activit
 ```{r mundane-table}
 #| echo: false
 show_target("vig_whatis_mundane_table",
-  caption = "Six mundane activities ranked by micromorts (mm). Ratio vs coffee = mm / 0.01 mm (cup of coffee). All rows are acute per-event risks from common_risks(). Source: micromort package.")
+  caption = "Six mundane activities ranked by micromorts (mm). Ratio vs coffee = mm / coffee mm. All rows are acute per-event risks from common_risks(). Source: micromort package.")
 ```
 
-All of these are **below 1 mm** — risks so small we never perceive them as dangerous. The 12x ratio between a 30-minute bicycle commute and a cup of coffee sounds alarming, but in absolute terms it is the difference between a 0.01 and 0.12 in a million chance. Both are negligible.
+All of these are **below 1 mm** — risks so small we never perceive them as dangerous.
+
+```{r mundane-comparison-sentence, results='asis', echo=FALSE}
+cat(safe_tar_read("vig_whatis_mundane_comparison_sentence") %||% "")
+```
 
 Hover over the bars to compare.
 

@@ -141,6 +141,23 @@ plan_vignette_outputs <- list(
     }
   ),
 
+  # Dynamic comparison sentence for mundane risks section
+  # Assembles the bicycle-vs-coffee prose from live common_risks() values.
+  # Prevents the 12x/0.01/0.12 literals in the vignette from drifting.
+  targets::tar_target(
+    vig_whatis_mundane_comparison_sentence,
+    {
+      cr <- common_risks()
+      coffee_mm  <- cr$micromorts[cr$activity == "Cup of coffee"]
+      bicycle_mm <- cr$micromorts[cr$activity == "Commuting by bicycle (30 min)"]
+      ratio <- round(bicycle_mm / coffee_mm)
+      sprintf(
+        "The %dx ratio between a 30-minute bicycle commute and a cup of coffee sounds alarming, but in absolute terms it is the difference between a %s and %s in a million chance. Both are negligible.",
+        ratio, format(coffee_mm), format(bicycle_mm)
+      )
+    }
+  ),
+
   # Full spectrum dot chart (plotly)
   targets::tar_target(
     vig_whatis_spectrum_plot,
