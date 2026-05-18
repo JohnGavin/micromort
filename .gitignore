@@ -50,9 +50,10 @@ check/
 man/figures/logo-candidates/
 /_extensions/
 .roborev.toml
-# roborev local state + claude per-project settings
+# roborev local state + claude per-project settings + agent worktrees
 .roborev/
 .claude/settings.local.json
+.claude/worktrees/
 # Generated vignette artifacts (rendered output lives in docs/articles/)
 vignettes/chronic_vs_acute.html
 vignettes/chronic_vs_acute_files/
