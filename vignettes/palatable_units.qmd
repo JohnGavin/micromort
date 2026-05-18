@@ -49,7 +49,7 @@ Abstract probabilities are hard to grasp. Spiegelhalter offers a concrete anchor
 
 > **Flip a fair coin 20 times. The probability of getting 20 heads in a row is 1 in 1,048,576 — approximately 1 micromort.**
 
-This is a mathematical constant ($1/2^{20}$), not an estimate. It requires no denominator, no data source, and no geographic adjustment. If you can imagine the surprise of 20 consecutive heads, you can feel the scale of 1 micromort.
+This is a mathematical constant ($1/2^{20}$), not an estimate. It requires no denominator, no external source, and no geographic adjustment. If you can imagine the surprise of 20 consecutive heads, you can feel the scale of 1 micromort.
 
 For context, Gigerenzer (*Calculated Risks*, 2002) recommends expressing all probabilities as **natural frequencies** — counts in a defined population rather than percentages. "1 death per 1,000,000 exposures" is clearer than "0.0001% mortality rate." This package follows that convention: every micromort value has a traceable numerator (deaths) and denominator (exposures).
 

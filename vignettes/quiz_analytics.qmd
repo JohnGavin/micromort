@@ -159,7 +159,7 @@ format:
 
   var root = document.getElementById('analytics-root');
 
-  // ---- No data ----
+  // ---- Empty state ----
   if (history.length === 0 && qstatsMerged.length === 0) {
     root.innerHTML = '<div class="no-data-msg">' +
       '<p style="font-size:2rem;">📊</p>' +

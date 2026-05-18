@@ -264,20 +264,18 @@ bath_aged_fallback <- 0.5
 
 whatif <- safe_tar_read("vig_confounding_demographic_whatif")
 if (!is.null(whatif)) {
-  .pull1 <- function(df, act, col) {
+  .pull1 <- function(df, act, col, fallback = NA_real_) {
     rows <- dplyr::filter(df, activity == act)
     if (nrow(rows) != 1L) {
-      cli::cli_abort(c(
-        "x" = "Expected exactly one row for {.val {act}} in {.code vig_confounding_demographic_whatif}.",
-        "i" = "Got {nrow(rows)} row(s)."
-      ))
+      # Row absent from cached RDS (pre-dates new activity names): use fallback
+      return(fallback)
     }
     dplyr::pull(rows, !!rlang::sym(col))
   }
-  anaes_default <- .pull1(whatif, "General anaesthesia (elective)", "default_mm")
-  anaes_aged   <- .pull1(whatif, "General anaesthesia (elective)", "aged_mm")
-  bath_default <- .pull1(whatif, "Taking a bath (age-conditioned)", "default_mm")
-  bath_aged    <- .pull1(whatif, "Taking a bath (age-conditioned)", "aged_mm")
+  anaes_default <- .pull1(whatif, "General anaesthesia (elective)", "default_mm", anaes_default_fallback)
+  anaes_aged   <- .pull1(whatif, "General anaesthesia (elective)", "aged_mm", anaes_aged_fallback)
+  bath_default <- .pull1(whatif, "Taking a bath (age-conditioned)", "default_mm", bath_default_fallback)
+  bath_aged    <- .pull1(whatif, "Taking a bath (age-conditioned)", "aged_mm", bath_aged_fallback)
 } else {
   anaes_default <- anaes_default_fallback
   anaes_aged    <- anaes_aged_fallback

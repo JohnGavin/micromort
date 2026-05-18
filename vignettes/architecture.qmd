@@ -95,7 +95,7 @@ Target counts update automatically when plan files change.
 
 ```{r pipeline, results='asis'}
 emit_mermaid("vig_arch_pipeline_diagram",
-             "Pipeline diagram not available. Run `targets::tar_make()` first.",
+             "Pipeline diagram requires `tar_make()` to render.",
              caption = "Figure 1: Data pipeline showing five processing stages from raw risk data through targets to vignette outputs.",
              alt_text = "Mermaid flowchart showing the five-stage targets data pipeline: raw data ingestion, cleaning, aggregation, modelling, and vignette export.")
 ```
@@ -107,7 +107,7 @@ Click any function to view its documentation.
 
 ```{r concept, results='asis'}
 emit_mermaid("vig_arch_concept_diagram",
-             "Concept diagram not available. Run `targets::tar_make()` first.",
+             "Concept diagram requires `tar_make()` to render.",
              caption = "Figure 2: Exported functions grouped by category — risk data, conversion utilities, regional analysis, visualisation, and quiz.",
              alt_text = "Mermaid diagram showing all exported functions organised into five categories with links to their documentation pages.")
 ```
@@ -118,7 +118,7 @@ Which function should you start with? Follow the decision tree below.
 
 ```{r journey, results='asis'}
 emit_mermaid("vig_arch_user_journey_diagram",
-             "User journey diagram not available. Run `targets::tar_make()` first.",
+             "User journey diagram requires `tar_make()` to render.",
              caption = "Figure 3: Decision tree guiding users from their question (compare risks, explore regions, convert units) to the appropriate function.",
              alt_text = "Mermaid decision tree flowchart with three entry points — compare risks, explore regions, convert units — leading to specific package functions.")
 ```
@@ -130,7 +130,7 @@ Steps 4--5 follow the RED-GREEN TDD cycle.
 
 ```{r developer, results='asis'}
 emit_mermaid("vig_arch_developer_diagram",
-             "Developer diagram not available. Run `targets::tar_make()` first.",
+             "Developer diagram requires `tar_make()` to render.",
              caption = "Figure 4: Nine-step contributor workflow from issue creation through TDD (steps 4–5), documentation, CI checks, and PR merge.",
              alt_text = "Mermaid flowchart showing a nine-step development workflow: issue, branch, plan, RED test, GREEN implementation, refactor, document, check, and PR.")
 ```

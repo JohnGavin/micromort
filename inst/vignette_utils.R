@@ -30,10 +30,11 @@ safe_tar_read <- function(name) {
                              package = "micromort")
   }
   if (nzchar(rds_path) && file.exists(rds_path)) {
-    return(readRDS(rds_path))
+    val <- readRDS(rds_path)
+    if (!is.null(val)) return(val)
   }
 
-  message("Target '", name, "' not found in targets store or RDS fallback.")
+  message("Target '", name, "' requires tar_make() to build.")
   NULL
 }
 
@@ -45,7 +46,7 @@ safe_tar_read <- function(name) {
 show_target <- function(name, ...) {
   obj <- safe_tar_read(name)
   if (is.null(obj)) {
-    cat(paste0("*Target '", name, "' not available.*\n"))
+    cat(paste0("*`", name, "` requires `tar_make()` to render.*\n"))
     return(invisible(NULL))
   }
   render_target(obj, ...)

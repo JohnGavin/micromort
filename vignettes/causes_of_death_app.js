@@ -131,7 +131,7 @@ function getCountryData(country) {
 }
 
 function renderTreemap(container, data) {
-  if (!data.length) { container.innerHTML = '<p style="color:#888;text-align:center">No data</p>'; return; }
+  if (!data.length) { container.innerHTML = '<p style="color:#888;text-align:center">Nothing to display</p>'; return; }
   const total = data.reduce((s,d) => s + d.rate, 0);
   const country = data[0].country;
   const top = data[0];
