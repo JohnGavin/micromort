@@ -258,7 +258,7 @@ plan_qa_gates <- list(
         regexpr("articles/[a-z_-]+\\.html", navbar_text))
       slugs <- unique(slugs)
 
-      patterns <- c("not available", "not found in targets",
+      patterns <- c("not available", "not found in targets", "requires .tar_make",
                      "MISSING EVIDENCE", "Error in", "Error:")
       results <- lapply(slugs, function(slug) {
         url <- paste0(base_url, "/", slug)

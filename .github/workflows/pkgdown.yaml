@@ -128,7 +128,7 @@ jobs:
             fi
             URL="${SITE_URL}/${article}"
             CONTENT=$(curl -s --retry 3 --retry-delay 10 "$URL")
-            for pattern in "not found in targets store or RDS fallback" "MISSING EVIDENCE"; do
+            for pattern in "not found in targets store or RDS fallback" "requires .tar_make" "MISSING EVIDENCE"; do
               COUNT=$(echo "$CONTENT" | grep -ci "$pattern" || true)
               if [ "$COUNT" -gt 0 ]; then
                 echo "::error::${article}: ${COUNT} hits for '${pattern}'"
