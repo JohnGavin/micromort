@@ -94,7 +94,7 @@ jobs:
           fi
 
           # Check each navbar article
-          for article in $(grep -o 'articles/[a-z_]*\.html' _pkgdown.yml); do
+          for article in $(grep -o 'articles/[a-z_-]*\.html' _pkgdown.yml); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SITE_URL}/${article}" --retry 2 --retry-delay 5)
             if [ "$STATUS" != "200" ]; then
               echo "FAIL: ${SITE_URL}/${article} returned $STATUS"
