@@ -9,102 +9,61 @@
 
 library(cli)
 library(httr2)
+library(yaml)
+
+# ---------------------------------------------------------------------------
+# Internal helper: read article slugs from _pkgdown.yml dynamically.
+# Walks both `articles.contents` and navbar `href:` entries so that articles
+# listed in the navbar but not in the articles section (or vice-versa) are
+# all captured.
+# ---------------------------------------------------------------------------
+.pkgdown_article_slugs <- function(pkgdown_yml = "_pkgdown.yml") {
+  if (!file.exists(pkgdown_yml)) {
+    cli::cli_abort(c(
+      "x" = "{.file {pkgdown_yml}} not found.",
+      "i" = "Run from the package root or pass the correct path."
+    ))
+  }
+  yml <- yaml::read_yaml(pkgdown_yml)
+
+  slugs <- character(0)
+
+  # Walk articles.contents (handles both plain strings and list items)
+  for (section in yml$articles) {
+    for (item in section$contents) {
+      slug <- as.character(item)
+      if (nzchar(slug)) slugs <- c(slugs, slug)
+    }
+  }
+
+  # Also capture href: entries from the navbar (catches articles that appear
+  # in the navbar but not in the articles: section, and vice-versa)
+  navbar_text  <- readLines(pkgdown_yml, warn = FALSE)
+  href_matches <- regmatches(
+    navbar_text,
+    regexpr("articles/[A-Za-z0-9_-]+\\.html", navbar_text)
+  )
+  href_slugs <- sub("\\.html$", "", sub("^articles/", "", href_matches))
+  href_slugs <- href_slugs[nzchar(href_slugs)]
+
+  unique(c(slugs, href_slugs))
+}
 
 verify_pkgdown_urls <- function(
     base_url = "https://johngavin.github.io/micromort",
+    pkgdown_yml = "_pkgdown.yml",
     timeout = 10,
     verbose = TRUE
 ) {
-  # Key pages to verify — must match _pkgdown.yml navbar + reference sections
-  pages <- c(
-    # Home
-    "/",
-    "/index.html",
+  # Derive article paths dynamically from _pkgdown.yml so this list never
+  # drifts out of sync when articles are added or removed.
+  article_slugs <- .pkgdown_article_slugs(pkgdown_yml)
+  article_pages <- paste0("/articles/", article_slugs, ".html")
 
-    # Articles (all 10 from _pkgdown.yml navbar)
-    "/articles/architecture.html",
-    "/articles/telemetry.html",
-    "/articles/introduction.html",
-    "/articles/palatable_units.html",
-    "/articles/regional_variation.html",
-    "/articles/risk_equivalence.html",
-    "/articles/confounding.html",
-    "/articles/data_reliability.html",
-    "/articles/rest_api.html",
-    "/articles/quiz_shinylive.html",
+  # Fixed pages: home + reference index (stable, not sourced from yml articles)
+  home_pages <- c("/", "/index.html", "/reference/index.html")
 
-    # Reference index
-    "/reference/index.html",
-
-    # Datasets
-    "/reference/acute_risks.html",
-    "/reference/chronic_risks.html",
-    "/reference/risk_sources.html",
-
-    # Data Loaders
-    "/reference/load_acute_risks.html",
-    "/reference/load_chronic_risks.html",
-    "/reference/load_sources.html",
-
-    # Atomic Risk Schema
-    "/reference/atomic_risks.html",
-    "/reference/risk_components.html",
-    "/reference/risk_for_duration.html",
-    "/reference/common_risks.html",
-
-    # Risk Equivalence
-    "/reference/risk_equivalence.html",
-    "/reference/risk_exchange_matrix.html",
-
-    # Radiation Profiles
-    "/reference/radiation_profiles.html",
-    "/reference/patient_radiation_comparison.html",
-
-    # Legacy Data Functions
-    "/reference/demographic_factors.html",
-    "/reference/covid_vaccine_rr.html",
-    "/reference/risk_data_sources.html",
-
-    # Regional Life Expectancy
-    "/reference/regional_life_expectancy.html",
-    "/reference/vanguard_regions.html",
-    "/reference/laggard_regions.html",
-    "/reference/regional_mortality_multiplier.html",
-
-    # Conditional Risk Analysis
-    "/reference/cancer_risks.html",
-    "/reference/vaccination_risks.html",
-    "/reference/conditional_risk.html",
-    "/reference/hedged_portfolio.html",
-
-    # Conversion Functions
-    "/reference/as_micromort.html",
-    "/reference/as_microlife.html",
-    "/reference/as_probability.html",
-    "/reference/lle.html",
-    "/reference/value_of_micromort.html",
-
-    # Analysis Functions
-    "/reference/compare_interventions.html",
-    "/reference/lifestyle_tradeoff.html",
-    "/reference/daily_hazard_rate.html",
-    "/reference/annual_risk_budget.html",
-
-    # Visualization
-    "/reference/prepare_risks_plot.html",
-    "/reference/plot_risks.html",
-    "/reference/plot_risks_interactive.html",
-    "/reference/plot_risk_components.html",
-    "/reference/theme_micromort_dark.html",
-
-    # Interactive Tools
-    "/reference/launch_api.html",
-    "/reference/launch_dashboard.html",
-    "/reference/launch_quiz.html",
-    "/reference/quiz_pairs.html",
-    "/reference/activity_descriptions.html",
-    "/reference/format_activity_name.html"
-  )
+  pages <- c(home_pages, article_pages)
 
   results <- list()
   n_ok <- 0
