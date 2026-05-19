@@ -196,7 +196,11 @@ plan_vignette_outputs <- list(
           annotations = list(list(
             text = paste0(
               "Cleveland dot chart of top 35 activities by micromorts (mm, x-axis, log scale), coloured by category. ",
-              "Spans 6 orders of magnitude: from coffee (0.01 mm) to Mt Everest (37,932 mm). ",
+              "Spans 6 orders of magnitude: from ",
+              cr_show$activity[which.min(cr_show$micromorts)],
+              " (", round(min(cr_show$micromorts), 2), " mm) to ",
+              cr_show$activity[which.max(cr_show$micromorts)],
+              " (", formatC(max(cr_show$micromorts), format = "d", big.mark = ","), " mm). ",
               "Mountaineering and COVID-19 dominate; most daily activities cluster below 1 mm. ",
               "Source: common_risks() aggregating atomic_risks()."),
             x = 0.5, y = -0.06, xref = "paper", yref = "paper",

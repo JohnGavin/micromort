@@ -283,8 +283,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (fl) el = fl;
   }
   if (el) {
-    el.innerHTML = 'micromort 0.2.0 | ' +
-      '<a href="https://github.com/JohnGavin/micromort/commit/11086c76c1ea23ae2ae7d0c2dc723d288a76cb91">11086c7</a>' +
-      ' | Built 2026-04-30';
+    el.innerHTML = 'micromort | <a href="https://github.com/JohnGavin/micromort/commits/main">commit history</a>';
   }
 });
