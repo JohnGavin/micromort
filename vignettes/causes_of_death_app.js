@@ -256,7 +256,8 @@ function render() {
       else if (sortCol === 'category') { va = a.category; vb = b.category; }
       else if (sortCol === 'avg') { va = a.avg; vb = b.avg; }
       else if (sortCol === 'diff') { va = Math.abs(a.diff); vb = Math.abs(b.diff); }
-      else if (sortCol === 'rate') { va = a.rate1; vb = b.rate1; }
+      else if (sortCol === 'rate1') { va = a.rate1; vb = b.rate1; }
+      else if (sortCol === 'rate2') { va = a.rate2; vb = b.rate2; }
       else if (sortCol === 'pct') { va = a.pct1; vb = b.pct1; }
       else { va = a.avg; vb = b.avg; }
       if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
@@ -267,7 +268,7 @@ function render() {
     var cmpCols = ['cause','category', c1name, c2name, 'avg','diff'];
     var cmpLabels = ['Cause','Category', c1name + ' /100k', c2name + ' /100k', 'Average /100k', 'Difference'];
     var cmpCls = ['','','num','num','num','num'];
-    var cmpSortKeys = ['cause','category','rate','rate','avg','diff'];
+    var cmpSortKeys = ['cause','category','rate1','rate2','avg','diff'];
     var thead = '<tr>';
     cmpCols.forEach(function(c, i) {
       var arrow = sortCol === cmpSortKeys[i] ? (sortAsc ? ' ▲' : ' ▼') : '';
@@ -324,7 +325,8 @@ function render() {
 
     var tbody = renderTable(d1sorted, null);
 
-    var topCause = d1sorted.length ? d1sorted[0] : null;
+    var d1byRate = [...d1].sort(function(a, b) { return b.rate - a.rate; });
+    var topCause = d1byRate.length ? d1byRate[0] : null;
     var capText = 'Age-standardised death rates per 100,000 (GBD 2019). ';
     if (topCause) capText += 'In ' + c1name + ', ' + label(topCause.cause) + ' is the leading cause at ' +
       topCause.rate.toFixed(1) + ' per 100k (' + topCause.pct.toFixed(1) + '%). ';
