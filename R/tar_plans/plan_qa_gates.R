@@ -248,27 +248,65 @@ plan_qa_gates <- list(
       }
       base_url <- sub("/$", "", base_url)
 
-      yml <- tryCatch(yaml::read_yaml("_pkgdown.yml"), error = function(e) NULL)
-      if (is.null(yml)) return(data.frame(article = character(), pattern = character(),
+      # Extract article slugs from _pkgdown.yml articles: contents: lists
+      # (authoritative source — also catches Shinylive pages not in navbar)
+      yml_parsed <- tryCatch(yaml::read_yaml("_pkgdown.yml"), error = function(e) NULL)
+      if (is.null(yml_parsed)) return(data.frame(article = character(), pattern = character(),
         count = integer(), stringsAsFactors = FALSE))
 
-      # Extract article slugs from navbar
+      slugs <- character(0)
+      if (!is.null(yml_parsed$articles)) {
+        for (section in yml_parsed$articles) {
+          if (!is.null(section$contents)) {
+            for (item in section$contents) {
+              slug_bare <- as.character(item)
+              # normalise: replace hyphens with underscores is NOT needed —
+              # pkgdown uses the slug as-is for the HTML filename
+              slugs <- c(slugs, paste0("articles/", slug_bare, ".html"))
+            }
+          }
+        }
+      }
+      # Fallback: also grab navbar href: patterns and union them in
       navbar_text <- readLines("_pkgdown.yml", warn = FALSE)
-      slugs <- regmatches(navbar_text,
-        regexpr("articles/[a-z_-]+\\.html", navbar_text))
-      slugs <- unique(slugs)
+      navbar_slugs <- regmatches(navbar_text,
+        regexpr("articles/[a-zA-Z0-9_-]+\\.html", navbar_text))
+      slugs <- unique(c(slugs, navbar_slugs))
 
-      patterns <- c("not available", "not found in targets", "requires .tar_make",
-                     "MISSING EVIDENCE", "Error in", "Error:")
+      # Placeholder text emitted by show_target() when tar_make() has not run:
+      #   *`<name>` requires `tar_make()` to render.*
+      # (inst/vignette_utils.R line ~49)
+      patterns <- c(
+        "requires `tar_make\\(\\)` to render",
+        "requires tar_make\\(\\)",
+        "not found in targets store or RDS fallback",
+        "not available", "not found in targets",
+        "MISSING EVIDENCE", "Error in", "Error:"
+      )
+      n_checked <- 0L
       results <- lapply(slugs, function(slug) {
         url <- paste0(base_url, "/", slug)
-        body <- tryCatch({
+        fetch_result <- tryCatch({
           resp <- httr2::request(url) |>
             httr2::req_timeout(15) |>
             httr2::req_perform()
+          status <- httr2::resp_status(resp)
+          if (status != 200L) {
+            # Non-200 is an explicit failure — surface it
+            return(data.frame(article = slug, pattern = "FETCH_ERROR",
+              count = 1L,
+              stringsAsFactors = FALSE))
+          }
           httr2::resp_body_string(resp)
-        }, error = function(e) "")
-        if (!nzchar(body)) return(NULL)
+        }, error = function(e) {
+          # Network error / timeout — surface as FETCH_ERROR
+          data.frame(article = slug, pattern = "FETCH_ERROR",
+            count = 1L, stringsAsFactors = FALSE)
+        })
+        # If fetch_result is already a data.frame (error case), return it
+        if (is.data.frame(fetch_result)) return(fetch_result)
+        body <- fetch_result
+        n_checked <<- n_checked + 1L
         hits <- vapply(patterns, function(p) {
           m <- gregexpr(p, body, ignore.case = TRUE)[[1]]
           if (m[1] == -1L) 0L else length(m)
@@ -283,14 +321,46 @@ plan_qa_gates <- list(
         count = integer(), stringsAsFactors = FALSE)
 
       n_fail <- nrow(result_df)
+      # If zero articles were reachable, that is itself a failure — not a pass
+      if (n_checked == 0L && length(slugs) > 0L) {
+        cli::cli_abort(c(
+          "x" = "qa_deployed_html: could not fetch ANY of {length(slugs)} article(s)",
+          "i" = "All fetches returned FETCH_ERROR — check network and deployment status",
+          "i" = "Run targets::tar_read(qa_deployed_html) for per-slug details"
+        ))
+      }
       if (n_fail > 0) {
         cli::cli_warn(c(
-          "!" = "{n_fail} error pattern(s) in deployed HTML",
+          "!" = "{n_fail} error pattern(s) or fetch failure(s) in deployed HTML",
           "i" = "Run targets::tar_read(qa_deployed_html) for details"))
       } else {
-        cli::cli_alert_success("All {length(slugs)} deployed articles pass content QA")
+        cli::cli_alert_success(
+          "All {n_checked}/{length(slugs)} reachable deployed articles pass content QA")
       }
       result_df
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
+  # Enforce chronic CSV freshness: non-OK status is a build-failing gate
+  targets::tar_target(
+    qa_chronic_csv_gate,
+    {
+      check <- vig_chronic_csv_check
+      status <- check$status
+      if (status != "OK") {
+        cli::cli_abort(c(
+          "x" = "Chronic CSV gate FAILED: embedded CSV in chronic_quiz_shinylive.qmd is {status}",
+          "i" = "canonical_rows = {check$canonical_rows}, embedded_rows = {check$embedded_rows}",
+          "i" = "canonical_hash = {check$canonical_hash}",
+          "i" = "embedded_hash  = {check$embedded_hash}",
+          "i" = "Re-run the chronic_pairs pipeline target and update the embedded CSV"
+        ))
+      }
+      cli::cli_alert_success(
+        "Chronic CSV gate: embedded CSV matches canonical ({check$canonical_rows} rows)"
+      )
+      list(status = status, rows = check$canonical_rows, timestamp = Sys.time())
     },
     cue = targets::tar_cue(mode = "always")
   ),
