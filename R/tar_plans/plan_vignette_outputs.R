@@ -86,12 +86,16 @@ plan_vignette_outputs <- list(
         dplyr::arrange(micromorts) |>
         dplyr::mutate(activity = factor(activity, levels = activity))
 
+      coffee_mm <- mundane$micromorts[mundane$activity == "Cup of coffee"]
+      car_mm    <- mundane$micromorts[mundane$activity == "Commuting by car (30 min)"]
+      bike_mm   <- mundane$micromorts[mundane$activity == "Commuting by bicycle (30 min)"]
+
       plotly::plot_ly(mundane, y = ~activity, x = ~micromorts, type = "bar",
         orientation = "h",
         marker = list(color = "#2c7be5"),
         hovertemplate = paste0("<b>%{y}</b><br>",
           "%{x:.2f} mm<br>",
-          "%{x:.2f} / 0.01 = ", round(mundane$micromorts / 0.01), "x vs coffee",
+          "%{x:.2f} / ", coffee_mm, " = ", round(mundane$micromorts / coffee_mm), "x vs coffee",
           "<extra></extra>")) |>
         plotly::layout(
           xaxis = list(title = "Micromorts (mm)"),
@@ -102,7 +106,8 @@ plan_vignette_outputs <- list(
             text = paste0(
               "Horizontal bar chart of mundane daily activities ranked by micromorts (mm, x-axis). ",
               "1 mm = one-in-a-million chance of death. ",
-              "Commuting by car (0.13 mm) slightly exceeds cycling (0.12 mm); both dwarf coffee (0.01 mm). ",
+              "Commuting by car (", car_mm, " mm) slightly exceeds cycling (", bike_mm,
+              " mm); both dwarf coffee (", coffee_mm, " mm). ",
               "Source: common_risks() from atomic_risks(), cross-referenced with CDC/DfT data."),
             x = 0.5, y = -0.15, xref = "paper", yref = "paper",
             showarrow = FALSE, font = list(size = 9, color = "#888888")))
