@@ -4,15 +4,40 @@
 # Helper: get git last-commit unix timestamp for a repo-relative path.
 # Returns NA_real_ when the path has no git history yet.
 # ---------------------------------------------------------------------------
-.git_mtime <- function(pkg_root, rel_path) {
+.git_commit_mtime <- function(pkg_root, rel_path) {
   out <- system2(
     "git",
     c("-C", pkg_root, "log", "-1", "--format=%ct", "--", rel_path),
     stdout = TRUE, stderr = FALSE
   )
   if (length(out) == 0L || !nzchar(out)) return(NA_real_)
-  suppressWarnings(as.numeric(out))
+  ct <- as.numeric(out)
+  if (is.na(ct)) return(NA_real_)
+  ct
 }
+
+# ---------------------------------------------------------------------------
+# Helper: "source last touched" timestamp for a repo-relative path.
+# Returns the LATER of:
+#   (a) the git last-commit timestamp (catches committed-but-not-rebuilt)
+#   (b) the filesystem mtime           (catches working-tree edits)
+# Both are in seconds since Unix epoch (numeric).
+# Returns NA_real_ when neither is available.
+# ---------------------------------------------------------------------------
+.source_mtime <- function(pkg_root, rel_path) {
+  full_path  <- file.path(pkg_root, rel_path)
+  git_ct     <- .git_commit_mtime(pkg_root, rel_path)
+  fs_ct      <- tryCatch(
+    as.numeric(file.mtime(full_path)),
+    error = function(e) NA_real_
+  )
+  if (is.na(git_ct) && is.na(fs_ct)) return(NA_real_)
+  max(c(git_ct, fs_ct), na.rm = TRUE)
+}
+
+# Keep the old name as an alias so callers that compare OUTPUT html timestamps
+# (which live only in git, not in working-tree) still work correctly.
+.git_mtime <- .git_commit_mtime
 
 test_that("vig_whatis_mundane_plot and vig_whatis_mundane_table use the same activities", {
   # Read from cached RDS (CI/test friendly — doesn't require tar_make())
@@ -51,17 +76,13 @@ test_that("docs/articles/*.html is not stale relative to vignettes/*.qmd", {
     html <- file.path(doc_dir, paste0(base, ".html"))
     if (!file.exists(html)) next  # no deployed counterpart
 
-    qmd_time <- as.numeric(system2(
-      "git", c("-C", pkg_root, "log", "-1", "--format=%ct", "--", file.path("vignettes", qmd)),
-      stdout = TRUE, stderr = FALSE
-    ))
-    html_time <- as.numeric(system2(
-      "git", c("-C", pkg_root, "log", "-1", "--format=%ct", "--", file.path("docs", "articles", paste0(base, ".html"))),
-      stdout = TRUE, stderr = FALSE
-    ))
+    # Source: take the LATER of git-commit time and working-tree mtime so
+    # that an uncommitted edit to the .qmd is also caught as "stale".
+    qmd_time  <- .source_mtime(pkg_root, file.path("vignettes", qmd))
+    # Output: only git-commit time matters (deployed HTML has no working-tree edits)
+    html_time <- .git_commit_mtime(pkg_root, file.path("docs", "articles", paste0(base, ".html")))
 
-    if (length(qmd_time) == 1 && length(html_time) == 1 &&
-        !is.na(qmd_time) && !is.na(html_time) && qmd_time > html_time) {
+    if (!is.na(qmd_time) && !is.na(html_time) && qmd_time > html_time) {
       stale <- c(stale, base)
     }
   }
@@ -138,8 +159,10 @@ test_that("top-level pkgdown pages are not stale (CHANGELOG, README, NEWS)", {
       next
     }
 
-    src_ct <- .git_mtime(pkg_root, src_rel)
-    out_ct <- .git_mtime(pkg_root, out_rel)
+    # Source: max(git-commit, fs mtime) so working-tree edits are caught.
+    src_ct <- .source_mtime(pkg_root, src_rel)
+    # Output: git-commit time only (HTML has no relevant working-tree edits).
+    out_ct <- .git_commit_mtime(pkg_root, out_rel)
 
     if (anyNA(c(src_ct, out_ct))) next  # no git history yet — skip
 
@@ -207,8 +230,9 @@ test_that("CHANGELOG.md git-commit timestamp is older than or equal to docs/CHAN
     ))
   }
 
-  src_ct <- .git_mtime(pkg_root, "CHANGELOG.md")
-  out_ct <- .git_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
+  # Source: max(git-commit, fs mtime) catches working-tree edits to CHANGELOG.md.
+  src_ct <- .source_mtime(pkg_root, "CHANGELOG.md")
+  out_ct <- .git_commit_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
 
   testthat::skip_if(anyNA(c(src_ct, out_ct)), "No git history for one or both files")
 
@@ -222,6 +246,57 @@ test_that("CHANGELOG.md git-commit timestamp is older than or equal to docs/CHAN
   }
 
   expect_lte(src_ct, out_ct)
+})
+
+# ---------------------------------------------------------------------------
+# Working-tree edit detection: .source_mtime() picks up fs mtime > git-commit.
+#
+# This test proves the guard is not git-log-only: when a .qmd is modified on
+# disk but not yet committed, .source_mtime() returns the filesystem mtime
+# (which is newer than the git commit time), so the staleness check fires.
+# ---------------------------------------------------------------------------
+test_that(".source_mtime() detects working-tree edits beyond last git commit", {
+  testthat::skip_on_cran()
+  testthat::skip_if_not(
+    rprojroot::find_root(rprojroot::is_r_package) |>
+      file.path(".git") |>
+      file.exists(),
+    "test only runs inside a git checkout"
+  )
+
+  pkg_root <- rprojroot::find_root(rprojroot::is_r_package)
+
+  # Pick the first .qmd that has a git-commit history.
+  vig_dir   <- file.path(pkg_root, "vignettes")
+  qmd_files <- list.files(vig_dir, pattern = "\\.qmd$", full.names = FALSE)
+  candidate <- NULL
+  for (qmd in qmd_files) {
+    ct <- .git_commit_mtime(pkg_root, file.path("vignettes", qmd))
+    if (!is.na(ct)) { candidate <- qmd; break }
+  }
+  testthat::skip_if(is.null(candidate), "No .qmd with git history found")
+
+  rel_path <- file.path("vignettes", candidate)
+  full_path <- file.path(pkg_root, rel_path)
+
+  # Baseline: .source_mtime >= git_commit_mtime always.
+  git_ct  <- .git_commit_mtime(pkg_root, rel_path)
+  base_ct <- .source_mtime(pkg_root, rel_path)
+  expect_gte(base_ct, git_ct)
+
+  # Simulate a working-tree edit: advance the file's mtime by 60 seconds
+  # beyond the current .source_mtime (without modifying content).
+  # Restore the original mtime after the test via on.exit.
+  original_mtime <- file.mtime(full_path)
+  on.exit(Sys.setFileTime(full_path, original_mtime), add = TRUE)
+
+  future_mtime <- as.POSIXct(base_ct + 60, origin = "1970-01-01", tz = "UTC")
+  Sys.setFileTime(full_path, future_mtime)
+
+  edited_ct <- .source_mtime(pkg_root, rel_path)
+  # The helper must now return the filesystem mtime, not the git-commit time.
+  expect_gt(edited_ct, git_ct)
+  expect_equal(edited_ct, as.numeric(future_mtime), tolerance = 2)
 })
 
 # ---- qa_article_title_integrity unit tests --------------------------------
