@@ -27,14 +27,17 @@ MICROMORT_TO_MICROLIFE <- 0.7
 #' expedition or one base jump) keep their raw micromort value. Acute risks
 #' with any other period type (day, hour, month, year, period) represent a
 #' rate of exposure and are projected to `time_period_days` via
-#' `micromorts_per_day × time_period_days` before conversion to microlives.
+#' `micromorts_per_day_raw × time_period_days` before conversion to microlives.
+#' The unrounded column (`micromorts_per_day_raw`) is used rather than the
+#' display-rounded `micromorts_per_day` to prevent low-rate annual/monthly rows
+#' from collapsing to zero after rounding (e.g. 0.003 µm/day rounds to 0.00).
 #'
 #' @return A tibble with columns:
 #'   - `activity_a`, `type_a` ("acute"), `value_a` (raw micromorts as stored),
 #'     `unit_a` ("micromorts"), `category_a`, `period_a`,
 #'     `period_type_a` (one of "event", "day", "hour", "month", "year",
 #'     "period"), `effective_micromorts_a` (raw value for "event" rows;
-#'     `micromorts_per_day × time_period_days` otherwise)
+#'     `micromorts_per_day_raw × time_period_days` otherwise)
 #'   - `factor_b`, `type_b` ("chronic"), `value_b`, `unit_b` ("microlives/day"),
 #'     `category_b`, `direction_b`
 #'   - `common_unit` ("microlives"), `common_value_a`
@@ -67,7 +70,10 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   # - period_type == "event": one-off in the window (e.g. one expedition, one
   #   jump). Use raw micromorts.
   # - otherwise (day/hour/month/year/period): rate of exposure. Project to
-  #   `time_period_days` via the pre-computed `micromorts_per_day`.
+  #   `time_period_days` via the unrounded `micromorts_per_day_raw`.
+  # Using `micromorts_per_day_raw` (not the display-rounded `micromorts_per_day`)
+  # prevents low-rate annual/monthly rows from collapsing to 0 after rounding,
+  # which would produce wrong quiz values and wrong ratios.
   # Without this distinction, chronic-rate rows (e.g. "Living one day in
   # Lesotho" at 463 µm/day) are silently treated as one-off events and the
   # acute vs chronic comparison is non-commensurable. See roborev cluster
@@ -75,7 +81,7 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   effective_micromorts <- ifelse(
     acute$period_type == "event",
     acute$micromorts,
-    acute$micromorts_per_day * time_period_days
+    acute$micromorts_per_day_raw * time_period_days
   )
 
   acute_common <- tibble::tibble(

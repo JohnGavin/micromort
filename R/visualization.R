@@ -468,6 +468,7 @@ utils::globalVariables(c(
   # common_risks()
   "activity", "micromorts", "microlives", "category", "period", "source_url",
   "period_type", "period_days", "period_parsed", "micromorts_per_day",
+  "micromorts_per_day_raw",
   # covid_vaccine_rr()
   "age_group", "vaccination_status", "deaths_per_100k", "relative_risk",
   # chronic_risks()
