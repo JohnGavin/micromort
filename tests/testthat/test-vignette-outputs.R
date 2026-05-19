@@ -223,3 +223,87 @@ test_that("CHANGELOG.md git-commit timestamp is older than or equal to docs/CHAN
 
   expect_lte(src_ct, out_ct)
 })
+
+# ---- qa_article_title_integrity unit tests --------------------------------
+
+# Helper: given a slug, QMD title, and HTML lines, extract the HTML title
+# and h1 and return a list of violations (character vector, empty = OK).
+.check_article_title <- function(slug, qmd_title, html_lines) {
+  qmd_title_lc <- tolower(qmd_title)
+  violations   <- character(0)
+
+  title_matches <- regmatches(
+    html_lines,
+    regexpr("<title>[^<]+</title>", html_lines)
+  )
+  title_matches <- title_matches[nzchar(title_matches)]
+
+  if (length(title_matches) == 0L) {
+    return(paste0(slug, ": HTML missing <title> element"))
+  }
+
+  html_title_raw <- sub("^<title>", "", sub("</title>.*$", "", title_matches[1L]))
+  html_title     <- trimws(sub("\\s*•.*$", "", html_title_raw))
+  html_title_lc  <- tolower(html_title)
+
+  title_ok <- grepl(qmd_title_lc, html_title_lc, fixed = TRUE) ||
+              grepl(html_title_lc, qmd_title_lc, fixed = TRUE)
+  if (!title_ok) {
+    violations <- c(violations, paste0(
+      slug, ": title mismatch — QMD='", qmd_title, "' HTML='", html_title, "'"
+    ))
+  }
+
+  h1_matches <- regmatches(
+    html_lines,
+    regexpr('<h1[^>]*class="title"[^>]*>[^<]+</h1>', html_lines)
+  )
+  h1_matches <- h1_matches[nzchar(h1_matches)]
+  if (length(h1_matches) > 0L) {
+    h1_text   <- trimws(sub("^<h1[^>]*>", "", sub("</h1>.*$", "", h1_matches[1L])))
+    h1_ok <- grepl(qmd_title_lc, tolower(h1_text), fixed = TRUE) ||
+             grepl(tolower(h1_text), qmd_title_lc, fixed = TRUE)
+    if (!h1_ok) {
+      violations <- c(violations, paste0(
+        slug, ": h1 mismatch — QMD='", qmd_title, "' H1='", h1_text, "'"
+      ))
+    }
+  }
+
+  violations
+}
+
+test_that("article title checker: known-good HTML returns no violations", {
+  # Simulate a correctly rendered palatable_units article
+  qmd_title <- "Palatable Units: The Spiegelhalter Philosophy"
+  good_html  <- c(
+    "<title>Palatable Units: The Spiegelhalter Philosophy • micromort</title>",
+    '<h1 class="title">Palatable Units: The Spiegelhalter Philosophy</h1>'
+  )
+  violations <- .check_article_title("palatable_units", qmd_title, good_html)
+  expect_length(violations, 0L)
+})
+
+test_that("article title checker: mismatched title raises violation", {
+  # Simulate the corruption: HTML has quiz analytics title in a palatable_units page
+  qmd_title <- "Palatable Units: The Spiegelhalter Philosophy"
+  bad_html   <- c(
+    "<title>Your Quiz Analytics • micromort</title>",
+    '<h1 class="title">Your Quiz Analytics</h1>'
+  )
+  violations <- .check_article_title("palatable_units", qmd_title, bad_html)
+  expect_true(length(violations) >= 1L)
+  # Both title and h1 should be flagged
+  expect_true(any(grepl("title mismatch", violations)))
+  expect_true(any(grepl("h1 mismatch", violations)))
+})
+
+test_that("article title checker: missing <title> element raises violation", {
+  qmd_title <- "Palatable Units: The Spiegelhalter Philosophy"
+  no_title_html <- c(
+    "<html><body><h1>content</h1></body></html>"
+  )
+  violations <- .check_article_title("palatable_units", qmd_title, no_title_html)
+  expect_true(length(violations) >= 1L)
+  expect_true(any(grepl("missing", violations)))
+})

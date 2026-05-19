@@ -365,6 +365,111 @@ plan_qa_gates <- list(
     cue = targets::tar_cue(mode = "always")
   ),
 
+  # Article title integrity: verify each docs/articles/*.html title and h1
+  # match the source vignette YAML title, and the filename slug matches _pkgdown.yml.
+  # Detects the class of corruption reported in roborev jobs 3297/3290/3026:
+  # a rendered HTML picking up another vignette's title/h1/metadata.
+  targets::tar_target(
+    qa_article_title_integrity,
+    {
+      docs_dir    <- "docs/articles"
+      vig_dir     <- "vignettes"
+      pkgdown_yml <- "_pkgdown.yml"
+
+      if (!dir.exists(docs_dir) || !file.exists(pkgdown_yml)) {
+        cli::cli_alert_info("qa_article_title_integrity: docs/ or _pkgdown.yml absent — skipping")
+        return(list(violations = character(0), timestamp = Sys.time()))
+      }
+
+      yml_lines <- readLines(pkgdown_yml, warn = FALSE)
+      # Collect declared article slugs (bare name without .html)
+      declared_slugs <- regmatches(
+        yml_lines,
+        regexpr("articles/([a-z_-]+)\\.html", yml_lines)
+      )
+      declared_slugs <- unique(sub("articles/", "", sub("\\.html$", "", declared_slugs)))
+
+      violations <- character(0)
+
+      for (slug in declared_slugs) {
+        html_path <- file.path(docs_dir, paste0(slug, ".html"))
+        qmd_path  <- file.path(vig_dir,  paste0(slug, ".qmd"))
+
+        # Skip if HTML or QMD absent (other checks handle missing files)
+        if (!file.exists(html_path) || !file.exists(qmd_path)) next
+
+        # Extract title from QMD YAML front-matter
+        qmd_lines  <- readLines(qmd_path, warn = FALSE)
+        yaml_end   <- which(qmd_lines == "---")
+        if (length(yaml_end) < 2L) next
+        yaml_block <- qmd_lines[seq_len(yaml_end[2L])]
+        title_line <- grep("^title:\\s*", yaml_block, value = TRUE)
+        if (length(title_line) == 0L) next
+        qmd_title  <- trimws(sub("^title:\\s*['\"]?", "", sub("['\"]\\s*$", "", title_line[1L])))
+        qmd_title_lc <- tolower(qmd_title)
+
+        # Extract <title> from HTML head (first occurrence)
+        html_lines  <- readLines(html_path, warn = FALSE)
+        title_matches <- regmatches(
+          html_lines,
+          regexpr("<title>[^<]+</title>", html_lines)
+        )
+        title_matches <- title_matches[nzchar(title_matches)]
+        if (length(title_matches) == 0L) {
+          violations <- c(violations, paste0(slug, ": HTML missing <title> element"))
+          next
+        }
+        html_title_raw <- sub("^<title>", "", sub("</title>.*$", "", title_matches[1L]))
+        # pkgdown appends " • pkgname" to every title — strip it
+        html_title <- trimws(sub("\\s*•.*$", "", html_title_raw))
+        html_title_lc <- tolower(html_title)
+
+        # Title mismatch check (case-insensitive substring)
+        title_ok <- grepl(qmd_title_lc, html_title_lc, fixed = TRUE) ||
+                    grepl(html_title_lc, qmd_title_lc, fixed = TRUE)
+        if (!title_ok) {
+          violations <- c(violations, paste0(
+            slug, ": title mismatch — QMD='", qmd_title,
+            "' HTML='", html_title, "'"
+          ))
+        }
+
+        # Extract <h1> from HTML body
+        h1_matches <- regmatches(
+          html_lines,
+          regexpr('<h1[^>]*class="title"[^>]*>[^<]+</h1>', html_lines)
+        )
+        h1_matches <- h1_matches[nzchar(h1_matches)]
+        if (length(h1_matches) > 0L) {
+          h1_text    <- trimws(sub("^<h1[^>]*>", "", sub("</h1>.*$", "", h1_matches[1L])))
+          h1_text_lc <- tolower(h1_text)
+          h1_ok <- grepl(qmd_title_lc, h1_text_lc, fixed = TRUE) ||
+                   grepl(h1_text_lc, qmd_title_lc, fixed = TRUE)
+          if (!h1_ok) {
+            violations <- c(violations, paste0(
+              slug, ": h1 mismatch — QMD='", qmd_title,
+              "' H1='", h1_text, "'"
+            ))
+          }
+        }
+      }
+
+      if (length(violations) > 0L) {
+        cli::cli_abort(c(
+          "x" = "Article title integrity: {length(violations)} violation(s) detected",
+          "i" = "Each HTML article title and h1 must match the source vignette YAML title",
+          setNames(violations, rep("x", length(violations)))
+        ))
+      }
+
+      cli::cli_alert_success(
+        "Article title integrity: {length(declared_slugs)} articles pass"
+      )
+      list(violations = violations, timestamp = Sys.time())
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
   # Quality gate: weighted score (6 components + vignette compliance)
   targets::tar_target(
     qa_quality_gate,
