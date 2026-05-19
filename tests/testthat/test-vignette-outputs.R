@@ -382,3 +382,60 @@ test_that("article title checker: missing <title> element raises violation", {
   expect_true(length(violations) >= 1L)
   expect_true(any(grepl("missing", violations)))
 })
+
+# ---- .pkgdown_article_slugs() unit tests ----------------------------------
+
+# Helper: write a minimal _pkgdown.yml to a temp directory and return the path.
+.write_fixture_pkgdown <- function(dir) {
+  yml_path <- file.path(dir, "_pkgdown.yml")
+  writeLines(c(
+    "url: https://example.github.io/mypkg/",
+    "navbar:",
+    "  components:",
+    "    articles:",
+    "      menu:",
+    "      - text: Quiz",
+    "        href: articles/micromort-quiz.html",
+    "articles:",
+    "- title: 'Concepts'",
+    "  contents:",
+    "  - introduction",
+    "  - palatable_units",
+    "- title: 'Quizzes (Shinylive)'",
+    "  contents:",
+    "  - quiz_shinylive",
+    "  - chronic_quiz_shinylive",
+    "  - micromort-quiz"
+  ), yml_path)
+  yml_path
+}
+
+test_that(".pkgdown_article_slugs() returns slugs from articles:contents: AND navbar hrefs", {
+  tmp <- withr::local_tempdir()
+  yml <- .write_fixture_pkgdown(tmp)
+
+  # Load the helper from the package source (avoids install requirement)
+  source(here::here("R", "tar_plans", "plan_qa_gates.R"), local = TRUE)
+
+  slugs <- .pkgdown_article_slugs(yml)
+
+  # articles: contents: entries
+  expect_true("introduction"         %in% slugs)
+  expect_true("palatable_units"      %in% slugs)
+  expect_true("quiz_shinylive"       %in% slugs)
+  expect_true("chronic_quiz_shinylive" %in% slugs)
+  # navbar href entry (union, deduped)
+  expect_true("micromort-quiz"       %in% slugs)
+  # No duplicates (micromort-quiz appears in both navbar and articles:contents)
+  expect_equal(length(slugs), length(unique(slugs)))
+})
+
+test_that(".pkgdown_article_slugs() aborts on malformed YAML", {
+  tmp <- withr::local_tempdir()
+  bad_yml <- file.path(tmp, "_pkgdown.yml")
+  writeLines(c("url: ok", "articles: [bad: yaml: { unclosed"), bad_yml)
+
+  source(here::here("R", "tar_plans", "plan_qa_gates.R"), local = TRUE)
+
+  expect_error(.pkgdown_article_slugs(bad_yml))
+})

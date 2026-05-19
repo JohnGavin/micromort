@@ -17,6 +17,34 @@
 #'   - qa_vignette_compliance: Check vignette rule compliance (NEW)
 #'   - qa_quality_gate: Compute weighted quality gate score
 
+# ---------------------------------------------------------------------------
+# Shared helper: discover all article slugs from _pkgdown.yml.
+# Combines articles: contents: (authoritative, catches Shinylive pages not
+# in navbar) with navbar href: patterns. Errors loudly if the YAML is
+# malformed — a broken _pkgdown.yml should fail the pipeline, not silently
+# return success.
+# ---------------------------------------------------------------------------
+.pkgdown_article_slugs <- function(pkgdown_yml = "_pkgdown.yml") {
+  yml <- yaml::read_yaml(pkgdown_yml)  # aborts loudly if malformed (intended)
+  slugs <- character(0)
+  if (!is.null(yml$articles)) {
+    for (section in yml$articles) {
+      if (!is.null(section$contents)) {
+        for (item in section$contents) {
+          slugs <- c(slugs, as.character(item))
+        }
+      }
+    }
+  }
+  navbar_text <- readLines(pkgdown_yml, warn = FALSE)
+  href_matches <- regmatches(
+    navbar_text,
+    regexpr("articles/[A-Za-z0-9_-]+\\.html", navbar_text)
+  )
+  href_slugs <- sub("\\.html$", "", sub("^articles/", "", href_matches))
+  unique(c(slugs, href_slugs))
+}
+
 plan_qa_gates <- list(
   # Run all tests and capture results
   targets::tar_target(
@@ -248,30 +276,11 @@ plan_qa_gates <- list(
       }
       base_url <- sub("/$", "", base_url)
 
-      # Extract article slugs from _pkgdown.yml articles: contents: lists
-      # (authoritative source — also catches Shinylive pages not in navbar)
-      yml_parsed <- tryCatch(yaml::read_yaml("_pkgdown.yml"), error = function(e) NULL)
-      if (is.null(yml_parsed)) return(data.frame(article = character(), pattern = character(),
-        count = integer(), stringsAsFactors = FALSE))
-
-      slugs <- character(0)
-      if (!is.null(yml_parsed$articles)) {
-        for (section in yml_parsed$articles) {
-          if (!is.null(section$contents)) {
-            for (item in section$contents) {
-              slug_bare <- as.character(item)
-              # normalise: replace hyphens with underscores is NOT needed —
-              # pkgdown uses the slug as-is for the HTML filename
-              slugs <- c(slugs, paste0("articles/", slug_bare, ".html"))
-            }
-          }
-        }
-      }
-      # Fallback: also grab navbar href: patterns and union them in
-      navbar_text <- readLines("_pkgdown.yml", warn = FALSE)
-      navbar_slugs <- regmatches(navbar_text,
-        regexpr("articles/[a-zA-Z0-9_-]+\\.html", navbar_text))
-      slugs <- unique(c(slugs, navbar_slugs))
+      # Extract article slugs from _pkgdown.yml using the shared helper.
+      # .pkgdown_article_slugs() aborts loudly if _pkgdown.yml is malformed —
+      # a parse failure must fail the pipeline, not silently return success.
+      slug_bare <- .pkgdown_article_slugs("_pkgdown.yml")
+      slugs <- paste0("articles/", slug_bare, ".html")
 
       # Placeholder text emitted by show_target() when tar_make() has not run:
       #   *`<name>` requires `tar_make()` to render.*
@@ -330,9 +339,10 @@ plan_qa_gates <- list(
         ))
       }
       if (n_fail > 0) {
-        cli::cli_warn(c(
-          "!" = "{n_fail} error pattern(s) or fetch failure(s) in deployed HTML",
-          "i" = "Run targets::tar_read(qa_deployed_html) for details"))
+        cli::cli_abort(c(
+          "x" = "qa_deployed_html: {n_fail} error pattern(s) or fetch failure(s) in deployed HTML",
+          "i" = "Run targets::tar_read(qa_deployed_html) for details"
+        ))
       } else {
         cli::cli_alert_success(
           "All {n_checked}/{length(slugs)} reachable deployed articles pass content QA")
@@ -381,13 +391,10 @@ plan_qa_gates <- list(
         return(list(violations = character(0), timestamp = Sys.time()))
       }
 
-      yml_lines <- readLines(pkgdown_yml, warn = FALSE)
-      # Collect declared article slugs (bare name without .html)
-      declared_slugs <- regmatches(
-        yml_lines,
-        regexpr("articles/([a-z_-]+)\\.html", yml_lines)
-      )
-      declared_slugs <- unique(sub("articles/", "", sub("\\.html$", "", declared_slugs)))
+      # Use the shared helper so both targets see the same slug set.
+      # This also picks up pages declared only in articles: contents: (e.g.
+      # quiz_shinylive, chronic_quiz_shinylive) that href-only regex misses.
+      declared_slugs <- .pkgdown_article_slugs(pkgdown_yml)
 
       violations <- character(0)
 

@@ -34,6 +34,7 @@ Suggests:
     gh,
     here,
     htmltools,
+    httr2,
     stringr,
     tidyr,
     jsonlite,
@@ -52,7 +53,8 @@ Suggests:
     quarto,
     testthat (>= 3.0.0),
     urlchecker,
-    usethis
+    usethis,
+    yaml
 Config/testthat/edition: 3
 VignetteBuilder: quarto, knitr
 URL: https://johngavin.github.io/micromort/, https://github.com/johngavin/micromort

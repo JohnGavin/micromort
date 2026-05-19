@@ -47,30 +47,30 @@ jobs:
           echo "Pre-built docs/ found:"
           ls -la docs/*.html | head -10
 
+      - name: Install pyyaml for _pkgdown.yml parsing
+        run: pip install pyyaml
+
       - name: Verify all articles exist in docs/
         run: |
           ERRORS=0
           # Parse articles: contents: from _pkgdown.yml (authoritative; includes Shinylive pages)
           # Also union in navbar href: patterns as a fallback
           ARTICLE_SLUGS=$(python3 -c "
-          import sys, re
-          try:
-              import yaml
-              with open('_pkgdown.yml') as f:
-                  cfg = yaml.safe_load(f)
-              slugs = set()
-              for section in cfg.get('articles', []):
-                  for item in section.get('contents', []):
-                      if isinstance(item, str):
-                          slugs.add(item + '.html')
-              print('\n'.join(sorted(slugs)))
-          except Exception:
-              # Fallback: grep navbar hrefs
-              with open('_pkgdown.yml') as f:
-                  text = f.read()
-              for m in re.findall(r'articles/([A-Za-z0-9_-]+\.html)', text):
-                  print(m)
-          " 2>/dev/null || grep -o 'articles/[A-Za-z0-9_-]*\.html' _pkgdown.yml | sed 's|articles/||')
+          import sys, re, yaml
+          with open('_pkgdown.yml') as f:
+              cfg = yaml.safe_load(f)
+          slugs = set()
+          for section in cfg.get('articles', []):
+              for item in section.get('contents', []):
+                  if isinstance(item, str):
+                      slugs.add(item + '.html')
+          # Also capture navbar href: patterns
+          with open('_pkgdown.yml') as f:
+              text = f.read()
+          for m in re.findall(r'articles/([A-Za-z0-9_-]+)\.html', text):
+              slugs.add(m + '.html')
+          print('\n'.join(sorted(slugs)))
+          ")
           for article in $ARTICLE_SLUGS; do
             if [ ! -f "docs/articles/$article" ]; then
               echo "MISSING: docs/articles/$article (listed in _pkgdown.yml)"
@@ -116,23 +116,20 @@ jobs:
 
           # Check every article (navbar + articles: contents:)
           for article in $(python3 -c "
-          import re
-          try:
-              import yaml
-              with open('_pkgdown.yml') as f:
-                  cfg = yaml.safe_load(f)
-              slugs = set()
-              for section in cfg.get('articles', []):
-                  for item in section.get('contents', []):
-                      if isinstance(item, str):
-                          slugs.add('articles/' + item + '.html')
-              print('\n'.join(sorted(slugs)))
-          except Exception:
-              with open('_pkgdown.yml') as f:
-                  text = f.read()
-              for m in re.findall(r'articles/([A-Za-z0-9_-]+\.html)', text):
-                  print('articles/' + m)
-          " 2>/dev/null || grep -o 'articles/[A-Za-z0-9_-]*\.html' _pkgdown.yml); do
+          import re, yaml
+          with open('_pkgdown.yml') as f:
+              cfg = yaml.safe_load(f)
+          slugs = set()
+          for section in cfg.get('articles', []):
+              for item in section.get('contents', []):
+                  if isinstance(item, str):
+                      slugs.add('articles/' + item + '.html')
+          with open('_pkgdown.yml') as f:
+              text = f.read()
+          for m in re.findall(r'articles/([A-Za-z0-9_-]+)\.html', text):
+              slugs.add('articles/' + m + '.html')
+          print('\n'.join(sorted(slugs)))
+          "); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SITE_URL}/${article}" --retry 2 --retry-delay 5)
             if [ "$STATUS" != "200" ]; then
               echo "FAIL: ${SITE_URL}/${article} returned $STATUS"
@@ -159,23 +156,20 @@ jobs:
           # Skip articles that can't be rebuilt by pkgdown (Closeread, Shinylive)
           SKIP="chronic_vs_acute.html portfolio_shinylive.html"
           ALL_ARTICLES=$(python3 -c "
-          import re
-          try:
-              import yaml
-              with open('_pkgdown.yml') as f:
-                  cfg = yaml.safe_load(f)
-              slugs = set()
-              for section in cfg.get('articles', []):
-                  for item in section.get('contents', []):
-                      if isinstance(item, str):
-                          slugs.add('articles/' + item + '.html')
-              print('\n'.join(sorted(slugs)))
-          except Exception:
-              with open('_pkgdown.yml') as f:
-                  text = f.read()
-              for m in re.findall(r'articles/([A-Za-z0-9_-]+\.html)', text):
-                  print('articles/' + m)
-          " 2>/dev/null || grep -o 'articles/[A-Za-z0-9_-]*\.html' _pkgdown.yml | sort -u)
+          import re, yaml
+          with open('_pkgdown.yml') as f:
+              cfg = yaml.safe_load(f)
+          slugs = set()
+          for section in cfg.get('articles', []):
+              for item in section.get('contents', []):
+                  if isinstance(item, str):
+                      slugs.add('articles/' + item + '.html')
+          with open('_pkgdown.yml') as f:
+              text = f.read()
+          for m in re.findall(r'articles/([A-Za-z0-9_-]+)\.html', text):
+              slugs.add('articles/' + m + '.html')
+          print('\n'.join(sorted(slugs)))
+          ")
           for article in $ALL_ARTICLES; do
             BASENAME=$(basename "$article")
             if echo "$SKIP" | grep -q "$BASENAME"; then
