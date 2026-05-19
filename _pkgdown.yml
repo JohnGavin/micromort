@@ -1,5 +1,8 @@
 url: https://johngavin.github.io/micromort/
 
+exclude:
+  - CLAUDE.html
+
 template:
   bootstrap: 5
   bootswatch: flatly

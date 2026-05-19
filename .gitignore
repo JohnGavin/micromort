@@ -63,3 +63,6 @@ inst/extdata/vignettes/vig_intro_risk_plot.png
 inst/extdata/vignettes/vig_intro_risk_plot_interactive.html
 inst/extdata/vignettes/vig_intro_risk_plot_interactive_files/
 inst/extdata/vignettes/vig_palatable_risk_plot.png
+# Prevent pkgdown from publishing CLAUDE.md (internal dev instructions)
+docs/CLAUDE.html
+docs/CLAUDE.md
