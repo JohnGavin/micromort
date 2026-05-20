@@ -1,42 +1,41 @@
-# Current Work (Session 2026-05-20 — roborev backlog sweep, 3 worktree rounds, ENDED)
+# Current Work (Session 2026-05-20 — content-hash freshness check, ENDED)
 
-**Last updated:** session end after CHANGELOG + push
-**Previous active session:** 2026-05-03 to 2026-05-06 (Rankings bump chart, PM2.5 ladder)
+**Last updated:** session end after CHANGELOG append + commit.
+**Branch:** `feat/cc-20260520-195352`
+**Previous active session:** 2026-05-20 (roborev backlog sweep on `feat/cc-20260520-113729` → main).
 
 ## Final state
 
-`main` at `acf4559` (fix(dev): dynamic pkgdown URL list and symmetric .path_mtime). Pushed to `origin/main`. Working tree clean. No worktrees remain.
+`feat/cc-20260520-195352` at `beaa8de` (`fix(tests): content-hash freshness check (root-cause for roborev #3523 finding 3)`). Branch is 1 commit ahead of `origin/main`. Not pushed to remote.
 
 ## Session totals
 
-- **12 commits across 3 parallel-worktree rounds** addressing 14 roborev findings.
-- **Roborev backlog: 50+ → 3 verified-remaining findings** in consolidated job `3523`. Two superseded consolidations (`3343`, `3502`) explicitly closed; ~134 originals auto-closed by `roborev compact`.
-- **New QA targets introduced:** `qa_article_title_integrity`, `qa_chronic_csv_gate`. Both wired as build-failing gates.
-- **New shared helper:** `.pkgdown_article_slugs()` (in `R/tar_plans/plan_qa_gates.R`) used by `qa_deployed_html` + `qa_article_title_integrity` + `R/dev/verify_pkgdown_urls.R`.
-- **New test files:** `test-acute-risk-rounding.R` (29 PASS), `test-qa-chronic-csv-gate.R` (4 PASS).
-- **DESCRIPTION:** added `httr2`, `yaml` to Suggests (were undeclared but used by `plan_qa_gates.R`).
+- **1 commit** on the feature branch.
+- **+243 / -18 lines** in `tests/testthat/test-vignette-outputs.R`.
+- **+6 helper tests** using ephemeral git-fixture repos.
+- **+1 newly-exposed genuine staleness** (`chronic_quiz_shinylive.html`) that the prior timestamp-only guard missed in worktree contexts.
 
 ## Key technical events
 
-### Worktree auto-cleanup ate 4 of 6 Round-2 agent worktrees
-Prompts said "leave changes uncommitted" — agents complied — but the worktree-isolation harness cleaned the worktrees post-return because they had no commits. Working-tree changes appeared in `main` as shadow modifications. Recovery: redispatched the missing 4 agents with explicit "commit on your worktree branch before returning" + "report commit SHA" instructions; that pattern survived. Capture as a memory or rule next session.
+### Root-cause fix: filesystem mtimes lie in worktrees
 
-### `testthat::test_file()` vs `devtools::test_file()`
-Acute-risk tests failed with `could not find function "common_risks"` because `testthat::test_file()` doesn't load the package. Use `devtools::test_file()` for tests that touch package internals.
+The previous freshness guard used symmetric `max(git_ct, fs_mtime)`. In a `git worktree add`-created tree, every file gets a fresh fs mtime on checkout. Symmetric max therefore silently equalises source and output even when their git histories differ. Content-hash via `git hash-object` and `git rev-parse <commit>:<path>` answers the cause-level question — "has source content drifted since the output was last committed?" — and is immune to mtime games (touch, checkout, rsync -t, patch --keep-tz).
 
-### Compact's verification agent surfaces findings beyond raw review aggregation
-Round-3 compact surfaced 8 follow-up findings the per-PR reviews hadn't flagged (e.g. `qa_deployed_html warn-only`, `pkgdown/extra.js` source vs `docs/extra.js` artifact, hidden `yaml`/`httr2` deps). Compact is doing real verification work, not just dedup.
+### First-cut local-rebuild detection used mtime; that was wrong
 
-### Three intended-by-design test failures remain
-`test-vignette-outputs.R` reports 3 FAIL (CHANGELOG.md, README.qmd source newer than rendered HTML). These are the new freshness guard correctly flagging stale `docs/`. Resolution: run `pkgdown::build_site()` in the project nix shell, commit `docs/`, push. Not a regression.
+Initial `.content_drift()` rejected the content check when `fs_mtime > git_ct + 5s`. In a worktree that condition is true for every file. Replaced with content-only test: working-tree blob hash of output vs blob hash at HEAD. If they match, output is unmodified, content-hash is safe. If they differ, output was locally edited and we can't establish what source went into the rebuild — return NA, fall back to timestamps.
+
+### Nested nix-shell segfault on `devtools::test_file()`
+
+First run hit `R_LIBS_SITE` inheritance segfault. Worked around with `env -u R_LIBS_SITE -u R_LIBS_USER -u R_LIBS nix-shell … --run …`. The closure-rebuild `shellHook` from the `nix-nested-shell-isolation` rule is missing from this project's `default.nix`.
 
 ## Next session candidates
 
-- **Run `pkgdown::build_site()`** in the project nix shell to refresh stale `docs/CHANGELOG.html`, `docs/index.html`, and the chronic_quiz_shinylive / palatable_units rendered articles (which still ship the retired `Air pollution (high)` label). New gates will then verify clean.
-- **Fix `combined_quiz_pairs()` annualisation of bounded-window period rows** (`"per 8 weeks"`, `"11 weeks (2022)"`) — surfaced by Round 3's consolidation review. Real bug for `Living in NYC COVID-19 (Mar–May 2020)` etc.
-- **Dedup PM2.5 values** between `R/risks.R chronic_risks()` and `data-raw/sources/chronic_risks_base.csv` — pick one as source of truth.
-- **Fix `architecture.html`** rendering: `vig_pipeline_dependency_graph.rds` is `NULL` (last `tar_make()` errored in `targets::tar_network()`). Needs fresh pipeline run + per-article render.
-- **Pre-existing pending from 2026-05-03 session:** #99 evidence review (GLP-1, vaping, sleep), #98 offset calculator, #97 QR/text sizing, #84 CSS verification, #89 CI template.
+- **Add the closure-rebuild `shellHook`** to `default.nix` per `nix-nested-shell-isolation` rule. Without it, subagents in nested nix-shell contexts will segfault on R native package loads (Rcpp, lme4, brms, Matrix).
+- **Run `pkgdown::build_site()`** to clear the 3 content-validated stale outputs (`docs/CHANGELOG.html`, `docs/index.html`, `docs/articles/chronic_quiz_shinylive.html`). All 3 will pass the new content-hash check after rebuild + commit.
+- **Push `feat/cc-20260520-195352`** and open a PR if this is meant to merge ahead of PR #120 (or rebase onto / fold into PR #120 depending on review state).
+- **Decide on the untracked snapshot** `tests/testthat/_snaps/qa-chronic-csv-gate.md` generated by my full-suite run — commit it (per `snapshot-tests-mandatory` rule) or investigate why it was missing.
+- **Carried from prior session:** `combined_quiz_pairs()` bounded-window annualisation; PM2.5 dedup between `chronic_risks()` and CSV; `architecture.html` `vig_pipeline_dependency_graph` rebuild; #99 evidence review (GLP-1, vaping, sleep), #98 offset calculator, #97 QR/text sizing, #84 CSS verification, #89 CI template.
 
 ## Known Limitations (carried)
 
@@ -44,3 +43,4 @@ Round-3 compact surfaced 8 follow-up findings the per-PR reviews hadn't flagged 
 - Quarto 1.8.26 strips `<script>` from `{=html}` blocks — requires Python post-injection
 - chronic_vs_acute (Closeread) can't be rebuilt by pkgdown
 - pkgdown 2.2.0 + quarto 1.8.26 needs per-article quarto render + pkgdown wrap (full `build_site()` errors)
+- This project's `default.nix` lacks the closure-rebuild shellHook (new this session)

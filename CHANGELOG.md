@@ -1,5 +1,42 @@
 # Changelog
 
+## 2026-05-20 — Content-hash freshness check (root-cause for roborev #3523 finding 3)
+
+Branch: `feat/cc-20260520-195352`. Commit `beaa8de`.
+
+### Completed
+
+- **`.content_drift()` helper** added to `tests/testthat/test-vignette-outputs.R` using git's native content addressing (`git hash-object` for working-tree blob, `git rev-parse <commit>:<path>` for content at a specific commit). Returns `TRUE` (drifted), `FALSE` (matches), or `NA` (undetermined: output uncommitted or output blob locally modified vs HEAD).
+- **3 freshness tests rewired** to check `.content_drift()` first (authoritative); symmetric `.path_mtime()` timestamps only consulted when drift is `NA` (output never committed or locally rebuilt). Targeted CHANGELOG regression test now reports "content drifted since output last committed" instead of timestamp inequality.
+- **6 new helper tests** using ephemeral git fixtures: blob-hash parity with `git hash-object`; drift `FALSE`/`TRUE`/`NA` paths; working-tree edits with **preserved mtime** (the timestamp-blind failure mode that motivated the fix).
+- **Local-rebuild detection moved from mtime to content** — purely git-based: `out_now == out_at_build` ⇒ safe to use content-hash; `out_now != out_at_build` ⇒ output locally edited, fall back to timestamps. This removes the false-positive that the first iteration of `.content_drift()` exhibited because `git worktree add` refreshes every checked-out file's mtime.
+
+### Diagnostic value: a real stale was exposed
+
+The new check caught `docs/articles/chronic_quiz_shinylive.html` as stale by content even though previous timestamp-based logic missed it in worktree contexts:
+
+- `vignettes/chronic_quiz_shinylive.qmd` edited in `9479636` (PM2.5 row replacement, 2026-05-19)
+- `docs/articles/chronic_quiz_shinylive.html` last rebuilt in `c79745a` (Round 5 rebuild, 2026-05-18)
+- Source blob at `c79745a`: `937d7d9…` ≠ source blob now: `1ed0ae6…` ⇒ drifted
+
+Fix is `pkgdown::build_article("chronic_quiz_shinylive")` then commit `docs/`.
+
+### Failed Approaches
+
+- **First-cut local-rebuild detection used `fs_mtime > git_ct + 5s`.** False-positively suppressed the content check for every file in the worktree because `git worktree add` writes fresh filesystem mtimes uniformly (delta ~1.7M seconds in this worktree vs an actual commit elsewhere). Reported 19 false stales (all `vignettes/*.qmd` paths). Replaced with content-only check: `git hash-object` of working-tree output vs blob hash at HEAD. Pure git, no filesystem mtime input. Reported set collapsed to the 3 genuine items + 1 newly-exposed real drift.
+- **Nested nix-shell segfault** on first `devtools::test_file()` run — documented `R_LIBS_SITE` inheritance issue. `env -u R_LIBS_SITE -u R_LIBS_USER -u R_LIBS nix-shell …` works around. The shellHook fix from `nix-nested-shell-isolation` rule is not present in this project's `default.nix` — flag for next session.
+
+### Accuracy / Metrics
+
+- Tests: `[ FAIL 3 | WARN 2 | SKIP 0 | PASS 1002 ]` (was 996 PASS pre-change — +6 from new helper tests; the 3 FAILs are now content-validated rather than timestamp-only).
+- The 3 freshness FAILs now produce content-based diagnosis: `CHANGELOG.md`, `README.qmd`, and `chronic_quiz_shinylive` all flagged with "content drifted since output last committed."
+
+### Known Limitations / Follow-ups
+
+- The 3 freshness FAILs remain — same root cause as in the prior session entry (`docs/` is stale on this worktree's HEAD). Resolution unchanged: `pkgdown::build_site()` + commit `docs/`.
+- The project's `default.nix` lacks the closure-rebuild `shellHook` from the `nix-nested-shell-isolation` rule. Subagents in nested nix-shell contexts will segfault on R native loads until added.
+- Untracked `tests/testthat/_snaps/qa-chronic-csv-gate.md` created by my full-suite run is unrelated to this commit and remains in the working tree for a future cleanup decision.
+
 ## 2026-05-20 — Roborev backlog sweep: 3 parallel-worktree rounds, 12 commits
 
 ### Completed (commits `d41b13f..acf4559` — 12 commits across 3 rounds)
