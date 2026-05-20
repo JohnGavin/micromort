@@ -67,21 +67,24 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   acute <- acute[acute$micromorts > 0, ]
 
   # Scale acute risk to the comparison window:
-  # - period_type == "event": one-off in the window (e.g. one expedition, one
-  #   jump). Use raw micromorts.
-  # - otherwise (day/hour/month/year/period): rate of exposure. Project to
-  #   `time_period_days` via the unrounded `micromorts_per_day_raw`.
-  # Using `micromorts_per_day_raw` (not the display-rounded `micromorts_per_day`)
-  # prevents low-rate annual/monthly rows from collapsing to 0 after rounding,
-  # which would produce wrong quiz values and wrong ratios.
+  # - Genuine repeatable rates (period_type in day/hour/month/year): project to
+  #   `time_period_days` via the unrounded `micromorts_per_day_raw`. Using the
+  #   unrounded value prevents low-rate annual/monthly rows from collapsing to
+  #   0 after rounding, which would produce wrong quiz values and wrong ratios.
+  # - One-off totals (period_type "event" or "period"): the row already
+  #   represents a complete bounded interval (e.g. "one expedition", "one
+  #   jump", "11 weeks", "per 8 weeks"). Use raw micromorts as-is. Scaling
+  #   bounded `period` rows by `time_period_days` over-inflates them — e.g.
+  #   "Living in NYC COVID-19 (Mar-May 2020)" at 76µm/11-weeks becomes 361
+  #   over 365 days (wrong).
   # Without this distinction, chronic-rate rows (e.g. "Living one day in
-  # Lesotho" at 463 µm/day) are silently treated as one-off events and the
-  # acute vs chronic comparison is non-commensurable. See roborev cluster
-  # combined_quiz_pairs-chronic-as-acute (#934 and ~111 duplicates).
+  # Lesotho" at 463 µm/day) were silently treated as one-off events; with
+  # this distinction, bounded `period` rows are no longer wrongly annualised.
+  # See roborev clusters #934/#3523.
   effective_micromorts <- ifelse(
-    acute$period_type == "event",
-    acute$micromorts,
-    acute$micromorts_per_day_raw * time_period_days
+    acute$period_type %in% c("day", "hour", "month", "year"),
+    acute$micromorts_per_day_raw * time_period_days,
+    acute$micromorts
   )
 
   acute_common <- tibble::tibble(

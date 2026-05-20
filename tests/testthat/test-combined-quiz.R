@@ -109,18 +109,45 @@ test_that("combined_quiz_pairs() event-type rows use raw micromorts as effective
   expect_equal(evt$effective_micromorts_a, evt$value_a, tolerance = 1e-9)
 })
 
-test_that("combined_quiz_pairs() non-event acute rows scale by time_period_days", {
+test_that("combined_quiz_pairs() rate-type acute rows scale by time_period_days", {
   pairs_365 <- combined_quiz_pairs(n = 30, time_period_days = 365, seed = 42)
   pairs_90 <- combined_quiz_pairs(n = 30, time_period_days = 90, seed = 42)
+  rate_types <- c("day", "hour", "month", "year")
   common <- intersect(
-    pairs_365$activity_a[pairs_365$period_type_a != "event"],
-    pairs_90$activity_a[pairs_90$period_type_a != "event"]
+    pairs_365$activity_a[pairs_365$period_type_a %in% rate_types],
+    pairs_90$activity_a[pairs_90$period_type_a %in% rate_types]
   )
-  skip_if(length(common) == 0, "No common non-event acute rows to compare")
+  skip_if(length(common) == 0, "No common rate-type acute rows to compare")
   a <- common[1]
   v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
   v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]
   expect_equal(v90 / v365, 90 / 365, tolerance = 1e-6)
+})
+
+# Regression: roborev #3523 — bounded-window `period` rows (e.g. "11 weeks
+# (2022)", "per 8 weeks") are one-off interval totals, NOT repeatable daily
+# rates. Multiplying their dailyised value by time_period_days inflates them
+# (e.g. 76 µm/11-weeks COVID risk became 361 over 365 days). Period rows must
+# use raw micromorts, same as event-type rows.
+test_that("combined_quiz_pairs() period-type rows use raw micromorts as effective (regression #3523)", {
+  pairs <- combined_quiz_pairs(n = 50, time_period_days = 365, seed = 42)
+  period_rows <- pairs[pairs$period_type_a == "period", ]
+  skip_if(nrow(period_rows) == 0, "No period-type rows in this sample")
+  expect_equal(period_rows$effective_micromorts_a, period_rows$value_a, tolerance = 1e-9)
+})
+
+test_that("combined_quiz_pairs() period-type rows do NOT scale with time_period_days (regression #3523)", {
+  pairs_365 <- combined_quiz_pairs(n = 50, time_period_days = 365, seed = 42)
+  pairs_90 <- combined_quiz_pairs(n = 50, time_period_days = 90, seed = 42)
+  common <- intersect(
+    pairs_365$activity_a[pairs_365$period_type_a == "period"],
+    pairs_90$activity_a[pairs_90$period_type_a == "period"]
+  )
+  skip_if(length(common) == 0, "No common period-type rows to compare")
+  a <- common[1]
+  v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
+  v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]
+  expect_equal(v90, v365, tolerance = 1e-9)
 })
 
 test_that("combined_quiz_pairs() chronic uses abs(microlives_per_day) * time_period_days", {
