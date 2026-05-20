@@ -1,5 +1,61 @@
 # Changelog
 
+## 2026-05-20 — Roborev backlog sweep: 3 parallel-worktree rounds, 12 commits
+
+### Completed (commits `d41b13f..acf4559` — 12 commits across 3 rounds)
+
+**Triggered by:** 50+ open roborev reviews flagging 14 distinct issues across A-D tiers. Three rounds of `fixer` (sonnet) agents in `isolation:"worktree"` worktrees, each producing self-contained commits cherry-picked into `main`.
+
+**Round 1 (commits `d41b13f f978cd0 17d3d57`)** — 5 confirmed-current findings at HEAD:
+- A1 (`17d3d57`) — `docs/articles/palatable_units.html` corruption (quiz_analytics title + 511 lines of stray quiz JS appended after footer, caused by Quarto `_freeze/` cache reuse during `dcc9284` bulk-regen). Surgical HTML fix (949→432 lines) + new `qa_article_title_integrity` target.
+- A2 enforcement (`d41b13f`) — `qa_chronic_csv_gate` target wraps `vig_chronic_csv_check` and `cli::cli_abort()`s on non-OK status (was informational only).
+- B1 (`d41b13f`) — Placeholder regex updated to match `` `requires `tar_make()` to render/build` `` literal (was searching for the old `not found in targets` text).
+- B2 (`d41b13f`) — `qa_deployed_html` slug discovery now walks `_pkgdown.yml` `articles.contents` via `yaml::read_yaml()` instead of navbar-href scraping (picks up `chronic_quiz_shinylive`, `quiz_shinylive`, `ranking_quiz_shinylive`, `quiz_analytics`).
+- B3 top-level (`f978cd0`) — Freshness guard extended to `CHANGELOG.md → docs/CHANGELOG.html`, `README.qmd → docs/index.html`, `NEWS.md → docs/news/index.html` (was vignettes-only).
+- B4 (`d41b13f`) — Fetch failures in `qa_deployed_html` now surface as `FETCH_ERROR` rows; zero-reachable-articles condition aborts (was silently dropping NULL → "All pass" false success).
+
+**Round 2 (commits `9479636 b33d28d 71d17d4 a76a5bf 98faaf9 60d117f`)** — 8 deeper findings:
+- A2 source data (`9479636`) — `data-raw/sources/chronic_risks_base.csv` and `vignettes/chronic_quiz_shinylive.qmd` embedded CSV: replaced retired `Air pollution (high)` row with 4 PM2.5 ladder rows (10/25/50/100 μg/m³, source `who_pm25_2024`).
+- A3 (`71d17d4`) — `common_risks()` rounds `micromorts_per_day` to 2dp; `combined_quiz_pairs()` was scaling from rounded value → collapse-to-0 on low rates (14 rows showed `mm/day == 0` despite `mm > 0`). Added `micromorts_per_day_raw` column (unrounded); `combined_quiz_pairs()` now reads raw. 15 new tests pass; existing tests green.
+- B3 working-tree (`b33d28d`) — `.source_mtime()` returns `max(git_commit_ct, file.mtime())` so uncommitted `.qmd` edits count as "source last touched."
+- CLAUDE.html exposure (`a76a5bf`) — `_pkgdown.yml` `exclude: [CLAUDE.html]` stops pkgdown 2.x auto-discovery; deleted `docs/CLAUDE.{html,md}`; removed 1 sitemap entry + 2 search.json entries; added `.gitignore` rules.
+- C1+C2 (`98faaf9`) — `vignettes/causes_of_death_app.js`: split `cmpSortKeys` `'rate'` collision into `'rate1'/'rate2'` with distinct comparator branches; `topCause` now derived from rate-sorted copy independent of `sortCol`/`sortAsc`.
+- D1+D2+GBD (`60d117f`) — `docs/extra.js` hardcoded `11086c7 / 2026-04-30` footer replaced with permanent commit-history link; `R/tar_plans/plan_vignette_outputs.R` mundane-risks plot now derives `coffee_mm/car_mm/bike_mm` from `mundane` data; updated 25 strings in `R/activity_descriptions.R` from `GBD 2019` to `GBD 2023` matching `R/atomic_risks.R` Part 12.
+
+**Round 3 (commits `43a59c0 11ba051 acf4559`)** — 8 follow-ups surfaced by Round 2's consolidation review:
+- QA infra unification (`11ba051`) — `qa_deployed_html` now `cli_abort`s on non-empty result (was warn-only); `_pkgdown.yml` parse failure now aborts (was silent empty df); `httr2` + `yaml` added to DESCRIPTION Suggests; `.github/workflows/pkgdown.yaml` removed silent Python regex fallback and adds explicit `pip install pyyaml`; new `.pkgdown_article_slugs()` shared helper used by both `qa_deployed_html` and `qa_article_title_integrity`.
+- Dev/test tooling (`acf4559`) — `R/dev/verify_pkgdown_urls.R` now walks `_pkgdown.yml` dynamically (was hardcoded with obsolete `/articles/telemetry.html`); freshness guard renamed `.source_mtime → .path_mtime` and applied symmetrically to outputs (local rebuilds no longer false-flag).
+- Drift sweep (`43a59c0`) — `R/visualization.R:410` `37,932 mm` annotation and `R/tar_plans/plan_vignette_outputs.R:197` `0.01 mm` hover text now data-driven from the same data frames driving the plots; `pkgdown/extra.js` (the SOURCE of `docs/extra.js`) fixed to match.
+
+### Compact + close cycle (3 rounds)
+
+- Round 1 compact: 69 → 1 consolidated review (`3343`), 8 findings
+- Round 2 compact: 21 → 1 consolidated review (`3502`), 8 findings (mix of partial + new)
+- Round 3 compact: 2 → 1 consolidated review (`3523`), 3 findings remain
+- Total auto-closed by compact: ~134 originals; superseded consolidations (`3343`, `3502`) explicitly closed
+- Two stuck failed orphans (`1084`, `733`) cannot be closed via API (no review record)
+
+### Failed Approaches
+
+- **Worktree auto-cleanup ate 4 of 6 Round-2 agent worktrees.** Despite the prompt saying "leave changes uncommitted in the worktree for the orchestrator," the worktrees were cleaned post-return because the agents hadn't committed. Working-tree changes appeared in `main` as shadow modifications instead. Redispatched the 4 missing agents with explicit "commit on your worktree branch before returning" + "report commit SHA" instructions — that pattern survived cleanup correctly.
+- **Worktree-cleanup shadow trip-up during cherry-pick.** Round-2 cherry-pick complained about local changes overwriting target files. Used `git stash push --include-untracked` as a safety net, cherry-picked from the canonical branches, then dropped the stash.
+- **`testthat::test_file()` doesn't load the package** — Round-2 acute-risk-rounding tests failed with `could not find function "common_risks"`. Switched to `devtools::test_file()` which calls `pkgload::load_all()` first; 29/29 PASS. Documented for next session.
+- **Agent dispatch hit org monthly usage limit** during historical project work — fell back to direct edit (well-scoped, single-file, test-infra change within bounded-exception scope).
+
+### Accuracy / Metrics
+
+- Tests: `test-acute-risk-rounding.R` 29 PASS (new), `test-qa-chronic-csv-gate.R` 4 PASS (new), `test-vignette-outputs.R` 20 PASS + 3 staleness FAIL (intended signals on stale `docs/CHANGELOG.html` and `docs/index.html`).
+- Roborev resolution: 50+ → 3 verified-remaining findings (job `3523`).
+- Commits: 12, all conventional-commit-style with `roborev #...` tags and Co-Authored-By Claude.
+
+### Known Limitations / Follow-ups
+
+- **`docs/CHANGELOG.html`, `docs/index.html` are 18–19 days stale** vs source. New freshness tests correctly flag them (3 FAIL in `test-vignette-outputs.R`). Fix: `pkgdown::build_site()` in the project nix shell, commit `docs/`, push.
+- **`docs/articles/chronic_quiz_shinylive.html` and `palatable_units.html` still ship retired `Air pollution (high)` text.** Source is fixed; deployed HTML needs `pkgdown::build_article()` for those two. The new `qa_chronic_csv_gate` will fail until they're rebuilt.
+- **NEW finding from final consolidation (job `3523`):** `combined_quiz_pairs()` annualises bounded-window period rows (`"per 8 weeks"`, `"11 weeks (2022)"`) as if they were repeatable rates. Inflates `Living in NYC COVID-19 (Mar-May 2020)` etc. Real bug for a future round.
+- **Duplicated PM2.5 values** in `R/risks.R` chronic_risks() and `data-raw/sources/chronic_risks_base.csv`. Drift hazard. Small refactor candidate.
+- **`docs/articles/architecture.html` shows raw `requires tar_make()` placeholder** — `vig_pipeline_dependency_graph.rds` was exported as `NULL` because `targets::tar_network()` errored during the last `tar_make()`. Needs a fresh pipeline run + per-article render.
+
 ## 2026-05-18 — Round 5: latent bugs + process hardening + final backlog clearance
 
 ### Completed (commits `90e9e7f..7b790f6` — 8 Round-5 commits)
