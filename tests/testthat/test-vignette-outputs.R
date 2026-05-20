@@ -50,6 +50,85 @@
 # (which live only in git, not in working-tree) still work correctly.
 .git_mtime <- .git_commit_mtime
 
+# ---------------------------------------------------------------------------
+# Content-hash helpers (root-cause freshness check)
+#
+# Timestamps are a SYMPTOM of staleness — they can lie (touch, git checkout,
+# filesystem mtime granularity). File CONTENT is the cause. These helpers use
+# git's native content addressing (blob SHAs) to answer the authoritative
+# question: "has the source file actually changed since the output was last
+# committed?"
+#
+# Algorithm (.content_drift):
+#   1. Find the commit C that last modified the output (`out_rel`).
+#   2. Get the source blob hash AT commit C — what the source looked like
+#      when the output was committed.
+#   3. Get the source blob hash NOW — current working-tree content.
+#   4. If the two differ, content has drifted: the output is stale.
+#
+# Returns NA (not FALSE) when we cannot determine drift — caller should fall
+# back to timestamp logic. NA cases:
+#   - Output has never been committed.
+#   - Output has uncommitted local changes (working-tree mtime ahead of git
+#     commit time): the user has rebuilt locally and we cannot know what
+#     source content was in the rebuild without a manifest.
+#   - Source missing from the output's commit tree.
+# ---------------------------------------------------------------------------
+.last_commit_for_path <- function(pkg_root, rel_path) {
+  out <- suppressWarnings(system2(
+    "git",
+    c("-C", pkg_root, "log", "-1", "--format=%H", "--", rel_path),
+    stdout = TRUE, stderr = FALSE
+  ))
+  if (length(out) == 0L || !nzchar(out[[1L]])) return(NA_character_)
+  out[[1L]]
+}
+
+.git_blob_hash_now <- function(pkg_root, rel_path) {
+  full <- file.path(pkg_root, rel_path)
+  if (!file.exists(full)) return(NA_character_)
+  out <- suppressWarnings(system2(
+    "git",
+    c("-C", pkg_root, "hash-object", "--", full),
+    stdout = TRUE, stderr = FALSE
+  ))
+  if (length(out) == 0L || !nzchar(out[[1L]])) return(NA_character_)
+  out[[1L]]
+}
+
+.git_blob_hash_at_commit <- function(pkg_root, rel_path, commit) {
+  out <- suppressWarnings(system2(
+    "git",
+    c("-C", pkg_root, "rev-parse", paste0(commit, ":", rel_path)),
+    stdout = TRUE, stderr = FALSE
+  ))
+  if (length(out) == 0L || !nzchar(out[[1L]])) return(NA_character_)
+  out[[1L]]
+}
+
+.content_drift <- function(pkg_root, src_rel, out_rel) {
+  out_commit <- .last_commit_for_path(pkg_root, out_rel)
+  if (is.na(out_commit)) return(NA)  # output never committed
+
+  # Locally-modified output? Compare working-tree blob hash to the committed
+  # blob hash. This is purely content-based — filesystem mtimes are unreliable
+  # because `git worktree add` and similar operations refresh mtimes on
+  # checkout even when content is identical to HEAD. If content matches HEAD,
+  # the source-hash comparison is valid; if it has been locally edited, we
+  # cannot establish what source went into the local rebuild without a build
+  # manifest, so fall back to timestamps.
+  out_now      <- .git_blob_hash_now(pkg_root, out_rel)
+  out_at_build <- .git_blob_hash_at_commit(pkg_root, out_rel, out_commit)
+  if (is.na(out_now) || is.na(out_at_build)) return(NA)
+  if (out_now != out_at_build) return(NA)  # output locally modified
+
+  src_at_build <- .git_blob_hash_at_commit(pkg_root, src_rel, out_commit)
+  src_now      <- .git_blob_hash_now(pkg_root, src_rel)
+  if (is.na(src_at_build) || is.na(src_now)) return(NA)
+
+  src_at_build != src_now
+}
+
 test_that("vig_whatis_mundane_plot and vig_whatis_mundane_table use the same activities", {
   # Read from cached RDS (CI/test friendly — doesn't require tar_make())
   table <- readRDS(testthat::test_path("..", "..", "inst", "extdata", "vignettes",
@@ -87,13 +166,22 @@ test_that("docs/articles/*.html is not stale relative to vignettes/*.qmd", {
     html <- file.path(doc_dir, paste0(base, ".html"))
     if (!file.exists(html)) next  # no deployed counterpart
 
-    # Source: take the LATER of git-commit time and working-tree mtime so
-    # that an uncommitted edit to the .qmd is also caught as "stale".
-    qmd_time  <- .path_mtime(pkg_root, file.path("vignettes", qmd))
-    # Output: symmetric max(git_ct, fs_ct) so that a locally-built HTML that
-    # hasn't been committed yet is not incorrectly flagged as stale.
-    html_time <- .path_mtime(pkg_root, file.path("docs", "articles", paste0(base, ".html")))
+    src_rel <- file.path("vignettes", qmd)
+    out_rel <- file.path("docs", "articles", paste0(base, ".html"))
 
+    # Authoritative content-hash check: did source content actually drift
+    # since the output was last committed? Returns NA when undetermined
+    # (output uncommitted/locally rebuilt) — then we fall back to timestamps.
+    drift <- .content_drift(pkg_root, src_rel, out_rel)
+    if (isTRUE(drift)) {
+      stale <- c(stale, base)
+      next
+    }
+    if (isFALSE(drift)) next  # content matches — not stale, timestamps irrelevant
+
+    # Timestamp fallback (drift is NA): use symmetric max(git_ct, fs_ct).
+    qmd_time  <- .path_mtime(pkg_root, src_rel)
+    html_time <- .path_mtime(pkg_root, out_rel)
     if (!is.na(qmd_time) && !is.na(html_time) && qmd_time > html_time) {
       stale <- c(stale, base)
     }
@@ -171,12 +259,17 @@ test_that("top-level pkgdown pages are not stale (CHANGELOG, README, NEWS)", {
       next
     }
 
-    # Source: max(git-commit, fs mtime) so working-tree edits are caught.
-    src_ct <- .path_mtime(pkg_root, src_rel)
-    # Output: symmetric max(git_ct, fs_ct) so a locally-rebuilt HTML that
-    # hasn't been committed yet is not incorrectly flagged as stale.
-    out_ct <- .path_mtime(pkg_root, out_rel)
+    # Authoritative: content drift since output's last commit.
+    drift <- .content_drift(pkg_root, src_rel, out_rel)
+    if (isTRUE(drift)) {
+      stale <- c(stale, sprintf("%s (content drifted since output last committed)", src_rel))
+      next
+    }
+    if (isFALSE(drift)) next  # content matches — not stale
 
+    # Fallback: drift is NA (output uncommitted/locally rebuilt). Use timestamps.
+    src_ct <- .path_mtime(pkg_root, src_rel)
+    out_ct <- .path_mtime(pkg_root, out_rel)
     if (anyNA(c(src_ct, out_ct))) next  # no git history yet — skip
 
     if (src_ct > out_ct) {
@@ -243,24 +336,39 @@ test_that("CHANGELOG.md git-commit timestamp is older than or equal to docs/CHAN
     ))
   }
 
-  # Source: max(git-commit, fs mtime) catches working-tree edits to CHANGELOG.md.
-  src_ct <- .path_mtime(pkg_root, "CHANGELOG.md")
-  # Output: symmetric max(git_ct, fs_ct) so a locally-rebuilt CHANGELOG.html
-  # that hasn't been committed yet is not incorrectly flagged as stale.
-  out_ct <- .path_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
+  # Authoritative content-hash check: has CHANGELOG.md drifted since
+  # docs/CHANGELOG.html was last committed?
+  drift <- .content_drift(
+    pkg_root,
+    "CHANGELOG.md",
+    file.path("docs", "CHANGELOG.html")
+  )
 
-  testthat::skip_if(anyNA(c(src_ct, out_ct)), "No git history for one or both files")
-
-  if (src_ct > out_ct) {
+  if (isTRUE(drift)) {
     cli::cli_abort(c(
-      "x" = "docs/CHANGELOG.html is stale.",
-      "i" = "CHANGELOG.md last committed: {format(as.POSIXct(src_ct, origin='1970-01-01', tz='UTC'), '%Y-%m-%d %H:%M UTC')}",
-      "i" = "docs/CHANGELOG.html last committed: {format(as.POSIXct(out_ct, origin='1970-01-01', tz='UTC'), '%Y-%m-%d %H:%M UTC')}",
+      "x" = "docs/CHANGELOG.html is stale (content drifted).",
+      "i" = "CHANGELOG.md content differs from what was present when docs/CHANGELOG.html was last committed.",
       "i" = "Run `pkgdown::build_news()`, commit docs/CHANGELOG.html, push."
     ))
   }
 
-  expect_lte(src_ct, out_ct)
+  # Drift is FALSE (content matches) or NA (output uncommitted/locally
+  # rebuilt). For NA, fall back to timestamp ordering as a secondary signal.
+  src_ct <- .path_mtime(pkg_root, "CHANGELOG.md")
+  out_ct <- .path_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
+
+  testthat::skip_if(anyNA(c(src_ct, out_ct)), "No git history for one or both files")
+
+  if (is.na(drift) && src_ct > out_ct) {
+    cli::cli_abort(c(
+      "x" = "docs/CHANGELOG.html is stale (timestamps disagree; content drift undetermined).",
+      "i" = "CHANGELOG.md last touched: {format(as.POSIXct(src_ct, origin='1970-01-01', tz='UTC'), '%Y-%m-%d %H:%M UTC')}",
+      "i" = "docs/CHANGELOG.html last touched: {format(as.POSIXct(out_ct, origin='1970-01-01', tz='UTC'), '%Y-%m-%d %H:%M UTC')}",
+      "i" = "Run `pkgdown::build_news()`, commit docs/CHANGELOG.html, push."
+    ))
+  }
+
+  expect_false(isTRUE(drift))
 })
 
 # ---------------------------------------------------------------------------
@@ -518,4 +626,121 @@ test_that(".pkgdown_article_slugs() aborts on malformed YAML", {
   source(here::here("R", "tar_plans", "plan_qa_gates.R"), local = TRUE)
 
   expect_error(.pkgdown_article_slugs(bad_yml))
+})
+
+# ---------------------------------------------------------------------------
+# Content-hash helper tests (root-cause freshness check)
+#
+# These tests build a self-contained git repo in a tempdir, commit a fake
+# source+output pair, then verify that .content_drift() reports correctly
+# across the meaningful state combinations. Using a dedicated tempdir repo
+# avoids dependence on the project's own git history.
+# ---------------------------------------------------------------------------
+
+# Helper: build a minimal git repo with one source + one output, both committed.
+# Returns the repo path. Caller is responsible for cleanup (withr::local_tempdir).
+.fixture_make_repo <- function(src_content, out_content) {
+  repo <- withr::local_tempdir(.local_envir = parent.frame())
+  system2("git", c("-C", repo, "init", "-q"))
+  # Local identity (test environment may not have global git config).
+  system2("git", c("-C", repo, "config", "user.email", "test@example.com"))
+  system2("git", c("-C", repo, "config", "user.name",  "Test"))
+  system2("git", c("-C", repo, "config", "commit.gpgsign", "false"))
+
+  writeLines(src_content, file.path(repo, "src.qmd"))
+  writeLines(out_content, file.path(repo, "out.html"))
+  system2("git", c("-C", repo, "add", "src.qmd", "out.html"))
+  system2("git", c("-C", repo, "commit", "-q", "-m", "initial"),
+          stdout = FALSE, stderr = FALSE)
+  repo
+}
+
+test_that(".git_blob_hash_now matches `git hash-object` on a tracked file", {
+  repo <- .fixture_make_repo("source line one", "<html>output</html>")
+
+  hash_helper <- .git_blob_hash_now(repo, "src.qmd")
+  hash_direct <- system2("git",
+    c("-C", repo, "hash-object", "--", file.path(repo, "src.qmd")),
+    stdout = TRUE)
+
+  expect_false(is.na(hash_helper))
+  expect_equal(hash_helper, hash_direct)
+})
+
+test_that(".content_drift returns FALSE when source unchanged since output commit", {
+  repo <- .fixture_make_repo("stable source", "<html>rendered</html>")
+
+  # Both files committed together; source has not changed since.
+  drift <- .content_drift(repo, "src.qmd", "out.html")
+
+  expect_false(is.na(drift))
+  expect_false(drift)
+})
+
+test_that(".content_drift returns TRUE when source content changes after output commit", {
+  repo <- .fixture_make_repo("original source", "<html>rendered v1</html>")
+
+  # Edit + commit the source ONLY — output stays at the v1 commit.
+  writeLines("edited source content", file.path(repo, "src.qmd"))
+  system2("git", c("-C", repo, "add", "src.qmd"))
+  system2("git", c("-C", repo, "commit", "-q", "-m", "edit source"),
+          stdout = FALSE, stderr = FALSE)
+
+  drift <- .content_drift(repo, "src.qmd", "out.html")
+
+  expect_false(is.na(drift))
+  expect_true(drift)
+})
+
+test_that(".content_drift returns NA when output is locally rebuilt (uncommitted)", {
+  repo <- .fixture_make_repo("source", "<html>v1</html>")
+
+  # Simulate a local rebuild: rewrite out.html but don't commit. Bump its
+  # mtime well past the git commit time so the local-rebuild detection fires.
+  writeLines("<html>v2 local</html>", file.path(repo, "out.html"))
+  out_full <- file.path(repo, "out.html")
+  future_mtime <- as.POSIXct(file.mtime(out_full) + 600, origin = "1970-01-01")
+  Sys.setFileTime(out_full, future_mtime)
+
+  drift <- .content_drift(repo, "src.qmd", "out.html")
+
+  expect_true(is.na(drift))
+})
+
+test_that(".content_drift returns NA when output has never been committed", {
+  repo <- withr::local_tempdir()
+  system2("git", c("-C", repo, "init", "-q"))
+  system2("git", c("-C", repo, "config", "user.email", "test@example.com"))
+  system2("git", c("-C", repo, "config", "user.name",  "Test"))
+
+  # Commit source only; output exists in working tree but is untracked.
+  writeLines("source only", file.path(repo, "src.qmd"))
+  system2("git", c("-C", repo, "add", "src.qmd"))
+  system2("git", c("-C", repo, "commit", "-q", "-m", "src"),
+          stdout = FALSE, stderr = FALSE)
+  writeLines("<html>untracked</html>", file.path(repo, "out.html"))
+
+  drift <- .content_drift(repo, "src.qmd", "out.html")
+
+  expect_true(is.na(drift))
+})
+
+test_that(".content_drift detects working-tree edits to source even without a new commit", {
+  # The most important case: a developer edits src.qmd locally but hasn't
+  # committed yet, and hasn't rebuilt the output. Content-hash must catch
+  # this — timestamps alone can miss it if mtime is preserved (git checkout,
+  # patch apply with --keep-tz, rsync -t).
+  repo <- .fixture_make_repo("baseline source", "<html>baseline</html>")
+
+  # Edit working tree, do NOT add/commit. Reset mtime to original to simulate
+  # the timestamp-preserving edit case (the failure mode timestamps miss).
+  src_full <- file.path(repo, "src.qmd")
+  original_mtime <- file.mtime(src_full)
+  writeLines("edited but not committed; mtime preserved", src_full)
+  Sys.setFileTime(src_full, original_mtime)
+
+  drift <- .content_drift(repo, "src.qmd", "out.html")
+
+  expect_false(is.na(drift))
+  expect_true(drift)
 })
