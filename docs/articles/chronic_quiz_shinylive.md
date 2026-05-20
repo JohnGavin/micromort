@@ -103,15 +103,71 @@ chronic_leaderboard_js <- "
 var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
 var scoreSubmitted = false;
+
+// ---- Timer (#58) ----
+var quiz_start_time = null;
+function markQuizStart() {
+  if (quiz_start_time === null) quiz_start_time = Date.now();
+}
+function getElapsedSeconds() {
+  if (quiz_start_time === null) return null;
+  return Math.round((Date.now() - quiz_start_time) / 1000);
+}
+
+// ---- Metadata collection (#58) ----
+// TODO: Google Form fields to add for enriched metadata:
+//   - time_seconds  (integer)
+//   - skipped       (integer)
+//   - language      (text, e.g. 'en-US')
+//   - device        (text, 'desktop' or 'mobile')
+//   - referrer      (text)
+// Until those fields exist, metadata is logged to the console only.
+function collectMetadata(difficulty, nQuestions, nSkipped) {
+  return {
+    difficulty: difficulty || '',
+    num_questions: nQuestions || 0,
+    time_seconds: getElapsedSeconds(),
+    skipped: nSkipped || 0,
+    language: navigator.language || '',
+    device: window.innerWidth > 768 ? 'desktop' : 'mobile',
+    referrer: document.referrer || ''
+  };
+}
+
+// ---- Star rating sanitization (#47) ----
+function sanitizeFeedback(text) {
+  var stripped = text.replace(/<[^>]*>/g, '');
+  var blocked = /javascript:|<script|eval\\(|document\\.|window\\./i;
+  if (blocked.test(stripped)) return '';
+  return stripped.slice(0, 200);
+}
+
+// ---- Submit feedback (#47) ----
+// TODO: Add Google Form fields for:
+//   - star_rating   (integer 1-5)
+//   - feedback_text (text, max 200 chars)
+function submitFeedback(quizType) {
+  var rating = parseInt(document.getElementById('star_rating_value') ? document.getElementById('star_rating_value').value : '0', 10);
+  var rawText = document.getElementById('feedback_text_input') ? document.getElementById('feedback_text_input').value : '';
+  var text = sanitizeFeedback(rawText);
+  if (rating === 0 && text === '') return;
+  console.log('Quiz feedback (' + quizType + '):', { rating: rating, text: text });
+  var btn = document.getElementById('feedback_submit_btn');
+  if (btn) { btn.textContent = 'Thanks!'; btn.disabled = true; }
+}
+
 function resetLeaderboard() {
   scoreSubmitted = false;
+  quiz_start_time = null;
   var btn = document.getElementById('submit_btn');
   if (btn) { btn.disabled = false; btn.textContent = 'Submit Score'; btn.className = 'btn btn-warning btn-lg'; }
   var el = document.getElementById('percentile_text');
   if (el) el.textContent = '';
 }
-function submitScore(score, total, difficulty, nQuestions) {
+function submitScore(score, total, difficulty, nQuestions, nSkipped) {
   if (scoreSubmitted) return;
+  var meta = collectMetadata(difficulty, nQuestions, nSkipped);
+  console.log('Quiz metadata (chronic):', meta);
   var btn = document.getElementById('submit_btn');
   if (btn) {
     btn.disabled = true;
@@ -195,6 +251,100 @@ function getPercentileLive(score, total) {
     console.log('Live Sheet fetch also failed:', err2);
     if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
   });
+}
+function localDateKey(d) {
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function utcDateKey(d) { return d.toISOString().slice(0, 10); }
+function updateStreakDisplay(scorePct) {
+  var STREAK_KEY = 'micromort_quiz_streak';
+  var LAST_PLAY_KEY = 'micromort_quiz_last_play';
+  var BEST_KEY = 'micromort_quiz_best_score';
+  var now = new Date();
+  var today = localDateKey(now);
+  var yestD = new Date(); yestD.setDate(yestD.getDate() - 1);
+  var yest = localDateKey(yestD);
+  var todayUtc = utcDateKey(now);
+  var yestUtc = utcDateKey(yestD);
+  var lastPlay = localStorage.getItem(LAST_PLAY_KEY);
+  var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  // One-time migration: UTC date strings or ISO timestamps → local date key
+  if (lastPlay) {
+    if (lastPlay === todayUtc) { lastPlay = today; }
+    else if (lastPlay === yestUtc) { lastPlay = yest; }
+    else if (/^\d+$/.test(lastPlay)) {
+      var asNum = parseInt(lastPlay, 10);
+      if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
+    } else if (lastPlay.length > 10) {
+      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      lastPlay = localDateKey(new Date(lastPlay));
+    }
+  }
+  if (lastPlay === today) {
+    if (streak === 0) streak = 1;
+  } else if (lastPlay === yest) {
+    streak = streak + 1;
+  } else {
+    streak = 1;
+  }
+  localStorage.setItem(STREAK_KEY, streak);
+  localStorage.setItem(LAST_PLAY_KEY, today);
+  var best = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  if (scorePct > best) {
+    best = scorePct;
+    localStorage.setItem(BEST_KEY, best);
+  }
+  var el = document.getElementById('streak_display');
+  if (!el) return;
+  var streakHtml = streak > 1 ? '<span style=\"font-size:1.2rem;\">&#x1F525; Streak: ' + streak + ' days</span>' : '';
+  var msg = '';
+  if (scorePct <= 33) msg = 'Keep learning! Try again to improve.';
+  else if (scorePct <= 66) msg = 'Good effort! You\\'re getting better.';
+  else if (scorePct < 100) msg = 'Great job! Almost perfect.';
+  else msg = 'Perfect score! &#x1F3AF;';
+  var bestHtml = best > 0 ? ' &middot; Best: ' + Math.round(best) + '%' : '';
+  el.innerHTML = '<div style=\"text-align:center;margin:8px 0;\">' +
+    (streakHtml ? '<div>' + streakHtml + '</div>' : '') +
+    '<div style=\"margin-top:4px;\">' + msg + bestHtml + '</div></div>';
+}
+
+// ---- Score history (#59) ----
+function recordScoreHistory(quizType, scorePct, score, total) {
+  var HISTORY_KEY = 'micromort_quiz_history';
+  var hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  hist.push({ date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total });
+  if (hist.length > 200) hist = hist.slice(-200);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+}
+
+// ---- Per-question stats (#78) ----
+function simpleHash(str) {
+  var h = 0;
+  for (var i = 0; i < str.length; i++) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return 'q' + Math.abs(h).toString(36);
+}
+function recordQuestionStats(questionKeys, wasCorrectArr) {
+  var QSTATS_KEY = 'micromort_quiz_question_stats_binary';
+  var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
+  for (var i = 0; i < questionKeys.length; i++) {
+    var h = questionKeys[i];
+    if (!stats[h]) stats[h] = { correct: 0, total: 0 };
+    stats[h].total += 1;
+    if (wasCorrectArr[i]) stats[h].correct += 1;
+  }
+  localStorage.setItem(QSTATS_KEY, JSON.stringify(stats));
+}
+function getQuestionStat(questionKey) {
+  var QSTATS_KEY = 'micromort_quiz_question_stats_binary';
+  var stats = JSON.parse(localStorage.getItem(QSTATS_KEY) || '{}');
+  var s = stats[questionKey];
+  if (!s || s.total === 0) return null;
+  return { correct: s.correct, total: s.total, pct: Math.round(100 * s.correct / s.total) };
 }
 "
 
@@ -496,6 +646,7 @@ results_summary_ui <- function(state) {
     !is.na(answers[i]) && answers[i] == pairs$answer[i]
   }, logical(1))
   score <- sum(correct)
+  n_skipped <- sum(is.na(answers[seq_len(n)]))
   pct <- score / n * 100
   baseline <- n / 2
 
@@ -519,8 +670,8 @@ results_summary_ui <- function(state) {
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
       tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
-        onclick = sprintf("submitScore(%d, %d, '%s', %d)", score, n,
-                          state$sel_difficulty, state$sel_nq), "Submit Score"),
+        onclick = sprintf("submitScore(%d, %d, '%s', %d, %d)", score, n,
+                          state$sel_difficulty, state$sel_nq, n_skipped), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
           "var pEl=document.getElementById('percentile_text');",
@@ -542,7 +693,61 @@ results_summary_ui <- function(state) {
     div(class = "text-center mt-2",
       tags$small(id = "percentile_text", class = "text-muted"),
       tags$br(),
-      tags$small(class = "text-muted", "Scores are anonymous. No personal data is collected."))
+      tags$small(class = "text-muted", "Scores are anonymous. No personal data is collected.")),
+    # ---- Star rating + feedback (#47) ----
+    tags$hr(),
+    div(class = "text-center mb-3",
+      tags$p(class = "text-muted mb-2", "How did you find this quiz? (optional)"),
+      tags$input(type = "hidden", id = "star_rating_value", value = "0"),
+      div(style = "font-size: 2rem; cursor: pointer; line-height: 1;",
+        lapply(1:5, function(i) {
+          tags$span(class = "star-btn", "\u2606",
+            style = "color: #6c757d; padding: 0 4px;",
+            onclick = sprintf("setStarRating(%d)", i))
+        })
+      ),
+      tags$small(id = "star_rating_label", class = "text-muted", "")
+    ),
+    div(class = "mx-auto mb-2", style = "max-width: 400px;",
+      tags$textarea(id = "feedback_text_input", class = "form-control",
+        rows = "2", maxlength = "200", placeholder = "Any thoughts? (optional)",
+        oninput = "updateCharCount()", style = "resize: vertical;"),
+      div(class = "text-end",
+        tags$small(id = "feedback_char_count", class = "text-muted", "0/200"))
+    ),
+    div(class = "text-center mb-3",
+      tags$button(id = "feedback_submit_btn", class = "btn btn-outline-secondary btn-sm",
+        onclick = "submitFeedback('chronic')", "Submit Feedback")
+    ),
+    tags$hr(),
+    # ---- Streak + navigation ----
+    div(id = "streak_display"),
+    tags$script(HTML(sprintf("setTimeout(function() { updateStreakDisplay(%s); }, 50);",
+                             round(pct, 1)))),
+    if (!isTRUE(state$attempt_logged)) {
+      state$attempt_logged <- TRUE
+      tags$script(HTML(sprintf(
+        paste0("(function(){",
+               "recordScoreHistory('chronic', %s, %d, %d);",
+               "var keys=[%s];",
+               "var corr=[%s];",
+               "recordQuestionStats(keys, corr);",
+               "})();"),
+        round(pct, 1), score, n,
+        paste(sprintf("simpleHash('%s|%s')",
+                      gsub("'", "\\\\'", pairs$factor_a[seq_len(n)]),
+                      gsub("'", "\\\\'", pairs$factor_b[seq_len(n)])),
+              collapse = ","),
+        paste(tolower(as.character(correct)), collapse = ","))))
+    },
+    div(class = "text-center mt-2",
+      tags$a(href = "https://johngavin.github.io/micromort/articles/",
+             target = "_blank", class = "text-muted",
+             tags$small("Try a different quiz \u2192")),
+      tags$span(class = "text-muted", " \u00b7 "),
+      tags$a(href = "https://johngavin.github.io/micromort/articles/quiz_analytics.html",
+             target = "_blank", class = "text-muted",
+             tags$small("Your quiz analytics \u2192")))
   )
 }
 
@@ -551,6 +756,10 @@ results_detail_ui <- function(state) {
   pairs <- state$pairs
   answers <- state$answers
   n <- state$n_questions
+
+  q_keys <- sprintf("simpleHash('%s|%s')",
+                    gsub("'", "\\\\'", pairs$factor_a[seq_len(n)]),
+                    gsub("'", "\\\\'", pairs$factor_b[seq_len(n)]))
 
   detail_rows <- lapply(seq_len(n), function(i) {
     user_ans <- if (is.na(answers[i])) "Skipped"
@@ -566,11 +775,19 @@ results_detail_ui <- function(state) {
     link_b <- if (!is.na(pairs$help_url_b[i]) && nzchar(pairs$help_url_b[i]))
       tags$a(href = pairs$help_url_b[i], target = "_blank", pairs$factor_b[i])
     else pairs$factor_b[i]
+    stat_id <- sprintf("qstat_%d", i)
     tags$tr(tags$td(i), tags$td(link_a),
             tags$td(sprintf("%s%s", dir_a, abs(pairs$microlives_a[i]))),
             tags$td(link_b),
             tags$td(sprintf("%s%s", dir_b, abs(pairs$microlives_b[i]))),
-            tags$td(user_ans), tags$td(correct_ans), tags$td(result))
+            tags$td(user_ans), tags$td(correct_ans), tags$td(result),
+            tags$td(id = stat_id, class = "text-muted", tags$small("...")))
+  })
+
+  stat_scripts <- lapply(seq_len(n), function(i) {
+    tags$script(HTML(sprintf(
+      "(function(){var s=getQuestionStat(%s);var el=document.getElementById('qstat_%d');if(el){el.innerHTML=s?'<small>'+s.pct+'%% ('+s.total+' plays)</small>':'<small>1st play</small>';}})()",
+      q_keys[i], i)))
   })
 
   tagList(
@@ -583,8 +800,10 @@ results_detail_ui <- function(state) {
       tags$table(class = "table table-striped table-hover detail-table",
         tags$thead(tags$tr(tags$th("Q"), tags$th("Factor A"), tags$th("ml/day A"),
                            tags$th("Factor B"), tags$th("ml/day B"),
-                           tags$th("Your Answer"), tags$th("Correct"), tags$th("Result"))),
-        tags$tbody(detail_rows)))
+                           tags$th("Your Answer"), tags$th("Correct"), tags$th("Result"),
+                           tags$th("Your history"))),
+        tags$tbody(detail_rows))),
+    tagList(stat_scripts)
   )
 }
 
@@ -605,6 +824,26 @@ ui <- page_fluid(
         }
         clicked.classList.add('selected');
       }
+      // Timer start handler (#58)
+      Shiny.addCustomMessageHandler('markQuizStart', function(msg) { markQuizStart(); });
+      // Star rating helper (#47)
+      function setStarRating(n) {
+        document.getElementById('star_rating_value').value = n;
+        var stars = document.querySelectorAll('.star-btn');
+        for (var i = 0; i < stars.length; i++) {
+          stars[i].textContent = i < n ? '\\u2605' : '\\u2606';
+          stars[i].style.color = i < n ? '#ffc107' : '#6c757d';
+        }
+        var lbl = document.getElementById('star_rating_label');
+        var labels = ['', 'Poor', 'Fair', 'Good', 'Great', 'Excellent'];
+        if (lbl) lbl.textContent = labels[n] || '';
+      }
+      // Feedback char counter (#47)
+      function updateCharCount() {
+        var inp = document.getElementById('feedback_text_input');
+        var ctr = document.getElementById('feedback_char_count');
+        if (inp && ctr) ctr.textContent = inp.value.length + '/200';
+      }
     "))
   ),
   div(class = "container-fluid",
@@ -617,7 +856,7 @@ server <- function(input, output, session) {
     phase = "instructions", n_questions = 5L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
     sel_difficulty = "mixed", sel_nq = 5L,
-    seen_pairs = character())
+    seen_pairs = character(), attempt_logged = FALSE)
 
   # Difficulty button handlers
   observeEvent(input$diff_easy, { state$sel_difficulty <- "easy" })
@@ -664,7 +903,10 @@ server <- function(input, output, session) {
     state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
     state$revealed <- rep(FALSE, n)
     state$current_q <- 1L
+    state$attempt_logged <- FALSE
     state$phase <- "question"
+    # Mark quiz start time for time-to-complete (#58)
+    session$sendCustomMessage("markQuizStart", list())
   })
 
   observeEvent(input$choose_left, {

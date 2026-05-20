@@ -32,7 +32,9 @@ A tibble showing the tradeoff ratio
 Other analysis:
 [`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md),
 [`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md),
-[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md)
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
+[`risk_sensitivity()`](https://johngavin.github.io/micromort/reference/risk_sensitivity.md),
+[`toxicological_risk()`](https://johngavin.github.io/micromort/reference/toxicological_risk.md)
 
 ## Examples
 

@@ -405,6 +405,18 @@ Convert between risk units
 - [`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
   : Value of a Statistical Life (VSL) to Micromort Value
 
+## Disease Risk Data
+
+Chronic and infectious disease risks from GBD data, plus toxicological
+LD50 profiles
+
+- [`chronic_disease_risks()`](https://johngavin.github.io/micromort/reference/chronic_disease_risks.md)
+  : Chronic Disease Risks by Country and Year
+- [`infectious_disease_risks()`](https://johngavin.github.io/micromort/reference/infectious_disease_risks.md)
+  : Daily micromorts from infectious diseases by country
+- [`toxicological_risk()`](https://johngavin.github.io/micromort/reference/toxicological_risk.md)
+  : Calculate micromorts from substance exposure using LD50 data
+
 ## Analysis Functions
 
 Risk analysis and modeling
@@ -417,6 +429,8 @@ Risk analysis and modeling
   : Daily Hazard Rate by Age
 - [`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md)
   : Annual Risk Budget
+- [`risk_sensitivity()`](https://johngavin.github.io/micromort/reference/risk_sensitivity.md)
+  : Sensitivity Analysis for Activity Risk Estimates
 
 ## Visualization
 
@@ -464,6 +478,10 @@ API, dashboard, and quiz
   : Tag-to-Category Mapping for Ranking Quiz
 - [`kendall_tau_score()`](https://johngavin.github.io/micromort/reference/kendall_tau_score.md)
   : Kendall Tau Score for Ranking Quiz
+- [`combined_quiz_pairs()`](https://johngavin.github.io/micromort/reference/combined_quiz_pairs.md)
+  : Generate cross-domain quiz pairs comparing acute and chronic risks
+- [`export_combined_quiz_csv()`](https://johngavin.github.io/micromort/reference/export_combined_quiz_csv.md)
+  : Export combined quiz pairs to CSV for Shinylive
 
 # Articles
 
@@ -522,6 +540,18 @@ load.
   Interactive drag-and-drop quiz ranking everyday risks by their effect
   on life expectancy. Combining acute micromorts and chronic microlives.
 
+- [Your Quiz
+  Analytics](https://johngavin.github.io/micromort/articles/quiz_analytics.md):
+
+  Personal quiz history and performance stats — reads data stored
+  locally in your browser.
+
+- [Risk Portfolio
+  Builder](https://johngavin.github.io/micromort/articles/portfolio_shinylive.md):
+
+  Build your personal risk portfolio — select activities and see
+  cumulative annual risk.
+
 ### Storytelling
 
 - [The Invisible
@@ -529,12 +559,21 @@ load.
 
 ### Analysis
 
+- [Causes of Death by
+  Country](https://johngavin.github.io/micromort/articles/causes_of_death.md):
+
+  What kills people? Interactive breakdown of 14 major causes of death
+  across 26 countries (GBD 2019).
+
 - [Risk Equivalence
   Dashboard](https://johngavin.github.io/micromort/articles/risk_equivalence.md):
+
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):
+
 - [Confounding Variables in Risk
   Data](https://johngavin.github.io/micromort/articles/confounding.md):
+
 - [How Reliable Are These
   Numbers?](https://johngavin.github.io/micromort/articles/data_reliability.md):
 
@@ -544,5 +583,3 @@ load.
   Overview](https://johngavin.github.io/micromort/articles/architecture.md):
 - [REST
   API](https://johngavin.github.io/micromort/articles/rest_api.md):
-- [Project
-  Telemetry](https://johngavin.github.io/micromort/articles/telemetry.md):

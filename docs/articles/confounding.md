@@ -208,10 +208,13 @@ as daily micromorts.
 
 Key findings:
 
-- **Cardiovascular disease** is the leading killer everywhere, at 3.24
-  mm/day in the UK and 7.65 mm/day in India (2.4x ratio). For context, a
-  single skydive is 8 mm — less than 3 days of background CVD risk in
-  India.
+- **[Cardiovascular disease
+  (CVD)](https://www.who.int/health-topics/cardiovascular-diseases)** is
+  the leading killer everywhere, at 3.24 mm/day in the UK and 7.65
+  mm/day in India (2.4x ratio). For context, a single skydive is 8 mm —
+  less than 3 days of background
+  [CVD](https://www.who.int/health-topics/cardiovascular-diseases) risk
+  in India.
 - **Diarrheal diseases** show the starkest gap: 0.02 mm/day in the UK vs
   1.28 mm/day in India — a 64x difference driven by clean water and
   sanitation infrastructure.
@@ -248,9 +251,9 @@ Key shifts for an 85-year-old male:
 
 - **Bed fall** enters the top 15 (absent from the default ranking
   entirely)
-- **General anaesthesia (elective)** jumps from ~ mm to mm — a routine
-  procedure becomes high-risk
-- **Taking a bath** rises from mm to mm
+- **General anaesthesia (elective)** jumps from ~2 mm to 50 mm — a
+  routine procedure becomes high-risk
+- **Taking a bath** rises from 0.07 mm to 0.5 mm
 - Activities with no age conditioning (mountaineering, COVID-19) remain
   unchanged
 
@@ -314,50 +317,51 @@ Show code
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin25.2.0
-#> Running under: macOS Tahoe 26.3.1
-#> 
-#> Matrix products: default
-#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
-#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
-#> 
-#> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-#> 
-#> time zone: Europe/Belfast
-#> tzcode source: internal
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] micromort_0.1.0 testthat_3.3.2 
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6        xfun_0.56           bslib_0.10.0       
-#>  [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
-#>  [7] callr_3.7.6         vctrs_0.7.1         tools_4.5.2        
-#> [10] crosstalk_1.2.2     ps_1.9.1            generics_0.1.4     
-#> [13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
-#> [16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
-#> [19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
-#> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
-#> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
-#> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
-#> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
-#> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
-#> [37] DT_0.34.0           cachem_1.1.0        tidyselect_1.2.1   
-#> [40] digest_0.6.39       dplyr_1.1.4         purrr_1.2.1        
-#> [43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0      
-#> [46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4     
-#> [49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0  
-#> [52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1      
-#> [55] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
-#> [58] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
-#> [61] knitr_1.51          rlang_1.1.7         gert_2.3.1         
-#> [64] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0     
-#> [67] R6_2.6.1            targets_1.11.4      fs_1.6.6
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin25.2.0
+Running under: macOS Tahoe 26.4.1
+
+Matrix products: default
+BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Belfast
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] micromort_0.2.0 testthat_3.3.2 
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        bslib_0.10.0        xfun_0.56          
+ [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
+ [7] callr_3.7.6         crosstalk_1.2.2     vctrs_0.7.1        
+[10] tools_4.5.2         ps_1.9.1            generics_0.1.4     
+[13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
+[16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
+[19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
+[22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
+[25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
+[28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
+[31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
+[34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+[37] DT_0.34.0           cachem_1.1.0        tidyselect_1.2.1   
+[40] digest_0.6.39       dplyr_1.1.4         purrr_1.2.1        
+[43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0      
+[46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4     
+[49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0  
+[52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1      
+[55] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
+[58] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
+[61] knitr_1.51          rlang_1.1.7         gert_2.3.1         
+[64] Rcpp_1.1.1          glue_1.8.0          pkgload_1.4.1      
+[67] jsonlite_2.0.0      R6_2.6.1            targets_1.11.4     
+[70] fs_1.6.6            units_1.0-0        
 ```
 
 ------------------------------------------------------------------------

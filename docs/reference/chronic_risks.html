@@ -162,28 +162,28 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> spiegelhalter_… Livin… living in sweden…                 21 gain      Demogra…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> spiegelhalter_… Smoki… smoking 20 cigar…                -<span style="color: #BB0000;">10</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> spiegelhalter_… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> spiegelhalter_… Untre… untreated hypert…                 -<span style="color: #BB0000;">4</span> loss      Cardiov…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> spiegelhalter_… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> philipson_2026… Avera… average cancer d…                 -<span style="color: #BB0000;">6</span> loss      Cancer  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> spiegelhalter_… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> who_pm25_2024_… Air p… air pollution                     -<span style="color: #BB0000;">4</span> loss      Environ…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Factors that reduce life expectancy</span></span></span>
 <span class="r-in"><span><span class="va">chronic</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 26 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 30 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    record_id      factor factor_normalized microlives_per_day direction category</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> spiegelhalter… Smoki… smoking 20 cigar…                -<span style="color: #BB0000;">10</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> spiegelhalter… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> spiegelhalter… Untre… untreated hypert…                 -<span style="color: #BB0000;">4</span> loss      Cardiov…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> spiegelhalter… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> spiegelhalter… Being… being 15 kg over…                 -<span style="color: #BB0000;">3</span> loss      Weight  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> spiegelhalter… Type … type 2 diabetes                   -<span style="color: #BB0000;">3</span> loss      Cardiov…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> spiegelhalter… Being… being 10 kg over…                 -<span style="color: #BB0000;">2</span> loss      Weight  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> spiegelhalter… 4th-5… 4th-5th alcoholi…                 -<span style="color: #BB0000;">2</span> loss      Alcohol </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> spiegelhalter… Sitti… sitting 8+ hours…                 -<span style="color: #BB0000;">2</span> loss      Sedenta…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> spiegelhalter… High … high ldl cholest…                 -<span style="color: #BB0000;">2</span> loss      Cardiov…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 16 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> philipson_202… Avera… average cancer d…                 -<span style="color: #BB0000;">6</span> loss      Cancer  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> spiegelhalter… Smoki… smoking 10 cigar…                 -<span style="color: #BB0000;">5</span> loss      Smoking </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> who_pm25_2024… Air p… air pollution                     -<span style="color: #BB0000;">4</span> loss      Environ…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> spiegelhalter… Untre… untreated hypert…                 -<span style="color: #BB0000;">4</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> spiegelhalter… Being… being male                        -<span style="color: #BB0000;">4</span> loss      Demogra…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> spiegelhalter… Being… being 15 kg over…                 -<span style="color: #BB0000;">3</span> loss      Weight  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> spiegelhalter… Type … type 2 diabetes                   -<span style="color: #BB0000;">3</span> loss      Cardiov…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> spiegelhalter… Being… being 10 kg over…                 -<span style="color: #BB0000;">2</span> loss      Weight  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> spiegelhalter… 4th-5… 4th-5th alcoholi…                 -<span style="color: #BB0000;">2</span> loss      Alcohol </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 20 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -207,7 +207,7 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: description &lt;chr&gt;, annual_effect_days &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_id &lt;chr&gt;, source_url &lt;chr&gt;, confidence &lt;chr&gt;, last_accessed &lt;date&gt;</span></span>
 <span class="r-in"><span><span class="fu">chronic_risks</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 40 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 43 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    factor   microlives_per_day category direction description annual_effect_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Smoking…                -<span style="color: #BB0000;">10</span> Smoking  loss      Heavy smok…              -<span style="color: #BB0000;">76</span>  </span>
@@ -220,10 +220,10 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2nd-3rd…                 -<span style="color: #BB0000;">1</span> Alcohol  loss      After firs…               -<span style="color: #BB0000;">7.6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 4th-5th…                 -<span style="color: #BB0000;">2</span> Alcohol  loss      Heavy drin…              -<span style="color: #BB0000;">15.2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Red mea…                 -<span style="color: #BB0000;">1</span> Diet     loss      Daily red …               -<span style="color: #BB0000;">7.6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 30 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 33 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="fu">chronic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">direction</span> <span class="op">==</span> <span class="st">"loss"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 28 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 31 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    factor   microlives_per_day category direction description annual_effect_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Smoking…                -<span style="color: #BB0000;">10</span> Smoking  loss      Heavy smok…              -<span style="color: #BB0000;">76</span>  </span>
@@ -236,7 +236,7 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2nd-3rd…                 -<span style="color: #BB0000;">1</span> Alcohol  loss      After firs…               -<span style="color: #BB0000;">7.6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 4th-5th…                 -<span style="color: #BB0000;">2</span> Alcohol  loss      Heavy drin…              -<span style="color: #BB0000;">15.2</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Red mea…                 -<span style="color: #BB0000;">1</span> Diet     loss      Daily red …               -<span style="color: #BB0000;">7.6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 21 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: source_url &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="fu">chronic_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">category</span> <span class="op">==</span> <span class="st">"Exercise"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 7</span></span>
@@ -252,7 +252,7 @@ BMJ 2012;345:e8223. <a href="https://doi.org/10.1136/bmj.e8223" class="external-
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by John Gavin.</p>
+  <p><span id="pkg-footer">micromort 0.2.0</span></p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -19,9 +19,8 @@ How risky are the mundane things we do every day?
 
 Everyday activities expressed in chest X-ray equivalents:
 
-    #> Target 'vig_equiv_everyday_chart' not found in targets store or RDS fallback.
-
-*Target ‘vig_equiv_everyday_chart’ not available.*
+Everyday activities expressed in chest X-ray equivalents, showing that a
+long-haul flight equals ~50 chest X-rays while a banana is negligible.
 
 ## Flight Risk Decomposition
 
@@ -31,9 +30,9 @@ dominate at each duration, and which you can mitigate.
 
 ### By Duration
 
-    #> Target 'vig_equiv_flight_duration_chart' not found in targets store or RDS fallback.
-
-*Target ‘vig_equiv_flight_duration_chart’ not available.*
+Cleveland dotplot decomposing flight risk into crash, DVT, and cosmic
+radiation components across 2h, 5h, 8h, and 12h flights, ordered by
+total micromorts.
 
 Key observations:
 
@@ -70,9 +69,8 @@ Medical imaging procedures vary enormously in radiation dose:
 
 How many chest X-rays equal one CT scan?
 
-    #> Target 'vig_equiv_medical_exchange_chart' not found in targets store or RDS fallback.
-
-*Target ‘vig_equiv_medical_exchange_chart’ not available.*
+Medical procedures ranked by chest X-ray equivalents, showing that a CT
+abdomen equals ~200 chest X-rays.
 
 ## Hedgeability Analysis
 
@@ -84,9 +82,9 @@ Which activities have hedgeable risk components?
 
 Flight risk decomposition showing hedgeable vs non-hedgeable portions:
 
-    #> Target 'vig_equiv_hedgeable_chart' not found in targets store or RDS fallback.
-
-*Target ‘vig_equiv_hedgeable_chart’ not available.*
+Flight risk decomposition by hedgeability: DVT risk (green, hedgeable
+via compression socks) vs crash and radiation (red, not hedgeable),
+ordered by total micromorts.
 
 ## Radiation Exposure Profiles
 
@@ -114,9 +112,9 @@ X-ray technician career (2 micromorts) by 5x.
 
 Cumulative radiation exposure over a 40-year career:
 
-    #> Target 'vig_equiv_radiation_timeline_chart' not found in targets store or RDS fallback.
-
-*Target ‘vig_equiv_radiation_timeline_chart’ not available.*
+Cumulative radiation micromorts over a 40-year career for different
+exposure profiles, showing that 100 lifetime chest X-rays exceeds
+occupational exposure.
 
 ### Regulatory Context
 
@@ -171,50 +169,52 @@ Show code
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin25.2.0
-#> Running under: macOS Tahoe 26.3.1
-#> 
-#> Matrix products: default
-#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
-#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
-#> 
-#> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-#> 
-#> time zone: Europe/Belfast
-#> tzcode source: internal
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] DT_0.34.0       targets_1.11.4  micromort_0.1.0 testthat_3.3.2 
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6        xfun_0.56           bslib_0.10.0       
-#>  [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
-#>  [7] callr_3.7.6         vctrs_0.7.1         tools_4.5.2        
-#> [10] crosstalk_1.2.2     ps_1.9.1            generics_0.1.4     
-#> [13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
-#> [16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
-#> [19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
-#> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
-#> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
-#> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
-#> [31] sys_3.4.3           usethis_3.2.1       yaml_2.3.12        
-#> [34] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
-#> [37] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
-#> [40] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
-#> [43] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
-#> [46] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
-#> [49] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
-#> [52] backports_1.5.0     bit64_4.6.0-1       rmarkdown_2.30     
-#> [55] igraph_2.2.1        bit_4.6.0           otel_0.2.0         
-#> [58] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         
-#> [61] rlang_1.1.7         gert_2.3.1          glue_1.8.0         
-#> [64] pkgload_1.4.1       jsonlite_2.0.0      R6_2.6.1           
-#> [67] fs_1.6.6
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin25.2.0
+Running under: macOS Tahoe 26.4.1
+
+Matrix products: default
+BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
+LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Belfast
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] DT_0.34.0       targets_1.11.4  micromort_0.2.0 testthat_3.3.2 
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6        bslib_0.10.0        xfun_0.56          
+ [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
+ [7] callr_3.7.6         crosstalk_1.2.2     vctrs_0.7.1        
+[10] tools_4.5.2         ps_1.9.1            generics_0.1.4     
+[13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
+[16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
+[19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
+[22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
+[25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
+[28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
+[31] sys_3.4.3           usethis_3.2.1       lazyeval_0.2.2     
+[34] yaml_2.3.12         plotly_4.12.0       tidyr_1.3.2        
+[37] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
+[40] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
+[43] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
+[46] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
+[49] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
+[52] prettyunits_1.2.0   scales_1.4.0        backports_1.5.0    
+[55] bit64_4.6.0-1       httr_1.4.7          rmarkdown_2.30     
+[58] igraph_2.2.1        bit_4.6.0           otel_0.2.0         
+[61] askpass_1.2.1       evaluate_1.0.5      knitr_1.51         
+[64] viridisLite_0.4.2   rlang_1.1.7         gert_2.3.1         
+[67] Rcpp_1.1.1          glue_1.8.0          pkgload_1.4.1      
+[70] jsonlite_2.0.0      R6_2.6.1            fs_1.6.6           
+[73] units_1.0-0        
 ```
 
 ------------------------------------------------------------------------

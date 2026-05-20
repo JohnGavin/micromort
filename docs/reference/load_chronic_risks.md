@@ -17,5 +17,5 @@ A tibble with chronic risk data
 ``` r
 chronic <- load_chronic_risks()
 nrow(chronic)
-#> [1] 38
+#> [1] 42
 ```

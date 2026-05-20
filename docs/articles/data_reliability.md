@@ -1,5 +1,3 @@
-# How Reliable Are These Numbers?
-
 Risk numbers disagree. The WHO and the Institute for Health Metrics and
 Evaluation (IHME) report malaria deaths as 550,000 and 760,000
 respectively — a 38% gap from the *same underlying deaths*. Our World in
@@ -26,9 +24,7 @@ cannot identify both the death count *and* the population at risk.
 
 ## 2. The Confidence System
 
-Every entry in
-[`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
-carries a `confidence` tier:
+Every entry in `atomic_risks()` carries a `confidence` tier:
 
 | Tier | Criteria | Example | Source type |
 |:---|:---|:---|:---|
@@ -61,59 +57,32 @@ Validation status levels
 
 Current validation status across all entries
 
-## 3. Geographic Conditioning: The Biggest Source of Variation
+## 3. Geographic and Health Profile Conditioning
 
-The same animal encounter can produce dramatically different micromort
-values depending on location and healthcare access:
+Geography is the biggest source of variation in risk data — the same
+snake bite ranges from 0.5 mm (US, with antivenom) to 18.5 mm (rural
+sub-Saharan Africa) �� a 37x difference. Health profile conditioning
+shows similar magnitude: a bee sting is 0.03 mm for the general
+population but 31 mm for someone with a known allergy (1,000x).
 
-| activity | micromorts | condition_value | confidence | notes |
-|:---|---:|:---|:---|:---|
-| Dog bite (US) | 6.7 | high_income | medium | CDC: ~30 deaths/yr among ~4.5M bites requiring medical attention |
-| Dog bite (rabies-endemic) | 160.0 | low_income | low | WHO: ~40k rabies deaths/yr, mostly dog-mediated |
-| Snake bite (US, with antivenom) | 0.5 | high_income | medium | CDC: ~5 deaths/yr among ~10k bites |
-| Snake bite (rural sub-Saharan Africa) | 18.5 | low_income | low | WHO/Lancet: ~100k deaths/yr among ~5.4M bites in sub-Saharan Africa |
+For the full analysis of how geography and demographics reshuffle risk
+rankings, including disease mortality by country
+([IHME](https://www.healthdata.org/)
+[GBD](https://www.healthdata.org/research-analysis/gbd) data) and
+age-conditioned confounders (bed falls, anaesthesia), see the
+[Confounding
+Variables](https://johngavin.github.io/micromort/articles/confounding.md)
+vignette.
 
-Geographic conditioning: same encounter, different risk
-
-Snake bite: **0.5 mm** (US, with antivenom) vs **18.5 mm** (rural
-Africa) — a **37x difference**. Dog bite: **6.7 mm** (US, with rabies
-PEP) vs **160 mm** (rabies-endemic, no treatment) — a **24x
-difference**.
-
-### The hedgeability asymmetry
-
-Geography is a **hedgeable conditional risk** — but only for some
-people:
-
-- A **tourist** can hedge: choose destination, get travel vaccines,
-  carry antivenom kit, buy travel insurance
-- A **resident** cannot hedge: they live there, and may lack healthcare
-  infrastructure, vaccines, or economic choice
-
-This parallels the existing health profile conditioning. A bee sting is
-0.03 mm for someone who is not allergic, but **31 mm** for someone with
-a known allergy — a 1,000x difference. The allergic person can hedge
-(carry an epinephrine auto-injector), but they cannot eliminate the
-underlying vulnerability.
-
-| activity | micromorts | condition_value | hedge_description | hedge_reduction_pct |
-|:---|---:|:---|:---|---:|
-| Bee/wasp sting (general) | 0.03 | healthy | Avoid nests, wear shoes outdoors | 30 |
-| Bee/wasp sting (allergic) | 31.00 | allergic | Carry epinephrine auto-injector, immunotherapy | 95 |
-
-Health profile conditioning: same sting, different risk
-
-### Using geographic filtering
+The `common_risks()` function supports profile-based filtering:
 
 ``` r
-# Default: returns high-income estimates
-common_risks() |> filter(category == "Wildlife")
+# Default: returns high-income, all-ages estimates
+common_risks()
 
-# Explicitly request low-income geography
-common_risks(profile = list(geography = "low_income")) |> filter(category == "Wildlife")
-
-# Combine with health profile
-common_risks(profile = list(geography = "low_income", health_profile = "allergic"))
+# Geographic and health profile conditioning
+common_risks(profile = list(country = "NG"))
+common_risks(profile = list(health_profile = "allergic"))
 ```
 
 ## 4. Cross-Validation Methods
@@ -125,10 +94,14 @@ We use five methods to assess data reliability:
 Compare the same risk across independent sources. For wildlife risks, we
 cross-reference:
 
-- **OWID** annual death counts (numerator)
-- **CDC** injury surveillance (US denominator)
-- **WHO** fact sheets (global denominator)
-- **ISAF** shark attack database (species-specific data)
+- **[OWID](https://ourworldindata.org/)** (Our World in Data) annual
+  death counts (numerator)
+- **[CDC](https://www.cdc.gov/)** (Centers for Disease Control and
+  Prevention) injury surveillance (US denominator)
+- **[WHO](https://www.who.int/)** (World Health Organization) fact
+  sheets (global denominator)
+- **[ISAF](https://www.floridamuseum.ufl.edu/shark-attacks/)**
+  (International Shark Attack File) species-specific data
 
 ### Denominator audit
 
@@ -158,7 +131,7 @@ Variables](https://johngavin.github.io/micromort/articles/confounding.md)).
 Is the number physically plausible? A micromort value that implies more
 deaths than the population can support is a red flag.
 
-## 5. Worked Example: Animal Risks from OWID
+## 5. Worked Example: Animal Risks from [OWID](https://ourworldindata.org/)
 
 Our World in Data reports annual deaths by animal. Converting to
 per-encounter micromorts requires:
@@ -178,12 +151,14 @@ per-encounter micromorts requires:
 | Crocodile | ~1,000 | Unknown | — | — | **No** |
 | Elephant | ~500 | Unknown | — | — | **No** |
 
-Converting OWID annual counts to per-encounter micromorts
+Converting Our World in Data (OWID) annual counts to per-encounter
+micromorts
 
 Mosquito, crocodile, and elephant fail our inclusion criteria: there is
 no defensible per-encounter denominator. Mosquito bites are ubiquitous
-in endemic regions, making a per-bite risk meaningless. We cite OWID for
-context but do not include these as micromort entries.
+in endemic regions, making a per-bite risk meaningless. We cite
+[OWID](https://ourworldindata.org/) for context but do not include these
+as micromort entries.
 
 ## 6. Estimate Ranges
 
@@ -238,48 +213,43 @@ Show code
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin25.2.0
-#> Running under: macOS Tahoe 26.3.1
-#> 
-#> Matrix products: default
-#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
-#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
-#> 
-#> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-#> 
-#> time zone: Europe/Belfast
-#> tzcode source: internal
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] dplyr_1.1.4     micromort_0.1.0 testthat_3.3.2 
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] generics_0.1.4      digest_0.6.39       magrittr_2.0.4     
-#>  [4] evaluate_1.0.5      grid_4.5.2          RColorBrewer_1.1-3 
-#>  [7] pkgload_1.4.1       fastmap_1.2.0       rprojroot_2.1.1    
-#> [10] jsonlite_2.0.0      processx_3.8.6      pkgbuild_1.4.8     
-#> [13] backports_1.5.0     brio_1.1.5          secretbase_1.1.1   
-#> [16] ps_1.9.1            purrr_1.2.1         scales_1.4.0       
-#> [19] codetools_0.2-20    cli_3.6.5           rlang_1.1.7        
-#> [22] bit64_4.6.0-1       withr_3.0.2         yaml_2.3.12        
-#> [25] otel_0.2.0          tools_4.5.2         checkmate_2.3.3    
-#> [28] ggplot2_4.0.1       base64url_1.4       credentials_2.0.3  
-#> [31] assertthat_0.2.1    vctrs_0.7.1         R6_2.6.1           
-#> [34] lifecycle_1.0.5     fs_1.6.6            bit_4.6.0          
-#> [37] usethis_3.2.1       targets_1.11.4      arrow_22.0.0       
-#> [40] callr_3.7.6         pkgconfig_2.0.3     desc_1.4.3         
-#> [43] pillar_1.11.1       gtable_0.3.6        data.table_1.18.2.1
-#> [46] glue_1.8.0          gert_2.3.1          xfun_0.56          
-#> [49] tibble_3.3.1        tidyselect_1.2.1    sys_3.4.3          
-#> [52] knitr_1.51          farver_2.1.2        igraph_2.2.1       
-#> [55] htmltools_0.5.9     rmarkdown_2.30      compiler_4.5.2     
-#> [58] prettyunits_1.2.0   S7_0.2.1            askpass_1.2.1      
-#> [61] openssl_2.3.4
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin24.6.0
+Running under: macOS Tahoe 26.4.1
+
+Matrix products: default
+BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib 
+LAPACK: /nix/store/5kg4z5bffhr8nry8bl8l5wlxvpy54dm2-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Belfast
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] dplyr_1.1.4     micromort_0.2.0 testthat_3.3.1 
+
+loaded via a namespace (and not attached):
+ [1] generics_0.1.4     digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5    
+ [5] grid_4.5.2         RColorBrewer_1.1-3 pkgload_1.4.1      fastmap_1.2.0     
+ [9] rprojroot_2.1.1    jsonlite_2.0.0     processx_3.8.6     pkgbuild_1.4.8    
+[13] backports_1.5.0    brio_1.1.5         secretbase_1.0.5   ps_1.9.1          
+[17] purrr_1.2.0        scales_1.4.0       codetools_0.2-20   cli_3.6.5         
+[21] rlang_1.1.6        units_1.0-0        bit64_4.6.0-1      withr_3.0.2       
+[25] yaml_2.3.12        otel_0.2.0         tools_4.5.2        checkmate_2.3.3   
+[29] base64url_1.4      ggplot2_4.0.1      credentials_2.0.3  assertthat_0.2.1  
+[33] vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4    fs_1.6.6          
+[37] bit_4.6.0          usethis_3.2.1      targets_1.11.4     arrow_22.0.0      
+[41] callr_3.7.6        pkgconfig_2.0.3    desc_1.4.3         pillar_1.11.1     
+[45] gtable_0.3.6       data.table_1.18.0  glue_1.8.0         Rcpp_1.1.0        
+[49] gert_2.2.0         xfun_0.55          tibble_3.3.0       tidyselect_1.2.1  
+[53] sys_3.4.3          knitr_1.51         farver_2.1.2       igraph_2.2.1      
+[57] htmltools_0.5.9    rmarkdown_2.30     compiler_4.5.2     prettyunits_1.2.0 
+[61] S7_0.2.1           askpass_1.2.1      openssl_2.3.4     
 ```
 
 ------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# What is a Micromort?
+# 
 
 # What is a Micromort?
 
@@ -13,20 +13,12 @@ death.
 A **micromort (mm)** is a one-in-a-million chance of death from a single
 activity.
 
-| Activity             |  mm  | Ratio vs coffee |
-|----------------------|:----:|:---------------:|
-| Cup of coffee        | 0.01 |       1x        |
-| Crossing a road      | 0.02 |       2x        |
-| Office work (8 hrs)  | 0.03 |       3x        |
-| Taking a bath        | 0.07 |       7x        |
-| Commuting by car     | 0.13 |       13x       |
-| Glass of wine        | 0.50 |       50x       |
-| Commuting by bicycle | 0.50 |       50x       |
-
 All of these are **below 1 mm** — risks so small we never perceive them
-as dangerous. The 50x ratio between wine and coffee sounds alarming, but
-in absolute terms it is the difference between a 0.01 and 0.5 in a
-million chance. Both are negligible.
+as dangerous.
+
+The 12x ratio between a 30-minute bicycle commute and a cup of coffee
+sounds alarming, but in absolute terms it is the difference between a
+0.01 and 0.12 in a million chance. Both are negligible.
 
 Hover over the bars to compare.
 
@@ -129,44 +121,50 @@ Rank 4 risks from biggest to smallest effect.
 
 Session Info
 
-    #> R version 4.5.2 (2025-10-31)
-    #> Platform: aarch64-apple-darwin25.2.0
-    #> Running under: macOS Tahoe 26.3.1
-    #> 
-    #> Matrix products: default
-    #> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
-    #> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
-    #> 
-    #> locale:
-    #> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-    #> 
-    #> time zone: Europe/Belfast
-    #> tzcode source: internal
-    #> 
-    #> attached base packages:
-    #> [1] stats     graphics  grDevices utils     datasets  methods   base     
-    #> 
-    #> other attached packages:
-    #> [1] plotly_4.12.0   dplyr_1.1.4     ggplot2_4.0.1   micromort_0.1.0
-    #> [5] testthat_3.3.2 
-    #> 
-    #> loaded via a namespace (and not attached):
-    #>  [1] tidyr_1.3.2         generics_0.1.4      digest_0.6.39      
-    #>  [4] magrittr_2.0.4      evaluate_1.0.5      grid_4.5.2         
-    #>  [7] RColorBrewer_1.1-3  pkgload_1.4.1       fastmap_1.2.0      
-    #> [10] rprojroot_2.1.1     jsonlite_2.0.0      pkgbuild_1.4.8     
-    #> [13] backports_1.5.0     brio_1.1.5          httr_1.4.7         
-    #> [16] purrr_1.2.1         crosstalk_1.2.2     viridisLite_0.4.2  
-    #> [19] scales_1.4.0        lazyeval_0.2.2      cli_3.6.5          
-    #> [22] rlang_1.1.7         bit64_4.6.0-1       withr_3.0.2        
-    #> [25] yaml_2.3.12         otel_0.2.0          tools_4.5.2        
-    #> [28] checkmate_2.3.3     credentials_2.0.3   assertthat_0.2.1   
-    #> [31] vctrs_0.7.1         R6_2.6.1            lifecycle_1.0.5    
-    #> [34] fs_1.6.6            htmlwidgets_1.6.4   bit_4.6.0          
-    #> [37] usethis_3.2.1       arrow_22.0.0        pkgconfig_2.0.3    
-    #> [40] desc_1.4.3          pillar_1.11.1       gtable_0.3.6       
-    #> [43] data.table_1.18.2.1 glue_1.8.0          gert_2.3.1         
-    #> [46] xfun_0.56           tibble_3.3.1        tidyselect_1.2.1   
-    #> [49] sys_3.4.3           knitr_1.51          farver_2.1.2       
-    #> [52] htmltools_0.5.9     rmarkdown_2.30      compiler_4.5.2     
-    #> [55] S7_0.2.1            askpass_1.2.1       openssl_2.3.4
+    R version 4.5.2 (2025-10-31)
+    Platform: aarch64-apple-darwin25.2.0
+    Running under: macOS Tahoe 26.4.1
+
+    Matrix products: default
+    BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib
+    LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+
+    locale:
+    [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+    time zone: Europe/Belfast
+    tzcode source: internal
+
+    attached base packages:
+    [1] stats     graphics  grDevices utils     datasets  methods   base
+
+    other attached packages:
+    [1] plotly_4.12.0   dplyr_1.1.4     ggplot2_4.0.1   micromort_0.2.0
+    [5] testthat_3.3.2
+
+    loaded via a namespace (and not attached):
+     [1] gtable_0.3.6        bslib_0.10.0        xfun_0.56
+     [4] htmlwidgets_1.6.4   processx_3.8.6      callr_3.7.6
+     [7] crosstalk_1.2.2     ps_1.9.1            vctrs_0.7.1
+    [10] tools_4.5.2         generics_0.1.4      base64url_1.4
+    [13] tibble_3.3.1        pkgconfig_2.0.3     secretbase_1.1.1
+    [16] data.table_1.18.2.1 checkmate_2.3.3     RColorBrewer_1.1-3
+    [19] S7_0.2.1            desc_1.4.3          assertthat_0.2.1
+    [22] lifecycle_1.0.5     compiler_4.5.2      farver_2.1.2
+    [25] credentials_2.0.3   brio_1.1.5          codetools_0.2-20
+    [28] sass_0.4.10         htmltools_0.5.9     sys_3.4.3
+    [31] usethis_3.2.1       yaml_2.3.12         lazyeval_0.2.2
+    [34] jquerylib_0.1.4     pillar_1.11.1       tidyr_1.3.2
+    [37] DT_0.34.0           openssl_2.3.4       cachem_1.1.0
+    [40] tidyselect_1.2.1    digest_0.6.39       purrr_1.2.1
+    [43] arrow_22.0.0        rprojroot_2.1.1     fastmap_1.2.0
+    [46] grid_4.5.2          cli_3.6.5           magrittr_2.0.4
+    [49] pkgbuild_1.4.8      withr_3.0.2         prettyunits_1.2.0
+    [52] scales_1.4.0        backports_1.5.0     bit64_4.6.0-1
+    [55] rmarkdown_2.30      httr_1.4.7          igraph_2.2.1
+    [58] bit_4.6.0           otel_0.2.0          askpass_1.2.1
+    [61] evaluate_1.0.5      knitr_1.51          viridisLite_0.4.2
+    [64] rlang_1.1.7         gert_2.3.1          Rcpp_1.1.1
+    [67] glue_1.8.0          pkgload_1.4.1       jsonlite_2.0.0
+    [70] R6_2.6.1            targets_1.11.4      fs_1.6.6
+    [73] units_1.0-0        

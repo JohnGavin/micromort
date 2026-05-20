@@ -70,9 +70,9 @@ head(pairs)
 #>   factor_b            factor_a microlives_a direction_a category_a annual_days_a
 #>   <chr>               <chr>           <dbl> <chr>       <chr>              <dbl>
 #> 1 150 min weekly exe… Untreat…           -4 loss        Cardiovas…         -30.4
-#> 2 20 min moderate ex… Red mea…           -1 loss        Diet                -7.6
+#> 2 20 min moderate ex… Process…           -1 loss        Diet                -7.6
 #> 3 20 min moderate ex… Low fib…           -1 loss        Diet                -7.6
-#> 4 20 min moderate ex… Process…           -1 loss        Diet                -7.6
+#> 4 20 min moderate ex… Red mea…           -1 loss        Diet                -7.6
 #> 5 2nd-3rd alcoholic … Being 1…           -2 loss        Weight             -15.2
 #> 6 4th-5th alcoholic … Smoking…           -1 loss        Smoking             -7.6
 #> # ℹ 10 more variables: microlives_b <dbl>, direction_b <chr>, category_b <chr>,
@@ -86,10 +86,10 @@ head(easy)
 #>   <chr>               <chr>           <dbl> <chr>       <chr>              <dbl>
 #> 1 150 min weekly exe… Smoking…          -10 loss        Smoking            -76  
 #> 2 2nd-3rd alcoholic … Smoking…           -5 loss        Smoking            -38  
-#> 3 5 servings fruit/v… Smoking…           -1 loss        Smoking             -7.6
+#> 3 5 servings fruit/v… Glass o…           -1 loss        Alcohol             -7.6
 #> 4 5 servings fruit/v… Being 5…           -1 loss        Weight              -7.6
-#> 5 5 servings fruit/v… Glass o…           -1 loss        Alcohol             -7.6
-#> 6 Average cancer dia… 2nd-3rd…           -1 loss        Alcohol             -7.6
+#> 5 5 servings fruit/v… Smoking…           -1 loss        Smoking             -7.6
+#> 6 Air pollution (PM2… Sitting…           -2 loss        Sedentary          -15.2
 #> # ℹ 11 more variables: microlives_b <dbl>, direction_b <chr>, category_b <chr>,
 #> #   annual_days_b <dbl>, ratio <dbl>, difficulty <chr>, answer <chr>,
 #> #   description_a <chr>, help_url_a <chr>, description_b <chr>,

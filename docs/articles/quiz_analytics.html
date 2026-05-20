@@ -14,11 +14,138 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="quiz_analytics_files/libs/clipboard/clipboard.min.js"></script><script src="quiz_analytics_files/libs/quarto-html/quarto.js" type="module"></script><script src="quiz_analytics_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="quiz_analytics_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="quiz_analytics_files/libs/quarto-html/popper.min.js"></script><script src="quiz_analytics_files/libs/quarto-html/tippy.umd.min.js"></script><script src="quiz_analytics_files/libs/quarto-html/anchor.min.js"></script><link href="quiz_analytics_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="quiz_analytics_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="quiz_analytics_files/libs/bootstrap/bootstrap.min.js"></script><link href="quiz_analytics_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="quiz_analytics_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="quiz_analytics_files/libs/quarto-html/popper.min.js"></script><script src="quiz_analytics_files/libs/quarto-html/tippy.umd.min.js"></script><link href="quiz_analytics_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="quiz_analytics_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<script>
+  (function() {
+    'use strict';
+
+    var STORAGE_THEME = 'vignette-dark-mode';
+    var STORAGE_FONT = 'vignette-font-size';
+    var BASE_FONT = 16;
+    var FONT_STEP = 2;
+    var MIN_FONT = 12;
+    var MAX_FONT = 24;
+
+    // ===== Theme Management =====
+    function getPreferredTheme() {
+      var saved = localStorage.getItem(STORAGE_THEME);
+      if (saved !== null) return saved === 'true';
+      // Default to dark, but respect OS preference if explicitly light
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        return false;
+      }
+      return true; // Default dark
+    }
+
+    function applyTheme(isDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark-mode');
+        document.body && document.body.classList.add('dark-mode');
+      } else {
+        document.documentElement.classList.remove('dark-mode');
+        document.body && document.body.classList.remove('dark-mode');
+      }
+      localStorage.setItem(STORAGE_THEME, isDark);
+      updateThemeButton(isDark);
+      propagateToIframes(isDark);
+    }
+
+    function updateThemeButton(isDark) {
+      var btn = document.getElementById('theme-toggle');
+      if (btn) {
+        btn.textContent = isDark ? '\u2600' : '\u263E'; // ☀ or ☾
+        btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+    }
+
+    function toggleTheme() {
+      var isDark = document.documentElement.classList.contains('dark-mode');
+      applyTheme(!isDark);
+    }
+
+    function propagateToIframes(isDark) {
+      document.querySelectorAll('iframe').forEach(function(f) {
+        try {
+          var doc = f.contentDocument || f.contentWindow.document;
+          if (isDark) {
+            doc.body.classList.add('dark-mode');
+            doc.documentElement.classList.add('dark-mode');
+          } else {
+            doc.body.classList.remove('dark-mode');
+            doc.documentElement.classList.remove('dark-mode');
+          }
+        } catch(e) { /* cross-origin iframe */ }
+      });
+    }
+
+    // ===== Font Size Management =====
+    function getSavedFontSize() {
+      var saved = localStorage.getItem(STORAGE_FONT);
+      return saved ? parseInt(saved, 10) : BASE_FONT;
+    }
+
+    function applyFontSize(size) {
+      size = Math.max(MIN_FONT, Math.min(MAX_FONT, size));
+      document.documentElement.style.fontSize = size + 'px';
+      localStorage.setItem(STORAGE_FONT, size);
+      return size;
+    }
+
+    function changeFontSize(delta) {
+      var current = getSavedFontSize();
+      applyFontSize(current + delta);
+    }
+
+    // ===== Apply Immediately (before DOM ready) =====
+    applyTheme(getPreferredTheme());
+    applyFontSize(getSavedFontSize());
+
+    // ===== Create Toolbar on DOM Ready =====
+    document.addEventListener('DOMContentLoaded', function() {
+      // Apply theme to body now that it exists
+      applyTheme(getPreferredTheme());
+
+      var toolbar = document.createElement('div');
+      toolbar.id = 'vignette-toolbar';
+      toolbar.setAttribute('role', 'toolbar');
+      toolbar.setAttribute('aria-label', 'Page display controls');
+
+      // Theme toggle
+      var themeBtn = document.createElement('button');
+      themeBtn.id = 'theme-toggle';
+      themeBtn.title = 'Toggle dark/light mode';
+      themeBtn.onclick = toggleTheme;
+      var isDark = document.documentElement.classList.contains('dark-mode');
+      themeBtn.textContent = isDark ? '\u2600' : '\u263E';
+      themeBtn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+
+      // Font decrease
+      var fontDown = document.createElement('button');
+      fontDown.id = 'font-decrease';
+      fontDown.title = 'Decrease font size';
+      fontDown.textContent = 'A\u2212'; // A−
+      fontDown.setAttribute('aria-label', 'Decrease font size');
+      fontDown.onclick = function() { changeFontSize(-FONT_STEP); };
+
+      // Font increase
+      var fontUp = document.createElement('button');
+      fontUp.id = 'font-increase';
+      fontUp.title = 'Increase font size';
+      fontUp.textContent = 'A+';
+      fontUp.setAttribute('aria-label', 'Increase font size');
+      fontUp.onclick = function() { changeFontSize(FONT_STEP); };
+
+      toolbar.appendChild(themeBtn);
+      toolbar.appendChild(fontDown);
+      toolbar.appendChild(fontUp);
+      document.body.appendChild(toolbar);
+
+      // Re-propagate to iframes that loaded after initial apply
+      setTimeout(function() { propagateToIframes(getPreferredTheme()); }, 1000);
+    });
+  })();
+  </script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Your Quiz Analytics">
 <meta property="og:image" content="https://johngavin.github.io/micromort/logo.png">
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -85,7 +212,7 @@
 </nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1></h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Your Quiz Analytics</h1>
 
 
 
@@ -98,27 +225,8 @@
 
 
 
-    <header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
-<h1 class="title">Your Quiz Analytics</h1>
-</div>
 
-<div>
-  <div class="description">
-    Personal quiz history and performance stats — reads data stored locally in your browser.
-  </div>
-</div>
-
-
-<div class="quarto-title-meta column-page">
-
-
-
-
-  </div>
-
-
-
-</header><style>
+    <style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0.5rem; padding-bottom: 0; }
   .description { margin-bottom: 0.25rem !important; }
@@ -467,7 +575,90 @@
     location.reload();
   };
 })();
-</script></main>
+</script><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main>
 </div>
 
 

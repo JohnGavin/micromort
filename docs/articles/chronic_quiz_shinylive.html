@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta charset="UTF-8">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
 <meta name="description" content="Interactive quiz comparing chronic lifestyle factors measured in microlives — 30 minutes of life expectancy per day.">
+
 <title>Which daily habit affects your lifespan more?</title>
 <style>
 code{white-space: pre-wrap;}
@@ -19,19 +22,294 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-<script src="chronic_quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/popper.min.js"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script><script src="chronic_quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script><link href="chronic_quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+
+
+<script src="chronic_quiz_shinylive_files/libs/clipboard/clipboard.min.js"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/popper.min.js"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-html/anchor.min.js"></script>
+<link href="chronic_quiz_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="chronic_quiz_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="chronic_quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script><link href="chronic_quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<script src="chronic_quiz_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="chronic_quiz_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="chronic_quiz_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
-<script src="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script><script src="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script><link href="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
 <link href="chronic_quiz_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
+<!--
+  Vignette Toolbar — Dark/Light Toggle + Font Size Controls
+  Source: ~/.claude/templates/vignette_toolbar.html
+  Include via _quarto.yml: format: html: include-in-header: path/to/vignette_toolbar.html
+
+  Features:
+  - Dark mode toggle (default: dark, persists to localStorage)
+  - Font size A-/A+ (2px steps, persists to localStorage)
+  - Respects OS preference on first visit
+  - Propagates to Shinylive iframes
+-->
+<style>
+/* ===== Toolbar Container ===== */
+#vignette-toolbar {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 10000;
+  display: flex;
+  gap: 6px;
+  background: rgba(128, 128, 128, 0.15);
+  padding: 4px 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+#vignette-toolbar button {
+  font-size: 16px;
+  background: none;
+  border: 1px solid #888;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 30px;
+  text-align: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+#vignette-toolbar button:hover {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+#vignette-toolbar button:focus {
+  outline: 2px solid #4ea8de;
+  outline-offset: 2px;
+}
+
+/* Light mode button colors */
+body:not(.dark-mode) #vignette-toolbar button {
+  color: #333;
+  border-color: #666;
+}
+
+/* Dark mode button colors */
+body.dark-mode #vignette-toolbar button {
+  color: #eee;
+  border-color: #888;
+}
+
+/* ===== Dark Mode Styles ===== */
+body.dark-mode, html.dark-mode {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
+body.dark-mode p, body.dark-mode li, body.dark-mode td, body.dark-mode th,
+body.dark-mode code, body.dark-mode pre, body.dark-mode blockquote,
+body.dark-mode .quarto-title, body.dark-mode #title-block-header {
+  color: #ffffff !important;
+}
+
+body.dark-mode a { color: #4ea8de !important; }
+body.dark-mode a:visited { color: #9d7cd8 !important; }
+
+body.dark-mode .callout, body.dark-mode .card, body.dark-mode .sidebar,
+body.dark-mode nav, body.dark-mode header, body.dark-mode footer {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode table {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode tr:nth-child(even) {
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode code {
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode pre {
+  background-color: #1a1a1a !important;
+  border-color: #444 !important;
+}
+
+/* Override any inline light backgrounds */
+body.dark-mode [style*="background:#fff"],
+body.dark-mode [style*="background:#f8"],
+body.dark-mode [style*="background: #fff"],
+body.dark-mode [style*="background: #f8"],
+body.dark-mode [style*="background-color:#fff"],
+body.dark-mode [style*="background-color:#f8"],
+body.dark-mode [style*="background-color: #fff"],
+body.dark-mode [style*="background-color: #f8"] {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Shinylive iframe dark mode */
+body.dark-mode .shinylive-wrapper,
+body.dark-mode .shinylive-container,
+body.dark-mode iframe {
+  background-color: #1a1a1a !important;
+}
+
+/* ===== Accessible Color Overrides (≥4.5:1 on #000) ===== */
+body.dark-mode .text-success, body.dark-mode .alert-success { color: #69d4a0 !important; }
+body.dark-mode .text-danger, body.dark-mode .alert-danger { color: #f08080 !important; }
+body.dark-mode .text-info, body.dark-mode .alert-info { color: #5edaff !important; }
+body.dark-mode .text-primary, body.dark-mode .alert-primary { color: #4ea8de !important; }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  var STORAGE_THEME = 'vignette-dark-mode';
+  var STORAGE_FONT = 'vignette-font-size';
+  var BASE_FONT = 16;
+  var FONT_STEP = 2;
+  var MIN_FONT = 12;
+  var MAX_FONT = 24;
+
+  // ===== Theme Management =====
+  function getPreferredTheme() {
+    var saved = localStorage.getItem(STORAGE_THEME);
+    if (saved !== null) return saved === 'true';
+    // Default to dark, but respect OS preference if explicitly light
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return false;
+    }
+    return true; // Default dark
+  }
+
+  function applyTheme(isDark) {
+    if (isDark) {
+      document.documentElement.classList.add('dark-mode');
+      document.body && document.body.classList.add('dark-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+      document.body && document.body.classList.remove('dark-mode');
+    }
+    localStorage.setItem(STORAGE_THEME, isDark);
+    updateThemeButton(isDark);
+    propagateToIframes(isDark);
+  }
+
+  function updateThemeButton(isDark) {
+    var btn = document.getElementById('theme-toggle');
+    if (btn) {
+      btn.textContent = isDark ? '\u2600' : '\u263E'; // ☀ or ☾
+      btn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+    }
+  }
+
+  function toggleTheme() {
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    applyTheme(!isDark);
+  }
+
+  function propagateToIframes(isDark) {
+    document.querySelectorAll('iframe').forEach(function(f) {
+      try {
+        var doc = f.contentDocument || f.contentWindow.document;
+        if (isDark) {
+          doc.body.classList.add('dark-mode');
+          doc.documentElement.classList.add('dark-mode');
+        } else {
+          doc.body.classList.remove('dark-mode');
+          doc.documentElement.classList.remove('dark-mode');
+        }
+      } catch(e) { /* cross-origin iframe */ }
+    });
+  }
+
+  // ===== Font Size Management =====
+  function getSavedFontSize() {
+    var saved = localStorage.getItem(STORAGE_FONT);
+    return saved ? parseInt(saved, 10) : BASE_FONT;
+  }
+
+  function applyFontSize(size) {
+    size = Math.max(MIN_FONT, Math.min(MAX_FONT, size));
+    document.documentElement.style.fontSize = size + 'px';
+    localStorage.setItem(STORAGE_FONT, size);
+    return size;
+  }
+
+  function changeFontSize(delta) {
+    var current = getSavedFontSize();
+    applyFontSize(current + delta);
+  }
+
+  // ===== Apply Immediately (before DOM ready) =====
+  applyTheme(getPreferredTheme());
+  applyFontSize(getSavedFontSize());
+
+  // ===== Create Toolbar on DOM Ready =====
+  document.addEventListener('DOMContentLoaded', function() {
+    // Apply theme to body now that it exists
+    applyTheme(getPreferredTheme());
+
+    var toolbar = document.createElement('div');
+    toolbar.id = 'vignette-toolbar';
+    toolbar.setAttribute('role', 'toolbar');
+    toolbar.setAttribute('aria-label', 'Page display controls');
+
+    // Theme toggle
+    var themeBtn = document.createElement('button');
+    themeBtn.id = 'theme-toggle';
+    themeBtn.title = 'Toggle dark/light mode';
+    themeBtn.onclick = toggleTheme;
+    var isDark = document.documentElement.classList.contains('dark-mode');
+    themeBtn.textContent = isDark ? '\u2600' : '\u263E';
+    themeBtn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+
+    // Font decrease
+    var fontDown = document.createElement('button');
+    fontDown.id = 'font-decrease';
+    fontDown.title = 'Decrease font size';
+    fontDown.textContent = 'A\u2212'; // A−
+    fontDown.setAttribute('aria-label', 'Decrease font size');
+    fontDown.onclick = function() { changeFontSize(-FONT_STEP); };
+
+    // Font increase
+    var fontUp = document.createElement('button');
+    fontUp.id = 'font-increase';
+    fontUp.title = 'Increase font size';
+    fontUp.textContent = 'A+';
+    fontUp.setAttribute('aria-label', 'Increase font size');
+    fontUp.onclick = function() { changeFontSize(FONT_STEP); };
+
+    toolbar.appendChild(themeBtn);
+    toolbar.appendChild(fontDown);
+    toolbar.appendChild(fontUp);
+    document.body.appendChild(toolbar);
+
+    // Re-propagate to iframes that loaded after initial apply
+    setTimeout(function() { propagateToIframes(getPreferredTheme()); }, 1000);
+  });
+})();
+</script>
+
+
 </head>
+
 <body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 
-<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
 <h1 class="title">Which daily habit affects your lifespan more?</h1>
 </div>
 
@@ -51,7 +329,10 @@ ul.task-list li input[type="checkbox"] {
   
 
 
-</header><style>
+</header>
+
+
+<style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
   .description { margin-bottom: 0 !important; }
@@ -1054,13 +1335,14 @@ shinyApp(ui, server)
 "High LDL cholesterol (untreated)","Being 15 kg overweight",-3,"loss","Weight",-22.8,-2,"loss","Cardiovascular",-15.2,1.5,"hard","a","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","LDL &gt; 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease"
 "Mediterranean diet","2 hours TV watching",-1,"loss","Sedentary",-7.6,2,"gain","Diet",15.2,2,"hard","b","Prolonged sedentary behaviour (sitting/lying) increases cardiovascular mortality independent of exercise. TV time is a proxy for total sitting.","https://en.wikipedia.org/wiki/Sedentary_lifestyle","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
 "Mediterranean diet","Living with a smoker",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","Second-hand smoke exposure increases lung cancer risk by 20-30% and heart disease risk by 25-30%.","https://en.wikipedia.org/wiki/Passive_smoking","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
-"Mediterranean diet","Air pollution (high)",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","Living in a highly polluted urban area (PM2.5 &gt; 25 ug/m3) causes chronic respiratory and cardiovascular damage.","https://en.wikipedia.org/wiki/Air_pollution#Health_effects","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
+"Mediterranean diet","Air pollution (PM2.5 ~25 μg/m³)",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","US EPA annual standard level. PM2.5 at 25 μg/m³ substantially elevates cardiovascular and lung disease risk. WHO risk ratio: 1.08 per 10 μg/m³.","https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
 "Sitting 8+ hours/day","Being 15 kg overweight",-3,"loss","Weight",-22.8,-2,"loss","Sedentary",-15.2,1.5,"hard","a","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle"
 "Smoking 10 cigarettes","Smoking 20 cigarettes",-10,"loss","Smoking",-76,-5,"loss","Smoking",-38,2,"hard","a","A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco","Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco"
 "Type 2 diabetes (poorly controlled)","Being 10 kg overweight",-2,"loss","Weight",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","HbA1c &gt; 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 "Type 2 diabetes (poorly controlled)","Sitting 8+ hours/day",-2,"loss","Sedentary",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle","HbA1c &gt; 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"
 "Type 2 diabetes (poorly controlled)","4th-5th alcoholic drink",-2,"loss","Alcohol",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Heavy daily drinking (4-5 drinks) dramatically increases liver cirrhosis, cancer, and cardiovascular mortality.","https://en.wikipedia.org/wiki/Alcohol_and_health","HbA1c &gt; 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"</code></pre>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script><div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<div id="qr-container" style="text-align:center; margin:20px 0 10px;"></div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var el = document.getElementById('qr-container');
@@ -1069,16 +1351,20 @@ document.addEventListener('DOMContentLoaded', function() {
     qr.addData(window.location.href);
     qr.make();
     el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
-      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
-      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+      '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0;flex-wrap:wrap;">' +
+      '<span style="display:inline-block;max-width:110px;max-height:110px;">' + qr.createImgTag(3) + '</span>' +
+      '<span style="font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;">' + window.location.href + '</span></div></details>';
   }
 });
-</script><div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
+</script>
+<div style="text-align:center; margin-top:8px; font-size:0.8rem; color:#6c757d;">
   <a href="https://github.com/JohnGavin/micromort" style="color:#6c757d;">micromort</a> |
   <a href="https://johngavin.github.io/micromort/" style="color:#6c757d;">docs</a>
 </div>
 
-</main><!-- /main column --><script id="quarto-html-after-body" type="application/javascript">
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -1483,5 +1769,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-</body>
-</html>
+</body></html>
