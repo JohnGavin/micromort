@@ -285,9 +285,9 @@ function renderQR(containerId, size) {
   var qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
-  el.innerHTML = '<div style=\"display:flex;align-items:center;gap:12px;margin-top:12px;padding:8px 0;\">' +
-    qr.createImgTag(size || 3) +
-    '<span style=\"font-size:0.85rem;color:#6c757d;word-break:break-all;\">' + url + '</span></div>';
+  el.innerHTML = '<div style=\"display:flex;align-items:center;gap:16px;margin-top:12px;padding:8px 0;\">' +
+    '<span style=\"display:inline-block;max-width:110px;max-height:110px;\">' + qr.createImgTag(size || 3) + '</span>' +
+    '<span style=\"font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;\">' + url + '</span></div>';
 }
 setTimeout(function() { renderQR('qr-results', 3); }, 500);
 function localDateKey(d) {
