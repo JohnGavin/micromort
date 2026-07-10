@@ -50,6 +50,50 @@
 # (which live only in git, not in working-tree) still work correctly.
 .git_mtime <- .git_commit_mtime
 
+# ---------------------------------------------------------------------------
+# Helper: does `rel_path` have real uncommitted changes (staged, unstaged, or
+# untracked) in the working tree?
+# ---------------------------------------------------------------------------
+.has_uncommitted_changes <- function(pkg_root, rel_path) {
+  out <- tryCatch(
+    system2(
+      "git",
+      c("-C", pkg_root, "status", "--porcelain", "--", rel_path),
+      stdout = TRUE, stderr = FALSE
+    ),
+    error = function(e) character(0)
+  )
+  length(out) > 0L && any(nzchar(out))
+}
+
+# ---------------------------------------------------------------------------
+# Helper: "effective" timestamp used for STALENESS DECISIONS (as opposed to
+# .path_mtime(), which is a general-purpose "last touched" helper tested in
+# isolation below).
+#
+# .path_mtime() returns max(git_ct, fs_ct) so a genuine, uncommitted
+# working-tree edit is caught. But a fresh `git clone` or `git worktree add`
+# stamps EVERY checked-out file with an ~simultaneous "now" mtime (in git's
+# internal tree-walk order, which visits "docs/" before "vignettes/"
+# alphabetically) that has zero relationship to real edit history. Because
+# that checkout-time fs_ct is always newer than any historic git-commit
+# time, max(git_ct, fs_ct) alone can never distinguish "just checked out"
+# from "actually edited a moment ago" -- so every fresh checkout/worktree
+# spuriously flagged ~all vignettes as ~1-second "stale" relative to their
+# HTML (llm#763).
+#
+# .effective_mtime() trusts the filesystem mtime only when the path has a
+# real uncommitted change (the actual signal for "locally edited/rebuilt,
+# not yet committed"); a pristine file always resolves to its git-commit
+# timestamp, which is immune to checkout-order noise.
+# ---------------------------------------------------------------------------
+.effective_mtime <- function(pkg_root, rel_path) {
+  if (.has_uncommitted_changes(pkg_root, rel_path)) {
+    return(.path_mtime(pkg_root, rel_path))
+  }
+  .git_commit_mtime(pkg_root, rel_path)
+}
+
 test_that("vig_whatis_mundane_plot and vig_whatis_mundane_table use the same activities", {
   # Read from cached RDS (CI/test friendly — doesn't require tar_make())
   table <- readRDS(testthat::test_path("..", "..", "inst", "extdata", "vignettes",
@@ -87,12 +131,12 @@ test_that("docs/articles/*.html is not stale relative to vignettes/*.qmd", {
     html <- file.path(doc_dir, paste0(base, ".html"))
     if (!file.exists(html)) next  # no deployed counterpart
 
-    # Source: take the LATER of git-commit time and working-tree mtime so
-    # that an uncommitted edit to the .qmd is also caught as "stale".
-    qmd_time  <- .path_mtime(pkg_root, file.path("vignettes", qmd))
-    # Output: symmetric max(git_ct, fs_ct) so that a locally-built HTML that
-    # hasn't been committed yet is not incorrectly flagged as stale.
-    html_time <- .path_mtime(pkg_root, file.path("docs", "articles", paste0(base, ".html")))
+    # Source: real uncommitted edit -> fs mtime; pristine -> git-commit time
+    # (immune to checkout-order noise; see .effective_mtime() above).
+    qmd_time  <- .effective_mtime(pkg_root, file.path("vignettes", qmd))
+    # Output: same rule so a locally-built HTML that hasn't been committed
+    # yet is not incorrectly flagged as stale.
+    html_time <- .effective_mtime(pkg_root, file.path("docs", "articles", paste0(base, ".html")))
 
     if (!is.na(qmd_time) && !is.na(html_time) && qmd_time > html_time) {
       stale <- c(stale, base)
@@ -171,11 +215,12 @@ test_that("top-level pkgdown pages are not stale (CHANGELOG, README, NEWS)", {
       next
     }
 
-    # Source: max(git-commit, fs mtime) so working-tree edits are caught.
-    src_ct <- .path_mtime(pkg_root, src_rel)
-    # Output: symmetric max(git_ct, fs_ct) so a locally-rebuilt HTML that
-    # hasn't been committed yet is not incorrectly flagged as stale.
-    out_ct <- .path_mtime(pkg_root, out_rel)
+    # Source: real uncommitted edit -> fs mtime; pristine -> git-commit time
+    # (immune to checkout-order noise; see .effective_mtime() above).
+    src_ct <- .effective_mtime(pkg_root, src_rel)
+    # Output: same rule so a locally-rebuilt HTML that hasn't been committed
+    # yet is not incorrectly flagged as stale.
+    out_ct <- .effective_mtime(pkg_root, out_rel)
 
     if (anyNA(c(src_ct, out_ct))) next  # no git history yet — skip
 
@@ -243,11 +288,12 @@ test_that("CHANGELOG.md git-commit timestamp is older than or equal to docs/CHAN
     ))
   }
 
-  # Source: max(git-commit, fs mtime) catches working-tree edits to CHANGELOG.md.
-  src_ct <- .path_mtime(pkg_root, "CHANGELOG.md")
-  # Output: symmetric max(git_ct, fs_ct) so a locally-rebuilt CHANGELOG.html
-  # that hasn't been committed yet is not incorrectly flagged as stale.
-  out_ct <- .path_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
+  # Source: real uncommitted edit -> fs mtime; pristine -> git-commit time
+  # (immune to checkout-order noise; see .effective_mtime() above).
+  src_ct <- .effective_mtime(pkg_root, "CHANGELOG.md")
+  # Output: same rule so a locally-rebuilt CHANGELOG.html that hasn't been
+  # committed yet is not incorrectly flagged as stale.
+  out_ct <- .effective_mtime(pkg_root, file.path("docs", "CHANGELOG.html"))
 
   testthat::skip_if(anyNA(c(src_ct, out_ct)), "No git history for one or both files")
 

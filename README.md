@@ -114,11 +114,12 @@ compare_interventions(list(
 
 ``` r
 daily_hazard_rate(35)
-#> # A tibble: 1 × 7
-#>     age sex   daily_prob micromorts microlives_consumed precision_note          
-#>   <dbl> <chr>      <dbl>      <dbl>               <dbl> <chr>                   
-#> 1    35 male  0.00000296          3                 0.1 Gompertz-Makeham approx…
-#> # ℹ 1 more variable: interpretation <chr>
+#> # A tibble: 1 × 9
+#>     age sex   daily_prob micromorts micromorts_lower micromorts_upper
+#>   <dbl> <chr>      <dbl>      <dbl>            <dbl>            <dbl>
+#> 1    35 male  0.00000296          3              2.7              3.3
+#> # ℹ 3 more variables: microlives_consumed <dbl>, precision_note <chr>,
+#> #   interpretation <chr>
 ```
 
 ### Lifestyle Tradeoffs
@@ -239,30 +240,6 @@ Smoking 2 cigarettes: -1 microlife/day.
 **1 micromort ≈ 0.7 microlives** (at 40 years remaining life expectancy).
 
 ## Architecture
-
-<details>
-<summary>Package architecture (click to expand; renders on GitHub)</summary>
-
-```mermaid
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
-graph LR
-
-  Conversion["Unit Conversion<br>5 functions"]
-  Data["Risk Datasets<br>21 functions"]
-  Analysis["Risk Analysis<br>6 functions"]
-  Viz["Visualization<br>5 functions"]
-  Apps["Interactive Apps<br>6 functions"]
-
-  Conversion --> Data --> Analysis --> Viz --> Apps
-
-  style Conversion fill:#999999,stroke:#CC0000,color:#000000
-  style Data fill:#999999,stroke:#CC0000,color:#000000
-  style Analysis fill:#999999,stroke:#CC0000,color:#000000
-  style Viz fill:#999999,stroke:#CC0000,color:#000000
-  style Apps fill:#999999,stroke:#CC0000,color:#000000
-```
-
-</details>
 
 See the [Architecture vignette](https://johngavin.github.io/micromort/articles/architecture.html) for detailed diagrams.
 

@@ -26,6 +26,7 @@ Imports:
 Suggests:
     box,
     bslib,
+    callr,
     digest,
     DT,
     eurostat,
