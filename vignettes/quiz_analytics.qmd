@@ -74,14 +74,16 @@ format:
     border-bottom: 1px solid #252545;
   }
   .analytics-table tr:hover td { background: #1e1e3a; }
-  .badge-acute   { background: #2c4e7c; color: #7eb3ff; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
-  .badge-chronic { background: #2c5c3c; color: #7ecf9e; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
+  .badge-acute   { background: #2c4e7c; color: #a8cbff; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
+  .badge-chronic { background: #2c5c3c; color: #a3ddb9; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
   .badge-ranking { background: #5c3c2c; color: #cfae7e; padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; }
   .score-bar-wrap { background: #2a2a4e; border-radius: 4px; height: 14px; min-width: 80px; }
   .score-bar-fill { background: #2c7be5; height: 14px; border-radius: 4px; }
   .no-data-msg {
     text-align: center;
-    color: #6677aa;
+    color: #8899cc;
+    background: #1a1a2e;
+    border-radius: 8px;
     padding: 2rem 1rem;
     font-size: 0.9rem;
   }
@@ -91,7 +93,7 @@ format:
   .clear-btn {
     background: none;
     border: 1px solid #cc4444;
-    color: #cc4444;
+    color: #e05c5c;
     border-radius: 4px;
     padding: 3px 10px;
     font-size: 0.75rem;
@@ -310,7 +312,7 @@ format:
     var hardRows = topN.map(function(r, i) {
       return '<tr>' +
         '<td>' + (i + 1) + '</td>' +
-        '<td style="font-family:monospace;font-size:0.75rem;color:#6677aa;">' + escHtml(r.key) + '</td>' +
+        '<td style="font-family:monospace;font-size:0.75rem;color:#8899cc;">' + escHtml(r.key) + '</td>' +
         '<td>' + escHtml(typeLabel[r.type] || r.type) + '</td>' +
         '<td>' + r.total + '</td>' +
         '<td>' + scoreBar(r.pct) + '</td>' +

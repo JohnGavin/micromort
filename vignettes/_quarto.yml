@@ -1,6 +1,8 @@
 project:
   type: default
   output-dir: .
+  post-render:
+    - /Users/johngavin/docs_gh/llm/.claude/scripts/quarto_post_render_contrast.sh
 
 format:
   html:
