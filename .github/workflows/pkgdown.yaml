@@ -178,6 +178,19 @@ jobs:
             fi
             URL="${SITE_URL}/${article}"
             CONTENT=$(curl -s --retry 3 --retry-delay 10 "$URL")
+            # Strip code-fold <details>...</details> blocks before grepping.
+            # code-fold: true echoes the R chunk SOURCE verbatim inside
+            # <details class="code-fold">, regardless of whether the
+            # fallback branch inside that source actually ran — so a
+            # fallback-message string literal sitting harmlessly in source
+            # code was false-positiving this gate on every deploy
+            # (micromort#126). The real chunk OUTPUT (mermaid diagram or a
+            # genuine unrendered fallback) always sits outside </details>.
+            CONTENT=$(echo "$CONTENT" | python3 -c "
+          import re, sys
+          text = sys.stdin.read()
+          print(re.sub(r'<details[^>]*>.*?</details>', '', text, flags=re.DOTALL))
+          ")
             # Patterns match placeholder text from inst/vignette_utils.R show_target()
             # and safe_tar_read() — keep in sync with plan_qa_gates.R qa_deployed_html
             for pattern in \
