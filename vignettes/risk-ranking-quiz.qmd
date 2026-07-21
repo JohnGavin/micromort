@@ -45,7 +45,7 @@ format:
   .option-btn.selected { border-color: #14549e; background-color: #14549e; color: #fff; }
   .option-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .option-label { font-weight: 600; white-space: nowrap; min-width: 140px; font-size: 1.1rem; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
   .explanation-panel p { margin-bottom: 0.25rem; }
   .detail-scroll { overflow-x: auto; width: 100%; }
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
@@ -58,7 +58,7 @@ format:
   .rank-label { font-size: 1.2rem; color: #6c757d; text-align: center; }
   .rank-arrow { font-size: 1.6rem; font-weight: bold; vertical-align: middle; }
   .lle-tap { font-weight: bold; }
-  .lle-help-tip { font-size: 0.85rem; color: #6c757d; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px 8px; margin-top: 4px; }
+  .lle-help-tip { font-size: 0.85rem; color: #495057; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px 8px; margin-top: 4px; }
   .rank-badges { display: flex; gap: 4px; flex-wrap: wrap; }
   .lle-reveal { font-weight: bold; font-size: 0.9rem; white-space: nowrap; }
   .lle-loss { color: #dc3545; }
@@ -92,6 +92,10 @@ format:
     .detail-table { font-size: 0.9rem; }
     .detail-table th, .detail-table td { padding: 4px 6px; }
   }
+  body.dark-mode [style*="background:#d1ecf1"] { background:#0a1f22 !important; border-color:#2f6f7a !important; }
+  body.dark-mode [style*="background:#d1ecf1"] summary,
+  body.dark-mode [style*="background:#d1ecf1"] p,
+  body.dark-mode [style*="background:#d1ecf1"] a { color:#5edaff !important; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>

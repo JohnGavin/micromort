@@ -97,7 +97,9 @@ quiz_css <- "
   .quiz-btn .help-icon { font-size: 0.8rem; color: #adb5bd; cursor: help; margin-left: 4px; }
   .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .quiz-btn-correct .help-link, .quiz-btn-wrong .help-link, .quiz-btn-neutral .help-link { color: #0a58ca; }
+  .quiz-btn-correct .help-icon, .quiz-btn-wrong .help-icon, .quiz-btn-neutral .help-icon { color: #495057; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   .option-btn {
