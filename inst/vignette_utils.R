@@ -63,6 +63,22 @@ render_target <- function(obj, ...) {
     print(obj)
   } else if (inherits(obj, "htmlwidget")) {
     # plotly, visNetwork, DT, leaflet, etc.
+    #
+    # A widget object read back from a pre-computed RDS fallback needs its
+    # OWN package namespace loaded so knit_print.htmlwidget can locate the
+    # widget's JS/CSS bindings (htmlwidgets looks these up by widget class,
+    # via the defining package). Packages that micromort formally Imports
+    # (DT, plotly) get loaded as a side effect of attaching micromort itself;
+    # a Suggests-only widget package like visNetwork does not, so a render
+    # session that never explicitly attaches it (e.g. pkgdown's default
+    # fresh-subprocess quarto render) silently falls back to printing the
+    # widget's raw list structure instead of the interactive graph
+    # (micromort#126).
+    widget_pkg <- class(obj)[1]
+    if (requireNamespace(widget_pkg, quietly = TRUE)) {
+      try(getNamespace(widget_pkg), silent = TRUE)
+    }
+    requireNamespace("htmlwidgets", quietly = TRUE)
     obj
   } else if (inherits(obj, "data.frame")) {
     # Data frames: wrap in DT with dark theme

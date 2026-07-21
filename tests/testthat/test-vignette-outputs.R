@@ -565,3 +565,46 @@ test_that(".pkgdown_article_slugs() aborts on malformed YAML", {
 
   expect_error(.pkgdown_article_slugs(bad_yml))
 })
+
+# ---------------------------------------------------------------------------
+# Regression test for micromort#126: targets::tar_visnetwork(),
+# targets::tar_network(), and targets::tar_read_raw() all raise
+# "attempted to run ... during a pipeline, which is unsupported" when called
+# directly from inside a running tar_make() pipeline. The old
+# tryCatch(..., error = function(e) NULL) handlers swallowed this silently,
+# so vig_arch_tar_visnetwork and vig_pipeline_dependency_graph always built
+# to NULL and were exported as 80-byte serialized-NULL RDS fallbacks that
+# rendered a permanent placeholder in the deployed architecture.html
+# (root cause of the 2026-07-10 deploy failure). This test guards against
+# ANY vig_* RDS fallback silently regressing to NULL again, regardless of
+# which target caused it.
+# ---------------------------------------------------------------------------
+test_that("no inst/extdata/vignettes/*.rds deserializes to NULL", {
+  pkg_root <- rprojroot::find_root(rprojroot::is_r_package)
+  rds_dir  <- file.path(pkg_root, "inst", "extdata", "vignettes")
+  testthat::skip_if_not(dir.exists(rds_dir), "inst/extdata/vignettes/ not present")
+
+  rds_files <- list.files(rds_dir, pattern = "\\.rds$", full.names = TRUE)
+  testthat::skip_if(length(rds_files) == 0L, "no RDS fallbacks to check")
+
+  null_files <- character(0)
+  for (f in rds_files) {
+    obj <- tryCatch(readRDS(f), error = function(e) NULL)
+    if (is.null(obj)) null_files <- c(null_files, basename(f))
+  }
+
+  if (length(null_files) > 0L) {
+    cli::cli_abort(c(
+      "x" = "{length(null_files)} RDS fallback{?s} deserialize{?s/} to NULL.",
+      "i" = "Files: {.val {null_files}}.",
+      "i" = paste(
+        "This means the underlying tar_target() silently failed to build",
+        "(commonly: tar_network()/tar_visnetwork()/tar_read_raw() called",
+        "directly inside tar_make(), which targets forbids — wrap in",
+        "callr::r() instead) and site_rds_export exported the NULL as-is."
+      )
+    ))
+  }
+
+  expect_length(null_files, 0L)
+})

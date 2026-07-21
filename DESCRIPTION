@@ -55,6 +55,7 @@ Suggests:
     testthat (>= 3.0.0),
     urlchecker,
     usethis,
+    visNetwork,
     yaml
 Config/testthat/edition: 3
 VignetteBuilder: quarto, knitr

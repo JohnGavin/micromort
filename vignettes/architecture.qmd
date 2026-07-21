@@ -37,7 +37,16 @@ html_escape <- function(x) {
   x <- gsub("'", "&#39;", x, fixed = TRUE)
   x
 }
-emit_mermaid <- function(target_name, fallback_msg, caption = NULL, alt_text = NULL) {
+# `label` is a short human name (e.g. "Pipeline diagram") used ONLY to build
+# the fallback message when the target hasn't been built. It is NOT the full
+# "requires `tar_make()` to render" sentence — that text is assembled here,
+# inside the (include=FALSE) setup chunk, so it never appears as visible
+# source in a code-folded call site further down the page. Passing the full
+# sentence as a call-site argument previously caused pkgdown's deployed-HTML
+# error-pattern gate to false-positive on every rendered page, because
+# code-fold: true echoes the chunk source verbatim regardless of whether the
+# fallback branch actually ran (micromort#126).
+emit_mermaid <- function(target_name, label, caption = NULL, alt_text = NULL) {
   diagram <- safe_tar_read(target_name)
   if (!is.null(diagram)) {
     id <- gsub("[^a-z0-9]", "", target_name)
@@ -52,7 +61,7 @@ emit_mermaid <- function(target_name, fallback_msg, caption = NULL, alt_text = N
       cat(sprintf('<figcaption>%s</figcaption>\n</figure>\n', html_escape(caption)))
     }
   } else {
-    cat(paste0("*", fallback_msg, "*\n"))
+    cat(paste0("*", label, " requires `tar_make()` to render.*\n"))
   }
 }
 ```
@@ -95,7 +104,7 @@ Target counts update automatically when plan files change.
 
 ```{r pipeline, results='asis'}
 emit_mermaid("vig_arch_pipeline_diagram",
-             "Pipeline diagram requires `tar_make()` to render.",
+             "Pipeline diagram",
              caption = "Figure 1: Data pipeline showing five processing stages from raw risk data through targets to vignette outputs.",
              alt_text = "Mermaid flowchart showing the five-stage targets data pipeline: raw data ingestion, cleaning, aggregation, modelling, and vignette export.")
 ```
@@ -107,7 +116,7 @@ Click any function to view its documentation.
 
 ```{r concept, results='asis'}
 emit_mermaid("vig_arch_concept_diagram",
-             "Concept diagram requires `tar_make()` to render.",
+             "Concept diagram",
              caption = "Figure 2: Exported functions grouped by category — risk data, conversion utilities, regional analysis, visualisation, and quiz.",
              alt_text = "Mermaid diagram showing all exported functions organised into five categories with links to their documentation pages.")
 ```
@@ -118,7 +127,7 @@ Which function should you start with? Follow the decision tree below.
 
 ```{r journey, results='asis'}
 emit_mermaid("vig_arch_user_journey_diagram",
-             "User journey diagram requires `tar_make()` to render.",
+             "User journey diagram",
              caption = "Figure 3: Decision tree guiding users from their question (compare risks, explore regions, convert units) to the appropriate function.",
              alt_text = "Mermaid decision tree flowchart with three entry points — compare risks, explore regions, convert units — leading to specific package functions.")
 ```
@@ -130,7 +139,7 @@ Steps 4--5 follow the RED-GREEN TDD cycle.
 
 ```{r developer, results='asis'}
 emit_mermaid("vig_arch_developer_diagram",
-             "Developer diagram requires `tar_make()` to render.",
+             "Developer diagram",
              caption = "Figure 4: Nine-step contributor workflow from issue creation through TDD (steps 4–5), documentation, CI checks, and PR merge.",
              alt_text = "Mermaid flowchart showing a nine-step development workflow: issue, branch, plan, RED test, GREEN implementation, refactor, document, check, and PR.")
 ```
