@@ -615,11 +615,11 @@ function updateStreakDisplay(scorePct) {
   if (lastPlay) {
     if (lastPlay === todayUtc) { lastPlay = today; }
     else if (lastPlay === yestUtc) { lastPlay = yest; }
-    else if (/^\d+$/.test(lastPlay)) {
+    else if (/^\\d+$/.test(lastPlay)) {
       var asNum = parseInt(lastPlay, 10);
       if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
     } else if (lastPlay.length &gt; 10) {
-      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      // ISO timestamp (e.g. \"2025-05-17T22:00:00.000Z\") — convert to local date
       lastPlay = localDateKey(new Date(lastPlay));
     }
   }
