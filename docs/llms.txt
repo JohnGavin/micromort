@@ -30,7 +30,7 @@ nrow(acute)
 # Load chronic risks (microlives per day)
 chronic <- load_chronic_risks()
 nrow(chronic)
-#> [1] 38
+#> [1] 42
 ```
 
 ### Acute Risks (Micromorts per Event)
@@ -67,15 +67,15 @@ chronic |>
 #>    factor                              microlives_per_day category      
 #>    <chr>                                            <dbl> <chr>         
 #>  1 Smoking 20 cigarettes                              -10 Smoking       
-#>  2 Smoking 10 cigarettes                               -5 Smoking       
-#>  3 Untreated hypertension                              -4 Cardiovascular
-#>  4 Being male (vs female)                              -4 Demographics  
-#>  5 Being 15 kg overweight                              -3 Weight        
-#>  6 Type 2 diabetes (poorly controlled)                 -3 Cardiovascular
-#>  7 Being 10 kg overweight                              -2 Weight        
-#>  8 4th-5th alcoholic drink                             -2 Alcohol       
-#>  9 Sitting 8+ hours/day                                -2 Sedentary     
-#> 10 High LDL cholesterol (untreated)                    -2 Cardiovascular
+#>  2 Average cancer diagnosis                            -6 Cancer        
+#>  3 Smoking 10 cigarettes                               -5 Smoking       
+#>  4 Air pollution (PM2.5 ~100 μg/m³)                    -4 Environment   
+#>  5 Untreated hypertension                              -4 Cardiovascular
+#>  6 Being male (vs female)                              -4 Demographics  
+#>  7 Being 15 kg overweight                              -3 Weight        
+#>  8 Type 2 diabetes (poorly controlled)                 -3 Cardiovascular
+#>  9 Being 10 kg overweight                              -2 Weight        
+#> 10 4th-5th alcoholic drink                             -2 Alcohol
 ```
 
 ## Visualize
@@ -113,11 +113,12 @@ compare_interventions(list(
 
 ``` r
 daily_hazard_rate(35)
-#> # A tibble: 1 × 7
-#>     age sex   daily_prob micromorts microlives_consumed precision_note          
-#>   <dbl> <chr>      <dbl>      <dbl>               <dbl> <chr>                   
-#> 1    35 male  0.00000296          3                 0.1 Gompertz-Makeham approx…
-#> # ℹ 1 more variable: interpretation <chr>
+#> # A tibble: 1 × 9
+#>     age sex   daily_prob micromorts micromorts_lower micromorts_upper
+#>   <dbl> <chr>      <dbl>      <dbl>            <dbl>            <dbl>
+#> 1    35 male  0.00000296          3              2.7              3.3
+#> # ℹ 3 more variables: microlives_consumed <dbl>, precision_note <chr>,
+#> #   interpretation <chr>
 ```
 
 ### Lifestyle Tradeoffs
@@ -239,27 +240,6 @@ A **microlife** = 30 minutes of life expectancy change per day. Smoking
 expectancy).
 
 ## Architecture
-
-Package architecture (click to expand; renders on GitHub)
-
-``` mermaid
-%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
-graph LR
-
-  Conversion["Unit Conversion<br>5 functions"]
-  Data["Risk Datasets<br>21 functions"]
-  Analysis["Risk Analysis<br>6 functions"]
-  Viz["Visualization<br>5 functions"]
-  Apps["Interactive Apps<br>6 functions"]
-
-  Conversion --> Data --> Analysis --> Viz --> Apps
-
-  style Conversion fill:#999999,stroke:#CC0000,color:#000000
-  style Data fill:#999999,stroke:#CC0000,color:#000000
-  style Analysis fill:#999999,stroke:#CC0000,color:#000000
-  style Viz fill:#999999,stroke:#CC0000,color:#000000
-  style Apps fill:#999999,stroke:#CC0000,color:#000000
-```
 
 See the [Architecture
 vignette](https://johngavin.github.io/micromort/articles/architecture.html)

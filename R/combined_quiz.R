@@ -25,19 +25,25 @@ MICROMORT_TO_MICROLIFE <- 0.7
 #'   `NULL` (random each call).
 #' Acute risks with `period_type == "event"` (true one-off events such as one
 #' expedition or one base jump) keep their raw micromort value. Acute risks
-#' with any other period type (day, hour, month, year, period) represent a
-#' rate of exposure and are projected to `time_period_days` via
+#' with period type day/hour/month/year represent a repeatable rate of
+#' exposure and are projected to `time_period_days` via
 #' `micromorts_per_day_raw × time_period_days` before conversion to microlives.
-#' The unrounded column (`micromorts_per_day_raw`) is used rather than the
-#' display-rounded `micromorts_per_day` to prevent low-rate annual/monthly rows
-#' from collapsing to zero after rounding (e.g. 0.003 µm/day rounds to 0.00).
+#' `period_type == "period"` rows are split by their `period` string: a plain
+#' "N weeks (YEAR)" surveillance-rate phrasing (e.g. "11 weeks (2022)") scales
+#' the same as day/hour/month/year, while a "per N weeks"/"per N months"
+#' bounded-window phrasing (e.g. "per 8 weeks" for a specific historical
+#' interval) keeps its raw micromort value like an event row. The unrounded
+#' column (`micromorts_per_day_raw`) is used rather than the display-rounded
+#' `micromorts_per_day` to prevent low-rate annual/monthly rows from
+#' collapsing to zero after rounding (e.g. 0.003 µm/day rounds to 0.00).
 #'
 #' @return A tibble with columns:
 #'   - `activity_a`, `type_a` ("acute"), `value_a` (raw micromorts as stored),
 #'     `unit_a` ("micromorts"), `category_a`, `period_a`,
 #'     `period_type_a` (one of "event", "day", "hour", "month", "year",
-#'     "period"), `effective_micromorts_a` (raw value for "event" rows;
-#'     `micromorts_per_day_raw × time_period_days` otherwise)
+#'     "period"), `effective_micromorts_a` (raw value for "event" rows and
+#'     bounded-window "period" rows; `micromorts_per_day_raw ×
+#'     time_period_days` otherwise)
 #'   - `factor_b`, `type_b` ("chronic"), `value_b`, `unit_b` ("microlives/day"),
 #'     `category_b`, `direction_b`
 #'   - `common_unit` ("microlives"), `common_value_a`
@@ -71,18 +77,35 @@ combined_quiz_pairs <- function(n = 10, time_period_days = 365, seed = NULL) {
   #   `time_period_days` via the unrounded `micromorts_per_day_raw`. Using the
   #   unrounded value prevents low-rate annual/monthly rows from collapsing to
   #   0 after rounding, which would produce wrong quiz values and wrong ratios.
-  # - One-off totals (period_type "event" or "period"): the row already
-  #   represents a complete bounded interval (e.g. "one expedition", "one
-  #   jump", "11 weeks", "per 8 weeks"). Use raw micromorts as-is. Scaling
-  #   bounded `period` rows by `time_period_days` over-inflates them — e.g.
-  #   "Living in NYC COVID-19 (Mar-May 2020)" at 76µm/11-weeks becomes 361
-  #   over 365 days (wrong).
-  # Without this distinction, chronic-rate rows (e.g. "Living one day in
+  # - `period_type == "period"` is NOT a single homogeneous case — it covers
+  #   two different phrasings of `period` that parse_period_type() cannot
+  #   currently tell apart, and each needs opposite treatment:
+  #     (a) plain "N weeks (YEAR)" surveillance-rate rows, e.g. "11 weeks
+  #         (2022)" (CDC MMWR age-stratified COVID mortality) — these ARE
+  #         repeatable rates ("this is your risk for any 11-week window while
+  #         unvaccinated") and must scale the same as day/hour/month/year, via
+  #         `micromorts_per_day_raw * time_period_days`.
+  #     (b) "per N weeks"/"per N months" bounded-window rows, e.g.
+  #         "per 8 weeks" for "Living in NYC COVID-19 (Mar-May 2020)" — the
+  #         activity name pins this to a specific historical interval that
+  #         already happened and is not repeatable; scaling it inflates it
+  #         (e.g. 50µm/8-weeks -> 228µm/year). Use raw micromorts as-is, same
+  #         as event-type rows.
+  #   Distinguish (a) from (b) by the leading "per " token, which only
+  #   appears on the bounded-window phrasing.
+  # - Event-type rows: the row already represents a complete one-off total
+  #   (e.g. "one expedition", "one jump"). Use raw micromorts as-is.
+  # Without any distinction, chronic-rate rows (e.g. "Living one day in
   # Lesotho" at 463 µm/day) were silently treated as one-off events; with
-  # this distinction, bounded `period` rows are no longer wrongly annualised.
-  # See roborev clusters #934/#3523.
+  # the day/hour/month/year vs event split, bounded `period` rows were still
+  # wrongly conflated with rate `period` rows. See roborev clusters
+  # #934/#3523.
+  period_is_bounded_window <- acute$period_type == "period" &
+    grepl("^per\\s", acute$period)
+  scales_with_time <- acute$period_type %in% c("day", "hour", "month", "year") |
+    (acute$period_type == "period" & !period_is_bounded_window)
   effective_micromorts <- ifelse(
-    acute$period_type %in% c("day", "hour", "month", "year"),
+    scales_with_time,
     acute$micromorts_per_day_raw * time_period_days,
     acute$micromorts
   )

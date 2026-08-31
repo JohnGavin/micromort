@@ -48,7 +48,8 @@ format:
   .quiz-btn-neutral { border: 3px solid #6c757d !important; background-color: #e9ecef !important; color: #495057 !important; cursor: default; }
   .quiz-btn .help-link { font-size: 0.85rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
+  .quiz-btn-correct .help-link, .quiz-btn-wrong .help-link, .quiz-btn-neutral .help-link { color: #0a58ca; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px 20px; font-size: 1.1rem; }
   .explanation-panel p { margin-bottom: 0.25rem; }
   .gap-3 { gap: 1rem; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -88,6 +89,10 @@ format:
     .detail-table { font-size: 0.9rem; }
     .detail-table th, .detail-table td { padding: 4px 6px; }
   }
+  body.dark-mode [style*="background:#d1ecf1"] { background:#0a1f22 !important; border-color:#2f6f7a !important; }
+  body.dark-mode [style*="background:#d1ecf1"] summary,
+  body.dark-mode [style*="background:#d1ecf1"] p,
+  body.dark-mode [style*="background:#d1ecf1"] a { color:#5edaff !important; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>

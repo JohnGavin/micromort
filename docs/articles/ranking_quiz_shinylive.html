@@ -144,12 +144,16 @@ body.dark-mode pre {
 /* Override any inline light backgrounds */
 body.dark-mode [style*="background:#fff"],
 body.dark-mode [style*="background:#f8"],
+body.dark-mode [style*="background:#d1e"],
 body.dark-mode [style*="background: #fff"],
 body.dark-mode [style*="background: #f8"],
+body.dark-mode [style*="background: #d1e"],
 body.dark-mode [style*="background-color:#fff"],
 body.dark-mode [style*="background-color:#f8"],
+body.dark-mode [style*="background-color:#d1e"],
 body.dark-mode [style*="background-color: #fff"],
-body.dark-mode [style*="background-color: #f8"] {
+body.dark-mode [style*="background-color: #f8"],
+body.dark-mode [style*="background-color: #d1e"] {
   background: #000000 !important;
   color: #ffffff !important;
 }
@@ -389,7 +393,7 @@ quiz_css &lt;- "
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
   .detail-table th, .detail-table td { padding: 6px 10px; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   .tag-btn {
     padding: 6px 14px; border: 2px solid #dee2e6; border-radius: 20px;
@@ -612,11 +616,11 @@ function updateStreakDisplay(scorePct) {
   if (lastPlay) {
     if (lastPlay === todayUtc) { lastPlay = today; }
     else if (lastPlay === yestUtc) { lastPlay = yest; }
-    else if (/^\d+$/.test(lastPlay)) {
+    else if (/^\\d+$/.test(lastPlay)) {
       var asNum = parseInt(lastPlay, 10);
       if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
     } else if (lastPlay.length &gt; 10) {
-      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      // ISO timestamp (e.g. \"2025-05-17T22:00:00.000Z\") — convert to local date
       lastPlay = localDateKey(new Date(lastPlay));
     }
   }

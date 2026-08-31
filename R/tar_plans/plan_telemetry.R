@@ -58,20 +58,40 @@ plan_telemetry <- list(
 
 
   # Pipeline dependency graph as mermaid text
+  #
+  # NOTE: targets::tar_network() must NOT be called directly inside a running
+  # tar_make() pipeline — targets explicitly forbids self-referential access
+  # to the active data store from within a target ("attempted to run
+  # targets::tar_process() ... during a pipeline, which is unsupported").
+  # Fix: run the introspection in a fresh callr subprocess so it is not
+  # flagged as "inside the current pipeline" (micromort#126).
   targets::tar_target(
     vig_pipeline_dependency_graph,
-    tryCatch({
-      net <- targets::tar_network(targets_only = TRUE)
-      edges <- net$edges
-      if (nrow(edges) == 0) return(NULL)
+    {
+      store <- targets::tar_config_get("store")
+      tryCatch({
+        net <- callr::r(
+          function(store) targets::tar_network(targets_only = TRUE, store = store),
+          args = list(store = store)
+        )
+        edges <- net$edges
+        if (nrow(edges) == 0) return(NULL)
 
-      # Build mermaid flowchart from edges with project dark theme
-      lines <- c(mermaid_dark_theme_header(), "graph LR")
-      for (i in seq_len(nrow(edges))) {
-        lines <- c(lines, paste0("  ", edges$from[i], " --> ", edges$to[i]))
-      }
-      paste(lines, collapse = "\n")
-    }, error = function(e) NULL),
+        # Build mermaid flowchart from edges with project dark theme
+        lines <- c(mermaid_dark_theme_header(), "graph LR")
+        for (i in seq_len(nrow(edges))) {
+          lines <- c(lines, paste0("  ", edges$from[i], " --> ", edges$to[i]))
+        }
+        paste(lines, collapse = "\n")
+      }, error = function(e) {
+        warning(
+          "vig_pipeline_dependency_graph: tar_network() failed in callr ",
+          "subprocess: ", conditionMessage(e),
+          call. = FALSE
+        )
+        NULL
+      })
+    },
     cue = targets::tar_cue(mode = "always")
   ),
 
