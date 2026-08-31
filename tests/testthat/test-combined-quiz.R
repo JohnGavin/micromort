@@ -109,14 +109,71 @@ test_that("combined_quiz_pairs() event-type rows use raw micromorts as effective
   expect_equal(evt$effective_micromorts_a, evt$value_a, tolerance = 1e-9)
 })
 
-test_that("combined_quiz_pairs() non-event acute rows scale by time_period_days", {
+test_that("combined_quiz_pairs() rate-type acute rows scale by time_period_days", {
   pairs_365 <- combined_quiz_pairs(n = 30, time_period_days = 365, seed = 42)
   pairs_90 <- combined_quiz_pairs(n = 30, time_period_days = 90, seed = 42)
+  rate_types <- c("day", "hour", "month", "year")
   common <- intersect(
-    pairs_365$activity_a[pairs_365$period_type_a != "event"],
-    pairs_90$activity_a[pairs_90$period_type_a != "event"]
+    pairs_365$activity_a[pairs_365$period_type_a %in% rate_types],
+    pairs_90$activity_a[pairs_90$period_type_a %in% rate_types]
   )
-  skip_if(length(common) == 0, "No common non-event acute rows to compare")
+  skip_if(length(common) == 0, "No common rate-type acute rows to compare")
+  a <- common[1]
+  v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
+  v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]
+  expect_equal(v90 / v365, 90 / 365, tolerance = 1e-6)
+})
+
+# Regression: roborev #3523 — bounded-window `period` rows phrased as
+# "per N weeks"/"per N months" (e.g. "per 8 weeks" for "Living in NYC
+# COVID-19 (Mar-May 2020)") are one-off interval totals pinned to a specific
+# historical window, NOT repeatable daily rates. Multiplying their dailyised
+# value by time_period_days inflates them (e.g. 50 µm/8-weeks becomes
+# 228 µm/year). These rows must use raw micromorts, same as event-type rows.
+# NOTE: `period_type_a == "period"` also covers a second, opposite case —
+# plain "N weeks (YEAR)" surveillance-rate rows (e.g. "11 weeks (2022)")
+# which DO scale (see the "period-type week-rate rows" test below and
+# roborev cluster #3523 follow-up / test-acute-risk-rounding.R). These tests
+# therefore filter to the "per " bounded-window phrasing specifically,
+# rather than the whole "period" period_type.
+test_that("combined_quiz_pairs() bounded-window period rows use raw micromorts as effective (regression #3523)", {
+  pairs <- combined_quiz_pairs(n = 50, time_period_days = 365, seed = 42)
+  period_rows <- pairs[pairs$period_type_a == "period" & grepl("^per\\s", pairs$period_a), ]
+  skip_if(nrow(period_rows) == 0, "No bounded-window period rows in this sample")
+  expect_equal(period_rows$effective_micromorts_a, period_rows$value_a, tolerance = 1e-9)
+})
+
+test_that("combined_quiz_pairs() bounded-window period rows do NOT scale with time_period_days (regression #3523)", {
+  pairs_365 <- combined_quiz_pairs(n = 50, time_period_days = 365, seed = 42)
+  pairs_90 <- combined_quiz_pairs(n = 50, time_period_days = 90, seed = 42)
+  is_bounded_365 <- pairs_365$period_type_a == "period" & grepl("^per\\s", pairs_365$period_a)
+  is_bounded_90 <- pairs_90$period_type_a == "period" & grepl("^per\\s", pairs_90$period_a)
+  common <- intersect(
+    pairs_365$activity_a[is_bounded_365],
+    pairs_90$activity_a[is_bounded_90]
+  )
+  skip_if(length(common) == 0, "No common bounded-window period rows to compare")
+  a <- common[1]
+  v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
+  v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]
+  expect_equal(v90, v365, tolerance = 1e-9)
+})
+
+# Regression: the "11 weeks (2022)" CDC MMWR surveillance-rate rows (e.g.
+# "COVID-19 unvaccinated (age 80+)") also carry `period_type_a == "period"`,
+# but represent an ongoing repeatable rate ("this is your risk for any
+# 11-week window"), not a bounded historical event. They must scale the same
+# way as day/hour/month/year rows.
+test_that("combined_quiz_pairs() week-rate period rows scale by time_period_days", {
+  pairs_365 <- combined_quiz_pairs(n = 50, time_period_days = 365, seed = 42)
+  pairs_90 <- combined_quiz_pairs(n = 50, time_period_days = 90, seed = 42)
+  is_rate_365 <- pairs_365$period_type_a == "period" & !grepl("^per\\s", pairs_365$period_a)
+  is_rate_90 <- pairs_90$period_type_a == "period" & !grepl("^per\\s", pairs_90$period_a)
+  common <- intersect(
+    pairs_365$activity_a[is_rate_365],
+    pairs_90$activity_a[is_rate_90]
+  )
+  skip_if(length(common) == 0, "No common week-rate period rows to compare")
   a <- common[1]
   v365 <- pairs_365$effective_micromorts_a[pairs_365$activity_a == a][1]
   v90 <- pairs_90$effective_micromorts_a[pairs_90$activity_a == a][1]

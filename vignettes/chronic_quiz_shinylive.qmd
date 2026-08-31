@@ -1040,8 +1040,9 @@ document.addEventListener('DOMContentLoaded', function() {
     qr.addData(window.location.href);
     qr.make();
     el.innerHTML = '<details><summary style="cursor:pointer;color:#6c757d;font-size:0.85rem;">Show QR code</summary>' +
-      '<div style="margin:8px 0;">' + qr.createImgTag(3) + '</div>' +
-      '<span style="font-size:0.75rem;color:#6c757d;">' + window.location.href + '</span></details>';
+      '<div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:8px 0;flex-wrap:wrap;">' +
+      '<span style="display:inline-block;max-width:110px;max-height:110px;">' + qr.createImgTag(3) + '</span>' +
+      '<span style="font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;">' + window.location.href + '</span></div></details>';
   }
 });
 </script>

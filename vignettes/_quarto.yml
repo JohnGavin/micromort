@@ -1,6 +1,22 @@
 project:
   type: default
   output-dir: .
+  # Explicit `render:` glob is REQUIRED: pkgdown's build_quarto_articles()
+  # calls quarto::quarto_render() with a "--output-dir <tempdir>" override
+  # (see quarto_args in pkgdown:::quarto_render). Without an explicit
+  # `render:` list, this quarto project ("type: default") silently
+  # discovers and renders ZERO files whenever the render is invoked with an
+  # --output-dir override that differs from the project's own `output-dir`
+  # — reproduced directly via both `quarto render vignettes --output-dir
+  # <tmp>` (CLI) and `quarto::quarto_render("vignettes", quarto_args =
+  # c("--output-dir", <tmp>))` (R wrapper), each exiting 0 with 0 files
+  # rendered. A plain single-file render (`quarto render
+  # vignettes/architecture.qmd`) is unaffected, which is why this only
+  # surfaces inside pkgdown::build_site() (via tar_make()'s site_pkgdown
+  # target) as "No built file found for 'vignettes/architecture.qmd'", not
+  # in a standalone per-file render.
+  render:
+    - "*.qmd"
   post-render:
     - /Users/johngavin/docs_gh/llm/.claude/scripts/quarto_post_render_contrast.sh
 
