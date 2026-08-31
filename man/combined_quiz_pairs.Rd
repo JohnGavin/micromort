@@ -14,16 +14,33 @@ Default \code{365} (1 year). For chronic risks, the cumulative impact is
 \verb{abs(microlives_per_day) × time_period_days}.}
 
 \item{seed}{Integer or \code{NULL}. Random seed for reproducibility. Default
-\code{NULL} (random each call).}
+\code{NULL} (random each call).
+Acute risks with \code{period_type == "event"} (true one-off events such as one
+expedition or one base jump) keep their raw micromort value. Acute risks
+with period type day/hour/month/year represent a repeatable rate of
+exposure and are projected to \code{time_period_days} via
+\verb{micromorts_per_day_raw × time_period_days} before conversion to microlives.
+\code{period_type == "period"} rows are split by their \code{period} string: a plain
+"N weeks (YEAR)" surveillance-rate phrasing (e.g. "11 weeks (2022)") scales
+the same as day/hour/month/year, while a "per N weeks"/"per N months"
+bounded-window phrasing (e.g. "per 8 weeks" for a specific historical
+interval) keeps its raw micromort value like an event row. The unrounded
+column (\code{micromorts_per_day_raw}) is used rather than the display-rounded
+\code{micromorts_per_day} to prevent low-rate annual/monthly rows from
+collapsing to zero after rounding (e.g. 0.003 µm/day rounds to 0.00).}
 }
 \value{
 A tibble with columns:
 \itemize{
-\item \code{activity_a}, \code{type_a} ("acute"), \code{value_a}, \code{unit_a} ("micromorts"),
-\code{category_a}, \code{period_a}
+\item \code{activity_a}, \code{type_a} ("acute"), \code{value_a} (raw micromorts as stored),
+\code{unit_a} ("micromorts"), \code{category_a}, \code{period_a},
+\code{period_type_a} (one of "event", "day", "hour", "month", "year",
+"period"), \code{effective_micromorts_a} (raw value for "event" rows and
+bounded-window "period" rows; \verb{micromorts_per_day_raw × time_period_days} otherwise)
 \item \code{factor_b}, \code{type_b} ("chronic"), \code{value_b}, \code{unit_b} ("microlives/day"),
 \code{category_b}, \code{direction_b}
-\item \code{common_unit} ("microlives"), \code{common_value_a}, \code{common_value_b}
+\item \code{common_unit} ("microlives"), \code{common_value_a}
+(\verb{effective_micromorts_a × 0.7}), \code{common_value_b}
 \item \code{correct_answer} ("a" or "b" — whichever has higher impact in common
 unit)
 \item \code{ratio} (larger / smaller common value)

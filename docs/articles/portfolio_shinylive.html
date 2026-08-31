@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta charset="UTF-8">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.26">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
 <meta name="description" content="Build your personal risk portfolio — select activities and see cumulative annual risk.">
+
 <title>Risk Portfolio Builder</title>
 <style>
 code{white-space: pre-wrap;}
@@ -19,12 +22,24 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-<script src="portfolio_shinylive_files/libs/clipboard/clipboard.min.js"></script><script src="portfolio_shinylive_files/libs/quarto-html/quarto.js" type="module"></script><script src="portfolio_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script><script src="portfolio_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script><script src="portfolio_shinylive_files/libs/quarto-html/popper.min.js"></script><script src="portfolio_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script><script src="portfolio_shinylive_files/libs/quarto-html/anchor.min.js"></script><link href="portfolio_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
+
+
+<script src="portfolio_shinylive_files/libs/clipboard/clipboard.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/popper.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="portfolio_shinylive_files/libs/quarto-html/anchor.min.js"></script>
+<link href="portfolio_shinylive_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="portfolio_shinylive_files/libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="portfolio_shinylive_files/libs/bootstrap/bootstrap.min.js"></script><link href="portfolio_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<script src="portfolio_shinylive_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="portfolio_shinylive_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="portfolio_shinylive_files/libs/bootstrap/bootstrap-d5fa03fb90ac27921a6d47853be462c0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content=".">
-<script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script><script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script><link href="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/run-python-blocks.js" type="module"></script>
+<link href="portfolio_shinylive_files/libs/quarto-contrib/shinylive-0.9.1/shinylive/shinylive.css" rel="stylesheet">
 <link href="portfolio_shinylive_files/libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <!--
   Vignette Toolbar — Dark/Light Toggle + Font Size Controls
@@ -36,7 +51,8 @@ ul.task-list li input[type="checkbox"] {
   - Font size A-/A+ (2px steps, persists to localStorage)
   - Respects OS preference on first visit
   - Propagates to Shinylive iframes
---><style>
+-->
+<style>
 /* ===== Toolbar Container ===== */
 #vignette-toolbar {
   position: fixed;
@@ -128,12 +144,16 @@ body.dark-mode pre {
 /* Override any inline light backgrounds */
 body.dark-mode [style*="background:#fff"],
 body.dark-mode [style*="background:#f8"],
+body.dark-mode [style*="background:#d1e"],
 body.dark-mode [style*="background: #fff"],
 body.dark-mode [style*="background: #f8"],
+body.dark-mode [style*="background: #d1e"],
 body.dark-mode [style*="background-color:#fff"],
 body.dark-mode [style*="background-color:#f8"],
+body.dark-mode [style*="background-color:#d1e"],
 body.dark-mode [style*="background-color: #fff"],
-body.dark-mode [style*="background-color: #f8"] {
+body.dark-mode [style*="background-color: #f8"],
+body.dark-mode [style*="background-color: #d1e"] {
   background: #000000 !important;
   color: #ffffff !important;
 }
@@ -151,6 +171,7 @@ body.dark-mode .text-danger, body.dark-mode .alert-danger { color: #f08080 !impo
 body.dark-mode .text-info, body.dark-mode .alert-info { color: #5edaff !important; }
 body.dark-mode .text-primary, body.dark-mode .alert-primary { color: #4ea8de !important; }
 </style>
+
 <script>
 (function() {
   'use strict';
@@ -281,12 +302,18 @@ body.dark-mode .text-primary, body.dark-mode .alert-primary { color: #4ea8de !im
   });
 })();
 </script>
+
+
 </head>
+
 <body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-full">
 
-<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<main class="content column-page" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
 <h1 class="title">Risk Portfolio Builder</h1>
 </div>
 
@@ -306,7 +333,10 @@ body.dark-mode .text-primary, body.dark-mode .alert-primary { color: #4ea8de !im
   
 
 
-</header><style>
+</header>
+
+
+<style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
   .description { margin-bottom: 0 !important; }
@@ -370,10 +400,10 @@ pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}
 .cbg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.75rem}
 .cb{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem}
 .cb:hover{background:#3a3a5e}.cb.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}
-.desel-btn{background:#3a1a1a;color:#e74c3c;border:1px solid #e74c3c;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem;margin-left:auto}
+.desel-btn{background:#3a1a1a;color:#ff6b5b;border:1px solid #e74c3c;border-radius:16px;padding:4px 14px;cursor:pointer;font-size:.85rem;margin-left:auto}
 .desel-btn:hover{background:#5a2a2a}
 .tab-row{display:flex;gap:0;margin-bottom:.75rem}
-.tab-btn{flex:1;padding:8px 0;text-align:center;background:#16213e;color:#888;border:1px solid #2a2a4e;cursor:pointer;font-size:.9rem;font-weight:600}
+.tab-btn{flex:1;padding:8px 0;text-align:center;background:#16213e;color:#9aa0a6;border:1px solid #2a2a4e;cursor:pointer;font-size:.9rem;font-weight:600}
 .tab-btn:first-child{border-radius:6px 0 0 6px}.tab-btn:last-child{border-radius:0 6px 6px 0}
 .tab-btn.active{background:#4a90d9;color:#fff;border-color:#4a90d9}
 .alist{max-height:350px;overflow-y:auto}
@@ -383,18 +413,18 @@ pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}
 .abtn:hover{background:#3a3a5e}.abtn.sel{background:#4a90d9;color:#fff;border-color:#4a90d9}
 .amm{color:#888;width:55px;text-align:right;font-size:.8rem;flex-shrink:0}
 .afreq input{background:#16213e;color:#e0e0e0;border:1px solid #444;width:50px;text-align:center;border-radius:3px;padding:2px 4px;font-size:.8rem}
-.aflbl{color:#666;font-size:.72rem;width:70px;flex-shrink:0}
+.aflbl{color:#888;font-size:.72rem;width:70px;flex-shrink:0}
 .crow{display:flex;align-items:center;gap:4px;padding:4px 6px;font-size:.85rem}
 .crow:hover{background:#1e1e3a}
 .cbtn{background:#2a2a4e;color:#ccc;border:1px solid #444;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.83rem;text-align:left;flex:1}
 .cbtn:hover{background:#3a3a5e}.cbtn.sel-loss{background:#5a1a1a;color:#e74c3c;border-color:#e74c3c}.cbtn.sel-gain{background:#1a3a1a;color:#27ae60;border-color:#27ae60}
 .cml{color:#888;width:70px;text-align:right;font-size:.8rem;flex-shrink:0}
-.cdesc{color:#666;font-size:.72rem;flex:0 0 150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cdesc{color:#888;font-size:.72rem;flex:0 0 150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .backb{background:none;border:1px solid #4a90d9;color:#4a90d9;border-radius:6px;padding:6px 16px;cursor:pointer;margin-bottom:1rem}
 .backb:hover{background:#16213e}
 .sbox{background:#16213e;border-radius:8px;padding:1rem;margin-bottom:1rem;text-align:center}
 .stotal{font-size:1.8rem;font-weight:700;color:#4a90d9}
-.ssub{color:#888;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}
+.ssub{color:#9aa0a6;font-size:.85rem;margin-top:.25rem}.eqrow{color:#aaa;font-size:.9rem}
 .drow{display:flex;align-items:center;padding:4px 0;border-bottom:1px solid #1a1a2e}
 .dlbl{width:42%;text-align:right;padding-right:12px;font-size:.82rem;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .dtrk{width:42%;position:relative;height:20px}
@@ -404,7 +434,7 @@ pcss &lt;- "body{background:#0d0d1a;color:#e0e0e0}
 .dval{width:16%;font-size:.8rem;color:#888;padding-left:8px}
 .drowt .dlbl{font-weight:700;color:#e74c3c}.drowt .dval{font-weight:700;color:#e74c3c}
 .synw{border-left:3px solid #e67e22;padding:8px 12px;margin:.5rem 0;background:#1e1a10;border-radius:0 6px 6px 0;font-size:.85rem;color:#ddd}
-.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#666;line-height:1.5}
+.cavs{border-top:1px solid #2a2a4e;margin-top:1rem;padding-top:.75rem;font-size:.78rem;color:#888;line-height:1.5}
 .stit{font-size:1rem;font-weight:600;color:#aaa;margin:.75rem 0 .5rem;border-bottom:1px solid #2a2a4e;padding-bottom:4px}"
 
 pjs &lt;- "
@@ -778,7 +808,9 @@ shinyApp(ui, server)
 "average_cancer_diagnosis","Average cancer diagnosis","Cancer",-6,"loss","~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)",NA
 </code></pre>
 
-</main><!-- /main column --><script id="quarto-html-after-body" type="application/javascript">
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -1183,5 +1215,4 @@ shinyApp(ui, server)
 
 
 
-</body>
-</html>
+</body></html>

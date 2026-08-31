@@ -99,16 +99,33 @@ Default <code>365</code> (1 year). For chronic risks, the cumulative impact is
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Integer or <code>NULL</code>. Random seed for reproducibility. Default
-<code>NULL</code> (random each call).</p></dd>
+<code>NULL</code> (random each call).
+Acute risks with <code>period_type == "event"</code> (true one-off events such as one
+expedition or one base jump) keep their raw micromort value. Acute risks
+with period type day/hour/month/year represent a repeatable rate of
+exposure and are projected to <code>time_period_days</code> via
+<code>micromorts_per_day_raw × time_period_days</code> before conversion to microlives.
+<code>period_type == "period"</code> rows are split by their <code>period</code> string: a plain
+"N weeks (YEAR)" surveillance-rate phrasing (e.g. "11 weeks (2022)") scales
+the same as day/hour/month/year, while a "per N weeks"/"per N months"
+bounded-window phrasing (e.g. "per 8 weeks" for a specific historical
+interval) keeps its raw micromort value like an event row. The unrounded
+column (<code>micromorts_per_day_raw</code>) is used rather than the display-rounded
+<code>micromorts_per_day</code> to prevent low-rate annual/monthly rows from
+collapsing to zero after rounding (e.g. 0.003 µm/day rounds to 0.00).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble with columns:</p><ul><li><p><code>activity_a</code>, <code>type_a</code> ("acute"), <code>value_a</code>, <code>unit_a</code> ("micromorts"),
-<code>category_a</code>, <code>period_a</code></p></li>
+    <p>A tibble with columns:</p><ul><li><p><code>activity_a</code>, <code>type_a</code> ("acute"), <code>value_a</code> (raw micromorts as stored),
+<code>unit_a</code> ("micromorts"), <code>category_a</code>, <code>period_a</code>,
+<code>period_type_a</code> (one of "event", "day", "hour", "month", "year",
+"period"), <code>effective_micromorts_a</code> (raw value for "event" rows and
+bounded-window "period" rows; <code>micromorts_per_day_raw × time_period_days</code> otherwise)</p></li>
 <li><p><code>factor_b</code>, <code>type_b</code> ("chronic"), <code>value_b</code>, <code>unit_b</code> ("microlives/day"),
 <code>category_b</code>, <code>direction_b</code></p></li>
-<li><p><code>common_unit</code> ("microlives"), <code>common_value_a</code>, <code>common_value_b</code></p></li>
+<li><p><code>common_unit</code> ("microlives"), <code>common_value_a</code>
+(<code>effective_micromorts_a × 0.7</code>), <code>common_value_b</code></p></li>
 <li><p><code>correct_answer</code> ("a" or "b" — whichever has higher impact in common
 unit)</p></li>
 <li><p><code>ratio</code> (larger / smaller common value)</p></li>
@@ -126,13 +143,13 @@ time period is <code>abs(microlives_per_day) × time_period_days</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pairs</span> <span class="op">&lt;-</span> <span class="fu">combined_quiz_pairs</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pairs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"activity_a"</span>, <span class="st">"factor_b"</span>, <span class="st">"correct_answer"</span>, <span class="st">"ratio"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   activity_a               factor_b                 correct_answer ratio</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Spanish flu infection    Smoking 10 cigarettes    a               1.15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Base jumping (per jump)  Glass of wine daily      b               1.21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Living (one day, age 90) Glass of wine daily      b               1.13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Matterhorn ascent        Average cancer diagnosis b               1.10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Living (one day, age 90) 2-3 cups coffee (men)    b               1.13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   activity_a                              factor_b          correct_answer ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Matterhorn ascent                       Average cancer d… b               1.10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Logging (per work day)                  Sitting 8+ hours… a               1.16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Logging (per work day)                  4th-5th alcoholi… a               1.16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Spanish flu infection                   Smoking 10 cigar… a               1.15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Living in US during COVID-19 (Jul 2020) Smoking 20 cigar… a               1.17</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># One year time period (default)</span></span></span>
 <span class="r-in"><span><span class="va">pairs_year</span> <span class="op">&lt;-</span> <span class="fu">combined_quiz_pairs</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span>, time_period_days <span class="op">=</span> <span class="fl">365</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
@@ -144,7 +161,7 @@ time period is <code>abs(microlives_per_day) × time_period_days</code>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by John Gavin.</p>
+  <p><span id="pkg-footer">micromort 0.2.0</span></p>
 </div>
 
 <div class="pkgdown-footer-right">

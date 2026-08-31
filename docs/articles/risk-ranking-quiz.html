@@ -270,9 +270,9 @@
   .tag-btn.selected { border-color: #14549e; background: #14549e; }
   .rank-item .badge { font-size: 0.8em; }
   .rank-item .item-name { font-weight: 600; flex: 1; }
-  .qr-section { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 8px 0; }
-  .qr-section canvas { border-radius: 4px; }
-  .qr-section .qr-url { font-size: 0.85rem; color: #6c757d; word-break: break-all; }
+  .qr-section { display: flex; align-items: center; gap: 16px; margin-top: 12px; padding: 8px 0; }
+  .qr-section canvas, .qr-section img { border-radius: 4px; max-width: 110px; max-height: 110px; height: auto; }
+  .qr-section .qr-url { font-size: 1.2rem; color: #495057; word-break: break-all; user-select: all; cursor: text; font-family: monospace; }
 
   @media (max-width: 600px) {
     #quiz-app { padding: 10px; font-size: 1.05rem; }
@@ -518,9 +518,9 @@ const ENCOURAGEMENTS = [
 function render() {
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
-    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 4); break;
+    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 3); break;
     case 'question': app.innerHTML = renderQuestion(); initSortable(); break;
-    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 5); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }

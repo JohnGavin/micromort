@@ -21,6 +21,20 @@ th, td { border-color: #444 !important; }
 h2, h3 { color: #ffffff; }
 strong { color: #ffffff; }
 a { color: #6ea8fe; }
+/* Issue #84.2 — reduce excessive vertical gap between cr-section heading
+   and body prose. closeread defaults add ~3rem top/bottom; halve it. */
+.cr-section { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.cr-section h2 { margin-top: 0; margin-bottom: 0.75rem; }
+.cr-section h3 { margin-top: 0.5rem; margin-bottom: 0.75rem; }
+.cr-section p { margin-top: 0.25rem; margin-bottom: 0.5rem; }
+/* Issue #84.4 — table/DT font must match narrative (closeread sets 1.25rem). */
+.cr-section table, .cr-section .dataTables_wrapper,
+.cr-section .dt-container, .cr-section .dataTable {
+  font-size: 1.15rem !important;
+}
+.cr-section table th, .cr-section table td {
+  font-size: 1.15rem !important;
+}
 /* Light mode override for users without dark extensions */
 @media (prefers-color-scheme: light) {
   body { background-color: #ffffff; color: #212529; }
@@ -53,7 +67,7 @@ source(file.path(tryCatch(rprojroot::find_root(rprojroot::is_r_package),
 
 ## The invisible risk
 
-A heroin dose carries **30 micromorts**. Base jumping: **430**. These feel dangerous because they're *chosen* and *visible*.
+A skydive carries **8 micromorts**. A heroin dose: **30**. Base jumping: **430**. These feel dangerous because they're *chosen* and *visible*.
 
 But what if the bigger risk is something you can't see, can't feel, and can't opt out of? @cr-equiv-table
 
@@ -82,15 +96,19 @@ Over a full year, chronic disease risk dwarfs any one-off activity. Here's the U
 
 :::{#cr-waterfall .sticky}
 
-### UK annual chronic disease risk (micromorts/year)
+```{=html}
+<h3>UK annual chronic disease risk (micromorts/year)</h3>
+```
 
 ```{r waterfall-chronic}
 #| echo: false
 show_target("vig_chronic_acute_waterfall_chronic",
-  caption = "UK annual chronic disease micromorts. Cancer (~1,400 mm/yr) and CVD (~1,200 mm/yr) together equal climbing the Matterhorn annually. Source: chronic_disease_risks(country='GBR').")
+  caption = "UK annual chronic disease micromorts. Cancer (~1,400 mm/yr) and cardiovascular disease (CVD, ~1,200 mm/yr) together equal climbing the Matterhorn annually. Source: chronic_disease_risks(country='GBR').")
 ```
 
-### Acute one-off risks for comparison
+```{=html}
+<h3>Acute one-off risks for comparison</h3>
+```
 
 ```{r waterfall-acute}
 #| echo: false
@@ -118,12 +136,12 @@ The chronic burden is not fixed — it depends enormously on where you live. Swi
 ```{r country-shift}
 #| echo: false
 show_target("vig_chronic_acute_country_display",
-  caption = "Daily disease micromorts: UK vs Nigeria. Diarrheal disease 44x higher in Nigeria; cardiovascular disease (CVD) doubles. Geography is the dominant confounder in chronic risk. Source: common_risks() with country profiles.")
+  caption = "Daily disease micromorts: UK vs Nigeria. Diarrheal disease 44x higher in Nigeria; cardiovascular disease (CVD) doubles; lower respiratory infections (LRI) ~3x. Geography is the dominant confounder in chronic risk. Source: common_risks() with country profiles.")
 ```
 
 :::
 
-[**Diarrheal disease** jumps from 0.02 mm/day in the UK to 0.88 mm/day in Nigeria — a 44x difference driven by clean water and sanitation infrastructure.]{highlight="cr-country"}
+[**Diarrheal disease** jumps from 0.02 mm/day in the UK to 0.88 mm/day in Nigeria — a 44x difference driven by clean water and sanitation infrastructure. <a href="https://www.who.int/news-room/fact-sheets/detail/pneumonia"><abbr title="Lower respiratory infections: pneumonia, bronchiolitis, influenza-related deaths">LRI</abbr></a> shows the same geographic pattern.]{highlight="cr-country"}
 
 [**<a href="https://www.who.int/health-topics/cardiovascular-diseases"><abbr title="Cardiovascular disease: diseases of the heart and blood vessels">CVD</abbr></a>** doubles from 3.2 to 7.3 mm/day. The same organ, the same biology, but vastly different outcomes depending on healthcare access, diet, and environmental factors.]{highlight="cr-country"}
 

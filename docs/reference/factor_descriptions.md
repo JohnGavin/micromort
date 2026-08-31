@@ -27,7 +27,7 @@ A tibble with columns:
 
 ``` r
 factor_descriptions()
-#> # A tibble: 40 × 3
+#> # A tibble: 43 × 3
 #>    factor                   description                                 help_url
 #>    <chr>                    <chr>                                       <chr>   
 #>  1 Smoking 20 cigarettes    A pack-a-day habit accelerates aging so th… https:/…
@@ -40,7 +40,7 @@ factor_descriptions()
 #>  8 2nd-3rd alcoholic drink  After the first drink's potential protecti… https:/…
 #>  9 4th-5th alcoholic drink  Heavy daily drinking (4-5 drinks) dramatic… https:/…
 #> 10 Red meat (1 portion/day) Daily red meat consumption is associated w… https:/…
-#> # ℹ 30 more rows
+#> # ℹ 33 more rows
 factor_descriptions() |> dplyr::filter(grepl("exercise", factor, ignore.case = TRUE))
 #> # A tibble: 2 × 3
 #>   factor                   description                                  help_url

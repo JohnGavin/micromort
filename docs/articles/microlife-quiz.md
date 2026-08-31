@@ -1,8 +1,10 @@
 # Which daily habit has a bigger effect on your lifespan?
 
-# Which daily habit has a bigger effect on your lifespan?
+Also available as Shinylive app (richer UI, 30-60s load)
 
-Interactive quiz comparing chronic lifestyle factors measured in
-microlives — 30 minutes of life expectancy per day.
+[Open Shinylive
+version](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.md)
+— full Shiny app with score submission, percentile ranking, and streak
+tracking.
 
 Loading quiz data...

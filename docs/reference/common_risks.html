@@ -114,7 +114,16 @@ single activity family result.</p></dd>
 <dd><p>Typical duration in days (for cross-activity comparison)</p></dd>
 
 <dt>micromorts_per_day</dt>
-<dd><p>Micromorts normalized per day</p></dd>
+<dd><p>Micromorts normalized per day, rounded to 2
+decimal places. Suitable for display; may collapse to 0.00 for very
+low-rate rows (e.g. annual risk / 365). Use
+<code>micromorts_per_day_raw</code> for downstream computation.</p></dd>
+
+<dt>micromorts_per_day_raw</dt>
+<dd><p>Unrounded micromorts per day
+(<code>micromorts / period_days</code>). Use this column for any
+multiplication (e.g. projecting to a time window) to avoid rounding
+errors on low-rate annual/monthly rows.</p></dd>
 
 <dt>source_url</dt>
 <dd><p>Data source URL</p></dd>
@@ -150,7 +159,7 @@ Microlife: 30 minutes of life expectancy lost.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 107 × 14</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 107 × 15</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… event            60    </span>
@@ -164,11 +173,11 @@ Microlife: 30 minutes of life expectancy lost.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430       301  Daily L… per d… day               1    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234       164. COVID-19 11 we… period           77    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 97 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;, confidence &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
 <span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">category</span> <span class="op">==</span> <span class="st">"COVID-19"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 19 × 14</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 19 × 15</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> COVID-19 infec…   <span style="text-decoration: underline;">10</span>000        <span style="text-decoration: underline;">7</span>000   COVID-19 per i… event                14</span>
@@ -190,11 +199,11 @@ Microlife: 30 minutes of life expectancy lost.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> COVID-19 bival…       1           0.7 COVID-19 11 we… period               77</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> COVID-19 monov…       0.2         0.1 COVID-19 11 we… period               77</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> COVID-19 bival…       0.05        0   COVID-19 11 we… period               77</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;, confidence &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
 <span class="r-in"><span><span class="fu">common_risks</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">micromorts</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 14</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 15</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932    <span style="text-decoration: underline;">26</span>552.  Mountai… per a… event            60    </span>
@@ -211,9 +220,9 @@ Microlife: 30 minutes of life expectancy lost.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Scuba diving, …        164      115.  Sport    per y… year            365    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> Vaginal birth …        120       84   Medical  per e… event             1    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Living (one da…        105       73.5 Daily L… per d… day               1    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: micromorts_per_day &lt;dbl&gt;, source_url &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;, confidence &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -221,7 +230,7 @@ Microlife: 30 minutes of life expectancy lost.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by John Gavin.</p>
+  <p><span id="pkg-footer">micromort 0.2.0</span></p>
 </div>
 
 <div class="pkgdown-footer-right">

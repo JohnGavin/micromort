@@ -135,7 +135,7 @@ its low and high estimate when all activities are re-ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   activity  micromorts_base micromorts_low micromorts_high rank_base rank_change</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Skydivin…               8            6.4             9.6        32           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Skydivin…               8            6.4             9.6        32           9</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Sensitivity for all activities at ±10%</span></span></span>
 <span class="r-in"><span><span class="fu">risk_sensitivity</span><span class="op">(</span>pct <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
@@ -145,12 +145,12 @@ its low and high estimate when all activities are re-ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Eve…           <span style="text-decoration: underline;">37</span>932         <span style="text-decoration: underline;">34</span>139.          <span style="text-decoration: underline;">41</span>725.         1           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalay…           <span style="text-decoration: underline;">12</span>000         <span style="text-decoration: underline;">10</span>800           <span style="text-decoration: underline;">13</span>200          2           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-1…           <span style="text-decoration: underline;">10</span>000          <span style="text-decoration: underline;">9</span>000           <span style="text-decoration: underline;">11</span>000          3           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish…            <span style="text-decoration: underline;">3</span>000          <span style="text-decoration: underline;">2</span>700            <span style="text-decoration: underline;">3</span>300          4           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterh…            <span style="text-decoration: underline;">2</span>840          <span style="text-decoration: underline;">2</span>556            <span style="text-decoration: underline;">3</span>124          5           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living …             500           450             550          6           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living …             463           417.            509.         7           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base ju…             430           387             473          8           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First d…             430           387             473          8           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish…            <span style="text-decoration: underline;">3</span>000          <span style="text-decoration: underline;">2</span>700            <span style="text-decoration: underline;">3</span>300          4           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterh…            <span style="text-decoration: underline;">2</span>840          <span style="text-decoration: underline;">2</span>556            <span style="text-decoration: underline;">3</span>124          5           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living …             500           450             550          6           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living …             463           417.            509.         7           3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base ju…             430           387             473          8           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First d…             430           387             473          8           2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-1…             234           211.            257.        10           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 97 more rows</span></span>
 <span class="r-in"><span></span></span>
@@ -159,16 +159,16 @@ its low and high estimate when all activities are re-ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 107 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity micromorts_base micromorts_low micromorts_high rank_base rank_change</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Eve…           <span style="text-decoration: underline;">37</span>932         <span style="text-decoration: underline;">30</span>346.          <span style="text-decoration: underline;">45</span>518.         1           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalay…           <span style="text-decoration: underline;">12</span>000          <span style="text-decoration: underline;">9</span>600           <span style="text-decoration: underline;">14</span>400          2           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-1…           <span style="text-decoration: underline;">10</span>000          <span style="text-decoration: underline;">8</span>000           <span style="text-decoration: underline;">12</span>000          3           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish…            <span style="text-decoration: underline;">3</span>000          <span style="text-decoration: underline;">2</span>400            <span style="text-decoration: underline;">3</span>600          4           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterh…            <span style="text-decoration: underline;">2</span>840          <span style="text-decoration: underline;">2</span>272            <span style="text-decoration: underline;">3</span>408          5           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living …             500           400             600          6           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living …             463           370.            556.         7           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base ju…             430           344             516          8           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First d…             430           344             516          8           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-1…             234           187.            281.        10           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> COVID-1…               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Living …               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Walking…               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Driving…               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Train (…               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Eating …               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 1 hour …               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Eating …               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Eating …               1            0.8             1.2        60          15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Living …               1            0.8             1.2        60          15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 97 more rows</span></span>
 </code></pre></div>
     </div>
@@ -177,7 +177,7 @@ its low and high estimate when all activities are re-ranked.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by John Gavin.</p>
+  <p><span id="pkg-footer">micromort 0.2.0</span></p>
 </div>
 
 <div class="pkgdown-footer-right">

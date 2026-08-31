@@ -117,28 +117,28 @@ head(chronic)
 #> 1 spiegelhalter_… Livin… living in sweden…                 21 gain      Demogra…
 #> 2 spiegelhalter_… Livin… living in 2010 v…                 15 gain      Histori…
 #> 3 spiegelhalter_… Smoki… smoking 20 cigar…                -10 loss      Smoking 
-#> 4 spiegelhalter_… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
-#> 5 spiegelhalter_… Untre… untreated hypert…                 -4 loss      Cardiov…
-#> 6 spiegelhalter_… Being… being male                        -4 loss      Demogra…
+#> 4 philipson_2026… Avera… average cancer d…                 -6 loss      Cancer  
+#> 5 spiegelhalter_… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
+#> 6 who_pm25_2024_… Air p… air pollution                     -4 loss      Environ…
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 
 # Factors that reduce life expectancy
 chronic |> dplyr::filter(direction == "loss")
-#> # A tibble: 26 × 12
+#> # A tibble: 30 × 12
 #>    record_id      factor factor_normalized microlives_per_day direction category
 #>    <chr>          <chr>  <chr>                          <dbl> <chr>     <chr>   
 #>  1 spiegelhalter… Smoki… smoking 20 cigar…                -10 loss      Smoking 
-#>  2 spiegelhalter… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
-#>  3 spiegelhalter… Untre… untreated hypert…                 -4 loss      Cardiov…
-#>  4 spiegelhalter… Being… being male                        -4 loss      Demogra…
-#>  5 spiegelhalter… Being… being 15 kg over…                 -3 loss      Weight  
-#>  6 spiegelhalter… Type … type 2 diabetes                   -3 loss      Cardiov…
-#>  7 spiegelhalter… Being… being 10 kg over…                 -2 loss      Weight  
-#>  8 spiegelhalter… 4th-5… 4th-5th alcoholi…                 -2 loss      Alcohol 
-#>  9 spiegelhalter… Sitti… sitting 8+ hours…                 -2 loss      Sedenta…
-#> 10 spiegelhalter… High … high ldl cholest…                 -2 loss      Cardiov…
-#> # ℹ 16 more rows
+#>  2 philipson_202… Avera… average cancer d…                 -6 loss      Cancer  
+#>  3 spiegelhalter… Smoki… smoking 10 cigar…                 -5 loss      Smoking 
+#>  4 who_pm25_2024… Air p… air pollution                     -4 loss      Environ…
+#>  5 spiegelhalter… Untre… untreated hypert…                 -4 loss      Cardiov…
+#>  6 spiegelhalter… Being… being male                        -4 loss      Demogra…
+#>  7 spiegelhalter… Being… being 15 kg over…                 -3 loss      Weight  
+#>  8 spiegelhalter… Type … type 2 diabetes                   -3 loss      Cardiov…
+#>  9 spiegelhalter… Being… being 10 kg over…                 -2 loss      Weight  
+#> 10 spiegelhalter… 4th-5… 4th-5th alcoholi…                 -2 loss      Alcohol 
+#> # ℹ 20 more rows
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 
@@ -162,7 +162,7 @@ chronic |> dplyr::filter(direction == "gain")
 #> # ℹ 6 more variables: description <chr>, annual_effect_days <dbl>,
 #> #   source_id <chr>, source_url <chr>, confidence <chr>, last_accessed <date>
 chronic_risks()
-#> # A tibble: 40 × 7
+#> # A tibble: 43 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -175,10 +175,10 @@ chronic_risks()
 #>  8 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
 #>  9 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
 #> 10 Red mea…                 -1 Diet     loss      Daily red …               -7.6
-#> # ℹ 30 more rows
+#> # ℹ 33 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(direction == "loss")
-#> # A tibble: 28 × 7
+#> # A tibble: 31 × 7
 #>    factor   microlives_per_day category direction description annual_effect_days
 #>    <chr>                 <dbl> <chr>    <chr>     <chr>                    <dbl>
 #>  1 Smoking…                -10 Smoking  loss      Heavy smok…              -76  
@@ -191,7 +191,7 @@ chronic_risks() |> dplyr::filter(direction == "loss")
 #>  8 2nd-3rd…                 -1 Alcohol  loss      After firs…               -7.6
 #>  9 4th-5th…                 -2 Alcohol  loss      Heavy drin…              -15.2
 #> 10 Red mea…                 -1 Diet     loss      Daily red …               -7.6
-#> # ℹ 18 more rows
+#> # ℹ 21 more rows
 #> # ℹ 1 more variable: source_url <chr>
 chronic_risks() |> dplyr::filter(category == "Exercise")
 #> # A tibble: 2 × 7
