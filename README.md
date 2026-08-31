@@ -29,7 +29,7 @@ nrow(acute)
 # Load chronic risks (microlives per day)
 chronic <- load_chronic_risks()
 nrow(chronic)
-#> [1] 38
+#> [1] 42
 ```
 
 ### Acute Risks (Micromorts per Event)
@@ -68,15 +68,15 @@ chronic |>
 #>    factor                              microlives_per_day category      
 #>    <chr>                                            <dbl> <chr>         
 #>  1 Smoking 20 cigarettes                              -10 Smoking       
-#>  2 Smoking 10 cigarettes                               -5 Smoking       
-#>  3 Untreated hypertension                              -4 Cardiovascular
-#>  4 Being male (vs female)                              -4 Demographics  
-#>  5 Being 15 kg overweight                              -3 Weight        
-#>  6 Type 2 diabetes (poorly controlled)                 -3 Cardiovascular
-#>  7 Being 10 kg overweight                              -2 Weight        
-#>  8 4th-5th alcoholic drink                             -2 Alcohol       
-#>  9 Sitting 8+ hours/day                                -2 Sedentary     
-#> 10 High LDL cholesterol (untreated)                    -2 Cardiovascular
+#>  2 Average cancer diagnosis                            -6 Cancer        
+#>  3 Smoking 10 cigarettes                               -5 Smoking       
+#>  4 Air pollution (PM2.5 ~100 μg/m³)                    -4 Environment   
+#>  5 Untreated hypertension                              -4 Cardiovascular
+#>  6 Being male (vs female)                              -4 Demographics  
+#>  7 Being 15 kg overweight                              -3 Weight        
+#>  8 Type 2 diabetes (poorly controlled)                 -3 Cardiovascular
+#>  9 Being 10 kg overweight                              -2 Weight        
+#> 10 4th-5th alcoholic drink                             -2 Alcohol
 ```
 
 ## Visualize

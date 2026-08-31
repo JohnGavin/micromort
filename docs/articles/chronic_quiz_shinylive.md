@@ -79,7 +79,9 @@ quiz_css <- "
   .quiz-btn .help-icon { font-size: 0.8rem; color: #adb5bd; cursor: help; margin-left: 4px; }
   .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .quiz-btn-correct .help-link, .quiz-btn-wrong .help-link, .quiz-btn-neutral .help-link { color: #0a58ca; }
+  .quiz-btn-correct .help-icon, .quiz-btn-wrong .help-icon, .quiz-btn-neutral .help-icon { color: #495057; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   .option-btn {
@@ -275,11 +277,11 @@ function updateStreakDisplay(scorePct) {
   if (lastPlay) {
     if (lastPlay === todayUtc) { lastPlay = today; }
     else if (lastPlay === yestUtc) { lastPlay = yest; }
-    else if (/^\d+$/.test(lastPlay)) {
+    else if (/^\\d+$/.test(lastPlay)) {
       var asNum = parseInt(lastPlay, 10);
       if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
     } else if (lastPlay.length > 10) {
-      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      // ISO timestamp (e.g. \"2025-05-17T22:00:00.000Z\") — convert to local date
       lastPlay = localDateKey(new Date(lastPlay));
     }
   }
@@ -1001,7 +1003,7 @@ shinyApp(ui, server)
 "High LDL cholesterol (untreated)","Being 15 kg overweight",-3,"loss","Weight",-22.8,-2,"loss","Cardiovascular",-15.2,1.5,"hard","a","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","LDL > 160 mg/dL without statin therapy accelerates atherosclerosis and coronary heart disease.","https://en.wikipedia.org/wiki/Low-density_lipoprotein#Role_in_disease"
 "Mediterranean diet","2 hours TV watching",-1,"loss","Sedentary",-7.6,2,"gain","Diet",15.2,2,"hard","b","Prolonged sedentary behaviour (sitting/lying) increases cardiovascular mortality independent of exercise. TV time is a proxy for total sitting.","https://en.wikipedia.org/wiki/Sedentary_lifestyle","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
 "Mediterranean diet","Living with a smoker",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","Second-hand smoke exposure increases lung cancer risk by 20-30% and heart disease risk by 25-30%.","https://en.wikipedia.org/wiki/Passive_smoking","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
-"Mediterranean diet","Air pollution (high)",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","Living in a highly polluted urban area (PM2.5 > 25 ug/m3) causes chronic respiratory and cardiovascular damage.","https://en.wikipedia.org/wiki/Air_pollution#Health_effects","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
+"Mediterranean diet","Air pollution (PM2.5 ~25 μg/m³)",-1,"loss","Environment",-7.6,2,"gain","Diet",15.2,2,"hard","b","US EPA annual standard level. PM2.5 at 25 μg/m³ substantially elevates cardiovascular and lung disease risk. WHO risk ratio: 1.08 per 10 μg/m³.","https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/","Rich in olive oil, fish, vegetables, and whole grains. Proven to reduce cardiovascular events and cancer incidence.","https://en.wikipedia.org/wiki/Mediterranean_diet"
 "Sitting 8+ hours/day","Being 15 kg overweight",-3,"loss","Weight",-22.8,-2,"loss","Sedentary",-15.2,1.5,"hard","a","Significant obesity (BMI ~30+) with substantially elevated risks of heart disease, stroke, and cancer.","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","Full-day desk work without breaks substantially increases cardiovascular disease, diabetes, and all-cause mortality risk.","https://en.wikipedia.org/wiki/Sedentary_lifestyle"
 "Smoking 10 cigarettes","Smoking 20 cigarettes",-10,"loss","Smoking",-76,-5,"loss","Smoking",-38,2,"hard","a","A pack-a-day habit accelerates aging so that each day lived costs 29 hours of life expectancy. The single largest modifiable mortality risk.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco","Half-a-pack daily. Dose-response is roughly linear: half the cigarettes, half the microlife cost.","https://en.wikipedia.org/wiki/Health_effects_of_tobacco"
 "Type 2 diabetes (poorly controlled)","Being 10 kg overweight",-2,"loss","Weight",-15.2,-3,"loss","Cardiovascular",-22.8,1.5,"hard","b","Cumulative metabolic and cardiovascular burden of moderate obesity (BMI ~28-30).","https://en.wikipedia.org/wiki/Obesity#Effects_on_health","HbA1c > 8% dramatically increases risk of cardiovascular disease, neuropathy, retinopathy, and kidney failure.","https://en.wikipedia.org/wiki/Type_2_diabetes"

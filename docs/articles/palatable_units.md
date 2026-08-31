@@ -1,5 +1,7 @@
 # Palatable Units: The Spiegelhalter Philosophy
 
+# Palatable Units: The Spiegelhalter Philosophy
+
 **“Statistics are not just numbers; they are the way we make sense of
 the world.”** — Sir David Spiegelhalter
 
@@ -33,7 +35,7 @@ concrete anchor (*The Norm Chronicles*, 2013;
 > **Flip a fair coin 20 times. The probability of getting 20 heads in a
 > row is 1 in 1,048,576 — approximately 1 micromort.**
 
-This is a mathematical constant ($`1/2^{20}`$), not an estimate. It
+This is a mathematical constant (\\1/2^{20}\\), not an estimate. It
 requires no denominator, no external source, and no geographic
 adjustment. If you can imagine the surprise of 20 consecutive heads, you
 can feel the scale of 1 micromort.
@@ -120,9 +122,8 @@ category.](palatable_units_files/figure-html/palatable_units-chunk-3-1.png)
 Spiegelhalter’s logarithmic risk ladder placing activities from
 negligible (banana dose) to extreme (BASE jumping) on a unified scale.
 
-For interactive exploration, use
-[`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md)
-which provides:
+For interactive exploration, use `plot_risks_interactive()` which
+provides:
 
 - Hover details showing micromorts, microlives, and period
 - Click legend to show/hide categories
