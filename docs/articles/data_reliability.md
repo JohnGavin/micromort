@@ -1,3 +1,5 @@
+# How Reliable Are These Numbers?
+
 Risk numbers disagree. The WHO and the Institute for Health Metrics and
 Evaluation (IHME) report malaria deaths as 550,000 and 760,000
 respectively — a 38% gap from the *same underlying deaths*. Our World in
@@ -24,7 +26,9 @@ cannot identify both the death count *and* the population at risk.
 
 ## 2. The Confidence System
 
-Every entry in `atomic_risks()` carries a `confidence` tier:
+Every entry in
+[`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
+carries a `confidence` tier:
 
 | Tier | Criteria | Example | Source type |
 |:---|:---|:---|:---|
@@ -74,7 +78,9 @@ age-conditioned confounders (bed falls, anaesthesia), see the
 Variables](https://johngavin.github.io/micromort/articles/confounding.md)
 vignette.
 
-The `common_risks()` function supports profile-based filtering:
+The
+[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
+function supports profile-based filtering:
 
 ``` r
 # Default: returns high-income, all-ages estimates
@@ -215,7 +221,7 @@ Show code
 sessionInfo()
 R version 4.5.2 (2025-10-31)
 Platform: aarch64-apple-darwin24.6.0
-Running under: macOS Tahoe 26.4.1
+Running under: macOS Tahoe 26.5.2
 
 Matrix products: default
 BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib 
