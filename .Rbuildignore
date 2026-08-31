@@ -25,3 +25,4 @@
 ^_targets\.yaml$
 ^vignettes/\.quarto$
 ^vignettes/quiz_shinylive\.qmd$
+^LICENSE\.content\.md$

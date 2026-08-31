@@ -15,6 +15,9 @@ on:
       - "docs/**"
       - "_pkgdown.yml"
       - "pkgdown/**"
+  pull_request:
+    paths:
+      - "docs/**"
   workflow_dispatch:
 
 permissions:
@@ -27,7 +30,64 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Fast, no-Pages-permissions gate: greps the already-committed
+  # docs/articles/*.html for the same error patterns the post-deploy check
+  # looks for, but on-disk and pre-deploy. Runs on PRs too, so a
+  # placeholder-shipping vignette (micromort#126) is caught at review time
+  # instead of only after the live site has already gone stale.
+  check-html:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check committed docs/ HTML for error patterns (pre-deploy)
+        run: |
+          ERRORS=0
+          # Skip articles that can't be rebuilt by pkgdown (Closeread, Shinylive)
+          SKIP="chronic_vs_acute.html portfolio_shinylive.html"
+          shopt -s nullglob
+          for article in docs/articles/*.html; do
+            BASENAME=$(basename "$article")
+            if echo "$SKIP" | grep -q "$BASENAME"; then
+              echo "SKIP: ${article} (Closeread/Shinylive)"
+              continue
+            fi
+            # Strip code-fold <details>...</details> blocks before grepping —
+            # keep in sync with the post-deploy check and plan_qa_gates.R.
+            CONTENT=$(python3 -c "
+          import re
+          with open('$article') as f:
+              text = f.read()
+          print(re.sub(r'<details[^>]*>.*?</details>', '', text, flags=re.DOTALL))
+          ")
+            # Patterns match placeholder text from inst/vignette_utils.R show_target()
+            # and safe_tar_read() — keep in sync with plan_qa_gates.R qa_deployed_html
+            for pattern in \
+              "requires \`tar_make()\` to render" \
+              "requires tar_make() to" \
+              "not found in targets store or RDS fallback" \
+              "MISSING EVIDENCE"; do
+              COUNT=$(echo "$CONTENT" | grep -ci "$pattern" || true)
+              if [ "$COUNT" -gt 0 ]; then
+                echo "::error::${article}: ${COUNT} hits for '${pattern}'"
+                ERRORS=$((ERRORS + COUNT))
+              fi
+            done
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::${ERRORS} error pattern(s) found in committed docs/articles/*.html"
+            exit 1
+          fi
+          echo "All committed articles pass content QA"
+
   deploy:
+    needs: check-html
+    # Only push/workflow_dispatch actually deploy; pull_request only runs
+    # the check-html gate above (no Pages permissions needed for a PR).
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment:
@@ -178,6 +238,19 @@ jobs:
             fi
             URL="${SITE_URL}/${article}"
             CONTENT=$(curl -s --retry 3 --retry-delay 10 "$URL")
+            # Strip code-fold <details>...</details> blocks before grepping.
+            # code-fold: true echoes the R chunk SOURCE verbatim inside
+            # <details class="code-fold">, regardless of whether the
+            # fallback branch inside that source actually ran — so a
+            # fallback-message string literal sitting harmlessly in source
+            # code was false-positiving this gate on every deploy
+            # (micromort#126). The real chunk OUTPUT (mermaid diagram or a
+            # genuine unrendered fallback) always sits outside </details>.
+            CONTENT=$(echo "$CONTENT" | python3 -c "
+          import re, sys
+          text = sys.stdin.read()
+          print(re.sub(r'<details[^>]*>.*?</details>', '', text, flags=re.DOTALL))
+          ")
             # Patterns match placeholder text from inst/vignette_utils.R show_target()
             # and safe_tar_read() — keep in sync with plan_qa_gates.R qa_deployed_html
             for pattern in \

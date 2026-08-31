@@ -144,12 +144,16 @@ body.dark-mode pre {
 /* Override any inline light backgrounds */
 body.dark-mode [style*="background:#fff"],
 body.dark-mode [style*="background:#f8"],
+body.dark-mode [style*="background:#d1e"],
 body.dark-mode [style*="background: #fff"],
 body.dark-mode [style*="background: #f8"],
+body.dark-mode [style*="background: #d1e"],
 body.dark-mode [style*="background-color:#fff"],
 body.dark-mode [style*="background-color:#f8"],
+body.dark-mode [style*="background-color:#d1e"],
 body.dark-mode [style*="background-color: #fff"],
-body.dark-mode [style*="background-color: #f8"] {
+body.dark-mode [style*="background-color: #f8"],
+body.dark-mode [style*="background-color: #d1e"] {
   background: #000000 !important;
   color: #ffffff !important;
 }
@@ -420,7 +424,9 @@ quiz_css &lt;- "
   .quiz-btn .help-icon { font-size: 0.8rem; color: #adb5bd; cursor: help; margin-left: 4px; }
   .quiz-btn .help-link { font-size: 0.7rem; color: #8bb9fe; text-decoration: none; }
   .quiz-btn .help-link:hover { text-decoration: underline; }
-  .explanation-panel { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
+  .quiz-btn-correct .help-link, .quiz-btn-wrong .help-link, .quiz-btn-neutral .help-link { color: #0a58ca; }
+  .quiz-btn-correct .help-icon, .quiz-btn-wrong .help-icon, .quiz-btn-neutral .help-icon { color: #495057; }
+  .explanation-panel { background-color: #f8f9fa; color: #212529; border: 1px solid #dee2e6; border-radius: 8px; padding: 12px 16px; font-size: 0.9rem; }
   .gap-3 { gap: 1rem; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
   .option-btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -601,9 +607,9 @@ function renderQR(containerId, size) {
   var qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
-  el.innerHTML = '&lt;div style=\"display:flex;align-items:center;gap:16px;margin-top:12px;padding:8px 0;\"&gt;' +
-    '&lt;span style=\"display:inline-block;max-width:110px;max-height:110px;\"&gt;' + qr.createImgTag(size || 3) + '&lt;/span&gt;' +
-    '&lt;span style=\"font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
+  el.innerHTML = '&lt;div style=\"display:flex;align-items:center;gap:12px;margin-top:12px;padding:8px 0;\"&gt;' +
+    qr.createImgTag(size || 3) +
+    '&lt;span style=\"font-size:0.85rem;color:#6c757d;word-break:break-all;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
 }
 setTimeout(function() { renderQR('qr-results', 3); }, 500);
 function localDateKey(d) {
@@ -629,11 +635,11 @@ function updateStreakDisplay(scorePct) {
   if (lastPlay) {
     if (lastPlay === todayUtc) { lastPlay = today; }
     else if (lastPlay === yestUtc) { lastPlay = yest; }
-    else if (/^\d+$/.test(lastPlay)) {
+    else if (/^\\d+$/.test(lastPlay)) {
       var asNum = parseInt(lastPlay, 10);
       if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
     } else if (lastPlay.length &gt; 10) {
-      // ISO timestamp (e.g. "2025-05-17T22:00:00.000Z") — convert to local date
+      // ISO timestamp (e.g. \"2025-05-17T22:00:00.000Z\") — convert to local date
       lastPlay = localDateKey(new Date(lastPlay));
     }
   }

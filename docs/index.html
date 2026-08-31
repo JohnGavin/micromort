@@ -190,11 +190,12 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/daily_hazard_rate.html">daily_hazard_rate</a></span><span class="op">(</span><span class="fl">35</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 1 × 7</span></span>
-<span><span class="co">#&gt;     age sex   daily_prob micromorts microlives_consumed precision_note          </span></span>
-<span><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;               &lt;dbl&gt; &lt;chr&gt;                   </span></span>
-<span><span class="co">#&gt; 1    35 male  0.00000296          3                 0.1 Gompertz-Makeham approx…</span></span>
-<span><span class="co">#&gt; # ℹ 1 more variable: interpretation &lt;chr&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 1 × 9</span></span>
+<span><span class="co">#&gt;     age sex   daily_prob micromorts micromorts_lower micromorts_upper</span></span>
+<span><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1    35 male  0.00000296          3              2.7              3.3</span></span>
+<span><span class="co">#&gt; # ℹ 3 more variables: microlives_consumed &lt;dbl&gt;, precision_note &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   interpretation &lt;chr&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="lifestyle-tradeoffs">Lifestyle Tradeoffs<a class="anchor" aria-label="anchor" href="#lifestyle-tradeoffs"></a>
@@ -362,25 +363,7 @@ Using with rix
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
 </h2>
-<details><summary>
-Package architecture (click to expand; renders on GitHub)
-</summary><pre class="mermaid"><code>%%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#999999', 'primaryTextColor': '#000000', 'primaryBorderColor': '#CC0000', 'lineColor': '#CC0000', 'secondaryColor': '#999999', 'tertiaryColor': '#999999', 'background': '#000000', 'mainBkg': '#999999', 'nodeBorder': '#CC0000', 'clusterBkg': '#333333', 'clusterBorder': '#CC0000', 'titleColor': '#000000', 'edgeLabelBackground': '#999999'}}}%%
-graph LR
-
-  Conversion["Unit Conversion&lt;br&gt;5 functions"]
-  Data["Risk Datasets&lt;br&gt;21 functions"]
-  Analysis["Risk Analysis&lt;br&gt;6 functions"]
-  Viz["Visualization&lt;br&gt;5 functions"]
-  Apps["Interactive Apps&lt;br&gt;6 functions"]
-
-  Conversion --&gt; Data --&gt; Analysis --&gt; Viz --&gt; Apps
-
-  style Conversion fill:#999999,stroke:#CC0000,color:#000000
-  style Data fill:#999999,stroke:#CC0000,color:#000000
-  style Analysis fill:#999999,stroke:#CC0000,color:#000000
-  style Viz fill:#999999,stroke:#CC0000,color:#000000
-  style Apps fill:#999999,stroke:#CC0000,color:#000000</code></pre>
-</details><p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams.</p>
+<p>See the <a href="https://johngavin.github.io/micromort/articles/architecture.html">Architecture vignette</a> for detailed diagrams.</p>
 </div>
 <div class="section level2">
 <h2 id="data-sources">Data Sources<a class="anchor" aria-label="anchor" href="#data-sources"></a>

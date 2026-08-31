@@ -315,6 +315,14 @@ plan_qa_gates <- list(
         # If fetch_result is already a data.frame (error case), return it
         if (is.data.frame(fetch_result)) return(fetch_result)
         body <- fetch_result
+        # Strip code-fold <details>...</details> blocks before matching.
+        # code-fold: true echoes the R chunk SOURCE verbatim inside
+        # <details class="code-fold">, regardless of whether a fallback
+        # branch inside that source actually ran, so a fallback-message
+        # string literal sitting in source code would false-positive this
+        # gate (micromort#126). Keep in sync with the equivalent strip in
+        # .github/workflows/pkgdown.yaml.
+        body <- gsub("(?s)<details[^>]*>.*?</details>", "", body, perl = TRUE)
         n_checked <<- n_checked + 1L
         hits <- vapply(patterns, function(p) {
           m <- gregexpr(p, body, ignore.case = TRUE)[[1]]

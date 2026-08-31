@@ -80,18 +80,47 @@ plan_site_build <- list(
   ),
 
   # ── P0: Export all vig_* targets to inst/extdata/vignettes/*.rds ───────
+  #
+  # NOTE: targets::tar_read_raw() must NOT be called directly inside a
+  # running tar_make() pipeline — targets explicitly forbids self-referential
+  # access to the active data store from within a target ("attempted to run
+  # targets::tar_read_raw() ... during a pipeline, which is unsupported").
+  # Before this fix, every call silently errored, the per-name tryCatch
+  # swallowed it, and 0 targets were ever exported unless this target
+  # happened to run outside a pipeline context — which is how the two
+  # RDS fallbacks in inst/extdata/vignettes/ (vig_arch_tar_visnetwork,
+  # vig_pipeline_dependency_graph) ended up as 80-byte serialized NULLs
+  # (micromort#126). Fix: read every vig_* target in one fresh callr
+  # subprocess so the reads are not flagged as "inside the current
+  # pipeline".
   targets::tar_target(
     site_rds_export,
     {
       out_dir <- "inst/extdata/vignettes"
       if (!fs::dir_exists(out_dir)) fs::dir_create(out_dir, recurse = TRUE)
 
+      store <- targets::tar_config_get("store")
       manifest <- targets::tar_manifest()
       vig_names <- manifest$name[grepl("^vig_", manifest$name)]
 
+      objs <- callr::r(
+        function(names, store) {
+          out <- list()
+          for (nm in names) {
+            val <- tryCatch(
+              targets::tar_read_raw(nm, store = store),
+              error = function(e) NULL
+            )
+            if (!is.null(val)) out[[nm]] <- val
+          }
+          out
+        },
+        args = list(names = vig_names, store = store)
+      )
+
       exported <- character()
-      for (name in vig_names) {
-        obj <- tryCatch(targets::tar_read_raw(name), error = function(e) NULL)
+      for (name in names(objs)) {
+        obj <- objs[[name]]
         if (is.null(obj)) next
 
         rds_path <- file.path(out_dir, paste0(name, ".rds"))
@@ -108,6 +137,14 @@ plan_site_build <- list(
           saveRDS(obj, rds_path, compress = "xz")
         }
         exported <- c(exported, name)
+      }
+
+      if (length(exported) < length(vig_names)) {
+        cli::cli_warn(c(
+          "!" = "site_rds_export: only exported {length(exported)}/{length(vig_names)} vig_* targets",
+          "i" = "Missing: {paste(setdiff(vig_names, exported), collapse = ', ')}",
+          "i" = "Run tar_make() for the missing targets before relying on their RDS fallback"
+        ))
       }
 
       cli::cli_alert_success("Exported {length(exported)} vig_* targets to RDS")

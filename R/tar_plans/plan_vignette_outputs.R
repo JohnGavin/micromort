@@ -979,12 +979,37 @@ plan_vignette_outputs <- list(
   ),
 
   # Targets DAG (auto-generated)
+  #
+  # NOTE: targets::tar_visnetwork() must NOT be called directly inside a
+  # running tar_make() pipeline — targets explicitly forbids self-referential
+  # access to the active data store from within a target ("attempted to run
+  # targets::tar_process() ... during a pipeline, which is unsupported").
+  # Fix: run the introspection in a fresh callr subprocess so it is not
+  # flagged as "inside the current pipeline" (micromort#126).
   targets::tar_target(
     vig_arch_tar_visnetwork,
-    tryCatch(
-      targets::tar_visnetwork(targets_only = TRUE, label = "name"),
-      error = function(e) NULL
-    )
+    {
+      store <- targets::tar_config_get("store")
+      tryCatch(
+        callr::r(
+          function(store) {
+            # Node names are shown by default; `label=` only adds *extra*
+            # aesthetics and must be one of "description"/"time"/"size"/
+            # "branches" — "name" is not a valid value.
+            targets::tar_visnetwork(targets_only = TRUE, store = store)
+          },
+          args = list(store = store)
+        ),
+        error = function(e) {
+          warning(
+            "vig_arch_tar_visnetwork: tar_visnetwork() failed in callr ",
+            "subprocess: ", conditionMessage(e),
+            call. = FALSE
+          )
+          NULL
+        }
+      )
+    }
   ),
 
   # README concept diagram (simplified, no click for GitHub)
