@@ -114,7 +114,7 @@ show_target("vig_quiz_json_script")
 // ---- State ----
 const S = {
   phase: 'instructions', nQuestions: 5, currentQ: 0,
-  pairs: [], answers: [], displayOrder: [], revealed: [],
+  pairs: [], answers: [], displayOrder: [], revealed: [], confidences: [],
   selDifficulty: 'mixed', selNq: 5, seenKeys: new Set()
 };
 let quizPool = [];
@@ -249,6 +249,55 @@ function getPercentile(score, total, difficulty, nQuestions) {
   });
 }
 
+// ---- Local score/confidence history (Phase 1 of #132) ----
+// Additive to the micromort_quiz_history schema shared with the Shinylive
+// quiz variants ({date, type, score, correct, total}); confidences/outcomes
+// are only added when at least one question was rated, so older entries and
+// entries from other quiz pages are unaffected. This is browser-local only —
+// no confidence data is sent to the Form/Sheet/leaderboard pipeline.
+function recordScoreHistory(quizType, scorePct, score, total, confidences, outcomes) {
+  const HISTORY_KEY = 'micromort_quiz_history';
+  let hist;
+  try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { hist = []; }
+  const entry = { date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total };
+  if (Array.isArray(confidences) && confidences.some(c => c !== null && c !== undefined)) {
+    entry.confidences = confidences;
+    entry.outcomes = outcomes;
+  }
+  hist.push(entry);
+  if (hist.length > 200) hist = hist.slice(-200);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(hist)); } catch (e) { /* localStorage unavailable/full */ }
+}
+
+function recordCompletedQuiz() {
+  const n = S.nQuestions;
+  let score = 0;
+  const outcomes = [];
+  for (let i = 0; i < n; i++) {
+    const correct = S.answers[i] !== null && S.answers[i] === S.pairs[i].answer;
+    if (correct) score++;
+    outcomes.push(S.answers[i] === null ? null : (correct ? 1 : 0));
+  }
+  recordScoreHistory('acute', score / n * 100, score, n, S.confidences, outcomes);
+}
+
+// Self-only calibration: predicted score (confidence-weighted expectation)
+// and Brier score over the questions the participant rated a confidence for.
+function computeCalibration() {
+  const n = S.nQuestions;
+  let rated = 0, predicted = 0, brierSum = 0;
+  for (let i = 0; i < n; i++) {
+    const conf = S.confidences[i];
+    if (conf === null || conf === undefined) continue;
+    const frac = conf / 100;
+    const outcome = (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) ? 1 : 0;
+    predicted += frac;
+    brierSum += Math.pow(frac - outcome, 2);
+    rated++;
+  }
+  return { rated, predicted, brier: rated > 0 ? brierSum / rated : null };
+}
+
 // ---- Result phrases ----
 const PHRASES = [
   {min: 95, phrase: 'Actuarial genius!', fact: 'Actuaries quantify risk for a living.', link: 'https://en.wikipedia.org/wiki/Actuary'},
@@ -336,6 +385,7 @@ function startQuiz() {
   S.pairs = shuffle(pool).slice(0, n);
   S.pairs.forEach(p => S.seenKeys.add([p.activity_a, p.activity_b].sort().join('|||')));
   S.answers = new Array(n).fill(null);
+  S.confidences = new Array(n).fill(null);
   S.displayOrder = S.pairs.map(() => Math.random() < 0.5 ? ['a','b'] : ['b','a']);
   S.revealed = new Array(n).fill(false);
   S.currentQ = 0;
@@ -397,6 +447,19 @@ function renderQuestion() {
     </div>`;
   }
 
+  // Confidence capture (Phase 1 of #132: self-only, no server persistence)
+  let confidenceHtml = '';
+  if (revealed && answer !== null) {
+    const conf = S.confidences[q];
+    const confOptions = [0, 25, 50, 75, 100];
+    confidenceHtml = `<div class="text-center mt-2">
+      <small class="text-muted d-block mb-1">How confident were you in that pick?</small>
+      <div class="option-btn-group justify-content-center" id="grp_conf">
+        ${confOptions.map(pct => `<button class="option-btn${conf === pct ? ' selected' : ''}" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
+      </div>
+    </div>`;
+  }
+
   // Tally
   let correctSoFar = 0;
   for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
@@ -421,7 +484,7 @@ function renderQuestion() {
       <div class="quiz-vs"><h3 class="text-muted mb-0">VS</h3></div>
       <div class="quiz-col">${btnContent(right, R, btnClass(R, R === pair.answer))}</div>
     </div>
-    ${resultHtml}`;
+    ${resultHtml}${confidenceHtml}`;
 }
 
 function choose(side) {
@@ -429,9 +492,13 @@ function choose(side) {
   S.revealed[S.currentQ] = true;
   render();
 }
+function chooseConfidence(pct, el) {
+  S.confidences[S.currentQ] = pct;
+  selectInGroup('grp_conf', el);
+}
 function nextQ() {
   if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
-  else { S.phase = 'results_summary'; render(); }
+  else { S.phase = 'results_summary'; recordCompletedQuiz(); render(); }
 }
 function prevQ() {
   if (S.currentQ > 0) { S.currentQ--; render(); }
@@ -444,6 +511,16 @@ function renderResults() {
   for (let i = 0; i < n; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) score++; }
   const pct = score / n * 100, baseline = (n / 2).toFixed(1);
   const info = getPhrase(pct);
+  const calib = computeCalibration();
+  const calibHtml = calib.rated > 0 ? `
+    <div style="display:flex;gap:16px;margin-bottom:1rem;">
+      <div style="flex:1;"><div class="card text-white bg-info"><div class="card-body text-center">
+        <small>Predicted (your confidence)</small><h2 class="mb-0">${calib.predicted.toFixed(1)} / ${n}</h2>
+      </div></div></div>
+    </div>
+    <div class="text-center mb-3">
+      <small class="text-muted">Your Brier score: <strong>${calib.brier.toFixed(3)}</strong> — lower is better calibrated (0 = perfect, 0.25 = "always say 50%" baseline)${calib.rated < n ? ` · based on ${calib.rated}/${n} rated question${calib.rated === 1 ? '' : 's'}` : ''}</small>
+    </div>` : '';
 
   return `
     <h2 class="text-center mb-4">Results</h2>
@@ -455,6 +532,7 @@ function renderResults() {
         <small>Random Guessing</small><h2 class="mb-0">~${baseline} / ${n}</h2>
       </div></div></div>
     </div>
+    ${calibHtml}
     <div class="text-center mb-4">
       <h3>${info.phrase}</h3>
       <em>${info.fact}</em><br>
