@@ -1,0 +1,27 @@
+pandoc: 3.7.0.2
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  architecture: architecture.html
+  causes_of_death: causes_of_death.html
+  chronic_quiz_shinylive: chronic_quiz_shinylive.html
+  chronic_vs_acute: chronic_vs_acute.html
+  confounding: confounding.html
+  data_reliability: data_reliability.html
+  introduction: introduction.html
+  microlife-quiz: microlife-quiz.html
+  micromort-quiz: micromort-quiz.html
+  palatable_units: palatable_units.html
+  portfolio_shinylive: portfolio_shinylive.html
+  quiz_analytics: quiz_analytics.html
+  quiz_shinylive: quiz_shinylive.html
+  ranking_quiz_shinylive: ranking_quiz_shinylive.html
+  regional_variation: regional_variation.html
+  rest_api: rest_api.html
+  risk_equivalence: risk_equivalence.html
+  risk-ranking-quiz: risk-ranking-quiz.html
+  what-is-a-micromort: what-is-a-micromort.html
+last_built: 2026-08-31T19:51Z
+urls:
+  reference: https://johngavin.github.io/micromort/reference
+  article: https://johngavin.github.io/micromort/articles
