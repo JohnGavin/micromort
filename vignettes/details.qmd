@@ -1,0 +1,80 @@
+---
+title: "Details"
+description: "Shinylive app links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don't interrupt quiz-taking."
+format:
+  html:
+    code-fold: true
+    code-summary: "Show code"
+vignette: >
+  %\VignetteIndexEntry{Details}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = ""
+)
+
+if (requireNamespace("micromort", quietly = TRUE)) {
+  library(micromort)
+} else {
+  pkgload::load_all(quiet = TRUE)
+}
+```
+
+This page collects information that used to sit at the bottom of the quiz
+pages: the Shinylive app links, how to view a page's source, and site build
+info. It was moved here because on the quiz pages that content sat directly
+below the interactive quiz area, so it was encountered on every scroll while
+answering questions — see
+[issue #142](https://github.com/JohnGavin/micromort/issues/142) for the full
+history.
+
+::: {.panel-tabset}
+
+## Shinylive apps
+
+Each of the three instant quizzes also has a full Shiny app version
+("Shinylive") with score submission, percentile ranking, and streak
+tracking. The Shinylive version takes 30-60 seconds to load in the browser
+(it runs R compiled to WebAssembly) — the instant quiz has no load delay but
+does not submit scores.
+
+| Quiz | Instant version | Shinylive version |
+|---|---|---|
+| Which lifestyle event is more likely to kill you? (micromorts) | [micromort-quiz.html](micromort-quiz.html) | [quiz_shinylive.html](quiz_shinylive.html) |
+| Which daily habit has a bigger effect on your lifespan? (microlives) | [microlife-quiz.html](microlife-quiz.html) | [chronic_quiz_shinylive.html](chronic_quiz_shinylive.html) |
+| Risk ranking | [risk-ranking-quiz.html](risk-ranking-quiz.html) | [ranking_quiz_shinylive.html](ranking_quiz_shinylive.html) |
+
+## Source
+
+Every article page on this site has its own auto-generated "Source:" line
+naming the `.qmd` file it was rendered from — that line is inherently
+per-page (pkgdown attaches it individually to each article), so it cannot be
+consolidated into a single link here.
+
+To view the source of the page you're currently reading, look for the
+"Source:" line near the top of that page, or browse the source directly:
+
+- [vignettes/](https://github.com/JohnGavin/micromort/tree/main/vignettes) —
+  every quiz, article, and dashboard `.qmd` source file
+- [R/](https://github.com/JohnGavin/micromort/tree/main/R) — package
+  functions and data pipeline code
+- [Full repository](https://github.com/JohnGavin/micromort)
+
+## Site info
+
+```{r site-info, echo=FALSE, results='asis'}
+pkg_version <- tryCatch(
+  as.character(utils::packageVersion("micromort")),
+  error = function(e) "unknown"
+)
+cat(sprintf(
+  "- **Package:** micromort %s\n- **Site built with:** [pkgdown](https://pkgdown.r-lib.org/)\n- **Commit history:** [github.com/JohnGavin/micromort/commits/main](https://github.com/JohnGavin/micromort/commits/main)\n",
+  pkg_version
+))
+```
+
+:::

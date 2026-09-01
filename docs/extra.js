@@ -295,9 +295,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // so it cannot be moved by editing a source file and must be relocated via
 // DOM manipulation. Runs on every page (articles + reference topics); pages
 // with no .page-header .dont-index (e.g. the homepage) are a silent no-op.
+//
+// Skipped on the three quiz pages (#quiz-app): appending this <details> to
+// #main puts it immediately after the quiz container, where it is
+// re-encountered on every scroll during quiz-taking (issue #142). Those
+// pages instead link to articles/details.html, which has a dedicated
+// "Source" tab -- appending this block there too would be a second,
+// competing mechanism for the same information on the same page.
 document.addEventListener('DOMContentLoaded', function() {
   var main = document.getElementById('main');
   if (!main) return;
+  if (document.getElementById('quiz-app')) return;
   var sourceLine = main.querySelector('.page-header .dont-index');
   if (!sourceLine) return;
 
@@ -315,9 +323,15 @@ document.addEventListener('DOMContentLoaded', function() {
 // metadata rather than a bold line the reader has to see on every page.
 // Registered after the #pkg-footer replacement above so it wraps the final
 // build-info text, not the static placeholder from _pkgdown.yml.
+//
+// Skipped on the three quiz pages (#quiz-app) for the same reason as the
+// Source-line relocation above -- articles/details.html has a "Site info"
+// tab covering this already; the footer on quiz pages is left in its plain
+// (uncollapsed, standard pkgdown) form.
 document.addEventListener('DOMContentLoaded', function() {
   var footer = document.querySelector('footer');
   if (!footer) return;
+  if (document.getElementById('quiz-app')) return;
   if (footer.querySelector('details.footer-meta')) return; // already wrapped
 
   var details = document.createElement('details');

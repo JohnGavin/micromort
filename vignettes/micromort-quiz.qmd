@@ -98,13 +98,12 @@ format:
     .detail-table { font-size: 0.9rem; }
     .detail-table th, .detail-table td { padding: 4px 6px; }
   }
-  body.dark-mode [style*="background:#d1ecf1"] { background:#0a1f22 !important; border-color:#2f6f7a !important; }
-  body.dark-mode [style*="background:#d1ecf1"] summary,
-  body.dark-mode [style*="background:#d1ecf1"] p,
-  body.dark-mode [style*="background:#d1ecf1"] a { color:#5edaff !important; }
+  .quiz-meta-link { max-width: 800px; margin: 0 auto 8px; padding: 0 20px; font-size: 0.9rem; }
+  .quiz-meta-link a { color: #8bb9fe; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<p class="quiz-meta-link">Also on <a href="quiz_shinylive.html">Shinylive</a> (richer UI) &middot; <a href="details.html">page details &amp; source</a></p>
 <div id="quiz-app">Loading quiz data...</div>
 ```
 
@@ -718,9 +717,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 ```
 
-```{=html}
-<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
-<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
-<p style="margin:8px 0 0;color:#0c5460;"><a href="quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
-</details>
-```

@@ -29,6 +29,8 @@ vignettes/chronic_quiz_shinylive.html
 vignettes/chronic_quiz_shinylive_files/
 vignettes/ranking_quiz_shinylive.html
 vignettes/ranking_quiz_shinylive_files/
+vignettes/details.html
+vignettes/details_files/
 vignettes/shinylive-sw.js
 # Quarto render artifacts for non-shinylive vignettes
 vignettes/_quarto.yaml
