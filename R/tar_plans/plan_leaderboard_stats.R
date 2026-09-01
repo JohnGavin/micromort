@@ -60,14 +60,23 @@ plan_leaderboard_stats <- list(
       }
 
       # Columns: 1=form_timestamp, 2=Score, 3=Total, 4=Timestamp(ISO),
-      #          5=quiz_type, 6=difficulty, 7=n_questions
+      #          5=quiz_type, 6=difficulty, 7=n_questions,
+      #          8=avg_confidence_pct (Phase 2 of #132, entry.1681143871).
+      # Google Forms appends new-question columns at the end of the Sheet.
+      # Rows submitted before this question existed simply have no 8th
+      # cell — extract_val() already returns NA_character_ for a col_idx
+      # past the row's cell count, so avg_confidence_pct is NA for those
+      # rows rather than a false 0. Only micromort-quiz.qmd (the acute
+      # quiz) currently sends this field; chronic/ranking submissions are
+      # NA here too, by construction, not by omission.
       df <- tibble::tibble(
         score = as.numeric(vapply(rows, extract_val, character(1), col_idx = 2)),
         total = as.numeric(vapply(rows, extract_val, character(1), col_idx = 3)),
         timestamp = vapply(rows, extract_val, character(1), col_idx = 4),
         quiz_type = vapply(rows, extract_val, character(1), col_idx = 5),
         difficulty = vapply(rows, extract_val, character(1), col_idx = 6),
-        n_questions = as.numeric(vapply(rows, extract_val, character(1), col_idx = 7))
+        n_questions = as.numeric(vapply(rows, extract_val, character(1), col_idx = 7)),
+        avg_confidence_pct = as.numeric(vapply(rows, extract_val, character(1), col_idx = 8))
       )
       # Default quiz_type for old submissions without the field
       df$quiz_type[is.na(df$quiz_type)] <- "acute"
@@ -133,11 +142,83 @@ plan_leaderboard_stats <- list(
         list(overall = overall, by_config = by_config)
       }
 
+      # Population-level confidence calibration (Phase 2 of #132).
+      #
+      # SIMPLIFICATION (documented here AND in the PR description — do not
+      # present this as a per-question Brier score): the Google Form only
+      # accepts ONE confidence value per quiz attempt (no per-question
+      # repeat structure), so avg_confidence_pct is the MEAN of the
+      # participant's per-question confidence ratings for that attempt,
+      # submitted once. The "calibration score" below —
+      # (mean_confidence/100 - score_pct/100)^2 — is therefore a coarse,
+      # attempt-level approximation of a Brier score, not the real thing.
+      # The TRUE per-question Brier score (computeCalibration() in the
+      # quiz's own <script>, surfaced in quiz_analytics.qmd) stays
+      # self-only/local, because the Sheet has no column to carry
+      # per-question confidence across a whole population. This figure is
+      # directional (population comparison), not precise.
+      compute_calibration_quantiles <- function(x) {
+        if (length(x) < 2) {
+          return(list(
+            percentiles = seq(0, 100, by = 10),
+            calibration_scores = rep(if (length(x) == 1) round(x[1], 4) else 0, 11)
+          ))
+        }
+        probs <- seq(0, 1, by = 0.1)
+        list(
+          percentiles = as.integer(probs * 100),
+          calibration_scores = round(as.numeric(stats::quantile(x, probs = probs)), 4)
+        )
+      }
+
+      compute_calibration_stats <- function(data) {
+        valid <- data[!is.na(data$avg_confidence_pct) & !is.na(data$score_pct), ]
+        if (nrow(valid) == 0) {
+          return(list(
+            n = 0,
+            quantiles = list(percentiles = seq(0, 100, by = 10), calibration_scores = rep(0, 11)),
+            points = list()
+          ))
+        }
+
+        predicted <- valid$avg_confidence_pct / 100
+        actual <- valid$score_pct / 100
+        calibration_score <- (predicted - actual)^2
+
+        # Cap scatter points to the most recent MAX_POINTS so the JSON
+        # payload stays bounded as the leaderboard grows; the quantile
+        # summary above still uses ALL valid rows, not just the capped set.
+        max_points <- 500
+        ord <- order(valid$timestamp, decreasing = TRUE, na.last = TRUE)
+        pts <- valid[ord, , drop = FALSE]
+        pts <- utils::head(pts, max_points)
+
+        points <- lapply(seq_len(nrow(pts)), function(i) {
+          list(
+            confidence_pct = pts$avg_confidence_pct[i],
+            score_pct = pts$score_pct[i]
+          )
+        })
+
+        list(
+          n = nrow(valid),
+          quantiles = compute_calibration_quantiles(calibration_score),
+          points = points
+        )
+      }
+
+      acute_data <- df[df$quiz_type == "acute" | is.na(df$quiz_type), ]
+      chronic_data <- df[df$quiz_type == "chronic", ]
+      ranking_data <- df[df$quiz_type == "ranking", ]
+
+      acute_stats <- build_quiz_stats(acute_data)
+      acute_stats$calibration <- compute_calibration_stats(acute_data)
+
       stats <- list(
         generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-        acute = build_quiz_stats(df[df$quiz_type == "acute" | is.na(df$quiz_type), ]),
-        chronic = build_quiz_stats(df[df$quiz_type == "chronic", ]),
-        ranking = build_quiz_stats(df[df$quiz_type == "ranking", ])
+        acute = acute_stats,
+        chronic = build_quiz_stats(chronic_data),
+        ranking = build_quiz_stats(ranking_data)
       )
 
       # Write to docs/api/

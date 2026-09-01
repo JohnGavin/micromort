@@ -14,13 +14,6 @@ format:
 ---
 
 ```{=html}
-<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
-<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
-<p style="margin:8px 0 0;color:#0c5460;"><a href="quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
-</details>
-```
-
-```{=html}
 <style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -68,9 +61,24 @@ format:
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
   .detail-table th, .detail-table td { padding: 8px 12px; }
   .alert { font-size: 1.1rem; }
-  .qr-section { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 8px 0; }
-  .qr-section canvas { border-radius: 4px; }
-  .qr-section .qr-url { font-size: 0.85rem; color: #6c757d; word-break: break-all; }
+  .qr-section { display: flex; align-items: center; gap: 16px; margin-top: 12px; padding: 8px 0; }
+  .qr-section canvas, .qr-section img { border-radius: 4px; max-width: 110px; max-height: 110px; height: auto; }
+  .qr-section .qr-url { font-size: 1.2rem; color: #495057; word-break: break-all; user-select: all; cursor: text; font-family: monospace; }
+
+  /* Population calibration comparison (Phase 2 of #132) — same dark
+     "analytics" panel styling as quiz_analytics.qmd, so the population
+     comparison reads as one visual family across the site. */
+  .analytics-section {
+    background: #1a1a2e; border: 1px solid #2a2a4e; border-radius: 8px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem; text-align: left;
+  }
+  .analytics-section h3 {
+    color: #e0e0e0; border-bottom: 1px solid #2a2a4e; padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem; font-size: 1.05rem;
+  }
+  svg.history-chart { overflow: visible; }
+  .chart-dot { cursor: pointer; }
+  .chart-dot:hover { r: 6; }
 
   /* Mobile layout */
   @media (max-width: 600px) {
@@ -193,6 +201,19 @@ function resetLeaderboard() {
   if (el) el.textContent = '';
 }
 
+// Mean confidence (0-100) across questions the participant rated in the
+// CURRENT attempt. Returns null when no question was rated at all — the
+// caller must guard on that and omit the field rather than send a bogus 0.
+// The Google Form only accepts ONE confidence value per submission (no
+// per-question repeat structure), so this attempt-level mean is the most
+// granular thing that can be sent to the population Sheet; the real
+// per-question confidences stay local (recordScoreHistory()/computeCalibration()).
+function computeMeanConfidence() {
+  const rated = S.confidences.filter(function(c) { return c !== null && c !== undefined; });
+  if (rated.length === 0) return null;
+  return rated.reduce(function(a, b) { return a + b; }, 0) / rated.length;
+}
+
 function submitScore(score, total, difficulty, nQuestions) {
   if (scoreSubmitted) return;
   const btn = document.getElementById('submit_btn');
@@ -204,6 +225,8 @@ function submitScore(score, total, difficulty, nQuestions) {
   data.append('entry.268026248', 'acute');
   data.append('entry.232879816', difficulty || '');
   data.append('entry.2010782223', nQuestions || '');
+  const meanConf = computeMeanConfidence();
+  if (meanConf !== null) data.append('entry.1681143871', Math.round(meanConf));
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
     scoreSubmitted = true;
     if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
@@ -222,6 +245,7 @@ function interpolatePercentile(scorePct, group) {
 
 function getPercentile(score, total, difficulty, nQuestions) {
   const pct = score / total * 100;
+  const meanConf = computeMeanConfidence();
   fetch(STATS_URL).then(r => { if (!r.ok) throw new Error(); return r.json(); })
   .then(stats => {
     const d = stats.acute;
@@ -232,6 +256,7 @@ function getPercentile(score, total, difficulty, nQuestions) {
     msg += '! (' + d.overall.n + ' submissions)';
     const el = document.getElementById('percentile_text');
     if (el) el.textContent = msg;
+    renderCalibrationComparison(d.calibration, meanConf, pct);
   }).catch(() => {
     // Fallback to live Sheet
     const el = document.getElementById('percentile_text');
@@ -246,7 +271,95 @@ function getPercentile(score, total, difficulty, nQuestions) {
       const percentile = json.table.rows.length > 0 ? Math.round(below / json.table.rows.length * 100) : 50;
       if (el) el.textContent = 'You scored better than ' + percentile + '% of players! (' + json.table.rows.length + ' submissions)';
     }).catch(() => { if (el) el.textContent = 'Score submitted! Rankings unavailable right now.'; });
+    // quiz_stats.json (the only source of population calibration data) was
+    // unreachable here, so there is nothing to compare against — leave the
+    // population calibration section hidden rather than showing a broken chart.
   });
+}
+
+// ---- Population confidence-calibration comparison (Phase 2 of #132) ----
+// SIMPLIFICATION: the population "calibration score" compared against here
+// is a coarse, ATTEMPT-level approximation of a Brier score —
+// (mean_confidence/100 - score_pct/100)^2 — computed server-side in
+// plan_leaderboard_stats.R from the single confidence value the Form
+// accepts per submission. It is not a true per-question Brier score; the
+// real per-question version stays self-only (see computeCalibration()
+// above and quiz_analytics.qmd's "Calibration" section).
+
+// Generic descending-is-better percentile lookup: returns the percentile
+// of the population whose value is <= `value` (population as-good-or-better
+// than `value` when LOWER values are better, e.g. a calibration score).
+function percentileOfAscending(value, percentiles, values) {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  for (let i = values.length - 1; i >= 0; i--) { if (value >= values[i]) return percentiles[i]; }
+  return 0;
+}
+
+function renderCalibrationScatter(points, myConf, myScorePct) {
+  const W = 320, H = 320, PAD = { l: 34, r: 12, t: 12, b: 32 };
+  const innerW = W - PAD.l - PAD.r, innerH = H - PAD.t - PAD.b;
+  function xPos(v) { return PAD.l + innerW * (Math.max(0, Math.min(100, v)) / 100); }
+  function yPos(v) { return PAD.t + innerH * (1 - Math.max(0, Math.min(100, v)) / 100); }
+
+  const grid = [0, 25, 50, 75, 100].map(function(v) {
+    const gx = xPos(v), gy = yPos(v);
+    return '<line x1="' + PAD.l + '" y1="' + gy + '" x2="' + (W - PAD.r) + '" y2="' + gy + '" stroke="#2a2a4e" stroke-width="1"/>' +
+           '<line x1="' + gx + '" y1="' + PAD.t + '" x2="' + gx + '" y2="' + (H - PAD.b) + '" stroke="#2a2a4e" stroke-width="1"/>' +
+           '<text x="' + (PAD.l - 4) + '" y="' + (gy + 3) + '" text-anchor="end" fill="#6677aa" font-size="9">' + v + '</text>' +
+           '<text x="' + gx + '" y="' + (H - PAD.b + 12) + '" text-anchor="middle" fill="#6677aa" font-size="9">' + v + '</text>';
+  }).join('');
+
+  // Perfect-calibration reference line (confidence == score)
+  const diag = '<line x1="' + xPos(0) + '" y1="' + yPos(0) + '" x2="' + xPos(100) + '" y2="' + yPos(100) +
+    '" stroke="#3a4e7c" stroke-width="1" stroke-dasharray="4,3"/>';
+
+  const popDots = points.map(function(p) {
+    return '<circle class="chart-dot" cx="' + xPos(p.confidence_pct) + '" cy="' + yPos(p.score_pct) +
+      '" r="3.5" fill="#5b9de5" fill-opacity="0.55"><title>Confidence ' + Math.round(p.confidence_pct) +
+      '%, score ' + Math.round(p.score_pct) + '%</title></circle>';
+  }).join('');
+
+  const myDot = '<circle cx="' + xPos(myConf) + '" cy="' + yPos(myScorePct) +
+    '" r="7" fill="#ffbe4d" stroke="#1a1a2e" stroke-width="1.5"><title>You: ' + Math.round(myConf) +
+    '% confident, ' + Math.round(myScorePct) + '% correct</title></circle>';
+
+  const axisLabels =
+    '<text x="' + (PAD.l + innerW / 2) + '" y="' + (H - 2) + '" text-anchor="middle" fill="#8899bb" font-size="10">Mean confidence (%)</text>' +
+    '<text x="10" y="' + (PAD.t + innerH / 2) + '" text-anchor="middle" fill="#8899bb" font-size="10" transform="rotate(-90 10 ' + (PAD.t + innerH / 2) + ')">Score (%)</text>';
+
+  return '<svg class="history-chart" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:320px;display:block;margin:0 auto;">' +
+    grid + diag + popDots + myDot + axisLabels + '</svg>';
+}
+
+function renderCalibrationComparison(dCalib, meanConf, myScorePct) {
+  const section = document.getElementById('pop_calibration_section');
+  const body = document.getElementById('pop_calibration_body');
+  if (!section || !body) return;
+  // No confidence rated this attempt -- nothing to compare, leave hidden.
+  if (meanConf === null || meanConf === undefined) return;
+
+  const popN = (dCalib && dCalib.n) || 0;
+  if (popN < 5) {
+    section.style.display = '';
+    body.innerHTML = '<p style="color:#8899bb;font-size:0.85rem;">Not enough population confidence data yet ' +
+      '(need 5+ rated attempts, have ' + popN + '). Check back soon!</p>';
+    return;
+  }
+
+  const myCalibScore = Math.pow(meanConf / 100 - myScorePct / 100, 2);
+  const q = dCalib.quantiles;
+  const belowOrEqualPct = percentileOfAscending(myCalibScore, q.percentiles, q.calibration_scores);
+  const betterThanPct = Math.max(0, 100 - belowOrEqualPct);
+
+  section.style.display = '';
+  body.innerHTML =
+    '<p style="color:#8899bb;font-size:0.85rem;margin-bottom:0.75rem;">Your calibration score (' +
+    myCalibScore.toFixed(3) + ') is better than ~' + Math.round(betterThanPct) + '% of the ' + popN +
+    ' players who rated their confidence. Lower is better — 0 means your mean confidence exactly matched ' +
+    'your score. This compares your <em>attempt-level</em> mean confidence against your score, a coarser ' +
+    'measure than the per-question calibration in your local ' +
+    '<a href="quiz_analytics.html">Quiz Analytics</a>.</p>' +
+    renderCalibrationScatter(dCalib.points || [], meanConf, myScorePct);
 }
 
 // ---- Local score/confidence history (Phase 1 of #132) ----
@@ -326,9 +439,9 @@ const ENCOURAGEMENTS = [
 function render() {
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
-    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 4); break;
+    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 3); break;
     case 'question': app.innerHTML = renderQuestion(); break;
-    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 5); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }
@@ -533,6 +646,10 @@ function renderResults() {
       </div></div></div>
     </div>
     ${calibHtml}
+    <div class="analytics-section" id="pop_calibration_section" style="display:none;">
+      <h3>Calibration vs. other players</h3>
+      <div id="pop_calibration_body"></div>
+    </div>
     <div class="text-center mb-4">
       <h3>${info.phrase}</h3>
       <em>${info.fact}</em><br>
@@ -546,7 +663,7 @@ function renderResults() {
     </div>
     <div class="text-center mt-2">
       <small id="percentile_text" class="text-muted"></small><br>
-      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
+      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp, and — if you rated any answers — your mean confidence for this attempt only).</small>
     </div>
     <div id="qr-results"></div>`;
 }
@@ -599,4 +716,11 @@ document.addEventListener('DOMContentLoaded', function() {
   render();
 });
 </script>
+```
+
+```{=html}
+<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
+<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
+<p style="margin:8px 0 0;color:#0c5460;"><a href="quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
+</details>
 ```

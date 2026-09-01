@@ -47,7 +47,7 @@ attempted this?”
 
 ### Converting Probabilities to Micromorts
 
-    #> [1] 100
+    [1] 100
 
 ### Common Risks Table
 
@@ -74,9 +74,6 @@ micromort) to BASE jumping (430 micromorts).
 For interactive exploration with hover details and category filtering,
 use
 [`plot_risks_interactive()`](https://johngavin.github.io/micromort/reference/plot_risks_interactive.md):
-
-Interactive version of the risk ladder with hover details and category
-filtering.
 
 ## 2. Microlives (Chronic Risk)
 
@@ -111,9 +108,9 @@ death is moving away from us even as we age.
 
 ### Converting Life Expectancy to Microlives
 
-    #> Heavy smoker (20/day): -20 microlives/day (life lost)
-    #> Moderate exercise: 2 microlives/day (life gained)
-    #> 5kg overweight: -1 microlife/day (life lost)
+    Heavy smoker (20/day): -20 microlives/day (life lost)
+    Moderate exercise: 2 microlives/day (life gained)
+    5kg overweight: -1 microlife/day (life lost)
 
 ## 3. Relationship Between Micromorts and Microlives
 
@@ -184,7 +181,7 @@ people (10 micromorts), is it worth it? Cost per micromort saved = \$50
 / 10 = \$5. If VSL = \$10M, then 1 micromort = \$10. Since \$5 \< \$10,
 it is cost-effective.
 
-    #> $ 10 per micromort
+    $ 10 per micromort
 
 ### UK Valuation: Micromorts ≈ Microlives
 
@@ -199,7 +196,7 @@ for micromorts and microlives:
 This near-equivalence (£1.60 ≈ £1.70) provides empirical support for the
 theoretical conversion: **1 micromort ≈ 1 microlife** in policy terms.
 
-    #> £ 1.6 per micromort
+    £ 1.6 per micromort
 
 This consistency suggests that policy decisions affecting acute risks
 (transport safety) and chronic risks (healthcare interventions) can be
@@ -207,9 +204,45 @@ compared on a common scale.
 
 ## 5. Loss of Life Expectancy (LLE)
 
-**LLE** estimates the average time lost from a lifespan due to a
-specific risk. For a 1-in-a-million risk (1 micromort), the LLE is
-approximately 21 minutes (assuming 40 years remaining life).
+**Loss of Life Expectancy (LLE)** estimates the average time lost from a
+lifespan due to a specific risk. It converts abstract probabilities into
+a tangible duration — answering “how much life does this cost me on
+average?”
+
+**Formula:** LLE = probability of death × remaining life expectancy
+
+For a 1-in-a-million risk (1 micromort), assuming 40 years remaining
+life:
+
+LLE = 1/1,000,000 × 40 years × 525,960 min/year ≈ **21 minutes**
+
+### Worked Examples
+
+| Activity | Micromorts | LLE per exposure | Equivalent time cost |
+|----|----|----|----|
+| Chest X-ray | 0.1 | ~2 minutes | Making a cup of tea |
+| Skydiving (1 jump) | 8 | ~3 hours | Watching a long film |
+| General anaesthetic | 10 | ~3.5 hours | A half-day at work |
+| Motorcycle ride (250 miles) | 40 | ~14 hours | A night’s sleep + commute |
+| BASE jumping (1 jump) | 430 | ~6 days | A short holiday |
+
+### Age Sensitivity
+
+LLE depends critically on remaining life expectancy. The same
+10-micromort surgery “costs” different amounts depending on age:
+
+| Age | Remaining LE | LLE from 10 micromorts |
+|-----|--------------|------------------------|
+| 20  | ~60 years    | 5.3 hours              |
+| 40  | ~40 years    | 3.5 hours              |
+| 60  | ~22 years    | 1.9 hours              |
+| 80  | ~9 years     | 0.8 hours              |
+
+Use
+[`lle(prob, life_expectancy = ...)`](https://johngavin.github.io/micromort/reference/lle.md)
+to calculate for any age. See also
+[`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md)
+for converting age-specific mortality into micromorts per day.
 
 ## 6. Complementary Metrics: QALY, DALY, and Morbidity
 
@@ -217,24 +250,33 @@ Micromorts and microlives focus on mortality. But many conditions (like
 the common cold) cause significant quality of life loss without being
 fatal. Complementary metrics capture this morbidity burden.
 
-### QALY (Quality-Adjusted Life Year)
+### [QALY](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case) (Quality-Adjusted Life Year)
 
 Measures years of life adjusted for quality. **1 QALY = 1 year of
-perfect health.**
+perfect health.** See the [NICE Methods
+Guide](https://www.nice.org.uk/process/pmg9/chapter/the-reference-case)
+for how QALYs are used in health technology assessment.
 
 - Health states are weighted 0 (death) to 1 (perfect health)
 - A year with chronic pain at 0.7 quality = 0.7 QALYs
 - Used to assess cost-effectiveness of medical interventions (e.g.,
   £20,000-30,000 per QALY threshold in UK)
+- Measured using instruments like the
+  [EQ-5D](https://euroqol.org/eq-5d-instruments/) (mobility, self-care,
+  usual activities, pain, anxiety)
 
-### DALY (Disability-Adjusted Life Years)
+### [DALY](https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158) (Disability-Adjusted Life Years)
 
-Measures disease burden as the sum of two components:
+Measures disease burden as the sum of two components. Defined by the
+[WHO Global Burden of
+Disease](https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates/global-health-estimates-leading-causes-of-dalys)
+study.
 
 - **DALY = YLL + YLD**, where:
   - **YLL (Years of Life Lost):** From premature mortality
   - **YLD (Years Lived with Disability):** From morbidity, weighted by
-    disability severity
+    [disability
+    weights](https://ghdx.healthdata.org/record/ihme-data/gbd-2019-disability-weights)
 
 For fatal diseases like COVID-19, YLL dominates. For non-fatal
 conditions like the common cold, YLD dominates.
@@ -298,12 +340,6 @@ The
 function calculates total life expectancy gain from adopting all optimal
 lifestyle choices:
 
-    #> Target 'vig_intro_portfolio_by_category' not found in targets store or RDS fallback.
-    #> *Target 'vig_intro_portfolio_by_category' not available.*
-
-    #> Target 'vig_intro_portfolio_summary' not found in targets store or RDS fallback.
-    #> *Target 'vig_intro_portfolio_summary' not available.*
-
 **Interpretation:** A fully “hedged” individual (non-smoker, regular
 exercise, healthy diet, vaccinated, etc.) can expect to gain significant
 additional life expectancy compared to an “unhedged” baseline.
@@ -353,113 +389,99 @@ Simpson’s paradox and stratification strategies, see the [Confounding
 Variables](https://johngavin.github.io/micromort/articles/confounding.md)
 vignette.
 
-## 8. Data Quality: The Denominator Problem
+## 8. Data Quality
 
-Not every widely-cited risk statistic belongs in a curated dataset. Many
-“exotic” risk figures circulate in media and popular science without the
-rigorous **exposure denominator** needed for meaningful micromort
-calculations. This section explains why certain risks were excluded and
-what to watch for when interpreting risk data.
+A micromort value is only meaningful when paired with a clear **exposure
+denominator** — *Deaths ÷ Exposures = Probability*. Many widely-cited
+risk figures fail this test: unknown denominators (how many bee sting
+*exposures* per year?), misleading population averages (bed falls: 0.004
+mm/night under-65 vs 10.2 mm/night age 85+ male), or fabricated
+numerators (the “150 coconut deaths/year” myth).
 
-### 8.1 The Three Denominator Failures
+For the full treatment — denominator failures, inclusion criteria,
+cross-validation methods, and worked examples — see the [Data
+Reliability](https://johngavin.github.io/micromort/articles/data_reliability.md)
+vignette. For how confounding variables (age, geography, health profile)
+reshape risk rankings, see [Confounding
+Variables](https://johngavin.github.io/micromort/articles/confounding.md).
 
-A micromort value is only meaningful when paired with a clear **period**
-— the unit of exposure. We require: *Deaths ÷ Exposures = Probability*.
-Three common failures make this impossible:
+## 10. The Perception Gap
 
-**1. Unknown denominator (no exposure count)**
+Why do people fear flying (0.05 micromorts per flight) more than driving
+to the airport (1–3 micromorts)? David Ropeik’s *Risk: A Practical Guide
+for Deciding What’s Really Safe and What’s Really Dangerous* (2002)
+identifies a set of psychological factors that systematically distort
+risk perception away from statistical reality.
 
-| Risk | Annual deaths (US) | What we don’t know |
-|----|----|----|
-| Bee/wasp stings | 72 | How many sting *exposures* per year? Is this per sting, per outdoor hour, per year of beekeeping? |
-| Dog mauling | 43-127 | Per dog interaction? Per year of dog ownership? Per year of existing near dogs? |
-| Fire ant stings | ~30 | Per sting event? Per year in fire ant territory? |
+**Ropeik’s key factors:**
 
-The 72 bee sting deaths per year ([CDC
-MMWR](https://www.cdc.gov/mmwr/volumes/68/wr/mm6829a5.htm)) is a solid
-numerator from the National Vital Statistics System. But without knowing
-the total number of sting exposures, we cannot calculate a per-sting
-micromort value. The best we can do is a per-year population rate (0.22
-micromorts/year for any US resident), which conflates people who never
-encounter bees with beekeepers stung weekly.
+- **Dread:** Risks that evoke vivid suffering (cancer, plane crashes)
+  feel larger than equivalent-mortality risks that kill quietly (heart
+  disease, falls)
+- **Control:** Voluntary risks (skiing, smoking) feel smaller than
+  imposed risks (pollution, food additives) even at equal micromort
+  levels
+- **Familiarity:** Novel risks (vaping, CRISPR) trigger more fear than
+  longstanding ones (alcohol, driving) regardless of the evidence
+- **Catastrophic potential:** A single event killing 200 people
+  generates more fear than 200 separate events each killing one person,
+  though the mortality is identical
 
-**2. Misleading population average (hides conditional risk)**
+These factors explain a persistent pattern in this package’s data: **the
+activities people worry about most are rarely the ones with the highest
+micromort counts**.
 
-| Risk | Population average | Conditional reality |
-|----|----|----|
-| Falling out of bed | 1.36 micromorts/year (US) | Under-65: ~0.004/night; Age 85+ male: **10.2/night** |
-| Cow trampling | 0.07 micromorts/year (US) | General public: ~0; Cattle farmer: ~7.5/year |
-| Lightning strike | 0.08 micromorts/year (US) | Indoor worker: ~0.02; Outdoor agricultural worker: ~1.2/year |
+Consider the cancer example from
+[`cancer_risks()`](https://johngavin.github.io/micromort/reference/cancer_risks.md):
+cancer accounts for roughly 25% of UK deaths, yet surveys consistently
+rank it as the *most feared* cause of death — ahead of cardiovascular
+disease, which kills more people ([Ropeik
+2010](https://doi.org/10.1111/j.1539-6924.2010.01412.x)). The
+[`chronic_disease_risks()`](https://johngavin.github.io/micromort/reference/chronic_disease_risks.md)
+data confirms that cardiovascular daily micromorts exceed cancer daily
+micromorts in every country in the dataset.
 
-Falling out of bed kills ~450 Americans per year
-([CPSC](https://www.cpsc.gov/Newsroom/News-Releases/2022/Older-Americans-Are-More-Likely-to-Suffer-Fatalities-from-Falls-and-Fire-CPSC-Report-Highlights-Hidden-Hazards-Around-the-Home)),
-but the CDC age-stratified data ([Data Brief
-532](https://www.cdc.gov/nchs/products/databriefs/db532.htm)) reveals a
-**2,500-fold** difference: an 85-year-old man faces ~10 micromorts per
-night of sleep (comparable to riding a motorcycle 60 miles), while
-someone under 65 faces ~0.004. The population average of 1.36/year is
-technically correct but practically useless.
+## 11. Calibrating Intuition
 
-**3. Fabricated or untraceable numerator**
+The practical goal of the `micromort` package is to help calibrate
+intuition against evidence. Ropeik’s framework suggests three
+strategies:
 
-| Claim | Cited figure | Actual evidence |
-|----|----|----|
-| Coconut deaths | “150 per year worldwide” | Originated from a **travel insurance press release** (Club Direct, late 1990s), not from Barss (1984). The original [Barss paper](https://pubmed.ncbi.nlm.nih.gov/6502774/) documented only 2 deaths over 4 years at one Papua New Guinea hospital. ([Snopes: Unproven](https://www.snopes.com/fact-check/coconuts-kill-more-sharks/)) |
-| Champagne cork deaths | “24 per year” | Traced to a 2008 *Daily Mail* article citing a tabloid book. No government vital statistics, hospital registry, or peer-reviewed study supports this figure. |
-| Left-handed equipment deaths | “9 years shorter lifespan” | A statistical artefact from [Halpern & Coren (1991)](https://pubmed.ncbi.nlm.nih.gov/2006231/), debunked by multiple papers. The apparent age gap reflects historical suppression of left-handedness reporting, not excess mortality ([van der Hoeven et al., 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10369838/)). |
+1.  **Anchor on familiar risks.** When evaluating a new risk, compare it
+    to something you already accept. The quiz vignettes do exactly this
+    — presenting pairs like “one skydive vs. 2.5 days of UK
+    cardiovascular risk” to build intuitive anchors.
 
-### 8.2 Inclusion Criteria for This Package
+2.  **Separate frequency from dread.** A risk that feels terrifying
+    (shark attack: 0.001 micromorts/beach visit) may be statistically
+    negligible compared to a risk that feels mundane (driving: 0.3
+    micromorts per 100 km). The
+    [`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
+    function puts both on the same scale.
 
-Risks in
-[`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)
-and
-[`acute_risks()`](https://johngavin.github.io/micromort/reference/acute_risks.md)
-meet these minimum standards:
+3.  **Account for chronic accumulation.** Ropeik emphasises that people
+    consistently underestimate slow, cumulative risks relative to
+    dramatic one-off events. The
+    [`combined_quiz_pairs()`](https://johngavin.github.io/micromort/reference/combined_quiz_pairs.md)
+    function is designed to make this comparison explicit: one acute
+    micromort event vs. the equivalent number of days of chronic
+    exposure.
 
-1.  **Traceable numerator**: Death count from a government agency (CDC,
-    CPSC, WHO, NOAA) or peer-reviewed epidemiological study
-2.  **Defined denominator**: A meaningful exposure unit (per ride, per
-    climb, per day, per trip) — not just “per year of being alive”
-3.  **Reproducible calculation**: The micromort derivation can be
-    independently verified from the cited source
-4.  **Not a myth**: The figure has not been debunked by subsequent
-    peer-reviewed work
+For further reading, see Slovic’s *The Perception of Risk*
+([2000](https://doi.org/10.4324/9781315661773)) and Fischhoff et al.’s
+foundational psychometric work
+([1978](https://doi.org/10.1016/0032-5910(78)80030-X)), which provide
+the empirical basis for Ropeik’s framework.
 
-Risks that fail criterion 2 but pass the others may still appear with
-`period = "per year"` as a background population rate, clearly labelled
-as such. See
-[`risk_data_sources()`](https://johngavin.github.io/micromort/reference/risk_data_sources.md)
-for full provenance of each entry. For examples of how confounding
-variables (age, occupation, allergy status) can change risk estimates by
-orders of magnitude, see the [Confounding
-Variables](https://johngavin.github.io/micromort/articles/confounding.md)
-vignette.
-
-### 8.3 When “Per Year” Is Legitimate
-
-Some risks are genuinely **background hazards** where the exposure is
-simply *being alive in a given geography*:
-
-- Lightning strike: 0.08 micromorts/year (US) — everyone is exposed to
-  thunderstorms
-- Asteroid impact: 0.01 micromorts/year (global) — a theoretical
-  actuarial average
-  ([NASA](https://ntrs.nasa.gov/api/citations/20160013841/downloads/20160013841.pdf))
-- Living one day at age 75: 120 micromorts/day — the baseline hazard
-  rate from all causes
-
-These are valid “per year” figures because the denominator is the entire
-population and the exposure is unavoidable. The problem arises when a
-per-year population rate is presented for an activity that only a
-fraction of the population engages in.
-
-## 9. Conclusion
+## 12. Conclusion
 
 The `micromort` package helps translate abstract probabilities into
 concrete units for better decision-making. By comparing acute risks
 (micromorts), chronic risks (microlives), and quality-of-life metrics
-(QALYs, DALYs), individuals and policymakers can make more informed
-choices about risk trade-offs.
+([QALYs](https://www.nice.org.uk/glossary?letter=q),
+[DALYs](https://www.who.int/data/gho/indicator-metadata-registry/imr-details/158)),
+individuals and policymakers can make more informed choices about risk
+trade-offs.
 
 The new conditional risk functions enable:
 
@@ -476,51 +498,46 @@ Show code
 
 ``` r
 sessionInfo()
-#> R version 4.5.2 (2025-10-31)
-#> Platform: aarch64-apple-darwin25.2.0
-#> Running under: macOS Tahoe 26.3.1
-#> 
-#> Matrix products: default
-#> BLAS:   /nix/store/ab8sq4g14lg45192ykfqcklgw6fvaswh-blas-3/lib/libblas.dylib 
-#> LAPACK: /nix/store/ssl6kfm7w37gz5pn57jn2x7xzw3bss24-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
-#> 
-#> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-#> 
-#> time zone: Europe/Belfast
-#> tzcode source: internal
-#> 
-#> attached base packages:
-#> [1] stats     graphics  grDevices utils     datasets  methods   base     
-#> 
-#> other attached packages:
-#> [1] DT_0.34.0       targets_1.11.4  micromort_0.1.0 testthat_3.3.2 
-#> 
-#> loaded via a namespace (and not attached):
-#>  [1] gtable_0.3.6        xfun_0.56           bslib_0.10.0       
-#>  [4] ggplot2_4.0.1       htmlwidgets_1.6.4   processx_3.8.6     
-#>  [7] callr_3.7.6         vctrs_0.7.1         tools_4.5.2        
-#> [10] crosstalk_1.2.2     ps_1.9.1            generics_0.1.4     
-#> [13] base64url_1.4       tibble_3.3.1        pkgconfig_2.0.3    
-#> [16] data.table_1.18.2.1 checkmate_2.3.3     secretbase_1.1.1   
-#> [19] RColorBrewer_1.1-3  S7_0.2.1            desc_1.4.3         
-#> [22] assertthat_0.2.1    lifecycle_1.0.5     compiler_4.5.2     
-#> [25] farver_2.1.2        credentials_2.0.3   brio_1.1.5         
-#> [28] codetools_0.2-20    sass_0.4.10         htmltools_0.5.9    
-#> [31] sys_3.4.3           usethis_3.2.1       lazyeval_0.2.2     
-#> [34] yaml_2.3.12         plotly_4.12.0       tidyr_1.3.2        
-#> [37] jquerylib_0.1.4     pillar_1.11.1       openssl_2.3.4      
-#> [40] cachem_1.1.0        tidyselect_1.2.1    digest_0.6.39      
-#> [43] dplyr_1.1.4         purrr_1.2.1         arrow_22.0.0       
-#> [46] rprojroot_2.1.1     fastmap_1.2.0       grid_4.5.2         
-#> [49] cli_3.6.5           magrittr_2.0.4      pkgbuild_1.4.8     
-#> [52] withr_3.0.2         prettyunits_1.2.0   scales_1.4.0       
-#> [55] backports_1.5.0     bit64_4.6.0-1       httr_1.4.7         
-#> [58] rmarkdown_2.30      igraph_2.2.1        bit_4.6.0          
-#> [61] otel_0.2.0          askpass_1.2.1       evaluate_1.0.5     
-#> [64] knitr_1.51          viridisLite_0.4.2   rlang_1.1.7        
-#> [67] gert_2.3.1          glue_1.8.0          pkgload_1.4.1      
-#> [70] jsonlite_2.0.0      R6_2.6.1            fs_1.6.6
+R version 4.5.2 (2025-10-31)
+Platform: aarch64-apple-darwin24.6.0
+Running under: macOS Tahoe 26.5.2
+
+Matrix products: default
+BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib 
+LAPACK: /nix/store/5kg4z5bffhr8nry8bl8l5wlxvpy54dm2-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+time zone: Europe/Belfast
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] DT_0.34.0       targets_1.11.4  micromort_0.2.0 testthat_3.3.1 
+
+loaded via a namespace (and not attached):
+ [1] gtable_0.3.6       bslib_0.9.0        xfun_0.55          ggplot2_4.0.1     
+ [5] htmlwidgets_1.6.4  processx_3.8.6     callr_3.7.6        crosstalk_1.2.2   
+ [9] vctrs_0.6.5        tools_4.5.2        ps_1.9.1           generics_0.1.4    
+[13] base64url_1.4      tibble_3.3.0       pkgconfig_2.0.3    data.table_1.18.0 
+[17] checkmate_2.3.3    secretbase_1.0.5   RColorBrewer_1.1-3 S7_0.2.1          
+[21] desc_1.4.3         assertthat_0.2.1   lifecycle_1.0.4    compiler_4.5.2    
+[25] farver_2.1.2       credentials_2.0.3  brio_1.1.5         codetools_0.2-20  
+[29] sass_0.4.10        htmltools_0.5.9    sys_3.4.3          usethis_3.2.1     
+[33] lazyeval_0.2.2     yaml_2.3.12        plotly_4.11.0      tidyr_1.3.2       
+[37] jquerylib_0.1.4    pillar_1.11.1      openssl_2.3.4      cachem_1.1.0      
+[41] tidyselect_1.2.1   digest_0.6.39      dplyr_1.1.4        purrr_1.2.0       
+[45] arrow_22.0.0       rprojroot_2.1.1    fastmap_1.2.0      grid_4.5.2        
+[49] cli_3.6.5          magrittr_2.0.4     pkgbuild_1.4.8     withr_3.0.2       
+[53] prettyunits_1.2.0  scales_1.4.0       backports_1.5.0    bit64_4.6.0-1     
+[57] httr_1.4.7         rmarkdown_2.30     igraph_2.2.1       bit_4.6.0         
+[61] otel_0.2.0         askpass_1.2.1      evaluate_1.0.5     knitr_1.51        
+[65] viridisLite_0.4.2  rlang_1.1.6        gert_2.2.0         Rcpp_1.1.0        
+[69] glue_1.8.0         pkgload_1.4.1      jsonlite_2.0.0     R6_2.6.1          
+[73] fs_1.6.6           units_1.0-0       
 ```
 
 ------------------------------------------------------------------------

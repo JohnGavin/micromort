@@ -1,9 +1,0 @@
-<script src="causes_of_death_data.json" type="application/json" id="death-data-src"></script>
-<script>
-// Load JSON data then initialize
-fetch('causes_of_death_data.json')
-  .then(function(r){return r.json()})
-  .then(function(data){window._COD_DATA=data})
-  .catch(function(e){console.error('data load failed',e)});
-</script>
-<script src="causes_of_death_app.js"></script>

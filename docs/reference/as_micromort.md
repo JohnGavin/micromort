@@ -6,7 +6,7 @@ converts a raw probability of death into micromorts.
 ## Usage
 
 ``` r
-as_micromort(prob)
+as_micromort(prob, use_units = FALSE)
 ```
 
 ## Arguments
@@ -15,9 +15,15 @@ as_micromort(prob)
 
   Numeric. Probability of death (0 to 1).
 
+- use_units:
+
+  Logical. If `TRUE`, returns a `units` object with unit "micromort".
+  Default `FALSE` returns a plain numeric for backwards compatibility.
+
 ## Value
 
-Numeric value in micromorts.
+Numeric value in micromorts, or a `units` object when
+`use_units = TRUE`.
 
 ## See also
 
@@ -34,8 +40,10 @@ Other conversion:
 ## Examples
 
 ``` r
-as_micromort(1/1000000) # 1 micromort
+as_micromort(1/1000000) # 1 micromort (plain numeric)
 #> [1] 1
-as_micromort(1/10000)   # 100 micromorts
+as_micromort(1/10000)   # 100 micromorts (plain numeric)
 #> [1] 100
+as_micromort(1/1000000, use_units = TRUE) # 1 [micromort]
+#> 1 [micromort]
 ```

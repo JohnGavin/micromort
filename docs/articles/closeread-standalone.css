@@ -1,9 +1,33 @@
 /* global layout styles */
-/* helpful for docs with no header space
-.cr-section .narrative-col > *:first-child {
-  padding-block-start: 10svh !important;
+
+/* Reduce vertical gap after H2 headings */
+.cr-section .narrative-col h2 {
+  margin-bottom: 0.5rem;
+  padding-bottom: 0;
 }
-*/
+/* Halve top padding of first trigger in each section */
+.cr-section .narrative-col .trigger:first-child {
+  padding-block-start: 20svh;
+}
+
+/* Table font matches narrative base (1.25rem), body text 2 sizes larger (1.5rem) */
+.cr-section .narrative-col p,
+.cr-section .narrative-col li {
+  font-size: 1.5rem;
+  line-height: 1.7;
+}
+.cr-section .narrative-col h2 {
+  font-size: 1.8rem;
+}
+.cr-section .narrative-col h3 {
+  font-size: 1.6rem;
+}
+.cr-section .sticky-col table,
+.cr-section .sticky-col .dataTables_wrapper,
+.cr-section .sticky-col .dataTables_wrapper td,
+.cr-section .sticky-col .dataTables_wrapper th {
+  font-size: 1.25rem;
+}
 .cr-section {
   display: grid;
   grid-template-rows: 1fr;

@@ -55,6 +55,18 @@ load.
   Interactive drag-and-drop quiz ranking everyday risks by their effect
   on life expectancy. Combining acute micromorts and chronic microlives.
 
+- [Your Quiz
+  Analytics](https://johngavin.github.io/micromort/articles/quiz_analytics.md):
+
+  Personal quiz history and performance stats — reads data stored
+  locally in your browser.
+
+- [Risk Portfolio
+  Builder](https://johngavin.github.io/micromort/articles/portfolio_shinylive.md):
+
+  Build your personal risk portfolio — select activities and see
+  cumulative annual risk.
+
 ### Storytelling
 
 - [The Invisible
@@ -62,12 +74,21 @@ load.
 
 ### Analysis
 
+- [Causes of Death by
+  Country](https://johngavin.github.io/micromort/articles/causes_of_death.md):
+
+  What kills people? Interactive breakdown of 14 major causes of death
+  across 26 countries (GBD 2019).
+
 - [Risk Equivalence
   Dashboard](https://johngavin.github.io/micromort/articles/risk_equivalence.md):
+
 - [Regional Variation in Life
   Expectancy](https://johngavin.github.io/micromort/articles/regional_variation.md):
+
 - [Confounding Variables in Risk
   Data](https://johngavin.github.io/micromort/articles/confounding.md):
+
 - [How Reliable Are These
   Numbers?](https://johngavin.github.io/micromort/articles/data_reliability.md):
 
@@ -77,5 +98,3 @@ load.
   Overview](https://johngavin.github.io/micromort/articles/architecture.md):
 - [REST
   API](https://johngavin.github.io/micromort/articles/rest_api.md):
-- [Project
-  Telemetry](https://johngavin.github.io/micromort/articles/telemetry.md):

@@ -116,6 +116,22 @@ table {
   padding: 4px 8px !important;
 }
 
+/* Page/footer metadata collapsed via extra.js: relocated pkgdown "Source:"
+   line and the wrapped site footer. No custom background is set here so
+   both inherit the page's normal text/background colors in light AND dark
+   mode automatically. */
+details.page-meta,
+details.footer-meta {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+}
+
+details.page-meta summary,
+details.footer-meta summary {
+  cursor: pointer;
+  color: #6c757d;
+}
+
 /* Dark plot container for risk comparison plots */
 .dark-plot-container {
   background-color: #1a1a1a;

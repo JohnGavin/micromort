@@ -28,7 +28,14 @@ A tibble with columns:
 \item{period}{Human-readable period description}
 \item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}
 \item{period_days}{Typical duration in days (for cross-activity comparison)}
-\item{micromorts_per_day}{Micromorts normalized per day}
+\item{micromorts_per_day}{Micromorts normalized per day, rounded to 2
+decimal places. Suitable for display; may collapse to 0.00 for very
+low-rate rows (e.g. annual risk / 365). Use
+\code{micromorts_per_day_raw} for downstream computation.}
+\item{micromorts_per_day_raw}{Unrounded micromorts per day
+(\code{micromorts / period_days}). Use this column for any
+multiplication (e.g. projecting to a time window) to avoid rounding
+errors on low-rate annual/monthly rows.}
 \item{source_url}{Data source URL}
 \item{n_components}{Number of atomic components summed}
 \item{hedgeable_pct}{Percent of total micromorts that are hedgeable}
