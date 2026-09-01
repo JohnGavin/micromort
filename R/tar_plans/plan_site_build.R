@@ -12,6 +12,7 @@
 #'   - site_chronic_shinylive: Render microlife quiz via quarto
 #'   - site_ranking_shinylive: Render risk-ranking quiz via quarto
 #'   - site_portfolio_shinylive: Render risk portfolio builder via quarto
+#'   - site_details: Render Details page via quarto (pkgdown mangles its tabset)
 #'   - site_deploy_shinylive: Copy shinylive outputs into docs/articles/
 #'   - site_verify: Check all navbar articles exist in docs/
 
@@ -381,6 +382,61 @@ plan_site_build <- list(
     }
   ),
 
+  # Render the Details page directly with quarto (pkgdown's build_site()
+  # wrapper mangles this page's `.panel-tabset` div: the tab content ends
+  # up nested inside a <button> and the second/third tabs lose their
+  # `.tab-pane`/`role=tab` wrapping entirely, breaking Bootstrap's JS
+  # tab-switching. A plain `quarto render` of the same .qmd file produces
+  # correct `<a class="nav-link" ...>` / `.tab-pane` markup — same failure
+  # class as the include-in-header CSS-drop documented in
+  # vignettes/_includes/toolbar.html and vignettes/_quarto.yml's `render:`
+  # comment. Mirrors site_closeread's overwrite-after-pkgdown pattern.
+  targets::tar_target(
+    site_details,
+    {
+      force(site_pkgdown)
+
+      qmd_path <- "vignettes/details.qmd"
+      if (!fs::file_exists(qmd_path)) {
+        cli::cli_alert_info("Details qmd not found — skipping")
+        return(list(qmd = qmd_path, skipped = TRUE, timestamp = Sys.time()))
+      }
+
+      cli::cli_alert_info("Rendering {qmd_path} with quarto (direct, bypassing pkgdown)...")
+      result <- withr::with_dir("vignettes", {
+        system2(
+          "quarto", c("render", "details.qmd"),
+          stdout = TRUE, stderr = TRUE
+        )
+      })
+      status <- attr(result, "status")
+      if (!is.null(status) && status != 0) {
+        cli::cli_abort(c(
+          "x" = "quarto render failed for {qmd_path}",
+          "i" = paste(utils::tail(result, 20), collapse = "\n")
+        ))
+      }
+
+      # Copy to docs/articles/ (overwrite pkgdown's mangled tabset version)
+      articles_dir <- "docs/articles"
+      html_src <- "vignettes/details.html"
+      files_src <- "vignettes/details_files"
+
+      if (fs::file_exists(html_src)) {
+        fs::file_copy(html_src, file.path(articles_dir, "details.html"),
+                      overwrite = TRUE)
+      }
+      if (fs::dir_exists(files_src)) {
+        dest <- file.path(articles_dir, "details_files")
+        if (fs::dir_exists(dest)) fs::dir_delete(dest)
+        fs::dir_copy(files_src, dest)
+      }
+
+      cli::cli_alert_success("Details page rendered and deployed")
+      list(qmd = qmd_path, output = result, timestamp = Sys.time())
+    }
+  ),
+
   # Copy shinylive outputs into docs/articles/
   targets::tar_target(
     site_deploy_shinylive,
@@ -440,6 +496,7 @@ plan_site_build <- list(
       # Depend on deploy steps and leaderboard stats
       force(site_deploy_shinylive)
       force(site_closeread)
+      force(site_details)
       force(leaderboard_stats_json)
 
       # Check leaderboard stats JSON exists

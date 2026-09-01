@@ -8,6 +8,7 @@ articles:
   chronic_vs_acute: chronic_vs_acute.html
   confounding: confounding.html
   data_reliability: data_reliability.html
+  details: details.html
   introduction: introduction.html
   microlife-quiz: microlife-quiz.html
   micromort-quiz: micromort-quiz.html
@@ -21,7 +22,7 @@ articles:
   risk_equivalence: risk_equivalence.html
   risk-ranking-quiz: risk-ranking-quiz.html
   what-is-a-micromort: what-is-a-micromort.html
-last_built: 2026-09-01T13:03Z
+last_built: 2026-09-01T20:48Z
 urls:
   reference: https://johngavin.github.io/micromort/reference
   article: https://johngavin.github.io/micromort/articles

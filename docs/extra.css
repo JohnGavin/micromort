@@ -132,6 +132,32 @@ details.footer-meta summary {
   color: #6c757d;
 }
 
+/* WCAG AA: #6c757d on the dark-mode body background (#000000, see
+   vignettes/_includes/toolbar.html) is 4.48:1 -- just under the 4.5:1
+   normal-text threshold. #adb5bd on #000000 measures 10.12:1. */
+body.dark-mode details.page-meta summary,
+body.dark-mode details.footer-meta summary {
+  color: #adb5bd;
+}
+
+/* WCAG AA: Bootstrap/bootswatch-flatly's .btn-outline-primary uses the
+   light-theme "primary" color (#2c3e50) for both text and border. Against
+   this site's dark-mode body background (#000000) that measured 1.91:1 --
+   near-invisible ("View Details" button, micromort/microlife/risk-ranking
+   quiz results screens). #8bb9fe (already used for .help-link in the same
+   quiz pages) measures 10.47:1. */
+body.dark-mode .btn-outline-primary {
+  color: #8bb9fe;
+  border-color: #8bb9fe;
+}
+
+body.dark-mode .btn-outline-primary:hover,
+body.dark-mode .btn-outline-primary:focus {
+  color: #212529;
+  background-color: #8bb9fe;
+  border-color: #8bb9fe;
+}
+
 /* Dark plot container for risk comparison plots */
 .dark-plot-container {
   background-color: #1a1a1a;
@@ -327,4 +353,243 @@ table.dataTable caption {
   figcaption, .figure-caption {
     color: #adb5bd;
   }
+}
+
+/* ============================================================
+   Vignette toolbar (dark/light toggle + font size) + body.dark-mode
+   overrides -- DUPLICATED from vignettes/_includes/toolbar.html's own
+   <style> block (issue: toolbar reported at bottom-left instead of
+   pinned top-right). Keep both copies in sync when editing.
+
+   pkgdown::build_site() silently drops the <style> half of a quarto
+   `include-in-header` file on every page it renders directly (14 of
+   19 vignettes) -- this copy fixes those. The other 5 vignettes,
+   PLUS the "Details" page (site_details target -- pkgdown also
+   mangles its .panel-tabset markup), are rendered via a dedicated
+   `quarto render` target in plan_site_build.R and never link this
+   file at all (they're standalone quarto documents, not merged into
+   pkgdown's template) -- those 6 pages need the toolbar.html copy
+   instead. Neither copy can be deleted without breaking one of the
+   two page classes. See the comment in vignettes/_includes/toolbar.html
+   for the full diagnosis.
+   ============================================================ */
+
+/* ===== Toolbar Container ===== */
+#vignette-toolbar {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 10000;
+  display: flex;
+  gap: 6px;
+  background: rgba(128, 128, 128, 0.15);
+  padding: 4px 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+#vignette-toolbar button {
+  font-size: 16px;
+  background: none;
+  border: 1px solid #888;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 30px;
+  text-align: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+#vignette-toolbar button:hover {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+#vignette-toolbar button:focus {
+  outline: 2px solid #4ea8de;
+  outline-offset: 2px;
+}
+
+/* Light mode button colors */
+body:not(.dark-mode) #vignette-toolbar button {
+  color: #333;
+  border-color: #666;
+}
+
+/* Dark mode button colors */
+body.dark-mode #vignette-toolbar button {
+  color: #eee;
+  border-color: #888;
+}
+
+/* ===== Dark Mode Styles ===== */
+body.dark-mode, html.dark-mode {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4,
+body.dark-mode p, body.dark-mode li, body.dark-mode td, body.dark-mode th,
+body.dark-mode code, body.dark-mode pre, body.dark-mode blockquote,
+body.dark-mode .quarto-title, body.dark-mode #title-block-header {
+  color: #ffffff !important;
+}
+
+/* NOT !important (WCAG AA fix, this session): plain <a> tags in prose
+   still get this color by cascade (body.dark-mode a has higher element
+   count than a bare .some-class selector), but page-specific link-color
+   fixes with >=2 classes -- e.g. micromort-quiz.qmd's
+   ".quiz-btn-correct .help-link { color: #0a58ca }", tuned in WCAG sweep
+   #125/#128 for a *light* revealed-answer background -- now correctly win
+   by specificity instead of being clobbered by !important. Before this
+   session, this collision was invisible because pkgdown::build_site()
+   silently dropped this whole CSS block on every page (this file didn't
+   exist here yet); fixing that drop is what surfaced the collision. Kept
+   in sync with the matching rule in vignettes/_includes/toolbar.html. */
+body.dark-mode a { color: #4ea8de; }
+body.dark-mode a:visited { color: #9d7cd8; }
+
+body.dark-mode .callout, body.dark-mode .card, body.dark-mode .sidebar,
+body.dark-mode nav, body.dark-mode header, body.dark-mode footer {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode table {
+  background-color: #1a1a1a !important;
+}
+
+body.dark-mode tr:nth-child(even) {
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode code {
+  background-color: #2a2a2a !important;
+}
+
+body.dark-mode pre {
+  background-color: #1a1a1a !important;
+  border-color: #444 !important;
+}
+
+/* Override any inline light backgrounds */
+body.dark-mode [style*="background:#fff"],
+body.dark-mode [style*="background:#f8"],
+body.dark-mode [style*="background:#d1e"],
+body.dark-mode [style*="background: #fff"],
+body.dark-mode [style*="background: #f8"],
+body.dark-mode [style*="background: #d1e"],
+body.dark-mode [style*="background-color:#fff"],
+body.dark-mode [style*="background-color:#f8"],
+body.dark-mode [style*="background-color:#d1e"],
+body.dark-mode [style*="background-color: #fff"],
+body.dark-mode [style*="background-color: #f8"],
+body.dark-mode [style*="background-color: #d1e"] {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Shinylive iframe dark mode */
+body.dark-mode .shinylive-wrapper,
+body.dark-mode .shinylive-container,
+body.dark-mode iframe {
+  background-color: #1a1a1a !important;
+}
+
+/* ===== Accessible Color Overrides (>=4.5:1 on #000) ===== */
+body.dark-mode .text-success { color: #69d4a0 !important; }
+body.dark-mode .text-danger { color: #f08080 !important; }
+body.dark-mode .text-info { color: #5edaff !important; }
+body.dark-mode .text-primary { color: #4ea8de !important; }
+
+/* WCAG AA fix (this session): .alert-success/.alert-danger/.alert-info and
+   .badge.bg-success/.badge.bg-danger are FILLED elements with their own
+   saturated bootswatch-flatly background (colors are theme constants, not
+   affected by dark/light mode) -- text inside them must contrast against
+   THAT background, not the page background, so they are deliberately
+   excluded from the .text-* rule above (which assumes the page's #000
+   background). bootswatch flatly's own un-overridden default (white text)
+   measures only 2.41-3.82:1 against these backgrounds -- also fails AA.
+   Measured replacement: #000000 vs #e74c3c (danger) = 5.50:1, vs #18bc9c
+   (success) = 8.71:1, vs #3498db (alert-info) = 6.66:1. .alert-primary is
+   left on its bootswatch default (white on #2c3e50 = 10.98:1, already
+   passes); no .badge.bg-info/.badge.bg-primary usage found to check.
+   Kept in sync with vignettes/_includes/toolbar.html. */
+body.dark-mode .alert-success,
+body.dark-mode .alert-danger,
+body.dark-mode .alert-info,
+body.dark-mode .badge.bg-success,
+body.dark-mode .badge.bg-danger {
+  color: #000000 !important;
+}
+
+/* WCAG AA fix (this session): .explanation-panel sets its own light
+   background (#f8f9fa) and dark text (#212529) for the quiz explanation
+   card, but the blanket "body.dark-mode p { color: #fff !important }"
+   rule above directly targets <p> elements and wins over the panel's
+   inherited color (a direct rule always beats an inherited one,
+   regardless of !important) -- so text inside routinely rendered
+   near-invisible white-on-#f8f9fa (~1.05:1). This restores the panel's
+   own #212529 (14.63:1 on #f8f9fa, from WCAG sweep #125/#128). Kept in
+   sync with vignettes/_includes/toolbar.html. */
+body.dark-mode .explanation-panel,
+body.dark-mode .explanation-panel p,
+body.dark-mode .explanation-panel strong {
+  color: #212529 !important;
+}
+
+/* WCAG AA fix (this session): bootswatch flatly's own .btn-secondary /
+   .badge.bg-secondary background (#95a5a6) with white text measures only
+   2.56:1. Darkened background (border matched) measures 5.94:1 with the
+   same white text. Kept in sync with vignettes/_includes/toolbar.html. */
+body.dark-mode .btn-secondary,
+body.dark-mode .badge.bg-secondary {
+  background-color: #5a6668 !important;
+  border-color: #5a6668 !important;
+}
+
+/* WCAG AA fix (this session): the quiz pages' own QR-code URL text
+   (.qr-section .qr-url, color #495057) was tuned for a light page
+   background; against this site's actual dark-mode container background
+   it measured 2.13:1. #adb5bd measures 8.39:1. Kept in sync with
+   vignettes/_includes/toolbar.html. */
+body.dark-mode .qr-section .qr-url {
+  color: #adb5bd !important;
+}
+
+/* WCAG AA fix (this session): Quarto's `.panel-tabset` (used by the
+   Details page, articles/details.html) renders standard Bootstrap
+   .nav-tabs markup. The existing dark-mode fix for these a few hundred
+   lines up is keyed on [data-bs-theme="dark"] -- an attribute set by
+   PKGDOWN's own lightswitch.js, which does not fire on
+   vignettes/_includes/toolbar.html's 6 standalone quarto-rendered pages
+   (they never link this file, but details.html is now one of them and
+   needs a tabset fix that DOES apply here for the 14 pages that DO link
+   this file). Re-keyed on .dark-mode (set by toolbar.html's own toggle,
+   present on every page) so it works everywhere a tabset might appear.
+   Kept in sync with vignettes/_includes/toolbar.html. */
+body.dark-mode .nav-tabs .nav-link.active,
+body.dark-mode .nav-tabs .nav-link.active:focus,
+body.dark-mode .nav-tabs .nav-link.active:hover {
+  color: #ffffff !important;
+  background-color: #2b3e50 !important;
+  border-color: #444 #444 transparent !important;
+}
+
+body.dark-mode .nav-tabs .nav-link {
+  color: #adb5bd !important;
+}
+
+body.dark-mode .nav-tabs .nav-link:hover {
+  color: #ffffff !important;
+  border-color: #555 #555 transparent !important;
+}
+
+body.dark-mode .nav-tabs {
+  border-bottom-color: #444 !important;
+}
+
+body.dark-mode .tab-content {
+  color: #e0e0e0;
 }

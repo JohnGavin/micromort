@@ -32,6 +32,12 @@ Each quiz has an instant (static JS) and Shinylive (richer UI) version.
   life expectancy. Each risk shows how much life you gain or lose per
   exposure.
 
+- [Details](https://johngavin.github.io/micromort/articles/details.md):
+
+  Shinylive app links, source locations, and site build info for the
+  micromort package — consolidated off the quiz pages so they don’t
+  interrupt quiz-taking.
+
 ### Quizzes (Shinylive)
 
 Full Shiny apps with score submission and percentile ranking. 30-60s

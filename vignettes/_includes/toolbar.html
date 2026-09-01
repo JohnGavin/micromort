@@ -8,6 +8,34 @@
   - Font size A-/A+ (2px steps, persists to localStorage)
   - Respects OS preference on first visit
   - Propagates to Shinylive iframes
+
+  IMPORTANT -- this CSS is DUPLICATED in pkgdown/extra.css. Keep both in
+  sync when editing. Why both exist:
+
+  pkgdown::build_site() silently DROPS this <style> block, site-wide, on
+  every page it renders directly (14 of 19 vignettes) -- confirmed by
+  grepping the built HTML for "#vignette-toolbar {": on a pkgdown-built
+  page it's absent; the <script> half below (plain JS text) survives fine.
+  Root cause is the same include-in-header vs. pkgdown's --output-dir
+  override fragility documented in vignettes/_quarto.yml's `render:`
+  comment. Symptom when this <style> block is the ONLY copy: the toolbar
+  (dark/light toggle, A-/A+) renders unstyled at the bottom of the page
+  instead of pinned top-right, and body.dark-mode's background/text
+  overrides never apply (background falls back to Bootstrap's
+  data-bs-theme=dark default #212529 instead of #000000).
+
+  The 5 vignettes rendered via a dedicated `quarto render` target in
+  plan_site_build.R (quiz_shinylive, chronic_quiz_shinylive,
+  ranking_quiz_shinylive, portfolio_shinylive, chronic_vs_acute) -- plus
+  details (site_details target, added because pkgdown's build_site() also
+  mangles its .panel-tabset markup) -- are standalone quarto documents:
+  they never go through pkgdown's template at all, so they never link
+  pkgdown/extra.css either. For THOSE 6 pages, this <style> block (which
+  a direct `quarto render` keeps intact) is the ONLY copy that applies.
+
+  So: pkgdown-built pages need the pkgdown/extra.css copy; the 6 standalone
+  quarto-rendered pages need this copy. Neither file can be deleted in
+  favour of the other without breaking one of the two page classes.
 -->
 <style>
 /* ===== Toolbar Container ===== */
@@ -72,8 +100,18 @@ body.dark-mode .quarto-title, body.dark-mode #title-block-header {
   color: #ffffff !important;
 }
 
-body.dark-mode a { color: #4ea8de !important; }
-body.dark-mode a:visited { color: #9d7cd8 !important; }
+/* NOT !important (WCAG AA fix, this session): plain <a> tags in prose
+   still get this color by cascade (body.dark-mode a has higher element
+   count than a bare .some-class selector), but page-specific link-color
+   fixes with >=2 classes -- e.g. micromort-quiz.qmd's
+   ".quiz-btn-correct .help-link { color: #0a58ca }", tuned in WCAG sweep
+   #125/#128 for a *light* revealed-answer background -- now correctly win
+   by specificity instead of being clobbered by !important. Before this
+   session, this collision was invisible because pkgdown::build_site()
+   silently dropped this whole <style> block on 14 of 19 pages (see the
+   top-of-file note); fixing that drop is what surfaced the collision. */
+body.dark-mode a { color: #4ea8de; }
+body.dark-mode a:visited { color: #9d7cd8; }
 
 body.dark-mode .callout, body.dark-mode .card, body.dark-mode .sidebar,
 body.dark-mode nav, body.dark-mode header, body.dark-mode footer {
@@ -122,11 +160,116 @@ body.dark-mode iframe {
   background-color: #1a1a1a !important;
 }
 
-/* ===== Accessible Color Overrides (≥4.5:1 on #000) ===== */
-body.dark-mode .text-success, body.dark-mode .alert-success { color: #69d4a0 !important; }
-body.dark-mode .text-danger, body.dark-mode .alert-danger { color: #f08080 !important; }
-body.dark-mode .text-info, body.dark-mode .alert-info { color: #5edaff !important; }
-body.dark-mode .text-primary, body.dark-mode .alert-primary { color: #4ea8de !important; }
+/* ===== Accessible Color Overrides (>=4.5:1 on #000) ===== */
+body.dark-mode .text-success { color: #69d4a0 !important; }
+body.dark-mode .text-danger { color: #f08080 !important; }
+body.dark-mode .text-info { color: #5edaff !important; }
+body.dark-mode .text-primary { color: #4ea8de !important; }
+
+/* WCAG AA fix (this session): .alert-success/.alert-danger/.alert-info and
+   .badge.bg-success/.badge.bg-danger are FILLED elements with their own
+   saturated bootswatch-flatly background (colors are theme constants, not
+   affected by dark/light mode) -- text inside them must contrast against
+   THAT background, not the page background, so they are deliberately
+   excluded from the .text-* rule above (which assumes the page's #000
+   background). bootswatch flatly's own un-overridden default (white text)
+   measures only 2.41-3.82:1 against these backgrounds -- also fails AA.
+   Measured replacement: #000000 vs #e74c3c (danger) = 5.50:1, vs #18bc9c
+   (success) = 8.71:1, vs #3498db (alert-info) = 6.66:1. .alert-primary is
+   left on its bootswatch default (white on #2c3e50 = 10.98:1, already
+   passes); no .badge.bg-info/.badge.bg-primary usage found to check. */
+body.dark-mode .alert-success,
+body.dark-mode .alert-danger,
+body.dark-mode .alert-info,
+body.dark-mode .badge.bg-success,
+body.dark-mode .badge.bg-danger {
+  color: #000000 !important;
+}
+
+/* WCAG AA fix (this session): .explanation-panel sets its own light
+   background (#f8f9fa) and dark text (#212529) for the quiz explanation
+   card, but the blanket "body.dark-mode p { color: #fff !important }"
+   rule above directly targets <p> elements and wins over the panel's
+   inherited color (a direct rule always beats an inherited one,
+   regardless of !important) -- so text inside routinely rendered
+   near-invisible white-on-#f8f9fa (~1.05:1). This restores the panel's
+   own #212529 (14.63:1 on #f8f9fa, from WCAG sweep #125/#128). */
+body.dark-mode .explanation-panel,
+body.dark-mode .explanation-panel p,
+body.dark-mode .explanation-panel strong {
+  color: #212529 !important;
+}
+
+/* WCAG AA fix (this session): bootswatch flatly's own .btn-secondary /
+   .badge.bg-secondary background (#95a5a6) with white text measures only
+   2.56:1. Darkened background (border matched) measures 5.94:1 with the
+   same white text. */
+body.dark-mode .btn-secondary,
+body.dark-mode .badge.bg-secondary {
+  background-color: #5a6668 !important;
+  border-color: #5a6668 !important;
+}
+
+/* WCAG AA fix (this session): the quiz pages' own QR-code URL text
+   (.qr-section .qr-url, color #495057) was tuned for a light page
+   background; against this site's actual dark-mode container background
+   it measured 2.13:1. #adb5bd measures 8.39:1. */
+body.dark-mode .qr-section .qr-url {
+  color: #adb5bd !important;
+}
+
+/* WCAG AA fix (this session): Quarto's `.panel-tabset` (used by the
+   Details page, articles/details.html) renders standard Bootstrap
+   .nav-tabs markup. The site already had a dark-mode fix for these, but
+   keyed on [data-bs-theme="dark"] -- an attribute set by PKGDOWN's own
+   lightswitch.js, which only loads on pkgdown::build_site()-rendered
+   pages, never on this file's own 6 standalone quarto-rendered pages
+   (including details.html). Re-keyed on .dark-mode (set by THIS file's
+   own toggle, present on every page) so it works everywhere a tabset
+   might appear. */
+body.dark-mode .nav-tabs .nav-link.active,
+body.dark-mode .nav-tabs .nav-link.active:focus,
+body.dark-mode .nav-tabs .nav-link.active:hover {
+  color: #ffffff !important;
+  background-color: #2b3e50 !important;
+  border-color: #444 #444 transparent !important;
+}
+
+body.dark-mode .nav-tabs .nav-link {
+  color: #adb5bd !important;
+}
+
+body.dark-mode .nav-tabs .nav-link:hover {
+  color: #ffffff !important;
+  border-color: #555 #555 transparent !important;
+}
+
+body.dark-mode .nav-tabs {
+  border-bottom-color: #444 !important;
+}
+
+body.dark-mode .tab-content {
+  color: #e0e0e0;
+}
+
+/* WCAG AA fix (this session): Bootstrap/bootswatch-flatly's
+   .btn-outline-primary uses the light-theme "primary" color (#2c3e50) for
+   text+border. Against this dark background that measures ~1.9:1 --
+   near-invisible (e.g. the "View Details" button on the quiz results
+   screens). #8bb9fe (already used for .help-link on the same quiz pages)
+   measures 10.47:1. Kept in sync with the matching rule in
+   pkgdown/extra.css. */
+body.dark-mode .btn-outline-primary {
+  color: #8bb9fe;
+  border-color: #8bb9fe;
+}
+
+body.dark-mode .btn-outline-primary:hover,
+body.dark-mode .btn-outline-primary:focus {
+  color: #212529;
+  background-color: #8bb9fe;
+  border-color: #8bb9fe;
+}
 </style>
 
 <script>

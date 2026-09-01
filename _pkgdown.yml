@@ -51,6 +51,8 @@ navbar:
         href: articles/portfolio_shinylive.html
       - text: "📈 Your Quiz Analytics"
         href: articles/quiz_analytics.html
+      - text: "ℹ️ Details (Shinylive links, source, site info)"
+        href: articles/details.html
       - text: "---"
       - text: "Storytelling"
       - text: "The Invisible Risk (closeread)"
@@ -87,6 +89,7 @@ articles:
   - micromort-quiz
   - microlife-quiz
   - risk-ranking-quiz
+  - details
 
 - title: "Quizzes (Shinylive)"
   desc: "Full Shiny apps with score submission and percentile ranking. 30-60s load."
