@@ -1,4 +1,4 @@
-# 
+# The Invisible Risk
 
 # The Invisible Risk
 
@@ -73,10 +73,8 @@ Explore the data yourself:
 
 - `common_risks(profile = list(country = "UK"))` — your country’s
   disease burden
-- [`geography_quiz_pairs()`](https://johngavin.github.io/micromort/reference/geography_quiz_pairs.md)
-  — quiz comparing risks across countries
-- [`risk_equivalence()`](https://johngavin.github.io/micromort/reference/risk_equivalence.md)
-  — formal equivalence calculations
+- `geography_quiz_pairs()` — quiz comparing risks across countries
+- `risk_equivalence()` — formal equivalence calculations
 
 Session info (click to expand)
 
@@ -85,7 +83,7 @@ Session info (click to expand)
     Running under: macOS Tahoe 26.5.2
 
     Matrix products: default
-    BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib
+    BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib 
     LAPACK: /nix/store/5kg4z5bffhr8nry8bl8l5wlxvpy54dm2-openblas-0.3.30/lib/libopenblasp-r0.3.30.dylib;  LAPACK version 3.12.0
 
     locale:
@@ -95,29 +93,29 @@ Session info (click to expand)
     tzcode source: internal
 
     attached base packages:
-    [1] stats     graphics  grDevices utils     datasets  methods   base
+    [1] stats     graphics  grDevices utils     datasets  methods   base     
 
     other attached packages:
-    [1] micromort_0.2.0 testthat_3.3.1
+    [1] micromort_0.2.0 testthat_3.3.1 
 
     loaded via a namespace (and not attached):
-     [1] gtable_0.3.6       bslib_0.9.0        xfun_0.55          ggplot2_4.0.1
-     [5] htmlwidgets_1.6.4  processx_3.8.6     callr_3.7.6        crosstalk_1.2.2
-     [9] vctrs_0.6.5        tools_4.5.2        ps_1.9.1           generics_0.1.4
-    [13] base64url_1.4      tibble_3.3.0       pkgconfig_2.0.3    data.table_1.18.0
-    [17] checkmate_2.3.3    secretbase_1.0.5   RColorBrewer_1.1-3 S7_0.2.1
-    [21] desc_1.4.3         assertthat_0.2.1   lifecycle_1.0.4    compiler_4.5.2
-    [25] farver_2.1.2       credentials_2.0.3  brio_1.1.5         codetools_0.2-20
-    [29] sass_0.4.10        htmltools_0.5.9    sys_3.4.3          usethis_3.2.1
-    [33] yaml_2.3.12        jquerylib_0.1.4    pillar_1.11.1      DT_0.34.0
-    [37] openssl_2.3.4      cachem_1.1.0       tidyselect_1.2.1   digest_0.6.39
-    [41] dplyr_1.1.4        purrr_1.2.0        arrow_22.0.0       rprojroot_2.1.1
-    [45] fastmap_1.2.0      grid_4.5.2         cli_3.6.5          magrittr_2.0.4
-    [49] pkgbuild_1.4.8     withr_3.0.2        prettyunits_1.2.0  scales_1.4.0
-    [53] backports_1.5.0    bit64_4.6.0-1      rmarkdown_2.30     igraph_2.2.1
-    [57] bit_4.6.0          otel_0.2.0         askpass_1.2.1      evaluate_1.0.5
-    [61] knitr_1.51         rlang_1.1.6        gert_2.2.0         Rcpp_1.1.0
-    [65] glue_1.8.0         pkgload_1.4.1      jsonlite_2.0.0     R6_2.6.1
+     [1] gtable_0.3.6       bslib_0.9.0        xfun_0.55          ggplot2_4.0.1     
+     [5] htmlwidgets_1.6.4  processx_3.8.6     callr_3.7.6        crosstalk_1.2.2   
+     [9] vctrs_0.6.5        tools_4.5.2        ps_1.9.1           generics_0.1.4    
+    [13] base64url_1.4      tibble_3.3.0       pkgconfig_2.0.3    data.table_1.18.0 
+    [17] checkmate_2.3.3    secretbase_1.0.5   RColorBrewer_1.1-3 S7_0.2.1          
+    [21] desc_1.4.3         assertthat_0.2.1   lifecycle_1.0.4    compiler_4.5.2    
+    [25] farver_2.1.2       credentials_2.0.3  brio_1.1.5         codetools_0.2-20  
+    [29] sass_0.4.10        htmltools_0.5.9    sys_3.4.3          usethis_3.2.1     
+    [33] yaml_2.3.12        jquerylib_0.1.4    pillar_1.11.1      DT_0.34.0         
+    [37] openssl_2.3.4      cachem_1.1.0       tidyselect_1.2.1   digest_0.6.39     
+    [41] dplyr_1.1.4        purrr_1.2.0        arrow_22.0.0       rprojroot_2.1.1   
+    [45] fastmap_1.2.0      grid_4.5.2         cli_3.6.5          magrittr_2.0.4    
+    [49] pkgbuild_1.4.8     withr_3.0.2        prettyunits_1.2.0  scales_1.4.0      
+    [53] backports_1.5.0    bit64_4.6.0-1      rmarkdown_2.30     igraph_2.2.1      
+    [57] bit_4.6.0          otel_0.2.0         askpass_1.2.1      evaluate_1.0.5    
+    [61] knitr_1.51         rlang_1.1.6        gert_2.2.0         Rcpp_1.1.0        
+    [65] glue_1.8.0         pkgload_1.4.1      jsonlite_2.0.0     R6_2.6.1          
     [69] targets_1.11.4     fs_1.6.6           units_1.0-0       
 
 ------------------------------------------------------------------------

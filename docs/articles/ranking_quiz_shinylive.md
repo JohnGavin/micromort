@@ -1,5 +1,10 @@
 # Rank these risks by their effect on lifespan
 
+# Rank these risks by their effect on lifespan
+
+Interactive drag-and-drop quiz ranking everyday risks by their effect on
+life expectancy. Combining acute micromorts and chronic microlives.
+
 ``` shinylive-r
 #| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
