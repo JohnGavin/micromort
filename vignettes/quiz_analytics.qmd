@@ -328,6 +328,45 @@ format:
       '<tbody>' + hardRows + '</tbody></table></div>';
   }
 
+  // ---- 5b. Calibration (Phase 1 of #132: self-only, confidence vs. accuracy) ----
+  // Reads the optional per-question `confidences`/`outcomes` arrays added to
+  // history entries by the Micromort Quiz. Older entries (and entries from
+  // quizzes that don't capture confidence) simply have neither array and are
+  // skipped here — missing confidence is treated as absent, not as 0%.
+  var calibHtml = '';
+  var calibBuckets = { 0: { n: 0, correct: 0 }, 25: { n: 0, correct: 0 }, 50: { n: 0, correct: 0 }, 75: { n: 0, correct: 0 }, 100: { n: 0, correct: 0 } };
+  var calibTotal = 0;
+  history.forEach(function(h) {
+    if (!Array.isArray(h.confidences) || !Array.isArray(h.outcomes)) return;
+    h.confidences.forEach(function(c, i) {
+      if (c === null || c === undefined) return;
+      var outcome = h.outcomes[i];
+      if (outcome === null || outcome === undefined) return;
+      if (!calibBuckets[c]) calibBuckets[c] = { n: 0, correct: 0 };
+      calibBuckets[c].n += 1;
+      calibBuckets[c].correct += outcome;
+      calibTotal += 1;
+    });
+  });
+  if (calibTotal > 0) {
+    var calibRows = [0, 25, 50, 75, 100].map(function(b) {
+      var stat = calibBuckets[b] || { n: 0, correct: 0 };
+      var acc = stat.n > 0 ? Math.round(100 * stat.correct / stat.n) : null;
+      return '<tr>' +
+        '<td>' + b + '%</td>' +
+        '<td>' + stat.n + '</td>' +
+        '<td>' + (acc !== null ? scoreBar(acc) : '') + '</td>' +
+        '<td>' + (acc !== null ? acc + '%' : '&mdash;') + '</td>' +
+        '</tr>';
+    }).join('');
+    calibHtml = '<div class="analytics-section"><h3>Calibration (your confidence vs. your accuracy)</h3>' +
+      '<p style="color:#8899bb;font-size:0.8rem;">From the Micromort Quiz, based on ' + calibTotal + ' rated answer' + (calibTotal === 1 ? '' : 's') + ' in this browser. ' +
+      'A well-calibrated player\'s observed accuracy roughly matches their stated confidence at each level — e.g. answers rated "75% confident" should be correct about 75% of the time.</p>' +
+      '<table class="analytics-table">' +
+      '<thead><tr><th>Stated confidence</th><th>Answers</th><th></th><th>Observed accuracy</th></tr></thead>' +
+      '<tbody>' + calibRows + '</tbody></table></div>';
+  }
+
   // ---- 5. Recent plays ----
   var recentRows = history.slice(-20).reverse().map(function(h) {
     return '<tr>' +
@@ -350,7 +389,8 @@ format:
     chartHtml +
     breakdownHtml +
     recentHtml +
-    hardestHtml;
+    hardestHtml +
+    calibHtml;
 
   // ---- Clear all data function ----
   window.clearAllData = function() {

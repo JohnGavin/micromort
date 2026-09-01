@@ -1,10 +1,5 @@
 # Risk Portfolio Builder
 
-# Risk Portfolio Builder
-
-Build your personal risk portfolio — select activities and see
-cumulative annual risk.
-
 ``` shinylive-r
 #| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
