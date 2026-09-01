@@ -52,7 +52,9 @@ A tibble with risk budget breakdown including:
 Other analysis:
 [`compare_interventions()`](https://johngavin.github.io/micromort/reference/compare_interventions.md),
 [`daily_hazard_rate()`](https://johngavin.github.io/micromort/reference/daily_hazard_rate.md),
-[`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md)
+[`lifestyle_tradeoff()`](https://johngavin.github.io/micromort/reference/lifestyle_tradeoff.md),
+[`risk_sensitivity()`](https://johngavin.github.io/micromort/reference/risk_sensitivity.md),
+[`toxicological_risk()`](https://johngavin.github.io/micromort/reference/toxicological_risk.md)
 
 ## Examples
 

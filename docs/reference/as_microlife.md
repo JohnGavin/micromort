@@ -6,7 +6,7 @@ This function converts minutes of life expectancy change to microlives.
 ## Usage
 
 ``` r
-as_microlife(minutes)
+as_microlife(minutes, use_units = FALSE)
 ```
 
 ## Arguments
@@ -19,9 +19,15 @@ as_microlife(minutes)
 
   - Negative values = life lost (e.g., from smoking)
 
+- use_units:
+
+  Logical. If `TRUE`, returns a `units` object with unit "microlife".
+  Default `FALSE` returns a plain numeric for backwards compatibility.
+
 ## Value
 
-Numeric. Value in microlives (same sign as input).
+Numeric. Value in microlives (same sign as input), or a `units` object
+when `use_units = TRUE`.
 
 ## Details
 
@@ -60,4 +66,8 @@ as_microlife(60)        # +2 microlives (life gained)
 # Being 5kg overweight: costs ~30 mins/day
 as_microlife(-30)       # -1 microlife (life lost)
 #> [1] -1
+
+# With units tracking
+as_microlife(60, use_units = TRUE) # 2 [microlife]
+#> 2 [microlife]
 ```

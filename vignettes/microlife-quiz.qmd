@@ -14,13 +14,6 @@ format:
 ---
 
 ```{=html}
-<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
-<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
-<p style="margin:8px 0 0;color:#0c5460;"><a href="chronic_quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
-</details>
-```
-
-```{=html}
 <style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -68,9 +61,9 @@ format:
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; font-size: 1.05rem; }
   .detail-table th, .detail-table td { padding: 8px 12px; }
   .alert { font-size: 1.1rem; }
-  .qr-section { display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 8px 0; }
-  .qr-section canvas { border-radius: 4px; }
-  .qr-section .qr-url { font-size: 0.85rem; color: #6c757d; word-break: break-all; }
+  .qr-section { display: flex; align-items: center; gap: 16px; margin-top: 12px; padding: 8px 0; }
+  .qr-section canvas, .qr-section img { border-radius: 4px; max-width: 110px; max-height: 110px; height: auto; }
+  .qr-section .qr-url { font-size: 1.2rem; color: #495057; word-break: break-all; user-select: all; cursor: text; font-family: monospace; }
 
   @media (max-width: 600px) {
     #quiz-app { padding: 10px; font-size: 1.05rem; }
@@ -279,9 +272,9 @@ const ENCOURAGEMENTS = [
 function render() {
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
-    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 4); break;
+    case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 3); break;
     case 'question': app.innerHTML = renderQuestion(); break;
-    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 5); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }
@@ -533,4 +526,11 @@ document.addEventListener('DOMContentLoaded', function() {
   render();
 });
 </script>
+```
+
+```{=html}
+<details style="margin:8px 0;padding:8px 12px;background:#d1ecf1;border:1px solid #bee5eb;border-radius:4px;">
+<summary style="cursor:pointer;font-weight:600;color:#0c5460;">Also available as Shinylive app (richer UI, 30-60s load)</summary>
+<p style="margin:8px 0 0;color:#0c5460;"><a href="chronic_quiz_shinylive.html">Open Shinylive version</a> — full Shiny app with score submission, percentile ranking, and streak tracking.</p>
+</details>
 ```

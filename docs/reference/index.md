@@ -105,6 +105,18 @@ Convert between risk units
 - [`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
   : Value of a Statistical Life (VSL) to Micromort Value
 
+## Disease Risk Data
+
+Chronic and infectious disease risks from GBD data, plus toxicological
+LD50 profiles
+
+- [`chronic_disease_risks()`](https://johngavin.github.io/micromort/reference/chronic_disease_risks.md)
+  : Chronic Disease Risks by Country and Year
+- [`infectious_disease_risks()`](https://johngavin.github.io/micromort/reference/infectious_disease_risks.md)
+  : Daily micromorts from infectious diseases by country
+- [`toxicological_risk()`](https://johngavin.github.io/micromort/reference/toxicological_risk.md)
+  : Calculate micromorts from substance exposure using LD50 data
+
 ## Analysis Functions
 
 Risk analysis and modeling
@@ -117,6 +129,8 @@ Risk analysis and modeling
   : Daily Hazard Rate by Age
 - [`annual_risk_budget()`](https://johngavin.github.io/micromort/reference/annual_risk_budget.md)
   : Annual Risk Budget
+- [`risk_sensitivity()`](https://johngavin.github.io/micromort/reference/risk_sensitivity.md)
+  : Sensitivity Analysis for Activity Risk Estimates
 
 ## Visualization
 
@@ -164,3 +178,7 @@ API, dashboard, and quiz
   : Tag-to-Category Mapping for Ranking Quiz
 - [`kendall_tau_score()`](https://johngavin.github.io/micromort/reference/kendall_tau_score.md)
   : Kendall Tau Score for Ranking Quiz
+- [`combined_quiz_pairs()`](https://johngavin.github.io/micromort/reference/combined_quiz_pairs.md)
+  : Generate cross-domain quiz pairs comparing acute and chronic risks
+- [`export_combined_quiz_csv()`](https://johngavin.github.io/micromort/reference/export_combined_quiz_csv.md)
+  : Export combined quiz pairs to CSV for Shinylive

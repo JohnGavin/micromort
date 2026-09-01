@@ -286,3 +286,50 @@ document.addEventListener('DOMContentLoaded', function() {
     el.innerHTML = 'micromort | <a href="https://github.com/JohnGavin/micromort/commits/main">commit history</a>';
   }
 });
+
+// Relocate the pkgdown-generated "Source: vignettes/x.qmd" (or "R/x.R")
+// line into a collapsed <details> block at the end of the article, instead
+// of showing it prominently right under the page title on every page.
+// pkgdown injects this <small class="dont-index"> inside .page-header from
+// its own BS5 Mustache template -- it is not present in our .qmd/.R source,
+// so it cannot be moved by editing a source file and must be relocated via
+// DOM manipulation. Runs on every page (articles + reference topics); pages
+// with no .page-header .dont-index (e.g. the homepage) are a silent no-op.
+document.addEventListener('DOMContentLoaded', function() {
+  var main = document.getElementById('main');
+  if (!main) return;
+  var sourceLine = main.querySelector('.page-header .dont-index');
+  if (!sourceLine) return;
+
+  var details = document.createElement('details');
+  details.className = 'page-meta';
+  var summary = document.createElement('summary');
+  summary.textContent = 'Page details';
+  details.appendChild(summary);
+  details.appendChild(sourceLine); // moves the existing node out of .page-header
+  main.appendChild(details);
+});
+
+// Wrap the pkgdown site footer (package line + "Site built with pkgdown
+// X.Y.Z.") in a collapsed <details> block so it reads as tucked-away
+// metadata rather than a bold line the reader has to see on every page.
+// Registered after the #pkg-footer replacement above so it wraps the final
+// build-info text, not the static placeholder from _pkgdown.yml.
+document.addEventListener('DOMContentLoaded', function() {
+  var footer = document.querySelector('footer');
+  if (!footer) return;
+  if (footer.querySelector('details.footer-meta')) return; // already wrapped
+
+  var details = document.createElement('details');
+  details.className = 'footer-meta';
+  var summary = document.createElement('summary');
+  summary.textContent = 'Site info';
+  details.appendChild(summary);
+
+  // Move all existing footer children (pkgdown-footer-left / -right) into
+  // the details wrapper, preserving their content and classes as-is.
+  while (footer.firstChild) {
+    details.appendChild(footer.firstChild);
+  }
+  footer.appendChild(details);
+});

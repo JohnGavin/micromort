@@ -63,7 +63,15 @@ A tibble with columns:
 
 - micromorts_per_day:
 
-  Micromorts normalized per day
+  Micromorts normalized per day, rounded to 2 decimal places. Suitable
+  for display; may collapse to 0.00 for very low-rate rows (e.g. annual
+  risk / 365). Use `micromorts_per_day_raw` for downstream computation.
+
+- micromorts_per_day_raw:
+
+  Unrounded micromorts per day (`micromorts / period_days`). Use this
+  column for any multiplication (e.g. projecting to a time window) to
+  avoid rounding errors on low-rate annual/monthly rows.
 
 - source_url:
 
@@ -106,7 +114,7 @@ for the component-level data.
 
 ``` r
 common_risks()
-#> # A tibble: 107 × 14
+#> # A tibble: 107 × 15
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event            60    
@@ -120,11 +128,11 @@ common_risks()
 #>  9 First day of l…        430       301  Daily L… per d… day               1    
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period           77    
 #> # ℹ 97 more rows
-#> # ℹ 7 more variables: micromorts_per_day <dbl>, source_url <chr>,
-#> #   n_components <int>, hedgeable_pct <dbl>, confidence <chr>,
-#> #   estimate_range <chr>, source_count <int>
+#> # ℹ 8 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
+#> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
+#> #   confidence <chr>, estimate_range <chr>, source_count <int>
 common_risks() |> dplyr::filter(category == "COVID-19")
-#> # A tibble: 19 × 14
+#> # A tibble: 19 × 15
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 COVID-19 infec…   10000        7000   COVID-19 per i… event                14
@@ -146,11 +154,11 @@ common_risks() |> dplyr::filter(category == "COVID-19")
 #> 17 COVID-19 bival…       1           0.7 COVID-19 11 we… period               77
 #> 18 COVID-19 monov…       0.2         0.1 COVID-19 11 we… period               77
 #> 19 COVID-19 bival…       0.05        0   COVID-19 11 we… period               77
-#> # ℹ 7 more variables: micromorts_per_day <dbl>, source_url <chr>,
-#> #   n_components <int>, hedgeable_pct <dbl>, confidence <chr>,
-#> #   estimate_range <chr>, source_count <int>
+#> # ℹ 8 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
+#> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
+#> #   confidence <chr>, estimate_range <chr>, source_count <int>
 common_risks() |> dplyr::filter(micromorts > 100)
-#> # A tibble: 14 × 14
+#> # A tibble: 14 × 15
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932    26552.  Mountai… per a… event            60    
@@ -167,7 +175,7 @@ common_risks() |> dplyr::filter(micromorts > 100)
 #> 12 Scuba diving, …        164      115.  Sport    per y… year            365    
 #> 13 Vaginal birth …        120       84   Medical  per e… event             1    
 #> 14 Living (one da…        105       73.5 Daily L… per d… day               1    
-#> # ℹ 7 more variables: micromorts_per_day <dbl>, source_url <chr>,
-#> #   n_components <int>, hedgeable_pct <dbl>, confidence <chr>,
-#> #   estimate_range <chr>, source_count <int>
+#> # ℹ 8 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
+#> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
+#> #   confidence <chr>, estimate_range <chr>, source_count <int>
 ```

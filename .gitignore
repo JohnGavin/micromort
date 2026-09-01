@@ -59,6 +59,7 @@ man/figures/logo-candidates/
 # Generated vignette artifacts (rendered output lives in docs/articles/)
 vignettes/chronic_vs_acute.html
 vignettes/chronic_vs_acute_files/
+vignettes/portfolio_shinylive.html
 vignettes/portfolio_shinylive_files/
 # Pre-rendered vignette plots cached under inst/extdata
 inst/extdata/vignettes/vig_intro_risk_plot.png

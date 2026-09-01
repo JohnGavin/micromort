@@ -136,8 +136,6 @@ chronic_risks <- function() {
   wiki_ml <- "https://en.wikipedia.org/wiki/Microlife"
   bmj_2012 <- "https://pubmed.ncbi.nlm.nih.gov/23247978/"
 
-  pm25_url <- "https://pmc.ncbi.nlm.nih.gov/articles/PMC11466858/"
-
   tibble::tribble(
     ~factor, ~microlives_per_day, ~category, ~description, ~source_url,
 
@@ -169,10 +167,8 @@ chronic_risks <- function() {
 
     # Environment
     "Living with a smoker", -1, "Environment", "Second-hand smoke exposure", NA_character_,
-    "Air pollution (PM2.5 ~10 μg/m³)", -0.5, "Environment", "Moderate urban area (EU average). WHO RR=1.08/10μg/m³", pm25_url,
-    "Air pollution (PM2.5 ~25 μg/m³)", -1, "Environment", "US EPA standard level. WHO RR=1.08/10μg/m³", pm25_url,
-    "Air pollution (PM2.5 ~50 μg/m³)", -2, "Environment", "Indian NAAQS level, many Asian cities. WHO RR=1.08/10μg/m³", pm25_url,
-    "Air pollution (PM2.5 ~100 μg/m³)", -4, "Environment", "Heavily polluted (Delhi average). WHO RR=1.08/10μg/m³, extrapolated", pm25_url,
+    # PM2.5 air pollution rows sourced from canonical parquet (data-raw/sources/chronic_risks_base.csv)
+    # at end of function — see roborev #3523.
 
     # Cardiovascular disease risk factors
     "Untreated hypertension", -4, "Cardiovascular", "Systolic BP >140 mmHg untreated", NA_character_,
@@ -214,7 +210,33 @@ chronic_risks <- function() {
       source_url = dplyr::coalesce(source_url, bmj_2012)
     ) |>
     dplyr::select(factor, microlives_per_day, category, direction,
-                  description, annual_effect_days, source_url)
+                  description, annual_effect_days, source_url) -> hardcoded
+
+  # PM2.5 air pollution rows sourced from the canonical parquet artefact built
+  # from data-raw/sources/chronic_risks_base.csv by plan_data_acquisition.R.
+  # Previously these rows were duplicated here as hardcoded literals AND in the
+  # CSV, creating drift hazard (roborev #3523). Reading from the parquet keeps
+  # one source of truth. When the parquet is unavailable (e.g. first-time
+  # install before tar_make), we emit a clear warning and return only the
+  # hardcoded rows — callers see fewer rows but no silent corruption.
+  pm25_extra <- tryCatch(
+    load_chronic_risks() |>
+      dplyr::filter(grepl("^Air pollution \\(PM2\\.5", .data$factor)) |>
+      dplyr::select(dplyr::any_of(c(
+        "factor", "microlives_per_day", "category", "direction",
+        "description", "annual_effect_days", "source_url"
+      ))),
+    error = function(e) {
+      cli::cli_warn(c(
+        "!" = "PM2.5 chronic-risk rows unavailable from canonical parquet.",
+        "i" = "Run {.code tar_make()} to regenerate {.path inst/extdata/chronic_risks.parquet}.",
+        "i" = "Cause: {conditionMessage(e)}"
+      ))
+      hardcoded[0L, ]
+    }
+  )
+
+  dplyr::bind_rows(hardcoded, pm25_extra)
 }
 
 #' Demographic Life Expectancy Factors
