@@ -1,5 +1,10 @@
 # Which daily habit affects your lifespan more?
 
+# Which daily habit affects your lifespan more?
+
+Interactive quiz comparing chronic lifestyle factors measured in
+microlives — 30 minutes of life expectancy per day.
+
 ``` shinylive-r
 #| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
