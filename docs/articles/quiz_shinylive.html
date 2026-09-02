@@ -744,14 +744,15 @@ function getPercentileLive(score, total) {
   });
 }
 function renderQR(containerId, size) {
-  var url = window.location.href;
+  var url = 'https://johngavin.github.io/micromort/articles/quiz_shinylive.html';
   var el = document.getElementById(containerId);
   if (!el || typeof qrcode === 'undefined') return;
   var qr = qrcode(0, 'M');
   qr.addData(url);
   qr.make();
+  var imgTag = qr.createImgTag(size || 3).replace('&lt;img', '&lt;img style=\"max-width:110px;max-height:110px;width:auto;height:auto;\"');
   el.innerHTML = '&lt;div style=\"display:flex;align-items:center;gap:16px;margin-top:12px;padding:8px 0;\"&gt;' +
-    '&lt;span style=\"display:inline-block;max-width:110px;max-height:110px;\"&gt;' + qr.createImgTag(size || 3) + '&lt;/span&gt;' +
+    '&lt;span style=\"display:inline-block;\"&gt;' + imgTag + '&lt;/span&gt;' +
     '&lt;span style=\"font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
 }
 setTimeout(function() { renderQR('qr-results', 3); }, 500);

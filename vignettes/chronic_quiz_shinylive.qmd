@@ -272,6 +272,18 @@ function getPercentileLive(score, total) {
     if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
   });
 }
+function renderQR(containerId, size) {
+  var url = 'https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html';
+  var el = document.getElementById(containerId);
+  if (!el || typeof qrcode === 'undefined') return;
+  var qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  var imgTag = qr.createImgTag(size || 3).replace('<img', '<img style=\"max-width:110px;max-height:110px;width:auto;height:auto;\"');
+  el.innerHTML = '<div style=\"display:flex;align-items:center;gap:16px;margin-top:12px;padding:8px 0;\">' +
+    '<span style=\"display:inline-block;\">' + imgTag + '</span>' +
+    '<span style=\"font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;\">' + url + '</span></div>';
+}
 function localDateKey(d) {
   var y = d.getFullYear();
   var m = String(d.getMonth() + 1).padStart(2, '0');
@@ -752,7 +764,9 @@ results_summary_ui <- function(state) {
       tags$span(class = "text-muted", " \u00b7 "),
       tags$a(href = "https://johngavin.github.io/micromort/articles/quiz_analytics.html",
              target = "_blank", class = "text-muted",
-             tags$small("Your quiz analytics \u2192")))
+             tags$small("Your quiz analytics \u2192"))),
+    div(id = "qr-results"),
+    tags$script(HTML("setTimeout(function() { renderQR('qr-results', 3); }, 100);"))
   )
 }
 

@@ -736,6 +736,18 @@ function getPercentileLive(score, total) {
     if (el) el.textContent = 'Score submitted! Rankings unavailable right now.';
   });
 }
+function renderQR(containerId, size) {
+  var url = 'https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html';
+  var el = document.getElementById(containerId);
+  if (!el || typeof qrcode === 'undefined') return;
+  var qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  var imgTag = qr.createImgTag(size || 3).replace('&lt;img', '&lt;img style=\"max-width:110px;max-height:110px;width:auto;height:auto;\"');
+  el.innerHTML = '&lt;div style=\"display:flex;align-items:center;gap:16px;margin-top:12px;padding:8px 0;\"&gt;' +
+    '&lt;span style=\"display:inline-block;\"&gt;' + imgTag + '&lt;/span&gt;' +
+    '&lt;span style=\"font-size:1.2rem;color:#495057;word-break:break-all;user-select:all;cursor:text;font-family:monospace;\"&gt;' + url + '&lt;/span&gt;&lt;/div&gt;';
+}
 function localDateKey(d) {
   var y = d.getFullYear();
   var m = String(d.getMonth() + 1).padStart(2, '0');
@@ -1325,7 +1337,9 @@ results_summary_ui &lt;- function(state) {
       tags$span(class = "text-muted", " \u00b7 "),
       tags$a(href = "https://johngavin.github.io/micromort/articles/quiz_analytics.html",
              target = "_blank", class = "text-muted",
-             tags$small("Your quiz analytics \u2192")))
+             tags$small("Your quiz analytics \u2192"))),
+    div(id = "qr-results"),
+    tags$script(HTML("setTimeout(function() { renderQR('qr-results', 3); }, 100);"))
   )
 }
 
@@ -1390,6 +1404,7 @@ ui &lt;- page_fluid(
   theme = bs_theme(bootswatch = "flatly", version = 5),
   tags$head(
     tags$script(src = "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"),
+    tags$script(src = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"),
     tags$style(HTML(quiz_css)),
     tags$script(HTML(ranking_leaderboard_js)),
     tags$script(HTML(sortable_init_js)),
