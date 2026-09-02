@@ -62,6 +62,53 @@
 <div id="changelog" class="section level1">
 
 <div class="section level2">
+<h2 id="id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes">2026-08-30/09-01 — Worktree cleanup + quiz confidence feature (issue #132) + site layout fixes<a class="anchor" aria-label="anchor" href="#id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes"></a></h2>
+<div class="section level3">
+<h3 id="completed">Completed<a class="anchor" aria-label="anchor" href="#completed"></a></h3>
+<p><strong>Worktree/branch cleanup:</strong> removed 5 merged worktrees, deleted 13 fully-merged branches (7 verified via squash-merge PR closure since git’s own <code>-d</code> check misses squash-merges), harvested one orphaned commit (content-hash freshness-check tests) into main via <a href="https://github.com/JohnGavin/micromort/pull/133" class="external-link">#133</a>.</p>
+<p><strong>PR #120 (combined-quiz rounding bug, 101 days stale):</strong> fixed via <a href="https://github.com/JohnGavin/micromort/pull/135" class="external-link">#135</a> — <code><a href="reference/combined_quiz_pairs.html">combined_quiz_pairs()</a></code> was scaling ALL <code>period_type=="period"</code> rows as bounded one-off totals, but some (e.g. CDC mortality-rate rows measured over a fixed window) should scale like any other rate; fix distinguishes by the period string itself. Required two further merge-conflict-resolution rounds (<a href="https://github.com/JohnGavin/micromort/pull/136" class="external-link">#136</a>, then a manual real-merge-commit push) after main moved repeatedly during the fix — see Failed Approaches.</p>
+<p><strong>Quiz-confidence feature (<a href="https://github.com/JohnGavin/micromort/issues/132" class="external-link">issue #132</a>):</strong> per-question confidence capture (0/25/50/75/100%) on <code>micromort-quiz.qmd</code>, self-only calibration + Brier score (<a href="https://github.com/JohnGavin/micromort/pull/134" class="external-link">#134</a>), then population-level comparison — confirmed the shared Google Form field (<code>entry.1681143871</code>, same form used by all 6 quiz files) and wired an attempt-level (not per-question — the form only accepts one confidence value per submission) calibration approximation into <code>plan_leaderboard_stats.R</code>, plus a predicted-vs-actual scatter on the results screen (<a href="https://github.com/JohnGavin/micromort/pull/140" class="external-link">#140</a>). Merged and live at <a href="https://johngavin.github.io/micromort/articles/micromort-quiz.html" class="uri">https://johngavin.github.io/micromort/articles/micromort-quiz.html</a>.</p>
+<p><strong>Site layout fixes (<a href="https://github.com/JohnGavin/micromort/pull/137" class="external-link">#137</a>, <a href="https://github.com/JohnGavin/micromort/pull/139" class="external-link">#139</a>, <a href="https://github.com/JohnGavin/micromort/pull/143" class="external-link">#143</a>):</strong> after two insufficient attempts (tracked in <a href="https://github.com/JohnGavin/micromort/issues/142" class="external-link">#142</a>), the Shinylive-availability banner / pkgdown Source line / site footer are now genuinely off the quiz pages’ scroll path — moved to a new <code>vignettes/details.qmd</code> page with a 3-tab tabset (Shinylive apps / Source / Site info), replaced on each quiz page with one small link. Also fixed: the A−/A+/theme toolbar was rendering at the bottom of every page instead of pinned top-right, because pkgdown’s <code>quarto_render()</code> under an <code>--output-dir</code> override was silently dropping the <code>&lt;style&gt;</code> half of <code>vignettes/_includes/toolbar.html</code>’s <code>include-in-header</code> content (root cause fixed, not worked around). A DOM-walking contrast audit found and fixed 20 WCAG-AA failures across the quiz + Details pages (was <code>color: #6c757d</code>, Bootstrap’s default <code>.text-muted</code>, unreadable against this site’s <code>#000000</code> dark theme).</p>
+<p><strong>Issues filed:</strong> - <a href="https://github.com/JohnGavin/micromort/issues/132" class="external-link">#132</a> — quiz confidence spec (open, Phase 2 in progress for the other two quizzes) - <a href="https://github.com/JohnGavin/micromort/issues/138" class="external-link">#138</a> — architecture.qmd docs-build bug, investigated, found unreproducible on a fresh checkout, <strong>closed</strong> - <a href="https://github.com/JohnGavin/micromort/issues/142" class="external-link">#142</a> — tracks 2 insufficient attempts at the banner/Source/footer fix before #143 actually solved it - <a href="https://github.com/JohnGavin/llm/issues/1127" class="external-link">llm#1127</a> — roborev’s Gemini reviewer can’t read its own diff snapshot (ignore-pattern misconfig), closed 3 phantom “High severity” findings (#9962/#9963/#9968) as invalid - <a href="https://github.com/JohnGavin/llm/issues/1132" class="external-link">llm#1132</a> — proposes generalizing the SPA-verification lesson (below) into <code>verification-before-completion</code>/<code>browser-user-testing</code></p>
+</div>
+<div class="section level3">
+<h3 id="failed-approaches">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches"></a></h3>
+<ul><li>
+<strong>Squash-merging a “sync branch with main” PR onto a long-lived feature branch never advances the merge-base</strong>, so subsequent <code>git merge main</code> attempts re-derive the same stale 3-way conflicts even where content already agrees. Discovered landing PR #120: two squash-merges (#135, #136) left the merge-base frozen at the original 3-month-old divergence point; a real trial merge kept reconflicting on <code>vignettes/_quarto.yml</code> even though a direct <code>git diff main featbranch</code> showed zero real disagreement. Fixed by landing one true (<code>--merge</code>, not <code>--squash</code>) merge commit directly. Adopted <code>--merge</code> for all subsequent “bring branch X up to date with main” landings this session (e.g. PR #140 onto the Phase-1 branch).</li>
+<li>
+<strong><code>git merge-tree &lt;base&gt; &lt;a&gt; &lt;b&gt;</code> gave a false “0 conflicts” reading</strong> during the same investigation — a real <code>git merge --no-commit --no-ff</code> trial immediately showed 7 real conflicts. Don’t trust <code>merge-tree</code>; do a real trial merge in a scratch worktree.</li>
+<li>
+<strong><code>nix-shell &lt;absolute-path&gt;/default.nix --run "..."</code> does not <code>cd</code> into that path</strong> — it only selects the environment. Running <code>tar_make()</code>/<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> this way silently operates on whatever directory the <em>calling</em> shell is already in. This mistake was made 3 times this session (once modifying the orchestrator’s own session worktree by accident, cleaned up via <code>git checkout -- .</code> / <code>git clean -fd</code>). Always use <code>(cd /path &amp;&amp; nix-shell default.nix --run "...")</code>.</li>
+<li>
+<strong>Static verification (<code>curl</code>+<code>grep</code>, jsdom against saved HTML) is not sufficient for a client-rendered/SPA page.</strong> Two PRs (#137, #139) both “fixed” the banner/Source/footer placement per static checks, and both were wrong in production — the content still appeared after every quiz question because it sat immediately after the SPA’s own redrawing container. Only caught via real <code>puppeteer-core</code> interaction (system Chrome, no bundled-browser download: <code>npm install puppeteer-core</code>, <code>executablePath: '.../Google Chrome.app/...'</code>) — clicking through the actual quiz and screenshotting the result. Now the mandatory verification method for any UI/layout claim about these pages.</li>
+<li>
+<strong>A stale local checkout produced a false “feature is missing” read.</strong> The main checkout’s working tree was 12 commits behind <code>origin/main</code> (never <code>git pull</code>ed) — a <code>grep</code> against local files nearly caused a wrong diagnosis. Use <code>git show &lt;ref&gt;:&lt;path&gt;</code> or confirm freshness via <code>git status</code>/<code>git fetch</code> first, don’t trust a local working tree’s currency.</li>
+<li>
+<strong><code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> refuses to build into an emptied <code>docs/</code> directory</strong> (<code>check_dest_is_pkgdown()</code> guard) after <code>git rm -rf docs</code> — workaround: seed <code>docs/pkgdown.yml</code> from <code>origin/main</code> before rebuilding; the real build then overwrites it correctly. Hit repeatedly (PRs #120, #136, #140, #143) — worth fixing properly (e.g. a <code>site_verify</code> pre-step) in a future session.</li>
+<li>Two GitHub Actions CI timeouts (20-min <code>R Tests</code> job limit) hit mid Nix-package-cache-upload on PR #143 — not a real test failure, just cold-cache infra; resolved with <code>gh run rerun --failed</code> (succeeded on warm cache in ~4 min).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="accuracy--metrics">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics"></a></h3>
+<ul><li>Final <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> across every merge this session: consistently <code>FAIL 0</code>, final count <code>PASS 1019</code> (<code>SKIP 2</code>).</li>
+<li>Contrast audit: 20 WCAG-AA failures → 0, across the 3 quiz pages + new Details page (#143).</li>
+<li>5 fixer-agent dispatches this session, all with mandatory foreground verification (no <code>run_in_background</code> on test/build commands) and, for the last one, mandatory real-browser screenshot evidence.</li>
+<li>roborev: 16 reviews since 2026-08-26, 12 failed verdicts / 6 addressed (6 open, all <code>gemini</code>, no crash/quota — see session’s own filed llm#1127 for a related root-cause investigation into false “High severity” phantom findings).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<ul><li>
+<strong>Quiz confidence Phase 2 is only live on <code>micromort-quiz.qmd</code>.</strong> <code>microlife-quiz.qmd</code> and <code>risk-ranking-quiz.qmd</code> still need the same confidence-capture + calibration wiring — per project memory (<code>project_quiz-confidence-phase2-definition-of-done.md</code>), get one quiz’s full population-comparison + Brier-score + actual-vs-predicted chart genuinely working (it now is) before replicating.</li>
+<li>
+<strong>Population calibration data is empty</strong> (<code>docs/api/quiz_stats.json</code>’s <code>calibration.n == 0</code>) — no real quiz-takers have submitted confidence ratings yet through the live Google Form. The population-comparison UI correctly shows a “not enough data yet” state; will populate as real submissions accumulate.</li>
+<li>
+<code>docs/pkgdown.yml</code>-sentinel-after-<code>git rm -rf docs</code> workaround (above) should be fixed properly rather than re-discovered each time.</li>
+<li>
+<code>worktree-agent-a57cb96f</code> branch/worktree remains un-triaged (deferred per explicit user instruction — ambiguous salvage signal, not auto-discardable).</li>
+<li>
+<code>ast-grep</code> was unavailable in one fixer’s nix shell/outer shell (PR #143) — <code>r_code_check.sh</code>’s structural checks could not run for that PR; called out explicitly in its PR body rather than silently skipped.</li>
+</ul></div>
+</div>
+<div class="section level2">
 <h2 id="id_2026-05-20--phase-123-roborev-3523-fixes--site-refresh-pr-120">2026-05-20 — Phase 1+2+3: roborev #3523 fixes + site refresh (PR #120)<a class="anchor" aria-label="anchor" href="#id_2026-05-20--phase-123-roborev-3523-fixes--site-refresh-pr-120"></a></h2>
 <div class="section level3">
 <h3 id="completed-commits-3a35b169f7cdbd-on-featcc-20260520-113729--8-commits-pr-httpsgithubcomjohngavinmicromortpull120">Completed (commits <code>3a35b16..9f7cdbd</code> on <code>feat/cc-20260520-113729</code> — 8 commits, PR <a href="https://github.com/JohnGavin/micromort/pull/120" class="external-link uri">https://github.com/JohnGavin/micromort/pull/120</a>)<a class="anchor" aria-label="anchor" href="#completed-commits-3a35b169f7cdbd-on-featcc-20260520-113729--8-commits-pr-httpsgithubcomjohngavinmicromortpull120"></a></h3>
@@ -93,13 +140,13 @@
 <strong>#1084 / #733</strong> (“unkillable failed orphans” per CURRENT_WORK) not present in the roborev DB (<code>show</code> returns <code>no review found</code>); effectively cleaned by daemon GC since the prior session.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="failed-approaches">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches"></a></h3>
+<h3 id="failed-approaches-1">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-1"></a></h3>
 <ul><li>Tried <code>Agent(subagent_type="fixer", ...)</code> for the B1+B2 work — hit the daily session-quota cap mid-dispatch. Fell back to direct opus edits with <code>Bash</code>-via-<code>timeout</code> verification. Worked but is slower per <code>auto-delegation</code> cost model; usable when the delegation tier is unavailable. No lasting damage — the in-worktree edits respected the <code>permission-discipline</code> rule because the workspace is itself a worktree.</li>
 <li>Tried <code>rm -rf vignettes/.quarto/_freeze/palatable_units/</code> to invalidate the stale Quarto freeze — blocked by <code>destructive_fs_guard.sh</code> hook (the directory is 5.0 MB, above the safe-deletion 1 MB threshold). Workaround: <code>mv</code> to <code>/tmp/palatable_units_freeze_backup_20260520</code> (reversible). Lesson: even for clearly regenerable cache directories, use <code>mv → /tmp/</code> rather than fighting the hook.</li>
 <li>Initial attempt to source the PM2.5 rows in <code><a href="reference/chronic_risks.html">chronic_risks()</a></code> directly from <code>data-raw/sources/chronic_risks_base.csv</code> via <code>readr::read_csv(here::here(...))</code> — fine in source-tree but <code>data-raw/</code> is <code>.Rbuildignore</code>d so installed users wouldn’t have the CSV. Switched to reading the canonical parquet via <code><a href="reference/load_chronic_risks.html">load_chronic_risks()</a></code> which IS shipped in <code>inst/extdata/</code>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics"></a></h3>
+<h3 id="accuracy--metrics-1">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-1"></a></h3>
 <ul><li>
 <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>: <code>[ FAIL 0 | PASS 996 ]</code> after B1+B2 (pre-existing 2 failures in <code>test-vignette-outputs.R</code> for stale-render guard were exactly what the site rebuild then addressed).</li>
 <li>Combined quiz CSV: 4 of 50 rows changed <code>effective_micromorts_a</code> (the bounded-window period rows). All ratios/winners recomputed.</li>
@@ -109,7 +156,7 @@
 <li>Zero residual stale labels: <code>grep "Air pollution (high)" docs/articles/*.html</code> returns no matches.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
 <ul><li>The 3rd roborev #3523 finding (freshness guard structurally only compares timestamps, not content) was addressed <em>by symptom</em> (the site has now been rebuilt) but not <em>by root cause</em> (the guard still can’t detect future content drift). Next session should add a content-hash check to <code>tests/testthat/test-vignette-outputs.R</code> so future PM2.5-style drift trips CI rather than slipping through to a roborev review.</li>
 <li>4 stale chronic_risks-dependent vignette RDS were regenerated by hand-ported tar code in a one-shot Rscript rather than by <code>tar_make()</code> on the worktree (which has no <code>_targets/</code> store). If new vignette targets are added that depend on <code><a href="reference/chronic_risks.html">chronic_risks()</a></code>, they will be missed by this manual list.</li>
 <li>Three shinylive vignettes rebuilt via direct <code>quarto render</code> rather than pkgdown — they show the warning <code>WARN: Refusing to remove directory … _files since it is not a subdirectory of the main project directory.</code> This is the documented limitation; harmless but cosmetic.</li>
@@ -134,7 +181,7 @@
 <li>Two stuck failed orphans (<code>1084</code>, <code>733</code>) cannot be closed via API (no review record)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="failed-approaches-1">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-1"></a></h3>
+<h3 id="failed-approaches-2">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-2"></a></h3>
 <ul><li>
 <strong>Worktree auto-cleanup ate 4 of 6 Round-2 agent worktrees.</strong> Despite the prompt saying “leave changes uncommitted in the worktree for the orchestrator,” the worktrees were cleaned post-return because the agents hadn’t committed. Working-tree changes appeared in <code>main</code> as shadow modifications instead. Redispatched the 4 missing agents with explicit “commit on your worktree branch before returning” + “report commit SHA” instructions — that pattern survived cleanup correctly.</li>
 <li>
@@ -145,7 +192,7 @@
 <strong>Agent dispatch hit org monthly usage limit</strong> during historical project work — fell back to direct edit (well-scoped, single-file, test-infra change within bounded-exception scope).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-1">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-1"></a></h3>
+<h3 id="accuracy--metrics-2">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-2"></a></h3>
 <ul><li>Tests: <code>test-acute-risk-rounding.R</code> 29 PASS (new), <code>test-qa-chronic-csv-gate.R</code> 4 PASS (new), <code>test-vignette-outputs.R</code> 20 PASS + 3 staleness FAIL (intended signals on stale <code>docs/CHANGELOG.html</code> and <code>docs/index.html</code>).</li>
 <li>Roborev resolution: 50+ → 3 verified-remaining findings (job <code>3523</code>).</li>
 <li>Commits: 12, all conventional-commit-style with <code>roborev #...</code> tags and Co-Authored-By Claude.</li>
@@ -259,7 +306,7 @@
 <p><strong>Roborev DB cleanup:</strong> 14 findings closed with audit-trail comments (#11, #232, #558, #928, #570, #59-69 H cluster, #235-247 B cluster). All marked stale/false-positive/by-design.</p>
 </div>
 <div class="section level3">
-<h3 id="failed-approaches-2">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-2"></a></h3>
+<h3 id="failed-approaches-3">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-3"></a></h3>
 <ul><li>
 <strong>Direct opus Edit/Write for code:</strong> <code>auto-delegation</code> rule was clarified mid-session to require subagent delegation for all R/code/config edits. Bounded exceptions are prose-only (CLAUDE.md, rules, memory, CHANGELOG). Forced re-spawning of <code>r-debugger</code> after one attempt hit org monthly budget cap.</li>
 <li>
@@ -272,7 +319,7 @@
 <strong>Mass <code>roborev close</code> against backlog IDs:</strong> some IDs in <code>backlog.md</code> don’t exist as roborev job IDs (e.g. #570). <code>roborev comment</code> still records the audit trail, but <code>roborev close</code> returns 404 for those. Workaround: comment-only path is acceptable for findings without matching job rows.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-2">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-2"></a></h3>
+<h3 id="accuracy--metrics-3">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-3"></a></h3>
 <ul><li>
 <strong>Test count:</strong> ~1000 → ~1031+ (snapshot test for combined-quiz columns, 3 risk-sensitivity regression tests, real zero-divisor fixture, atomic-risks component_id uniqueness, bed_age cardinality assertions).</li>
 <li>
@@ -281,7 +328,7 @@
 <strong>XSS surface:</strong> 7 paths sanitized in Cluster C + 16 paths in Round 3A across 3 quiz vignettes. <code>safeHref()</code> URL allowlist now blocks <code>javascript:</code>, <code>data:</code>, <code>vbscript:</code> injection vectors.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
+<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
 <ul><li>
 <strong><code>docs/articles/what-is-a-micromort.{md,html}</code> are stale relative to source.</strong> Task #21 (docs rebuild) hit org budget cap before commit. Site shows old 7-row wine table; source has 6-row table with bicycle/coffee prose. Next session: run <code>pkgdown::build_article("what-is-a-micromort")</code> or full <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code>.</li>
 <li>
@@ -295,7 +342,7 @@
 <div class="section level2">
 <h2 id="id_2026-05-03-to-2026-05-06">2026-05-03 to 2026-05-06<a class="anchor" aria-label="anchor" href="#id_2026-05-03-to-2026-05-06"></a></h2>
 <div class="section level3">
-<h3 id="completed">Completed<a class="anchor" aria-label="anchor" href="#completed"></a></h3>
+<h3 id="completed-1">Completed<a class="anchor" aria-label="anchor" href="#completed-1"></a></h3>
 <p><strong>Issues closed: 1</strong> (#96) <strong>Issues created: 2</strong> (#98, #99)</p>
 <div class="section level4">
 <h4 id="rankings-bump-chart-96">Rankings bump chart (#96)<a class="anchor" aria-label="anchor" href="#rankings-bump-chart-96"></a></h4>
@@ -324,12 +371,12 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="accuracy--metrics-3">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-3"></a></h3>
+<h3 id="accuracy--metrics-4">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-4"></a></h3>
 <ul><li>Tests: 923 passing, 0 failures</li>
 <li>CI: passing (green)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
+<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
 <ul><li>12 chronic risk factors still missing from #99 (GLP-1, vaping, sleep dose-response, social connection, DASH/MIND diets, nuts, coffee, aspirin, sauna, dancing, HRT)</li>
 <li>docs_qa_precommit.sh hook still buggy</li>
 <li>Quarto 1.8.26 strips scripts — requires Python post-injection for causes_of_death</li>
@@ -338,7 +385,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-25-to-2026-05-03">2026-04-25 to 2026-05-03<a class="anchor" aria-label="anchor" href="#id_2026-04-25-to-2026-05-03"></a></h2>
 <div class="section level3">
-<h3 id="completed-1">Completed<a class="anchor" aria-label="anchor" href="#completed-1"></a></h3>
+<h3 id="completed-2">Completed<a class="anchor" aria-label="anchor" href="#completed-2"></a></h3>
 <p><strong>Version bump: 0.1.0 → 0.2.0</strong> <strong>Issues closed: 2</strong> (#93, #95) <strong>Issues created: 3</strong> (#95, #96, #97)</p>
 <div class="section level4">
 <h4 id="causes-of-death-by-country-vignette-93-95">Causes of Death by Country vignette (#93, #95)<a class="anchor" aria-label="anchor" href="#causes-of-death-by-country-vignette-93-95"></a></h4>
@@ -365,7 +412,7 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="failed-approaches-3">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-3"></a></h3>
+<h3 id="failed-approaches-4">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-4"></a></h3>
 <ul><li>
 <strong>Quarto <code>{=html}</code> blocks strip <code>&lt;script&gt;</code> tags</strong> (Quarto 1.8.26). Tried: multiple <code>{=html}</code> blocks, <code>include-after-body</code>, <code>resources</code> + <code>&lt;script src&gt;</code>, extra.js dynamic loader. All failed. Workaround: Python post-processing injects JS+JSON directly into the pkgdown-built HTML before committing to docs/.</li>
 <li>
@@ -376,13 +423,13 @@
 <strong>Full <code>build_site()</code></strong> crashed on Closeread article (quarto render error). Individual <code>build_article()</code> calls work for all except chronic_vs_acute (pkgdown skips it).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-4">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-4"></a></h3>
+<h3 id="accuracy--metrics-5">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-5"></a></h3>
 <ul><li>CI: passing (0 HTML content errors in checked articles)</li>
 <li>Version: 0.2.0</li>
 <li>New vignette: causes_of_death (pure JS, 80KB deployed)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
+<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
 <ul><li>chronic_vs_acute still has 4 “not found in targets” in deployed HTML (Closeread, pkgdown can’t rebuild — quarto direct render is clean)</li>
 <li>docs_qa_precommit.sh hook has a bug (exits non-zero even with 0 errors) — requires python workaround to stage docs/ files</li>
 <li>OWID catalog URLs defunct (#94 blocks #90-92)</li>
@@ -393,7 +440,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-24">2026-04-24<a class="anchor" aria-label="anchor" href="#id_2026-04-24"></a></h2>
 <div class="section level3">
-<h3 id="completed-2">Completed<a class="anchor" aria-label="anchor" href="#completed-2"></a></h3>
+<h3 id="completed-3">Completed<a class="anchor" aria-label="anchor" href="#completed-3"></a></h3>
 <p><strong>Issues created: 5</strong> (#90, #91, #92, #93, #94)</p>
 <div class="section level4">
 <h4 id="owidgbd-gap-analysis">OWID/GBD gap analysis<a class="anchor" aria-label="anchor" href="#owidgbd-gap-analysis"></a></h4>
@@ -419,12 +466,12 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="failed-approaches-4">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-4"></a></h3>
+<h3 id="failed-approaches-5">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-5"></a></h3>
 <ul><li>Tried probing 15 OWID catalog date variants (2024-05-20 through 2026-02-11) — all return 404. The entire catalog.ourworldindata.org/garden/ihme_gbd/ path is defunct.</li>
 <li>OWID grapher CSV download pattern also returns 404 for GBD charts specifically (licensing restriction, not general breakage)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
+<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
 <ul><li>#94 blocks #90, #91, #92 — all need manual IHME account creation + download</li>
 <li>Existing bundled data frozen at GBD 2019 (via 2024-05-20 OWID snapshot)</li>
 <li>Pending from prior sessions: glossary/reference page fixes, text selectability, “click to expand” broken, article rebuilds for acronym link fixes</li>
@@ -433,7 +480,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-21">2026-04-21<a class="anchor" aria-label="anchor" href="#id_2026-04-21"></a></h2>
 <div class="section level3">
-<h3 id="completed-3">Completed<a class="anchor" aria-label="anchor" href="#completed-3"></a></h3>
+<h3 id="completed-4">Completed<a class="anchor" aria-label="anchor" href="#completed-4"></a></h3>
 <p><strong>Issues closed: 3</strong> (#30, #63, #82) <strong>Issues created: 4</strong> (#84, #85, #86, #87)</p>
 <div class="section level4">
 <h4 id="portfolio-risk-builder-30-63-merged">Portfolio Risk Builder (#30, #63 merged)<a class="anchor" aria-label="anchor" href="#portfolio-risk-builder-30-63-merged"></a></h4>
@@ -492,7 +539,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-20">2026-04-20<a class="anchor" aria-label="anchor" href="#id_2026-04-20"></a></h2>
 <div class="section level3">
-<h3 id="completed-4">Completed<a class="anchor" aria-label="anchor" href="#completed-4"></a></h3>
+<h3 id="completed-5">Completed<a class="anchor" aria-label="anchor" href="#completed-5"></a></h3>
 <p><strong>Issues closed: 13</strong> (#47, #58, #59, #61, #64, #71, #72, #75, #78, #79, #81, #83) <strong>Issues created: 2</strong> (#82, #83)</p>
 <div class="section level4">
 <h4 id="new-exported-functions-7">New exported functions (7)<a class="anchor" aria-label="anchor" href="#new-exported-functions-7"></a></h4>
@@ -554,20 +601,20 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="failed-approaches-5">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-5"></a></h3>
+<h3 id="failed-approaches-6">Failed Approaches<a class="anchor" aria-label="anchor" href="#failed-approaches-6"></a></h3>
 <ul><li>Bootstrap <code>data-bs-toggle</code> tabs: BS5 JS intercepted clicks on dynamically created nav elements, causing anchor navigation instead of tab switching. Fixed by switching to plain <code>&lt;button&gt;</code> elements with custom click handlers.</li>
 <li>Bootstrap <code>.tab-pane</code> CSS: <code>display:none</code> hid content even with <code>show active</code> classes. Fixed by using inline <code>style.display</code> toggling.</li>
 <li>Moving sections into tab panes via <code>appendChild</code>: sections rendered above nav because <code>parentContainer</code> reference became stale after DOM moves. Fixed by capturing parent before moves.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-5">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-5"></a></h3>
+<h3 id="accuracy--metrics-6">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-6"></a></h3>
 <ul><li>Tests: 914 passing, 0 failures</li>
 <li>New tests this session: ~112</li>
 <li>New exported functions: 7</li>
 <li>New bundled datasets: 4 CSVs (chronic diseases, infectious diseases, LD50, combined quiz pairs)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
+<h3 id="known-limitations-6">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-6"></a></h3>
 <ul><li>Introduction page build-info shows stale date (2026-04-18) — vig_build_info target needs rebuild</li>
 <li>
 <code>noUiSlider</code> JS error in DT filter widgets (cosmetic, doesn’t affect functionality)</li>
