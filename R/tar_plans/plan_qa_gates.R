@@ -16,6 +16,97 @@
 #'   - qa_no_raw_sql: Check for SQL violations
 #'   - qa_vignette_compliance: Check vignette rule compliance (NEW)
 #'   - qa_quality_gate: Compute weighted quality gate score
+#'   - qa_retired_factor_guard / qa_retired_factor_gate: retired
+#'     chronic_risks() factor names must not appear in committed docs/
+#'     artifacts (issue #110 / roborev cluster: PM2.5 refactor left
+#'     "Air pollution (high)" behind in stale rendered HTML)
+
+# ---------------------------------------------------------------------------
+# Retired chronic-risk factor names that must never appear in committed
+# rendered artifacts under docs/. Append here whenever a chronic_risks()
+# factor name is renamed or removed, so a future refactor cannot silently
+# leave stale data behind the way the PM2.5 refactor did (issue #110).
+# ---------------------------------------------------------------------------
+RETIRED_CHRONIC_FACTOR_NAMES <- c(
+  "Air pollution (high)"
+)
+
+# Files that legitimately discuss retired names in historical/narrative
+# prose (changelog entries) rather than as live embedded data. Mirrors the
+# CHANGELOG.md exclusion convention already used elsewhere in this repo
+# (see the roborev-exclude-patterns rule) — a changelog is expected to
+# name retired values for audit purposes; that is not stale data.
+.retired_factor_guard_excluded <- function(path) {
+  base <- basename(path)
+  base %in% c("CHANGELOG.md", "CHANGELOG.html")
+}
+
+# Pure scanning function (no I/O side effects beyond reading files), kept
+# separate from the target body so it can be unit-tested directly without
+# tar_make() — see tests/testthat/test-qa-retired-factor-guard.R.
+#
+# Returns status:
+#   "OK"    — docs/ + canonical data both readable, zero retired-name hits
+#   "STALE" — a retired name (confirmed absent from canonical data) was
+#             found in a scanned artifact
+#   "ERROR" — indeterminate: docs/ missing, canonical names unreadable, or
+#             no scannable files found. NEVER treated as a pass by the
+#             gate (checks-must-distinguish-unknown).
+.qa_retired_factor_scan <- function(docs_dir, canonical_names, retired_names) {
+  if (is.null(canonical_names) || length(canonical_names) == 0L) {
+    return(list(
+      status = "ERROR", violations = character(0), checked_names = character(0),
+      files_scanned = 0L,
+      message = "could not read canonical chronic_risks() factor names"
+    ))
+  }
+  if (!dir.exists(docs_dir)) {
+    return(list(
+      status = "ERROR", violations = character(0), checked_names = character(0),
+      files_scanned = 0L,
+      message = sprintf("docs directory '%s' not found", docs_dir)
+    ))
+  }
+
+  # Only enforce names confirmed absent from the current canonical set --
+  # if a "retired" name is reinstated later, this guard must not false-fail.
+  names_to_check <- retired_names[!retired_names %in% canonical_names]
+
+  all_files <- list.files(docs_dir, pattern = "\\.(html|md)$",
+                           recursive = TRUE, full.names = TRUE)
+  scanned_files <- Filter(function(f) !.retired_factor_guard_excluded(f), all_files)
+
+  if (length(scanned_files) == 0L) {
+    return(list(
+      status = "ERROR", violations = character(0), checked_names = names_to_check,
+      files_scanned = 0L,
+      message = sprintf("no scannable .html/.md files found under '%s'", docs_dir)
+    ))
+  }
+
+  violations <- character(0)
+  for (name in names_to_check) {
+    for (f in scanned_files) {
+      lines <- tryCatch(readLines(f, warn = FALSE), error = function(e) character(0))
+      hit_lines <- grep(name, lines, fixed = TRUE)
+      if (length(hit_lines) > 0L) {
+        violations <- c(violations, sprintf(
+          "%s:%d -- retired factor %s", f, hit_lines, shQuote(name)
+        ))
+      }
+    }
+  }
+
+  status <- if (length(violations) > 0L) "STALE" else "OK"
+
+  list(
+    status = status,
+    violations = violations,
+    checked_names = names_to_check,
+    files_scanned = length(scanned_files),
+    message = if (status == "OK") "clean" else sprintf("%d violation(s)", length(violations))
+  )
+}
 
 # ---------------------------------------------------------------------------
 # Shared helper: discover all article slugs from _pkgdown.yml.
@@ -562,6 +653,58 @@ plan_qa_gates <- list(
       cli::cli_alert_info("Vignette compliance: {vignette_score}% (informational)")
 
       gate
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
+  # Scan committed docs/ artifacts for retired chronic_risks() factor names.
+  # See .qa_retired_factor_scan() above for the OK/STALE/ERROR contract.
+  targets::tar_target(
+    qa_retired_factor_guard,
+    {
+      canonical_names <- tryCatch(chronic_risks()$factor, error = function(e) NULL)
+      result <- .qa_retired_factor_scan("docs", canonical_names, RETIRED_CHRONIC_FACTOR_NAMES)
+
+      if (result$status == "ERROR") {
+        cli::cli_alert_warning("qa_retired_factor_guard: indeterminate -- {result$message}")
+      } else if (result$status == "STALE") {
+        cli::cli_alert_danger(
+          "qa_retired_factor_guard: {length(result$violations)} retired-name occurrence(s) in docs/"
+        )
+      } else {
+        cli::cli_alert_success(
+          "qa_retired_factor_guard: OK ({result$files_scanned} file(s) scanned, {length(result$checked_names)} retired name(s) checked)"
+        )
+      }
+
+      result
+    },
+    cue = targets::tar_cue(mode = "always")
+  ),
+
+  # Enforce: retired factor names must never appear in committed docs/
+  # artifacts, and an indeterminate scan must never be treated as a pass.
+  targets::tar_target(
+    qa_retired_factor_gate,
+    {
+      check <- qa_retired_factor_guard
+      if (check$status != "OK") {
+        cli::cli_abort(c(
+          "x" = "Retired-factor gate FAILED: status = {check$status}",
+          if (check$status == "STALE") {
+            setNames(check$violations, rep("i", length(check$violations)))
+          } else {
+            c("i" = check$message)
+          },
+          "i" = if (check$status == "STALE") {
+            "Regenerate the stale docs/ artifact(s) from current chronic_risks() output"
+          } else {
+            "Fix the underlying cause (missing docs/, unreadable chronic_risks()) before trusting this gate"
+          }
+        ))
+      }
+      cli::cli_alert_success("Retired-factor gate: OK")
+      list(status = check$status, timestamp = Sys.time())
     },
     cue = targets::tar_cue(mode = "always")
   )
