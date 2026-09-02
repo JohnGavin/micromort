@@ -81,7 +81,7 @@ plan_normalization <- list(
       data <- data[, source_cols]
 
       # Validate no duplicate source_ids
-      if (any(duplicated(data$source_id))) {
+      if (anyDuplicated(data$source_id) > 0) {
         dups <- data$source_id[duplicated(data$source_id)]
         cli::cli_warn("Duplicate source_ids: {paste(unique(dups), collapse = ', ')}")
       }
