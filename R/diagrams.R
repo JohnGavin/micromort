@@ -43,6 +43,7 @@ mermaid_dark_theme_header <- function() {
     as_micromort = "Conversion", as_microlife = "Conversion",
     as_probability = "Conversion", lle = "Conversion",
     value_of_micromort = "Conversion",
+    MICROLIVES_PER_MICROMORT = "Conversion",
     # Data
     load_acute_risks = "Data", load_chronic_risks = "Data",
     load_sources = "Data", common_risks = "Data",

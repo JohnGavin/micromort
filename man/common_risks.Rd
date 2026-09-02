@@ -23,7 +23,8 @@ A tibble with columns:
 \describe{
 \item{activity}{Activity name}
 \item{micromorts}{Risk in micromorts (1 = 1-in-a-million death probability)}
-\item{microlives}{Equivalent microlives (micromorts x 0.7)}
+\item{microlives}{Equivalent microlives (micromorts x
+\link{MICROLIVES_PER_MICROMORT})}
 \item{category}{Activity category}
 \item{period}{Human-readable period description}
 \item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}

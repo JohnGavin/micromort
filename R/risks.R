@@ -24,7 +24,8 @@
 #'   \describe{
 #'     \item{activity}{Activity name}
 #'     \item{micromorts}{Risk in micromorts (1 = 1-in-a-million death probability)}
-#'     \item{microlives}{Equivalent microlives (micromorts x 0.7)}
+#'     \item{microlives}{Equivalent microlives (micromorts x
+#'       [MICROLIVES_PER_MICROMORT])}
 #'     \item{category}{Activity category}
 #'     \item{period}{Human-readable period description}
 #'     \item{period_type}{Normalized period type: "event", "day", "hour", "year", "period"}
@@ -96,7 +97,7 @@ common_risks <- function(profile = list(), duration_hours = NULL) {
     ) |>
     dplyr::arrange(.row_order) |>
     dplyr::mutate(
-      microlives = round(micromorts * 0.7, 1),
+      microlives = round(micromorts * MICROLIVES_PER_MICROMORT, 1),
       period_days = compute_period_days(period, period_type),
       micromorts_per_day_raw = micromorts / period_days,
       micromorts_per_day = round(micromorts_per_day_raw, 2)
@@ -135,6 +136,15 @@ common_risks <- function(profile = list(), duration_hours = NULL) {
 chronic_risks <- function() {
   wiki_ml <- "https://en.wikipedia.org/wiki/Microlife"
   bmj_2012 <- "https://pubmed.ncbi.nlm.nih.gov/23247978/"
+  # Primary source for the cancer-burden row below: Philipson T, Zhang D,
+  # Abbasi S, Fisher N (2026). "The Economic Value of Eliminating Cancer."
+  # NBER Working Paper 35052. Verified against the NBER page 2026-09-02
+  # (title, authors, working paper number, and the 30.7M deaths / 380M
+  # life-years / $197 trillion figures all match). This is the primary
+  # source; the secondary Marginal Revolution blog post that previously
+  # supplied the description link is no longer used as a source_url
+  # (micromort#109).
+  philipson_2026_nber <- "https://www.nber.org/papers/w35052"
 
   tibble::tribble(
     ~factor, ~microlives_per_day, ~category, ~description, ~source_url,
@@ -200,13 +210,18 @@ chronic_risks <- function() {
     "Living in 2010 vs 1910", 15, "Historical", "Medical/social progress", NA_character_,
     "Living in Sweden vs Russia (male)", 21, "Demographics", "Geographic health advantage", NA_character_,
 
-    # Cancer burden (Philipson et al. 2026 NBER)
-    "Average cancer diagnosis", -6, "Cancer", "~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)", NA_character_
+    # Cancer burden (Philipson et al. 2026 NBER, primary source above —
+    # micromort#109: this row previously fell back to the generic BMJ
+    # source_url instead of citing its own primary source)
+    "Average cancer diagnosis", -6, "Cancer", "~12.4 life-years lost per cancer death (380M life-years / 30.7M deaths)", philipson_2026_nber
   ) |>
     dplyr::mutate(
       direction = ifelse(microlives_per_day < 0, "loss", "gain"),
       # Annual effect: microlives * 365 days * 30 min / (24*60) = days/year
       annual_effect_days = round(microlives_per_day * 365 * 30 / (24 * 60), 1),
+      # Only rows still carrying NA fall back to the generic BMJ source;
+      # rows with an explicit source_url (e.g. the cancer-burden row above)
+      # are left untouched.
       source_url = dplyr::coalesce(source_url, bmj_2012)
     ) |>
     dplyr::select(factor, microlives_per_day, category, direction,
@@ -312,8 +327,9 @@ covid_vaccine_rr <- function() {
   ) |>
     dplyr::group_by(age_group) |>
     dplyr::mutate(
-      # Microlives: 1 micromort ≈ 0.7 microlives (assuming 40 years remaining)
-      microlives = round(micromorts * 0.7, 1),
+      # Microlives: see MICROLIVES_PER_MICROMORT for the derivation
+      # (assumes 40 years remaining life expectancy).
+      microlives = round(micromorts * MICROLIVES_PER_MICROMORT, 1),
       # Relative risk vs bivalent booster within age group
       relative_risk = round(micromorts / micromorts[vaccination_status == "Bivalent booster"], 1),
       period = "Sep-Dec 2022 (Omicron BA.4/BA.5)",
@@ -403,7 +419,8 @@ cancer_risks <- function() {
 
   # Death rates per 100,000 population (age-adjusted, SEER 2019-2023)
   # Convert: deaths per 100k/year * 10 = micromorts per year
-  # Then: micromorts_per_year / 365 * 0.7 = microlives per day (approximate)
+  # Then: micromorts_per_year / 365 * MICROLIVES_PER_MICROMORT = microlives
+  # per day (approximate; see MICROLIVES_PER_MICROMORT for the derivation)
 
   tibble::tribble(
     ~cancer_type, ~sex, ~age_group, ~deaths_per_100k, ~family_history_rr,
@@ -464,8 +481,8 @@ cancer_risks <- function() {
     dplyr::mutate(
       # Convert deaths per 100k/year to micromorts per year
       micromorts_per_year = deaths_per_100k * 10,
-      # Convert to microlives per day (1 mm ≈ 0.7 ml)
-      microlives_per_day = round(micromorts_per_year / 365 * 0.7, 2),
+      # Convert to microlives per day — see MICROLIVES_PER_MICROMORT
+      microlives_per_day = round(micromorts_per_year / 365 * MICROLIVES_PER_MICROMORT, 2),
       # With family history
       micromorts_with_family_history = round(micromorts_per_year * family_history_rr, 0),
       source_url = seer_url
@@ -556,9 +573,9 @@ vaccination_risks <- function() {
   ) |>
     dplyr::mutate(
       # Microlives gained per day from vaccination
-      microlives_gained_per_day = round(micromorts_avoided_per_year / 365 * 0.7, 2),
+      microlives_gained_per_day = round(micromorts_avoided_per_year / 365 * MICROLIVES_PER_MICROMORT, 2),
       # Annual effect in days of life
-      annual_life_days_gained = round(micromorts_avoided_per_year / 365 * 0.7 * 365 * 30 / (24 * 60), 1),
+      annual_life_days_gained = round(micromorts_avoided_per_year / 365 * MICROLIVES_PER_MICROMORT * 365 * 30 / (24 * 60), 1),
       source_url = cdc_url
     )
 }
@@ -653,7 +670,7 @@ conditional_risk <- function(disease = "all") {
       # Annual effect in days
       annual_days_gained = round(microlives_gained * 365 * 30 / (24 * 60), 1),
       # Convert to micromorts equivalent
-      micromorts_equivalent_per_day = round(microlives_gained / 0.7, 1)
+      micromorts_equivalent_per_day = round(microlives_gained / MICROLIVES_PER_MICROMORT, 1)
     )
 }
 
@@ -712,7 +729,7 @@ hedged_portfolio <- function(include_diseases = c("cardiovascular", "cancer",
       -overlap_adjustment,
       sum(by_category$total_ml_gained) - overlap_adjustment,
       round((sum(by_category$total_ml_gained) - overlap_adjustment) * 365 * 30 / (24 * 60), 1),
-      round((sum(by_category$total_ml_gained) - overlap_adjustment) / 0.7, 1),
+      round((sum(by_category$total_ml_gained) - overlap_adjustment) / MICROLIVES_PER_MICROMORT, 1),
       round((sum(by_category$total_ml_gained) - overlap_adjustment) * 365 * 40 * 30 / (24 * 60), 0)
     )
   )
