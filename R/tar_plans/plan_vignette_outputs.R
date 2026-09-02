@@ -2,6 +2,22 @@
 # Per quarto-files.md: "MANDATORY: Vignettes contain ZERO computation"
 # All plots, tables, and summaries are built here, loaded via tar_load() in vignettes
 
+# Shared activity allowlist for vig_whatis_mundane_plot and vig_whatis_mundane_table.
+# Defining once (here, as a real top-level constant) prevents the plot and
+# table from diverging silently — both tar_target() bodies below reference
+# this single object rather than each defining their own literal vector.
+# NOTE: this is a module-level constant, not a tar_target(), because both
+# targets need it at definition time (when the pipeline plan is built), not
+# as a pipeline dependency evaluated at build time.
+MUNDANE_ACTIVITIES <- c(
+  "Cup of coffee",
+  "Crossing a road",
+  "Working in an office (8 hours)",
+  "Taking a bath",
+  "Commuting by car (30 min)",
+  "Commuting by bicycle (30 min)"
+)
+
 plan_vignette_outputs <- list(
 
 
@@ -63,23 +79,11 @@ plan_vignette_outputs <- list(
   # WHAT-IS-A-MICROMORT VIGNETTE (closeread scrollytelling)
   # ==========================================================================
 
-  # Shared activity allowlist for vig_whatis_mundane_plot and vig_whatis_mundane_table.
-  # Defining once prevents the plot and table from diverging silently.
-  # NOTE: this is a module-level constant, not a tar_target, because both targets
-  # need it at definition time (not as a pipeline dependency).
-
   # Mundane risks bar chart (plotly)
   targets::tar_target(
     vig_whatis_mundane_plot,
     {
-      whatis_mundane_activities <- c(
-        "Cup of coffee",
-        "Crossing a road",
-        "Working in an office (8 hours)",
-        "Taking a bath",
-        "Commuting by car (30 min)",
-        "Commuting by bicycle (30 min)"
-      )
+      whatis_mundane_activities <- MUNDANE_ACTIVITIES
       cr <- common_risks()
       mundane <- cr |>
         dplyr::filter(activity %in% whatis_mundane_activities) |>
@@ -120,14 +124,7 @@ plan_vignette_outputs <- list(
   targets::tar_target(
     vig_whatis_mundane_table,
     {
-      whatis_mundane_activities <- c(
-        "Cup of coffee",
-        "Crossing a road",
-        "Working in an office (8 hours)",
-        "Taking a bath",
-        "Commuting by car (30 min)",
-        "Commuting by bicycle (30 min)"
-      )
+      whatis_mundane_activities <- MUNDANE_ACTIVITIES
       cr <- common_risks() |>
         dplyr::filter(.data$activity %in% whatis_mundane_activities) |>
         dplyr::select("activity", "micromorts") |>
@@ -249,6 +246,32 @@ plan_vignette_outputs <- list(
             x = 0.5, y = -0.08, xref = "paper", yref = "paper",
             showarrow = FALSE, font = list(size = 9, color = "#888888")))
         ) |> plotly::config(displayModeBar = FALSE)
+    }
+  ),
+
+  # Quiz-intro recap sentence ("You know that coffee is X mm and Everest is
+  # ~Y mm. You know that smoking costs Z ml/day and exercise gains W ml/day.")
+  # Assembles the coffee/Everest/smoking/exercise recap from live
+  # common_risks()/chronic_risks() values. Prevents the 0.01/38,000/10/3
+  # literals in the vignette from drifting (micromort#119 residue).
+  targets::tar_target(
+    vig_whatis_quiz_intro_sentence,
+    {
+      cr <- common_risks()
+      ch <- chronic_risks()
+
+      coffee_mm  <- cr$micromorts[cr$activity == "Cup of coffee"]
+      everest_mm <- cr$micromorts[cr$activity == "Mt. Everest ascent"]
+      smoking_ml  <- ch$microlives_per_day[ch$factor == "Smoking 20 cigarettes"]
+      exercise_ml <- ch$microlives_per_day[ch$factor == "150 min weekly exercise"]
+
+      sprintf(
+        "You know that coffee is %s mm and Everest is ~%s mm. You know that smoking costs %s ml/day and exercise gains %s ml/day.",
+        format(coffee_mm),
+        format(round(everest_mm, -3), big.mark = ","),
+        format(abs(smoking_ml)),
+        format(exercise_ml)
+      )
     }
   ),
 

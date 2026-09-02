@@ -171,7 +171,10 @@ The UK Department for Transport values a micromort at **£1.60**. NICE values a 
 
 You now have three currencies for risk — micromorts (mm), microlives (ml/day), and loss of life expectancy (LLE).[@cr-quiz]{focus-on="cr-quiz"}
 
-You know that coffee is 0.01 mm and Everest is ~38,000 mm. You know that smoking costs 10 ml/day and exercise gains 3 ml/day. But how good is your intuition? Three quizzes, three formats:
+```{r quiz-intro-sentence, results='asis', echo=FALSE}
+cat(safe_tar_read("vig_whatis_quiz_intro_sentence") %||% "")
+```
+But how good is your intuition? Three quizzes, three formats:
 
 **☠️ Micromort Quiz** — which activity is riskier? Pick A or B. Covers acute risks from skydiving to surgery.
 
