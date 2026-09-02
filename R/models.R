@@ -151,7 +151,7 @@ daily_hazard_rate <- function(age, sex = "male") {
   # hazard is unknown. Output rounded to 1dp for micromorts to avoid false
   # precision. See issue #70 (B3).
   #
-  # MANUAL: no source. These parameter values were not traced to a specific
+  # MANUAL: no source (see #123). These parameter values were not traced to a specific
   # HMD (Human Mortality Database) or ONS life table, year, or country during
   # the llm#792 provisional-constants audit (micromort#123). Both HMD and ONS
   # publish machine-readable life tables suitable for a proper fit; a search
@@ -196,7 +196,7 @@ daily_hazard_rate <- function(age, sex = "male") {
   micromorts_upper <- max(combo_mm)
 
   # Estimate microlives consumed
-  # MANUAL: no source for the 85-year life-expectancy cap — not traced to a
+  # MANUAL: no source (see #123) for the 85-year life-expectancy cap — not traced to a
   # specific HMD/ONS life table. See the MANUAL note above the
   # Gompertz-Makeham parameters (micromort#123) for the same tracking need.
   remaining_years <- pmax(85 - age, 1)
