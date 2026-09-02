@@ -250,6 +250,73 @@ test_that("docs/articles/*.html is not stale relative to vignettes/*.qmd", {
 })
 
 # ---------------------------------------------------------------------------
+# Issue #142 (third attempt): the pkgdown "Source:" line, the "Also on
+# Shinylive..." link, and the site footer must not sit exposed in the quiz
+# pages' scroll path. Attempts 1-2 wrapped them in <details> positioned
+# AFTER #quiz-app (still re-encountered on every scroll); the merged fix in
+# #143 then skipped quiz pages from the relocation entirely, leaving the
+# Source line and footer fully exposed (unwrapped, un-collapsed) instead of
+# tucked away as instructed. Each quiz .qmd now ships its own page-local
+# DOMContentLoaded handler (pkgdown/extra.js's site-wide relocation is
+# skipped on these pages by design, and is out of this fix's write-scope)
+# that collapses the "Source:" line + Shinylive link into a single
+# <details class="page-meta"> positioned BEFORE #quiz-app, and the footer
+# into <details class="footer-meta"> -- all confirmed live via puppeteer
+# against a real rebuilt page in this session (screenshots + expand/click
+# checks; see the PR description for the evidence).
+#
+# This static check CANNOT observe the resulting DOM (the <details>
+# wrapper is created by client-side JS at runtime -- it is not present in
+# the pre-JS HTML pkgdown/quarto emit, so a naive `grepl("<details
+# class=\"page-meta\">", html)` is a Type-B "wrong object" check that
+# always fails against the static file regardless of correctness). What
+# CAN be verified statically: the fix's source code actually shipped in
+# the built HTML (a regression here would mean the collapse logic was
+# accidentally deleted, or its class names drifted out of sync with the
+# `details.page-meta` / `details.footer-meta` selectors pkgdown/extra.css
+# defines), and that the raw elements the JS operates on are still present
+# for it to act on.
+# ---------------------------------------------------------------------------
+test_that("quiz pages ship the in-place collapse fix for Source line/Shinylive link/footer", {
+  testthat::skip_on_cran()
+
+  pkg_root <- rprojroot::find_root(rprojroot::is_r_package)
+  doc_dir  <- file.path(pkg_root, "docs", "articles")
+  quiz_html <- c("micromort-quiz.html", "microlife-quiz.html", "risk-ranking-quiz.html")
+
+  for (html_file in quiz_html) {
+    html_path <- file.path(doc_dir, html_file)
+    testthat::skip_if_not(file.exists(html_path), paste(html_file, "not built"))
+
+    html_txt <- paste(readLines(html_path, warn = FALSE), collapse = "\n")
+
+    # Raw elements the page-local JS needs to find and wrap must still be
+    # present in the pre-JS HTML (pkgdown/quarto's own output).
+    expect_true(grepl("quiz-meta-link", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- missing .quiz-meta-link (Shinylive link)"))
+    expect_true(grepl("dont-index", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- missing pkgdown .dont-index Source line"))
+    expect_true(grepl("<footer", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- missing <footer>"))
+    expect_true(grepl('id="quiz-app"', html_txt, fixed = TRUE),
+      info = paste(html_file, "-- missing #quiz-app"))
+
+    # The page-local collapse JS itself must be present, referencing the
+    # exact selectors/classes it needs: the two elements it collapses
+    # in place, and the `page-meta` / `footer-meta` classes that reuse
+    # pkgdown/extra.css's existing <details> styling (including the WCAG
+    # AA dark-mode contrast fix already defined for those classes).
+    expect_true(grepl(".quiz-meta-link", html_txt, fixed = TRUE) &&
+      grepl(".page-header .dont-index", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- collapse JS is not querying the expected selectors"))
+    expect_true(grepl("'page-meta'", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- collapse JS missing page-meta class assignment"))
+    expect_true(grepl("'footer-meta'", html_txt, fixed = TRUE),
+      info = paste(html_file, "-- collapse JS missing footer-meta class assignment"))
+  }
+})
+
+# ---------------------------------------------------------------------------
 # Top-level pkgdown pages: CHANGELOG, README/index.
 #
 # pkgdown renders several top-level Markdown files into docs/*.html that are

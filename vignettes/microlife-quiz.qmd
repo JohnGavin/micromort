@@ -524,6 +524,51 @@ document.addEventListener('DOMContentLoaded', function() {
   loadData();
   render();
 });
+
+// Tuck the "Also on Shinylive..." link and the pkgdown-generated
+// "Source:" line into ONE collapsed <details>, in place -- NOT relocated
+// after #quiz-app -- so neither sits in the quiz's scroll path or
+// reappears while answering questions (issue #142, third attempt).
+// pkgdown/extra.js's site-wide relocate-to-end-of-<main> handler
+// deliberately skips this page (detected via #quiz-app) because
+// appending there would put the block right after the quiz container --
+// exactly where it was re-encountered on every scroll in attempts 1-2.
+// This page-local handler instead collapses these two pieces where they
+// already sit (above #quiz-app, never repeated), reusing the same
+// `.page-meta` <details> class and CSS pkgdown/extra.css already defines
+// for every other page on the site. The footer gets the same treatment
+// below, reusing `.footer-meta`. Duplicated identically in
+// micromort-quiz.qmd and risk-ranking-quiz.qmd -- keep in sync.
+document.addEventListener('DOMContentLoaded', function() {
+  var metaLink = document.querySelector('.quiz-meta-link');
+  var sourceLine = document.querySelector('.page-header .dont-index');
+  if (metaLink || sourceLine) {
+    var already = (metaLink && metaLink.closest('details')) ||
+      (sourceLine && sourceLine.closest('details'));
+    if (!already) {
+      var anchor = metaLink || sourceLine;
+      var d = document.createElement('details');
+      d.className = 'page-meta';
+      var s = document.createElement('summary');
+      s.textContent = 'Page details & links';
+      anchor.parentNode.insertBefore(d, anchor);
+      d.appendChild(s);
+      if (metaLink) d.appendChild(metaLink);
+      if (sourceLine) d.appendChild(sourceLine);
+    }
+  }
+
+  var footer = document.querySelector('footer');
+  if (footer && !footer.querySelector('details.footer-meta')) {
+    var fd = document.createElement('details');
+    fd.className = 'footer-meta';
+    var fs = document.createElement('summary');
+    fs.textContent = 'Site info';
+    fd.appendChild(fs);
+    while (footer.firstChild) { fd.appendChild(footer.firstChild); }
+    footer.appendChild(fd);
+  }
+});
 </script>
 ```
 
