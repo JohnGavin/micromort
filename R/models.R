@@ -150,6 +150,19 @@ daily_hazard_rate <- function(age, sex = "male") {
   # Precision ceiling: these are population-level approximations — individual
   # hazard is unknown. Output rounded to 1dp for micromorts to avoid false
   # precision. See issue #70 (B3).
+  #
+  # MANUAL: no source. These parameter values were not traced to a specific
+  # HMD (Human Mortality Database) or ONS life table, year, or country during
+  # the llm#792 provisional-constants audit (micromort#123). Both HMD and ONS
+  # publish machine-readable life tables suitable for a proper fit; a search
+  # for the exact values below did not turn up a citable primary source, and
+  # this fix pass did not have the data-ingestion infrastructure in place to
+  # fit fresh parameters from a downloaded life table (that would need its
+  # own parser + target per the reproducible-ingestion rule, not a hand
+  # edit here). Tracking: needs a follow-up issue to either (a) fit `a`,
+  # `b`, `c` from a named HMD/ONS table + year, or (b) if these are meant as
+  # illustrative/teaching values rather than a real table, say so explicitly
+  # in the docs instead of "approximate for developed countries".
   if (sex == "male") {
     a <- 0.0001   # Background mortality
     b <- 0.00005  # Initial mortality
@@ -183,6 +196,9 @@ daily_hazard_rate <- function(age, sex = "male") {
   micromorts_upper <- max(combo_mm)
 
   # Estimate microlives consumed
+  # MANUAL: no source for the 85-year life-expectancy cap — not traced to a
+  # specific HMD/ONS life table. See the MANUAL note above the
+  # Gompertz-Makeham parameters (micromort#123) for the same tracking need.
   remaining_years <- pmax(85 - age, 1)
   # B3: round to 1dp (was 2dp) — Gompertz params are approximate
   microlives_consumed <- round(48 * daily_prob * remaining_years * 365 / 48, 1)
