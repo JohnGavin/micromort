@@ -1334,8 +1334,25 @@ quiz_css <- function() {
 }
 
 
+#' Shared streak-tracking JS core (localDateKey / updateStreak / showStreak)
+#'
+#' Used by both [streak_js()] and [leaderboard_js()] so the streak logic is
+#' defined in exactly one place. Both callers inject the returned JS into the
+#' same page scope; function declarations are hoisted, so paste order does
+#' not matter.
+#'
+#' The one-time UTC-key migration shim that used to live here (rewriting a
+#' legacy `todayUtc`/`yestUtc` key into the local-date key) was removed: it
+#' shipped 2026-05-17 and can only fire for a key written before that date,
+#' which by now (see the fix date on this comment) is always >=3 months
+#' stale and can never equal today's/yesterday's UTC date — so it could no
+#' longer migrate anything. Worse, it was ambiguous by construction for any
+#' negative-UTC-offset user: a play recorded in local format on day D can
+#' equal `yestUtc` when the local and UTC calendar dates disagree near
+#' midnight, causing a spurious extra `streak += 1` for a single day's play.
+#' See <https://github.com/JohnGavin/micromort/issues/107>.
 #' @noRd
-streak_js <- function() {
+streak_core_js <- function() {
   "
   function localDateKey(d) {
     var y = d.getFullYear();
@@ -1350,18 +1367,6 @@ streak_js <- function() {
     var yesterday = localDateKey(yest);
     var lastPlay = localStorage.getItem('micromort_last_play');
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
-    // One-time migration: legacy UTC-derived keys remain valid if they match
-    // either today's or yesterday's LOCAL date when interpreted as UTC.
-    function utcDateKey(d) {
-      return d.toISOString().slice(0, 10);
-    }
-    var todayUtc = utcDateKey(new Date());
-    var yestUtc  = (function() { var y = new Date(); y.setDate(y.getDate() - 1); return utcDateKey(y); })();
-    if (lastPlay === todayUtc) {
-      lastPlay = today;
-    } else if (lastPlay === yestUtc) {
-      lastPlay = yesterday;
-    }
     if (lastPlay === today) {
       // already played today
     } else if (lastPlay) {
@@ -1390,24 +1395,30 @@ streak_js <- function() {
     var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
     if (streak > 0) showStreak(streak);
   });
+  "
+}
+
+#' @noRd
+streak_js <- function() {
+  paste0(
+    streak_core_js(),
+    "
   $(document).on('shiny:connected', function() {
     Shiny.addCustomMessageHandler('update_streak', function(msg) {
       updateStreak();
     });
   });
   "
+  )
 }
 
 
 leaderboard_js <- function() {
-  # Google Form POST URL, Sheet JSON endpoint, and streak tracking
-  "
-  function localDateKey(d) {
-    var y = d.getFullYear();
-    var m = String(d.getMonth() + 1).padStart(2, '0');
-    var day = String(d.getDate()).padStart(2, '0');
-    return y + '-' + m + '-' + day;
-  }
+  # Google Form POST URL, Sheet JSON endpoint, and streak tracking.
+  # Streak logic (localDateKey/updateStreak/showStreak) lives in
+  # streak_core_js() — shared with streak_js(), not duplicated here.
+  paste0(
+    "
   var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSc1HX5kPVO6G982zOxH2BLv1FWexiITPnbjfWMN3a1M9yDtvw/formResponse';
   var SHEET_URL = 'https://docs.google.com/spreadsheets/d/17HLtIdV3r55dIh06cSaWT8kFXzNrkR-Fu2ZJkjszG8k/gviz/tq?tqx=out:json';
   var scoreSubmitted = false;
@@ -1459,58 +1470,9 @@ leaderboard_js <- function() {
       })
       .catch(function() {});
   }
-
-  function updateStreak() {
-    var today = localDateKey(new Date());
-    var yest = new Date();
-    yest.setDate(yest.getDate() - 1);
-    var yesterday = localDateKey(yest);
-    var lastPlay = localStorage.getItem('micromort_last_play');
-    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
-    // One-time migration: legacy UTC-derived keys remain valid if they match
-    // either today's or yesterday's LOCAL date when interpreted as UTC.
-    function utcDateKey(d) {
-      return d.toISOString().slice(0, 10);
-    }
-    var todayUtc = utcDateKey(new Date());
-    var yestUtc  = (function() { var y = new Date(); y.setDate(y.getDate() - 1); return utcDateKey(y); })();
-    if (lastPlay === todayUtc) {
-      lastPlay = today;
-    } else if (lastPlay === yestUtc) {
-      lastPlay = yesterday;
-    }
-    if (lastPlay === today) {
-      // already played today
-    } else if (lastPlay) {
-      if (lastPlay === yesterday) {
-        streak += 1;
-      } else {
-        streak = 1;
-      }
-    } else {
-      streak = 1;
-    }
-    localStorage.setItem('micromort_last_play', today);
-    localStorage.setItem('micromort_streak', streak.toString());
-    showStreak(streak);
-  }
-
-  function showStreak(streak) {
-    var el = document.getElementById('streak_text');
-    if (!el) return;
-    if (streak >= 2) {
-      el.textContent = streak + '-day streak! Keep it going!';
-    } else if (streak === 1) {
-      el.textContent = 'Play again tomorrow to start a streak!';
-    }
-  }
-
-  // Show existing streak on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    var streak = parseInt(localStorage.getItem('micromort_streak') || '0');
-    if (streak > 0) showStreak(streak);
-  });
-  "
+  ",
+    streak_core_js()
+  )
 }
 
 
