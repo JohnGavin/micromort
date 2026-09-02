@@ -741,7 +741,6 @@ function localDateKey(d) {
   var day = String(d.getDate()).padStart(2, '0');
   return y + '-' + m + '-' + day;
 }
-function utcDateKey(d) { return d.toISOString().slice(0, 10); }
 function updateStreakDisplay(scorePct) {
   var STREAK_KEY = 'micromort_quiz_streak';
   var LAST_PLAY_KEY = 'micromort_quiz_last_play';
@@ -750,22 +749,8 @@ function updateStreakDisplay(scorePct) {
   var today = localDateKey(now);
   var yestD = new Date(); yestD.setDate(yestD.getDate() - 1);
   var yest = localDateKey(yestD);
-  var todayUtc = utcDateKey(now);
-  var yestUtc = utcDateKey(yestD);
   var lastPlay = localStorage.getItem(LAST_PLAY_KEY);
   var streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
-  // One-time migration: UTC date strings or ISO timestamps → local date key
-  if (lastPlay) {
-    if (lastPlay === todayUtc) { lastPlay = today; }
-    else if (lastPlay === yestUtc) { lastPlay = yest; }
-    else if (/^\\d+$/.test(lastPlay)) {
-      var asNum = parseInt(lastPlay, 10);
-      if (!isNaN(asNum)) lastPlay = localDateKey(new Date(asNum));
-    } else if (lastPlay.length &gt; 10) {
-      // ISO timestamp (e.g. \"2025-05-17T22:00:00.000Z\") — convert to local date
-      lastPlay = localDateKey(new Date(lastPlay));
-    }
-  }
   if (lastPlay === today) {
     if (streak === 0) streak = 1;
   } else if (lastPlay === yest) {
