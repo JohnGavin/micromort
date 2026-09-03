@@ -178,7 +178,7 @@ Show code
 sessionInfo()
 R version 4.5.2 (2025-10-31)
 Platform: aarch64-apple-darwin24.6.0
-Running under: macOS Tahoe 26.5.2
+Running under: macOS Tahoe 26.6.2
 
 Matrix products: default
 BLAS:   /nix/store/gf17x1bj3m732n39jznn6kz69szbr5rb-blas-3/lib/libblas.dylib 

@@ -1,5 +1,168 @@
 # Changelog
 
+## 2026-08-30/09-01 — Worktree cleanup + quiz confidence feature (issue \#132) + site layout fixes
+
+### Completed
+
+**Worktree/branch cleanup:** removed 5 merged worktrees, deleted 13
+fully-merged branches (7 verified via squash-merge PR closure since
+git’s own `-d` check misses squash-merges), harvested one orphaned
+commit (content-hash freshness-check tests) into main via
+[\#133](https://github.com/JohnGavin/micromort/pull/133).
+
+**PR \#120 (combined-quiz rounding bug, 101 days stale):** fixed via
+[\#135](https://github.com/JohnGavin/micromort/pull/135) —
+[`combined_quiz_pairs()`](https://johngavin.github.io/micromort/reference/combined_quiz_pairs.md)
+was scaling ALL `period_type=="period"` rows as bounded one-off totals,
+but some (e.g. CDC mortality-rate rows measured over a fixed window)
+should scale like any other rate; fix distinguishes by the period string
+itself. Required two further merge-conflict-resolution rounds
+([\#136](https://github.com/JohnGavin/micromort/pull/136), then a manual
+real-merge-commit push) after main moved repeatedly during the fix — see
+Failed Approaches.
+
+**Quiz-confidence feature ([issue
+\#132](https://github.com/JohnGavin/micromort/issues/132)):**
+per-question confidence capture (0/25/50/75/100%) on
+`micromort-quiz.qmd`, self-only calibration + Brier score
+([\#134](https://github.com/JohnGavin/micromort/pull/134)), then
+population-level comparison — confirmed the shared Google Form field
+(`entry.1681143871`, same form used by all 6 quiz files) and wired an
+attempt-level (not per-question — the form only accepts one confidence
+value per submission) calibration approximation into
+`plan_leaderboard_stats.R`, plus a predicted-vs-actual scatter on the
+results screen
+([\#140](https://github.com/JohnGavin/micromort/pull/140)). Merged and
+live at
+<https://johngavin.github.io/micromort/articles/micromort-quiz.html>.
+
+**Site layout fixes
+([\#137](https://github.com/JohnGavin/micromort/pull/137),
+[\#139](https://github.com/JohnGavin/micromort/pull/139),
+[\#143](https://github.com/JohnGavin/micromort/pull/143)):** after two
+insufficient attempts (tracked in
+[\#142](https://github.com/JohnGavin/micromort/issues/142)), the
+Shinylive-availability banner / pkgdown Source line / site footer are
+now genuinely off the quiz pages’ scroll path — moved to a new
+`vignettes/details.qmd` page with a 3-tab tabset (Shinylive apps /
+Source / Site info), replaced on each quiz page with one small link.
+Also fixed: the A−/A+/theme toolbar was rendering at the bottom of every
+page instead of pinned top-right, because pkgdown’s `quarto_render()`
+under an `--output-dir` override was silently dropping the `<style>`
+half of `vignettes/_includes/toolbar.html`’s `include-in-header` content
+(root cause fixed, not worked around). A DOM-walking contrast audit
+found and fixed 20 WCAG-AA failures across the quiz + Details pages (was
+`color: #6c757d`, Bootstrap’s default `.text-muted`, unreadable against
+this site’s `#000000` dark theme).
+
+**Issues filed:** -
+[\#132](https://github.com/JohnGavin/micromort/issues/132) — quiz
+confidence spec (open, Phase 2 in progress for the other two quizzes) -
+[\#138](https://github.com/JohnGavin/micromort/issues/138) —
+architecture.qmd docs-build bug, investigated, found unreproducible on a
+fresh checkout, **closed** -
+[\#142](https://github.com/JohnGavin/micromort/issues/142) — tracks 2
+insufficient attempts at the banner/Source/footer fix before \#143
+actually solved it -
+[llm#1127](https://github.com/JohnGavin/llm/issues/1127) — roborev’s
+Gemini reviewer can’t read its own diff snapshot (ignore-pattern
+misconfig), closed 3 phantom “High severity” findings
+(#9962/#9963/#9968) as invalid -
+[llm#1132](https://github.com/JohnGavin/llm/issues/1132) — proposes
+generalizing the SPA-verification lesson (below) into
+`verification-before-completion`/`browser-user-testing`
+
+### Failed Approaches
+
+- **Squash-merging a “sync branch with main” PR onto a long-lived
+  feature branch never advances the merge-base**, so subsequent
+  `git merge main` attempts re-derive the same stale 3-way conflicts
+  even where content already agrees. Discovered landing PR \#120: two
+  squash-merges (#135, \#136) left the merge-base frozen at the original
+  3-month-old divergence point; a real trial merge kept reconflicting on
+  `vignettes/_quarto.yml` even though a direct
+  `git diff main featbranch` showed zero real disagreement. Fixed by
+  landing one true (`--merge`, not `--squash`) merge commit directly.
+  Adopted `--merge` for all subsequent “bring branch X up to date with
+  main” landings this session (e.g. PR \#140 onto the Phase-1 branch).
+- **`git merge-tree <base> <a> <b>` gave a false “0 conflicts” reading**
+  during the same investigation — a real `git merge --no-commit --no-ff`
+  trial immediately showed 7 real conflicts. Don’t trust `merge-tree`;
+  do a real trial merge in a scratch worktree.
+- **`nix-shell <absolute-path>/default.nix --run "..."` does not `cd`
+  into that path** — it only selects the environment. Running
+  `tar_make()`/[`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+  this way silently operates on whatever directory the *calling* shell
+  is already in. This mistake was made 3 times this session (once
+  modifying the orchestrator’s own session worktree by accident, cleaned
+  up via `git checkout -- .` / `git clean -fd`). Always use
+  `(cd /path && nix-shell default.nix --run "...")`.
+- **Static verification (`curl`+`grep`, jsdom against saved HTML) is not
+  sufficient for a client-rendered/SPA page.** Two PRs (#137, \#139)
+  both “fixed” the banner/Source/footer placement per static checks, and
+  both were wrong in production — the content still appeared after every
+  quiz question because it sat immediately after the SPA’s own redrawing
+  container. Only caught via real `puppeteer-core` interaction (system
+  Chrome, no bundled-browser download: `npm install puppeteer-core`,
+  `executablePath: '.../Google Chrome.app/...'`) — clicking through the
+  actual quiz and screenshotting the result. Now the mandatory
+  verification method for any UI/layout claim about these pages.
+- **A stale local checkout produced a false “feature is missing” read.**
+  The main checkout’s working tree was 12 commits behind `origin/main`
+  (never `git pull`ed) — a `grep` against local files nearly caused a
+  wrong diagnosis. Use `git show <ref>:<path>` or confirm freshness via
+  `git status`/`git fetch` first, don’t trust a local working tree’s
+  currency.
+- **[`pkgdown::build_site()`](https://pkgdown.r-lib.org/reference/build_site.html)
+  refuses to build into an emptied `docs/` directory**
+  (`check_dest_is_pkgdown()` guard) after `git rm -rf docs` —
+  workaround: seed `docs/pkgdown.yml` from `origin/main` before
+  rebuilding; the real build then overwrites it correctly. Hit
+  repeatedly (PRs \#120, \#136, \#140, \#143) — worth fixing properly
+  (e.g. a `site_verify` pre-step) in a future session.
+- Two GitHub Actions CI timeouts (20-min `R Tests` job limit) hit mid
+  Nix-package-cache-upload on PR \#143 — not a real test failure, just
+  cold-cache infra; resolved with `gh run rerun --failed` (succeeded on
+  warm cache in ~4 min).
+
+### Accuracy / Metrics
+
+- Final
+  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+  across every merge this session: consistently `FAIL 0`, final count
+  `PASS 1019` (`SKIP 2`).
+- Contrast audit: 20 WCAG-AA failures → 0, across the 3 quiz pages + new
+  Details page (#143).
+- 5 fixer-agent dispatches this session, all with mandatory foreground
+  verification (no `run_in_background` on test/build commands) and, for
+  the last one, mandatory real-browser screenshot evidence.
+- roborev: 16 reviews since 2026-08-26, 12 failed verdicts / 6 addressed
+  (6 open, all `gemini`, no crash/quota — see session’s own filed
+  llm#1127 for a related root-cause investigation into false “High
+  severity” phantom findings).
+
+### Known Limitations
+
+- **Quiz confidence Phase 2 is only live on `micromort-quiz.qmd`.**
+  `microlife-quiz.qmd` and `risk-ranking-quiz.qmd` still need the same
+  confidence-capture + calibration wiring — per project memory
+  (`project_quiz-confidence-phase2-definition-of-done.md`), get one
+  quiz’s full population-comparison + Brier-score + actual-vs-predicted
+  chart genuinely working (it now is) before replicating.
+- **Population calibration data is empty** (`docs/api/quiz_stats.json`’s
+  `calibration.n == 0`) — no real quiz-takers have submitted confidence
+  ratings yet through the live Google Form. The population-comparison UI
+  correctly shows a “not enough data yet” state; will populate as real
+  submissions accumulate.
+- `docs/pkgdown.yml`-sentinel-after-`git rm -rf docs` workaround (above)
+  should be fixed properly rather than re-discovered each time.
+- `worktree-agent-a57cb96f` branch/worktree remains un-triaged (deferred
+  per explicit user instruction — ambiguous salvage signal, not
+  auto-discardable).
+- `ast-grep` was unavailable in one fixer’s nix shell/outer shell (PR
+  \#143) — `r_code_check.sh`’s structural checks could not run for that
+  PR; called out explicitly in its PR body rather than silently skipped.
+
 ## 2026-05-20 — Phase 1+2+3: roborev \#3523 fixes + site refresh (PR \#120)
 
 ### Completed (commits `3a35b16..9f7cdbd` on `feat/cc-20260520-113729` — 8 commits, PR <https://github.com/JohnGavin/micromort/pull/120>)

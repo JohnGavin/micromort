@@ -43,7 +43,8 @@ A tibble with columns:
 
 - microlives:
 
-  Equivalent microlives (micromorts x 0.7)
+  Equivalent microlives (micromorts x
+  [MICROLIVES_PER_MICROMORT](https://johngavin.github.io/micromort/reference/MICROLIVES_PER_MICROMORT.md))
 
 - category:
 
