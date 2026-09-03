@@ -593,3 +593,66 @@ body.dark-mode .nav-tabs {
 body.dark-mode .tab-content {
   color: #e0e0e0;
 }
+
+/* ============================================================
+   Issue #124: micromort-quiz.html / risk-ranking-quiz.html palette
+   convergence with the landing page.
+
+   Root cause: these two articles are pkgdown-rendered vignettes (same
+   as every other article under vignettes/*.qmd) and pick up the
+   site-wide body.dark-mode override above (forces body:#000000,
+   nav/card/footer:#1a1a1a on EVERY vignette article -- verified this
+   is not quiz-specific: articles/introduction.html shows the same
+   values). The landing page (built from README.md, not a vignette)
+   never links vignettes/_includes/toolbar.html, so it shows
+   bslib/bootswatch-flatly's native [data-bs-theme="dark"] palette
+   untouched: body #212529, navbar #2c3e50.
+
+   Issue #124's acceptance criterion is scoped to these two pages only
+   ("both pages match the landing-page palette"), and vignettes/**
+   (including _quarto.yml and toolbar.html, which drive the class/JS
+   for ALL 19 articles) is out of this change's write-scope and being
+   edited concurrently by other agents. Converging all 19 vignette
+   pages to the landing palette is a separate, larger change than #124
+   asked for and is NOT done here -- flagged as a follow-up instead.
+
+   #quiz-app is an id both quiz .qmd files already emit (for their
+   Shinylive-vs-instant toggle markup) -- used here purely as a
+   selector hook, not added by this change. `:has()` is supported in
+   all evergreen browsers (Chrome/Edge 105+, Safari 15.4+, Firefox
+   121+, 2023-2024) and its argument's ID specificity guarantees this
+   block outranks the `body.dark-mode` rules above regardless of
+   source order.
+
+   Deliberately narrow: only body/html background+text-color and the
+   navbar background are converged. The WCAG-AA link/button/alert/
+   table fixes above stay in effect unchanged -- contrast against the
+   new, lighter #212529 background was re-verified (still >=4.5:1
+   normal text; see PR body for the ratio table), so none needed
+   re-tuning for this change. */
+html:has(#quiz-app).dark-mode,
+body:has(#quiz-app).dark-mode {
+  background-color: #212529 !important;
+  color: #e0e0e0 !important;
+}
+
+body:has(#quiz-app).dark-mode nav {
+  background-color: #2c3e50 !important;
+  color: #ffffff !important;
+}
+
+/* The site-wide `body.dark-mode a { color: #4ea8de }` rule (tuned for
+   prose links on a #000000/#212529 body background) drops to 4.17:1 --
+   below WCAG AA's 4.5:1 for normal text -- against this navbar's own
+   #2c3e50 background (measured with a real-browser contrast audit,
+   puppeteer-core against a scratch pkgdown render; see PR body). The
+   landing page's native navbar-dark text is plain white (measured
+   directly: rgb(255,255,255)), which is what pkgdown/bslib supplies
+   by default when nothing overrides it -- restore that inside nav on
+   these two pages only. */
+body:has(#quiz-app).dark-mode nav a,
+body:has(#quiz-app).dark-mode nav a:visited,
+body:has(#quiz-app).dark-mode nav a:hover,
+body:has(#quiz-app).dark-mode nav a:focus {
+  color: #ffffff !important;
+}

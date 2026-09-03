@@ -183,6 +183,7 @@ reference:
   - as_probability
   - lle
   - value_of_micromort
+  - MICROLIVES_PER_MICROMORT
 
 - title: "Disease Risk Data"
   desc: "Chronic and infectious disease risks from GBD data, plus toxicological LD50 profiles"

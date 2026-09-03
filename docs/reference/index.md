@@ -104,6 +104,8 @@ Convert between risk units
   Loss of Life Expectancy (LLE)
 - [`value_of_micromort()`](https://johngavin.github.io/micromort/reference/value_of_micromort.md)
   : Value of a Statistical Life (VSL) to Micromort Value
+- [`MICROLIVES_PER_MICROMORT`](https://johngavin.github.io/micromort/reference/MICROLIVES_PER_MICROMORT.md)
+  : Microlives per Micromort Conversion Factor
 
 ## Disease Risk Data
 
