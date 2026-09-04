@@ -1,5 +1,5 @@
 ---
-title: "Rank these risks by their effect on lifespan"
+title: "Rank lifespan risks"
 description: |
     Interactive drag-and-drop quiz.
     Rank everyday risks by their effect on life expectancy.
@@ -813,7 +813,7 @@ function shareResult(pct) {
   const pEl = document.getElementById('percentile_text');
   const pLine = pEl && pEl.textContent ? '\n' + pEl.textContent + '\n' : '\n';
   const text = '\ud83d\udcca Risk Ranking Quiz: I scored ' + pct + '%!' + pLine +
-    'Rank these risks by their effect on lifespan.\n' +
+    'Rank lifespan risks.\n' +
     'Can you beat my score? \ud83d\udcca\n' +
     'https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html';
   navigator.clipboard.writeText(text).then(() => {
