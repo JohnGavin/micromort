@@ -278,6 +278,21 @@
   .qr-section canvas, .qr-section img { border-radius: 4px; max-width: 110px; max-height: 110px; height: auto; }
   .qr-section .qr-url { font-size: 1.2rem; color: #495057; word-break: break-all; user-select: all; cursor: text; font-family: monospace; }
 
+  /* Population calibration comparison (replicated from micromort-quiz.qmd's
+     #132 Phase 2) — same dark "analytics" panel styling as quiz_analytics.qmd,
+     so the population comparison reads as one visual family across the site. */
+  .analytics-section {
+    background: #1a1a2e; border: 1px solid #2a2a4e; border-radius: 8px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem; text-align: left;
+  }
+  .analytics-section h3 {
+    color: #e0e0e0; border-bottom: 1px solid #2a2a4e; padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem; font-size: 1.05rem;
+  }
+  svg.history-chart { overflow: visible; }
+  .chart-dot { cursor: pointer; }
+  .chart-dot:hover { r: 6; }
+
   @media (max-width: 600px) {
     #quiz-app { padding: 10px; font-size: 1.05rem; }
     header#title-block-header { padding: 0 10px; }
@@ -304,7 +319,7 @@
 // ---- State ----
 const S = {
   phase: 'instructions', nQuestions: 5, currentQ: 0,
-  pairs: [], answers: [], displayOrder: [], revealed: [],
+  pairs: [], answers: [], displayOrder: [], revealed: [], confidences: [],
   selDifficulty: 'mixed', selNq: 5, seenKeys: new Set()
 };
 let quizPool = [];
@@ -387,6 +402,19 @@ function resetLeaderboard() {
   if (el) el.textContent = '';
 }
 
+// Mean confidence (0-100) across questions the participant rated in the
+// CURRENT attempt. Returns null when no question was rated at all — the
+// caller must guard on that and omit the field rather than send a bogus 0.
+// The Google Form only accepts ONE confidence value per submission (no
+// per-question repeat structure), so this attempt-level mean is the most
+// granular thing that can be sent to the population Sheet; the real
+// per-question confidences stay local (recordScoreHistory()/computeCalibration()).
+function computeMeanConfidence() {
+  const rated = S.confidences.filter(function(c) { return c !== null && c !== undefined; });
+  if (rated.length === 0) return null;
+  return rated.reduce(function(a, b) { return a + b; }, 0) / rated.length;
+}
+
 function submitScore(score, total, difficulty, nQuestions) {
   if (scoreSubmitted) return;
   const btn = document.getElementById('submit_btn');
@@ -398,6 +426,8 @@ function submitScore(score, total, difficulty, nQuestions) {
   data.append('entry.268026248', 'chronic');
   data.append('entry.232879816', difficulty || '');
   data.append('entry.2010782223', nQuestions || '');
+  const meanConf = computeMeanConfidence();
+  if (meanConf !== null) data.append('entry.1681143871', Math.round(meanConf));
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
     scoreSubmitted = true;
     if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
@@ -416,6 +446,7 @@ function interpolatePercentile(scorePct, group) {
 
 function getPercentile(score, total, difficulty, nQuestions) {
   const pct = score / total * 100;
+  const meanConf = computeMeanConfidence();
   fetch(STATS_URL).then(r => { if (!r.ok) throw new Error(); return r.json(); })
   .then(stats => {
     const d = stats.chronic;
@@ -426,7 +457,9 @@ function getPercentile(score, total, difficulty, nQuestions) {
     msg += '! (' + d.overall.n + ' submissions)';
     const el = document.getElementById('percentile_text');
     if (el) el.textContent = msg;
+    renderCalibrationComparison(d.calibration, meanConf, pct);
   }).catch(() => {
+    // Fallback to live Sheet
     const el = document.getElementById('percentile_text');
     if (el) el.textContent = 'Loading rankings...';
     fetch(SHEET_URL).then(r => r.text()).then(text => {
@@ -439,7 +472,146 @@ function getPercentile(score, total, difficulty, nQuestions) {
       const percentile = json.table.rows.length > 0 ? Math.round(below / json.table.rows.length * 100) : 50;
       if (el) el.textContent = 'You scored better than ' + percentile + '% of players! (' + json.table.rows.length + ' submissions)';
     }).catch(() => { if (el) el.textContent = 'Score submitted! Rankings unavailable right now.'; });
+    // quiz_stats.json (the only source of population calibration data) was
+    // unreachable here, so there is nothing to compare against — leave the
+    // population calibration section hidden rather than showing a broken chart.
   });
+}
+
+// ---- Population confidence-calibration comparison (replicated from
+// micromort-quiz.qmd's #132 Phase 2) ----
+// SIMPLIFICATION: the population "calibration score" compared against here
+// is a coarse, ATTEMPT-level approximation of a Brier score —
+// (mean_confidence/100 - score_pct/100)^2 — computed server-side in
+// plan_leaderboard_stats.R from the single confidence value the Form
+// accepts per submission. It is not a true per-question Brier score; the
+// real per-question version stays self-only (see computeCalibration()
+// below and quiz_analytics.qmd's "Calibration" section).
+
+// Generic descending-is-better percentile lookup: returns the percentile
+// of the population whose value is <= `value` (population as-good-or-better
+// than `value` when LOWER values are better, e.g. a calibration score).
+function percentileOfAscending(value, percentiles, values) {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  for (let i = values.length - 1; i >= 0; i--) { if (value >= values[i]) return percentiles[i]; }
+  return 0;
+}
+
+function renderCalibrationScatter(points, myConf, myScorePct) {
+  const W = 320, H = 320, PAD = { l: 34, r: 12, t: 12, b: 32 };
+  const innerW = W - PAD.l - PAD.r, innerH = H - PAD.t - PAD.b;
+  function xPos(v) { return PAD.l + innerW * (Math.max(0, Math.min(100, v)) / 100); }
+  function yPos(v) { return PAD.t + innerH * (1 - Math.max(0, Math.min(100, v)) / 100); }
+
+  const grid = [0, 25, 50, 75, 100].map(function(v) {
+    const gx = xPos(v), gy = yPos(v);
+    return '<line x1="' + PAD.l + '" y1="' + gy + '" x2="' + (W - PAD.r) + '" y2="' + gy + '" stroke="#2a2a4e" stroke-width="1"/>' +
+           '<line x1="' + gx + '" y1="' + PAD.t + '" x2="' + gx + '" y2="' + (H - PAD.b) + '" stroke="#2a2a4e" stroke-width="1"/>' +
+           '<text x="' + (PAD.l - 4) + '" y="' + (gy + 3) + '" text-anchor="end" fill="#6677aa" font-size="9">' + v + '</text>' +
+           '<text x="' + gx + '" y="' + (H - PAD.b + 12) + '" text-anchor="middle" fill="#6677aa" font-size="9">' + v + '</text>';
+  }).join('');
+
+  // Perfect-calibration reference line (confidence == score)
+  const diag = '<line x1="' + xPos(0) + '" y1="' + yPos(0) + '" x2="' + xPos(100) + '" y2="' + yPos(100) +
+    '" stroke="#3a4e7c" stroke-width="1" stroke-dasharray="4,3"/>';
+
+  const popDots = points.map(function(p) {
+    return '<circle class="chart-dot" cx="' + xPos(p.confidence_pct) + '" cy="' + yPos(p.score_pct) +
+      '" r="3.5" fill="#5b9de5" fill-opacity="0.55"><title>Confidence ' + Math.round(p.confidence_pct) +
+      '%, score ' + Math.round(p.score_pct) + '%</title></circle>';
+  }).join('');
+
+  const myDot = '<circle cx="' + xPos(myConf) + '" cy="' + yPos(myScorePct) +
+    '" r="7" fill="#ffbe4d" stroke="#1a1a2e" stroke-width="1.5"><title>You: ' + Math.round(myConf) +
+    '% confident, ' + Math.round(myScorePct) + '% correct</title></circle>';
+
+  const axisLabels =
+    '<text x="' + (PAD.l + innerW / 2) + '" y="' + (H - 2) + '" text-anchor="middle" fill="#8899bb" font-size="10">Mean confidence (%)</text>' +
+    '<text x="10" y="' + (PAD.t + innerH / 2) + '" text-anchor="middle" fill="#8899bb" font-size="10" transform="rotate(-90 10 ' + (PAD.t + innerH / 2) + ')">Score (%)</text>';
+
+  return '<svg class="history-chart" viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:320px;display:block;margin:0 auto;">' +
+    grid + diag + popDots + myDot + axisLabels + '</svg>';
+}
+
+function renderCalibrationComparison(dCalib, meanConf, myScorePct) {
+  const section = document.getElementById('pop_calibration_section');
+  const body = document.getElementById('pop_calibration_body');
+  if (!section || !body) return;
+  // No confidence rated this attempt -- nothing to compare, leave hidden.
+  if (meanConf === null || meanConf === undefined) return;
+
+  const popN = (dCalib && dCalib.n) || 0;
+  if (popN < 5) {
+    section.style.display = '';
+    body.innerHTML = '<p style="color:#8899bb;font-size:0.85rem;">Not enough population confidence data yet ' +
+      '(need 5+ rated attempts, have ' + popN + '). Check back soon!</p>';
+    return;
+  }
+
+  const myCalibScore = Math.pow(meanConf / 100 - myScorePct / 100, 2);
+  const q = dCalib.quantiles;
+  const belowOrEqualPct = percentileOfAscending(myCalibScore, q.percentiles, q.calibration_scores);
+  const betterThanPct = Math.max(0, 100 - belowOrEqualPct);
+
+  section.style.display = '';
+  body.innerHTML =
+    '<p style="color:#8899bb;font-size:0.85rem;margin-bottom:0.75rem;">Your calibration score (' +
+    myCalibScore.toFixed(3) + ') is better than ~' + Math.round(betterThanPct) + '% of the ' + popN +
+    ' players who rated their confidence. Lower is better — 0 means your mean confidence exactly matched ' +
+    'your score. This compares your <em>attempt-level</em> mean confidence against your score, a coarser ' +
+    'measure than the per-question calibration in your local ' +
+    '<a href="quiz_analytics.html">Quiz Analytics</a>.</p>' +
+    renderCalibrationScatter(dCalib.points || [], meanConf, myScorePct);
+}
+
+// ---- Local score/confidence history (replicated from micromort-quiz.qmd's
+// #132 Phase 1) ----
+// Additive to the micromort_quiz_history schema shared with the other quiz
+// variants ({date, type, score, correct, total}); confidences/outcomes are
+// only added when at least one question was rated, so older entries and
+// entries from other quiz pages are unaffected. This is browser-local only —
+// no confidence data is sent to the Form/Sheet/leaderboard pipeline.
+function recordScoreHistory(quizType, scorePct, score, total, confidences, outcomes) {
+  const HISTORY_KEY = 'micromort_quiz_history';
+  let hist;
+  try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { hist = []; }
+  const entry = { date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total };
+  if (Array.isArray(confidences) && confidences.some(c => c !== null && c !== undefined)) {
+    entry.confidences = confidences;
+    entry.outcomes = outcomes;
+  }
+  hist.push(entry);
+  if (hist.length > 200) hist = hist.slice(-200);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(hist)); } catch (e) { /* localStorage unavailable/full */ }
+}
+
+function recordCompletedQuiz() {
+  const n = S.nQuestions;
+  let score = 0;
+  const outcomes = [];
+  for (let i = 0; i < n; i++) {
+    const correct = S.answers[i] !== null && S.answers[i] === S.pairs[i].answer;
+    if (correct) score++;
+    outcomes.push(S.answers[i] === null ? null : (correct ? 1 : 0));
+  }
+  recordScoreHistory('chronic', score / n * 100, score, n, S.confidences, outcomes);
+}
+
+// Self-only calibration: predicted score (confidence-weighted expectation)
+// and Brier score over the questions the participant rated a confidence for.
+function computeCalibration() {
+  const n = S.nQuestions;
+  let rated = 0, predicted = 0, brierSum = 0;
+  for (let i = 0; i < n; i++) {
+    const conf = S.confidences[i];
+    if (conf === null || conf === undefined) continue;
+    const frac = conf / 100;
+    const outcome = (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) ? 1 : 0;
+    predicted += frac;
+    brierSum += Math.pow(frac - outcome, 2);
+    rated++;
+  }
+  return { rated, predicted, brier: rated > 0 ? brierSum / rated : null };
 }
 
 // ---- Result phrases ----
@@ -535,6 +707,7 @@ function startQuiz() {
   S.pairs = shuffle(pool).slice(0, n);
   S.pairs.forEach(p => S.seenKeys.add([p.factor_a, p.factor_b].sort().join('|||')));
   S.answers = new Array(n).fill(null);
+  S.confidences = new Array(n).fill(null);
   S.displayOrder = S.pairs.map(() => Math.random() < 0.5 ? ['a','b'] : ['b','a']);
   S.revealed = new Array(n).fill(false);
   S.currentQ = 0;
@@ -605,6 +778,20 @@ function renderQuestion() {
     </div>`;
   }
 
+  // Confidence capture (replicated from micromort-quiz.qmd's #132 Phase 1:
+  // self-only, no server persistence)
+  let confidenceHtml = '';
+  if (revealed && answer !== null) {
+    const conf = S.confidences[q];
+    const confOptions = [0, 25, 50, 75, 100];
+    confidenceHtml = `<div class="text-center mt-2">
+      <small class="text-muted d-block mb-1">How confident were you in that pick?</small>
+      <div class="option-btn-group justify-content-center" id="grp_conf">
+        ${confOptions.map(pct => `<button class="option-btn${conf === pct ? ' selected' : ''}" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
+      </div>
+    </div>`;
+  }
+
   // Tally
   let correctSoFar = 0;
   for (let i = 0; i <= q; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) correctSoFar++; }
@@ -630,7 +817,7 @@ function renderQuestion() {
       <div class="quiz-vs"><h3 class="text-muted mb-0">VS</h3></div>
       <div class="quiz-col">${btnContent(right, R, btnClass(R, R === pair.answer))}</div>
     </div>
-    ${resultHtml}`;
+    ${resultHtml}${confidenceHtml}`;
 }
 
 function choose(side) {
@@ -638,9 +825,13 @@ function choose(side) {
   S.revealed[S.currentQ] = true;
   render();
 }
+function chooseConfidence(pct, el) {
+  S.confidences[S.currentQ] = pct;
+  selectInGroup('grp_conf', el);
+}
 function nextQ() {
   if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
-  else { S.phase = 'results_summary'; render(); }
+  else { S.phase = 'results_summary'; recordCompletedQuiz(); render(); }
 }
 function prevQ() {
   if (S.currentQ > 0) { S.currentQ--; render(); }
@@ -653,6 +844,16 @@ function renderResults() {
   for (let i = 0; i < n; i++) { if (S.answers[i] !== null && S.answers[i] === S.pairs[i].answer) score++; }
   const pct = score / n * 100, baseline = (n / 2).toFixed(1);
   const info = getPhrase(pct);
+  const calib = computeCalibration();
+  const calibHtml = calib.rated > 0 ? `
+    <div style="display:flex;gap:16px;margin-bottom:1rem;">
+      <div style="flex:1;"><div class="card text-white bg-info"><div class="card-body text-center">
+        <small>Predicted (your confidence)</small><h2 class="mb-0">${calib.predicted.toFixed(1)} / ${n}</h2>
+      </div></div></div>
+    </div>
+    <div class="text-center mb-3">
+      <small class="text-muted">Your Brier score: <strong>${calib.brier.toFixed(3)}</strong> — lower is better calibrated (0 = perfect, 0.25 = "always say 50%" baseline)${calib.rated < n ? ` · based on ${calib.rated}/${n} rated question${calib.rated === 1 ? '' : 's'}` : ''}</small>
+    </div>` : '';
 
   return `
     <h2 class="text-center mb-4">Results</h2>
@@ -663,6 +864,11 @@ function renderResults() {
       <div style="flex:1;"><div class="card text-white bg-secondary"><div class="card-body text-center">
         <small>Random Guessing</small><h2 class="mb-0">~${baseline} / ${n}</h2>
       </div></div></div>
+    </div>
+    ${calibHtml}
+    <div class="analytics-section" id="pop_calibration_section" style="display:none;">
+      <h3>Calibration vs. other players</h3>
+      <div id="pop_calibration_body"></div>
     </div>
     <div class="text-center mb-4">
       <h3>${info.phrase}</h3>
@@ -677,7 +883,7 @@ function renderResults() {
     </div>
     <div class="text-center mt-2">
       <small id="percentile_text" class="text-muted"></small><br>
-      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp only).</small>
+      <small class="text-muted">Scores are recorded anonymously (score, total, timestamp, and — if you rated any answers — your mean confidence for this attempt only).</small>
     </div>
     <div id="qr-results"></div>`;
 }

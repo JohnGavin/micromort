@@ -66,10 +66,10 @@ plan_leaderboard_stats <- list(
       # Rows submitted before this question existed simply have no 8th
       # cell — extract_val() already returns NA_character_ for a col_idx
       # past the row's cell count, so avg_confidence_pct is NA for those
-      # rows rather than a false 0. micromort-quiz.qmd (acute) and
-      # risk-ranking-quiz.qmd (ranking) send this field; chronic-quiz
-      # submissions are NA here too, by construction, not by omission —
-      # chronic-quiz.qmd hasn't been given confidence capture yet.
+      # rows rather than a false 0. micromort-quiz.qmd (acute),
+      # risk-ranking-quiz.qmd (ranking), and microlife-quiz.qmd (chronic)
+      # all send this field; any submission from before a given quiz page
+      # gained confidence capture is NA here too, by construction.
       df <- tibble::tibble(
         score = as.numeric(vapply(rows, extract_val, character(1), col_idx = 2)),
         total = as.numeric(vapply(rows, extract_val, character(1), col_idx = 3)),
@@ -223,13 +223,16 @@ plan_leaderboard_stats <- list(
       acute_stats <- build_quiz_stats(acute_data)
       acute_stats$calibration <- compute_calibration_stats(acute_data)
 
+      chronic_stats <- build_quiz_stats(chronic_data)
+      chronic_stats$calibration <- compute_calibration_stats(chronic_data)
+
       ranking_stats <- build_quiz_stats(ranking_data)
       ranking_stats$calibration <- compute_calibration_stats(ranking_data)
 
       stats <- list(
         generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
         acute = acute_stats,
-        chronic = build_quiz_stats(chronic_data),
+        chronic = chronic_stats,
         ranking = ranking_stats
       )
 
