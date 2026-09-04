@@ -61,14 +61,15 @@ plan_leaderboard_stats <- list(
 
       # Columns: 1=form_timestamp, 2=Score, 3=Total, 4=Timestamp(ISO),
       #          5=quiz_type, 6=difficulty, 7=n_questions,
-      #          8=avg_confidence_pct (Phase 2 of #132, entry.1681143871).
+      #          8=avg_confidence_pct (#132, entry.1681143871).
       # Google Forms appends new-question columns at the end of the Sheet.
       # Rows submitted before this question existed simply have no 8th
       # cell — extract_val() already returns NA_character_ for a col_idx
       # past the row's cell count, so avg_confidence_pct is NA for those
-      # rows rather than a false 0. Only micromort-quiz.qmd (the acute
-      # quiz) currently sends this field; chronic/ranking submissions are
-      # NA here too, by construction, not by omission.
+      # rows rather than a false 0. micromort-quiz.qmd (acute) and
+      # risk-ranking-quiz.qmd (ranking) send this field; chronic-quiz
+      # submissions are NA here too, by construction, not by omission —
+      # chronic-quiz.qmd hasn't been given confidence capture yet.
       df <- tibble::tibble(
         score = as.numeric(vapply(rows, extract_val, character(1), col_idx = 2)),
         total = as.numeric(vapply(rows, extract_val, character(1), col_idx = 3)),
@@ -142,7 +143,7 @@ plan_leaderboard_stats <- list(
         list(overall = overall, by_config = by_config)
       }
 
-      # Population-level confidence calibration (Phase 2 of #132).
+      # Population-level confidence calibration (#132).
       #
       # SIMPLIFICATION (documented here AND in the PR description — do not
       # present this as a per-question Brier score): the Google Form only
@@ -157,6 +158,14 @@ plan_leaderboard_stats <- list(
       # self-only/local, because the Sheet has no column to carry
       # per-question confidence across a whole population. This figure is
       # directional (population comparison), not precise.
+      #
+      # This function is generic over quiz_type — it only needs
+      # avg_confidence_pct and score_pct on the input `data`, both already
+      # quiz-type-agnostic columns on `df`. The ranking quiz's "score_pct"
+      # is its own overall Kendall's-Tau-derived percentage (not a binary
+      # right/wrong fraction), which is why the ranking quiz's own
+      # self-only computeCalibration() in risk-ranking-quiz.qmd's <script>
+      # documents this same population-vs-continuous-outcome distinction.
       compute_calibration_quantiles <- function(x) {
         if (length(x) < 2) {
           return(list(
@@ -214,11 +223,14 @@ plan_leaderboard_stats <- list(
       acute_stats <- build_quiz_stats(acute_data)
       acute_stats$calibration <- compute_calibration_stats(acute_data)
 
+      ranking_stats <- build_quiz_stats(ranking_data)
+      ranking_stats$calibration <- compute_calibration_stats(ranking_data)
+
       stats <- list(
         generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
         acute = acute_stats,
         chronic = build_quiz_stats(chronic_data),
-        ranking = build_quiz_stats(ranking_data)
+        ranking = ranking_stats
       )
 
       # Write to docs/api/
