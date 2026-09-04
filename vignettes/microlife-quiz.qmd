@@ -269,6 +269,11 @@ const ENCOURAGEMENTS = [
 
 // ---- Render functions ----
 function render() {
+  // Issue #142 (attempt 5): tie visibility of the pkgdown Source line /
+  // Shinylive banner / site footer to actual quiz state, not DOM position.
+  // pkgdown/extra.css hides them via body:has(#quiz-app):not(.quiz-results);
+  // this class is set here, on every render(), so it always reflects S.phase.
+  document.body.classList.toggle('quiz-results', S.phase === 'results_summary' || S.phase === 'results_detail');
   const app = document.getElementById('quiz-app');
   switch (S.phase) {
     case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 3); break;
