@@ -67,9 +67,10 @@ plan_leaderboard_stats <- list(
       # cell — extract_val() already returns NA_character_ for a col_idx
       # past the row's cell count, so avg_confidence_pct is NA for those
       # rows rather than a false 0. micromort-quiz.qmd (acute),
-      # risk-ranking-quiz.qmd (ranking), and microlife-quiz.qmd (chronic)
-      # all send this field; any submission from before a given quiz page
-      # gained confidence capture is NA here too, by construction.
+      # risk-ranking-quiz.qmd (ranking), microlife-quiz.qmd and
+      # chronic_quiz_shinylive.qmd (both chronic) all send this field; any
+      # submission from before a given quiz page gained confidence capture
+      # is NA here too, by construction.
       df <- tibble::tibble(
         score = as.numeric(vapply(rows, extract_val, character(1), col_idx = 2)),
         total = as.numeric(vapply(rows, extract_val, character(1), col_idx = 3)),

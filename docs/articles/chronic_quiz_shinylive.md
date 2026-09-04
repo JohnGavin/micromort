@@ -579,7 +579,8 @@ question_ui <- function(state) {
 
   nav_ui <- div(
     class = "d-flex justify-content-between align-items-center mb-3",
-    actionButton("prev_q", "\u2190 Back", class = "btn-secondary"),
+    actionButton("prev_q", "\u2190 Back",
+      class = if (revealed) "btn-outline-secondary" else "btn-secondary"),
     span(class = "text-muted",
       if ("difficulty" %in% names(pair) && !is.na(pair$difficulty)) {
         diff_colors <- c(easy = "success", medium = "warning", hard = "danger")
@@ -588,7 +589,8 @@ question_ui <- function(state) {
       },
       sprintf("%d of %d", q, n),
       " \u00b7 ", tags$small(tally_text)),
-    actionButton("next_q", if (q == n) "Finish" else "Next \u2192", class = "btn-primary")
+    actionButton("next_q", if (q == n) "Finish" else "Next \u2192",
+      class = if (revealed) "btn-success" else "btn-primary")
   )
 
   tagList(
