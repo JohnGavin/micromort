@@ -656,3 +656,33 @@ body:has(#quiz-app).dark-mode nav a:hover,
 body:has(#quiz-app).dark-mode nav a:focus {
   color: #ffffff !important;
 }
+
+/* Issue #142 (attempt 5): hide the pkgdown "Source: vignettes/x.qmd" line,
+   the "Also on Shinylive..." banner, and the site footer for the ENTIRE
+   quiz-taking flow on the three quiz pages (setup screen + every question)
+   -- not just collapsed, fully absent from layout. They become visible
+   again only once the quiz reaches its results/final screen.
+
+   Attempts 1-4 (#137, #139, #143) all tried to fix this by repositioning
+   or collapsing these elements in the DOM -- but the quiz app replaces
+   #quiz-app's content in place per question rather than growing the page,
+   so anything living near #quiz-app (collapsed or not) is re-encountered
+   on every question regardless of where it sits in the document.
+
+   This attempt ties visibility to actual application state instead of DOM
+   position: each quiz .qmd's own render() function (called on every phase
+   transition) toggles body.quiz-results depending on S.phase --
+   .quiz-results is set only for 'results_summary'/'results_detail', never
+   for 'instructions' or 'question'. See risk-ranking-quiz.qmd /
+   micromort-quiz.qmd / microlife-quiz.qmd's render() functions.
+
+   pkgdown/extra.js explicitly skips its own Source-line/footer relocation
+   on these three pages (search "Skipped on the three quiz pages" in that
+   file) specifically because DOM relocation doesn't solve this -- so the
+   raw, un-wrapped `.dont-index` / footer markup is exactly what these
+   selectors target. `:has()` is supported in all evergreen browsers. */
+body:has(#quiz-app):not(.quiz-results) .dont-index,
+body:has(#quiz-app):not(.quiz-results) .quiz-meta-link,
+body:has(#quiz-app):not(.quiz-results) footer {
+  display: none !important;
+}
