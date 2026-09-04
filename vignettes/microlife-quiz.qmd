@@ -419,11 +419,12 @@ function renderQuestion() {
     return `<span class="badge me-2" style="${style}">${escHtml(d)}</span>`;
   })();
 
+  const nextBtnClass = revealed ? 'btn btn-success' : 'btn btn-primary';
   return `
     <div class="d-flex justify-content-between align-items-center mb-3">
       <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
       <span class="text-muted">${diffBadge}${q+1} of ${n} &middot; <small>Score: ${correctSoFar}/${answered} correct</small></span>
-      <button class="btn btn-primary" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
+      <button class="${nextBtnClass}" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
     </div>
     <div class="quiz-row">
       <div class="quiz-col">${btnContent(left, L, btnClass(L, L === pair.answer))}</div>
