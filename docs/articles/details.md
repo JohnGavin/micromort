@@ -2,8 +2,8 @@
 
 # Details
 
-Shinylive app links, source locations, and site build info for the
-micromort package — consolidated off the quiz pages so they don’t
+Retired Shinylive quiz links, source locations, and site build info for
+the micromort package — consolidated off the quiz pages so they don’t
 interrupt quiz-taking.
 
 This page collects information that used to sit at the bottom of the
@@ -14,21 +14,30 @@ encountered on every scroll while answering questions — see [issue
 \#142](https://github.com/JohnGavin/micromort/issues/142) for the full
 history.
 
-- [Shinylive apps](https://johngavin.github.io/micromort/articles/)
+- [Retired: Shinylive
+  quizzes](https://johngavin.github.io/micromort/articles/)
 - [Source](https://johngavin.github.io/micromort/articles/)
 - [Site info](https://johngavin.github.io/micromort/articles/)
 
-Each of the three instant quizzes also has a full Shiny app version
-(“Shinylive”) with score submission, percentile ranking, and streak
-tracking. The Shinylive version takes 30-60 seconds to load in the
-browser (it runs R compiled to WebAssembly) — the instant quiz has no
-load delay but does not submit scores.
+The three quizzes each used to have a second, full Shiny app version
+(“Shinylive”) alongside the instant (static JS) version below, offering
+score submission and percentile ranking. Those Shinylive versions were
+retired on 2026-09-05: an audit found their only remaining capability
+not already in the instant version was a small played-N-days-in-a-row
+streak indicator, which has since been ported to the instant quizzes.
+Retiring the Shinylive copies removed roughly 180MB of duplicate WASM
+bundles from this site and stopped every quiz-page fix from needing two
+parallel implementations kept in sync.
 
-| Quiz | Instant version | Shinylive version |
-|----|----|----|
-| Which lifestyle event is more likely to kill you? (micromorts) | [micromort-quiz.html](https://johngavin.github.io/micromort/articles/micromort-quiz.md) | [quiz_shinylive.html](https://johngavin.github.io/micromort/articles/quiz_shinylive.md) |
-| Which daily habit has a bigger effect on your lifespan? (microlives) | [microlife-quiz.html](https://johngavin.github.io/micromort/articles/microlife-quiz.md) | [chronic_quiz_shinylive.html](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.md) |
-| Risk ranking | [risk-ranking-quiz.html](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.md) | [ranking_quiz_shinylive.html](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.md) |
+The retired pages are still available in the repository history at the
+[`archive/shinylive-quizzes-2026-09-05`](https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05)
+tag.
+
+| Quiz | Instant version |
+|----|----|
+| Which lifestyle event is more likely to kill you? (micromorts) | [micromort-quiz.html](https://johngavin.github.io/micromort/articles/micromort-quiz.md) |
+| Which daily habit has a bigger effect on your lifespan? (microlives) | [microlife-quiz.html](https://johngavin.github.io/micromort/articles/microlife-quiz.md) |
+| Risk ranking | [risk-ranking-quiz.html](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.md) |
 
 Every article page on this site has its own auto-generated “Source:”
 line naming the `.qmd` file it was rendered from — that line is

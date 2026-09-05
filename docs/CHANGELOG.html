@@ -62,9 +62,62 @@
 <div id="changelog" class="section level1">
 
 <div class="section level2">
-<h2 id="id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes">2026-08-30/09-01 — Worktree cleanup + quiz confidence feature (issue #132) + site layout fixes<a class="anchor" aria-label="anchor" href="#id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes"></a></h2>
+<h2 id="id_2026-09-05--quiz-historyprogress-ui--per-questionanon-id-capture-scaffolding-issues-182-185">2026-09-05 — Quiz history/progress UI + per-question/anon-ID capture scaffolding (issues #182-#185)<a class="anchor" aria-label="anchor" href="#id_2026-09-05--quiz-historyprogress-ui--per-questionanon-id-capture-scaffolding-issues-182-185"></a></h2>
 <div class="section level3">
 <h3 id="completed">Completed<a class="anchor" aria-label="anchor" href="#completed"></a></h3>
+<p><strong>“My Progress” view (all 3 live JS quizzes):</strong> <code>micromort-quiz.qmd</code>, <code>microlife-quiz.qmd</code>, and <code>risk-ranking-quiz.qmd</code> each gained a collapsible “View my history” panel on the results screen, reading the existing <code>micromort_quiz_history</code> localStorage object (already written by <code>recordScoreHistory()</code>), filtered to that page’s quiz type, most recent 20 attempts first. Purely local/same-device — no server round trip, no schema change. Addresses the “quick win” from <a href="https://github.com/JohnGavin/micromort/issues/185" class="external-link">#185</a>.</p>
+<p><strong>Per-question difficulty now recorded locally (<a href="https://github.com/JohnGavin/micromort/issues/184" class="external-link">#184</a>):</strong> <code>recordScoreHistory()</code> in all 3 files gained an additive <code>difficulties</code> array parameter (one entry per question, <code>null</code> when absent), populated from each question’s own <code>.difficulty</code> field (<code>quizPool</code>’s <code>pair.difficulty</code> for the two pairwise quizzes, <code>items[0].difficulty</code> for the ranking quiz). Backward-compatible: old history entries and pages without any difficulty data are unaffected.</p>
+<p><strong>Per-question JSON payload builder, stubbed pending a Form field (<a href="https://github.com/JohnGavin/micromort/issues/183" class="external-link">#183</a>):</strong> each file gained <code>buildPerQuestionPayload()</code>, serializing <code>{q, answer, correct, difficulty, confidence}</code> per question for the just-completed attempt (the ranking quiz adapts <code>correct</code> to the continuous Kendall’s Tau percentage, since it has no binary right/wrong outcome). NOT wired into the live Form submission — a commented-out <code>data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID', ...)</code> stub sits directly above the live <code>data.append(...)</code> calls in each <code>submitScore()</code>, ready to activate once a real Google Form field exists.</p>
+<p><strong>Anonymous device ID, stubbed pending a Form field (<a href="https://github.com/JohnGavin/micromort/issues/185" class="external-link">#185</a>):</strong> each file gained <code>getAnonId()</code> — a <code>crypto.randomUUID()</code>-backed identifier generated once and persisted under the same <code>micromort_anon_id</code> localStorage key across all 3 pages, called eagerly at page load. Same stub-and-wait pattern as the per-question payload: a commented-out <code>data.append(...)</code> line, not live.</p>
+<p><strong>Issue comments posted</strong> on <a href="https://github.com/JohnGavin/micromort/issues/183" class="external-link">#183</a>, <a href="https://github.com/JohnGavin/micromort/issues/184" class="external-link">#184</a>, and <a href="https://github.com/JohnGavin/micromort/issues/185" class="external-link">#185</a> summarizing what’s live vs. what needs a manual Google Form-editor step (add a field, publish, find its <code>entry.NNNNNNNN</code> id) to finish server-side capture. None of #182-#185 closed — the Form-side work remains open.</p>
+</div>
+<div class="section level3">
+<h3 id="accuracy--metrics">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics"></a></h3>
+<ul><li>
+<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>: <code>FAIL 0 | WARN 0 | SKIP 4 | PASS 1049</code> (skips pre-existing/unrelated — see #185 below for one full-suite artifact).</li>
+<li>
+<code>check_dark_contrast.sh</code> (via <code>file://</code> against the freshly rebuilt local <code>docs/</code>): clean (0 unprotected light inline backgrounds) on all 3 edited quiz pages.</li>
+<li>Puppeteer + system Chrome interactive verification (played a full attempt end-to-end on each of the 3 pages): “My Progress” table renders the just-completed attempt and persists correctly across a page reload; <code>buildPerQuestionPayload()</code> and <code>getAnonId()</code> both execute without throwing (confirmed via direct in-page evaluation) even though neither is wired into the network call yet; the anon ID is stable across calls and survives a reload; <code>grep</code> confirms the live <code>fetch(FORM_URL, ...)</code> submission in all 3 files still sends the exact same <code>entry.*</code> field set as before this change — nothing new actually reaches the Form.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<ul><li>
+<strong>Data gap found, not fixed (out of scope for this task):</strong> the chronic quiz’s embedded <code>quiz-data</code> JSON (<code>vig_chronic_quiz_json_script</code> / <code>vig_chronic_pairs</code>) carries no <code>difficulty</code> field per pair at all — confirmed by inspecting the raw embedded JSON in the rebuilt <code>microlife-quiz.html</code>. This pre-dates this change (no <code>R/</code> file was touched); it means the new <code>difficulties</code> array in <code>micromort_quiz_history</code> will be empty for chronic-quiz attempts until that data-pipeline gap is separately fixed. The acute and ranking quizzes do carry per-question difficulty correctly (verified in the same interactive test).</li>
+<li>A full <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> rebuild (<code>site_verify</code> target) was required to un-stale the 3 edited articles, which regenerated build-info footers/htmlwidget IDs across every article in <code>docs/</code> — expected churn from this project’s existing full-site-rebuild architecture, not a scope creep of this change.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_2026-09-05--retire-the-3-shinylive-quizzes-js-only-going-forward">2026-09-05 — Retire the 3 Shinylive quizzes, JS-only going forward<a class="anchor" aria-label="anchor" href="#id_2026-09-05--retire-the-3-shinylive-quizzes-js-only-going-forward"></a></h2>
+<div class="section level3">
+<h3 id="completed-1">Completed<a class="anchor" aria-label="anchor" href="#completed-1"></a></h3>
+<p><strong>Retired <code>vignettes/quiz_shinylive.qmd</code>, <code>chronic_quiz_shinylive.qmd</code>, and <code>ranking_quiz_shinylive.qmd</code>.</strong> An architecture review found the site shipped 3 quiz topics twice — a vanilla-JS “instant” vignette and a standalone R/Shiny Shinylive (WASM) vignette per topic — and that the confidence-capture/calibration/scoring work landed this session (issue #132, PRs #134/#140/#172-#178) had made the JS versions functionally equivalent to their Shinylive twins. The only capability still exclusive to Shinylive was a small localStorage-based “played N days in a row” streak counter; that has been ported verbatim (same <code>micromort_quiz_streak</code>/<code>micromort_quiz_last_play</code>/<code>micromort_quiz_best_score</code> localStorage keys, so an existing streak carries over) to <code>micromort-quiz.qmd</code>, <code>microlife-quiz.qmd</code>, and <code>risk-ranking-quiz.qmd</code>.</p>
+<p><strong>Maintenance-cost evidence for the decision:</strong> every quiz-page fix this session (confidence-before-reveal, page-title sizing) needed two parallel PRs to keep the JS and Shinylive copies in sync (#172-#178 pairs). Retiring the Shinylive copies removes that duplication going forward.</p>
+<p><strong>Site-size recovery:</strong> <code>docs/</code> dropped from 288M to 107M (~181MB) — three ~60MB Shinylive WASM/webR asset bundles (<code>docs/articles/{quiz,chronic_quiz,ranking_quiz}_shinylive_files/</code>) removed.</p>
+<p><strong>Build pipeline cleanup (<code>R/tar_plans/</code>):</strong> removed the <code>site_quiz_shinylive</code>/<code>site_chronic_shinylive</code>/<code>site_ranking_shinylive</code> render targets and the embedded-CSV-staleness check targets that existed solely because Shinylive’s WebR runtime couldn’t fetch an external data file at runtime (<code>vig_quiz_csv_check</code>, <code>vig_ranking_csv_check</code>, <code>vig_chronic_csv_check</code>, and the <code>qa_chronic_csv_gate</code> that enforced the last one). <code>site_deploy_shinylive</code> now only handles the still-live <code>portfolio_shinylive.qmd</code> (Risk Portfolio Builder, unaffected by this change). <code>site_quiz_csv_export</code>’s now-dead “update embedded CSV in <code>quiz_shinylive.qmd</code>” branch was removed rather than left as a permanent no-op file-exists check.</p>
+<p><strong>Navbar/content updates:</strong> <code>_pkgdown.yml</code> navbar and <code>articles:</code> sections no longer reference the 3 retired slugs; the “Quizzes (Shinylive)” article group was renamed “Quiz Analytics &amp; Portfolio” (its only remaining members). <code>vignettes/details.qmd</code>’s “Shinylive apps” tab was rewritten to “Retired: Shinylive quizzes”, explaining the retirement and linking the archive tag. Each JS quiz page’s “Also on Shinylive (richer UI)” link line was removed. <code>README.qmd</code>’s quiz table dropped its Shinylive column. <code>quiz_analytics.qmd</code>’s empty-state links and the weekly leaderboard-email links (<code>.github/workflows/leaderboard-refresh.yml</code>) were repointed from the retired Shinylive URLs to the JS quiz URLs.</p>
+<p><strong>Redirects + archive:</strong> <code>docs/articles/{quiz,chronic_quiz,ranking_quiz}_shinylive.html</code> replaced with minimal <code>&lt;meta http-equiv="refresh"&gt;</code> redirect stubs pointing at the corresponding JS quiz page, so any existing bookmark/external link doesn’t 404. The full pre-retirement content is preserved at the <code>archive/shinylive-quizzes-2026-09-05</code> git tag: <a href="https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05" class="external-link uri">https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="accuracy--metrics-1">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-1"></a></h3>
+<ul><li>
+<code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>: <code>FAIL 0 | WARN 0 | SKIP 4 | PASS 1049</code> (2 of the 4 skips are the expected <code>vignettes/quiz_shinylive.qmd not found</code> graceful-skip guards in <code>test-quiz.R</code>/<code>test-quiz-streak.R</code>; the other 2 are pre-existing, unrelated sampling skips in <code>test-combined-quiz.R</code>).</li>
+<li>
+<code>check_dark_contrast.sh</code> (via <code>file://</code> URLs against the freshly rebuilt local <code>docs/</code>): clean (0 unprotected light inline backgrounds) on all 3 surviving quiz pages plus <code>details.html</code>.</li>
+<li>
+<code>docs/</code> size: 288M → 107M (~181MB recovered), matching the ~180MB estimate from the 3× ~60MB WASM asset directories.</li>
+<li>Removed <code>tests/testthat/test-qa-chronic-csv-gate.R</code> and its snapshot (<code>_snaps/qa-chronic-csv-gate.md</code>) — the <code>qa_chronic_csv_gate</code> target they simulated no longer exists.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
+<ul><li>Puppeteer/system-Chrome click-through verification (used successfully for the confidence-capture work earlier this session) was not re-run for the streak indicator specifically — <code>puppeteer-core</code> was not installed in this worktree’s node environment and installing it was judged not worth the time for this one check, per static/grep verification already covering: JS syntax validity (<code>node --check</code>) of all 3 edited quiz files, streak code present in both source <code>.qmd</code> and the rebuilt <code>docs/articles/*.html</code>, and the <code>#streak_display</code> element wired into each results view.</li>
+<li>
+<code>site_rds_export</code> reported <code>0/94 vig_* targets exported</code> during the narrowed rebuild — expected: this worktree’s <code>_targets</code> store doesn’t have the other (unrelated) <code>vig_*</code> targets already built, and a full <code>tar_make()</code> was intentionally not run (would pull in a live Google Sheets fetch via <code>leaderboard_raw</code>/<code>site_verify</code>). Does not affect the retirement itself.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes">2026-08-30/09-01 — Worktree cleanup + quiz confidence feature (issue #132) + site layout fixes<a class="anchor" aria-label="anchor" href="#id_2026-08-3009-01--worktree-cleanup--quiz-confidence-feature-issue-132--site-layout-fixes"></a></h2>
+<div class="section level3">
+<h3 id="completed-2">Completed<a class="anchor" aria-label="anchor" href="#completed-2"></a></h3>
 <p><strong>Worktree/branch cleanup:</strong> removed 5 merged worktrees, deleted 13 fully-merged branches (7 verified via squash-merge PR closure since git’s own <code>-d</code> check misses squash-merges), harvested one orphaned commit (content-hash freshness-check tests) into main via <a href="https://github.com/JohnGavin/micromort/pull/133" class="external-link">#133</a>.</p>
 <p><strong>PR #120 (combined-quiz rounding bug, 101 days stale):</strong> fixed via <a href="https://github.com/JohnGavin/micromort/pull/135" class="external-link">#135</a> — <code><a href="reference/combined_quiz_pairs.html">combined_quiz_pairs()</a></code> was scaling ALL <code>period_type=="period"</code> rows as bounded one-off totals, but some (e.g. CDC mortality-rate rows measured over a fixed window) should scale like any other rate; fix distinguishes by the period string itself. Required two further merge-conflict-resolution rounds (<a href="https://github.com/JohnGavin/micromort/pull/136" class="external-link">#136</a>, then a manual real-merge-commit push) after main moved repeatedly during the fix — see Failed Approaches.</p>
 <p><strong>Quiz-confidence feature (<a href="https://github.com/JohnGavin/micromort/issues/132" class="external-link">issue #132</a>):</strong> per-question confidence capture (0/25/50/75/100%) on <code>micromort-quiz.qmd</code>, self-only calibration + Brier score (<a href="https://github.com/JohnGavin/micromort/pull/134" class="external-link">#134</a>), then population-level comparison — confirmed the shared Google Form field (<code>entry.1681143871</code>, same form used by all 6 quiz files) and wired an attempt-level (not per-question — the form only accepts one confidence value per submission) calibration approximation into <code>plan_leaderboard_stats.R</code>, plus a predicted-vs-actual scatter on the results screen (<a href="https://github.com/JohnGavin/micromort/pull/140" class="external-link">#140</a>). Merged and live at <a href="https://johngavin.github.io/micromort/articles/micromort-quiz.html" class="uri">https://johngavin.github.io/micromort/articles/micromort-quiz.html</a>.</p>
@@ -88,14 +141,14 @@
 <li>Two GitHub Actions CI timeouts (20-min <code>R Tests</code> job limit) hit mid Nix-package-cache-upload on PR #143 — not a real test failure, just cold-cache infra; resolved with <code>gh run rerun --failed</code> (succeeded on warm cache in ~4 min).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics"></a></h3>
+<h3 id="accuracy--metrics-2">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-2"></a></h3>
 <ul><li>Final <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> across every merge this session: consistently <code>FAIL 0</code>, final count <code>PASS 1019</code> (<code>SKIP 2</code>).</li>
 <li>Contrast audit: 20 WCAG-AA failures → 0, across the 3 quiz pages + new Details page (#143).</li>
 <li>5 fixer-agent dispatches this session, all with mandatory foreground verification (no <code>run_in_background</code> on test/build commands) and, for the last one, mandatory real-browser screenshot evidence.</li>
 <li>roborev: 16 reviews since 2026-08-26, 12 failed verdicts / 6 addressed (6 open, all <code>gemini</code>, no crash/quota — see session’s own filed llm#1127 for a related root-cause investigation into false “High severity” phantom findings).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
 <ul><li>
 <strong>Quiz confidence Phase 2 is only live on <code>micromort-quiz.qmd</code>.</strong> <code>microlife-quiz.qmd</code> and <code>risk-ranking-quiz.qmd</code> still need the same confidence-capture + calibration wiring — per project memory (<code>project_quiz-confidence-phase2-definition-of-done.md</code>), get one quiz’s full population-comparison + Brier-score + actual-vs-predicted chart genuinely working (it now is) before replicating.</li>
 <li>
@@ -146,7 +199,7 @@
 <li>Initial attempt to source the PM2.5 rows in <code><a href="reference/chronic_risks.html">chronic_risks()</a></code> directly from <code>data-raw/sources/chronic_risks_base.csv</code> via <code>readr::read_csv(here::here(...))</code> — fine in source-tree but <code>data-raw/</code> is <code>.Rbuildignore</code>d so installed users wouldn’t have the CSV. Switched to reading the canonical parquet via <code><a href="reference/load_chronic_risks.html">load_chronic_risks()</a></code> which IS shipped in <code>inst/extdata/</code>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-1">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-1"></a></h3>
+<h3 id="accuracy--metrics-3">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-3"></a></h3>
 <ul><li>
 <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>: <code>[ FAIL 0 | PASS 996 ]</code> after B1+B2 (pre-existing 2 failures in <code>test-vignette-outputs.R</code> for stale-render guard were exactly what the site rebuild then addressed).</li>
 <li>Combined quiz CSV: 4 of 50 rows changed <code>effective_micromorts_a</code> (the bounded-window period rows). All ratios/winners recomputed.</li>
@@ -156,7 +209,7 @@
 <li>Zero residual stale labels: <code>grep "Air pollution (high)" docs/articles/*.html</code> returns no matches.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
+<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
 <ul><li>The 3rd roborev #3523 finding (freshness guard structurally only compares timestamps, not content) was addressed <em>by symptom</em> (the site has now been rebuilt) but not <em>by root cause</em> (the guard still can’t detect future content drift). Next session should add a content-hash check to <code>tests/testthat/test-vignette-outputs.R</code> so future PM2.5-style drift trips CI rather than slipping through to a roborev review.</li>
 <li>4 stale chronic_risks-dependent vignette RDS were regenerated by hand-ported tar code in a one-shot Rscript rather than by <code>tar_make()</code> on the worktree (which has no <code>_targets/</code> store). If new vignette targets are added that depend on <code><a href="reference/chronic_risks.html">chronic_risks()</a></code>, they will be missed by this manual list.</li>
 <li>Three shinylive vignettes rebuilt via direct <code>quarto render</code> rather than pkgdown — they show the warning <code>WARN: Refusing to remove directory … _files since it is not a subdirectory of the main project directory.</code> This is the documented limitation; harmless but cosmetic.</li>
@@ -192,7 +245,7 @@
 <strong>Agent dispatch hit org monthly usage limit</strong> during historical project work — fell back to direct edit (well-scoped, single-file, test-infra change within bounded-exception scope).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-2">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-2"></a></h3>
+<h3 id="accuracy--metrics-4">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-4"></a></h3>
 <ul><li>Tests: <code>test-acute-risk-rounding.R</code> 29 PASS (new), <code>test-qa-chronic-csv-gate.R</code> 4 PASS (new), <code>test-vignette-outputs.R</code> 20 PASS + 3 staleness FAIL (intended signals on stale <code>docs/CHANGELOG.html</code> and <code>docs/index.html</code>).</li>
 <li>Roborev resolution: 50+ → 3 verified-remaining findings (job <code>3523</code>).</li>
 <li>Commits: 12, all conventional-commit-style with <code>roborev #...</code> tags and Co-Authored-By Claude.</li>
@@ -319,7 +372,7 @@
 <strong>Mass <code>roborev close</code> against backlog IDs:</strong> some IDs in <code>backlog.md</code> don’t exist as roborev job IDs (e.g. #570). <code>roborev comment</code> still records the audit trail, but <code>roborev close</code> returns 404 for those. Workaround: comment-only path is acceptable for findings without matching job rows.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-3">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-3"></a></h3>
+<h3 id="accuracy--metrics-5">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-5"></a></h3>
 <ul><li>
 <strong>Test count:</strong> ~1000 → ~1031+ (snapshot test for combined-quiz columns, 3 risk-sensitivity regression tests, real zero-divisor fixture, atomic-risks component_id uniqueness, bed_age cardinality assertions).</li>
 <li>
@@ -328,7 +381,7 @@
 <strong>XSS surface:</strong> 7 paths sanitized in Cluster C + 16 paths in Round 3A across 3 quiz vignettes. <code>safeHref()</code> URL allowlist now blocks <code>javascript:</code>, <code>data:</code>, <code>vbscript:</code> injection vectors.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
+<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
 <ul><li>
 <strong><code>docs/articles/what-is-a-micromort.{md,html}</code> are stale relative to source.</strong> Task #21 (docs rebuild) hit org budget cap before commit. Site shows old 7-row wine table; source has 6-row table with bicycle/coffee prose. Next session: run <code>pkgdown::build_article("what-is-a-micromort")</code> or full <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code>.</li>
 <li>
@@ -342,7 +395,7 @@
 <div class="section level2">
 <h2 id="id_2026-05-03-to-2026-05-06">2026-05-03 to 2026-05-06<a class="anchor" aria-label="anchor" href="#id_2026-05-03-to-2026-05-06"></a></h2>
 <div class="section level3">
-<h3 id="completed-1">Completed<a class="anchor" aria-label="anchor" href="#completed-1"></a></h3>
+<h3 id="completed-3">Completed<a class="anchor" aria-label="anchor" href="#completed-3"></a></h3>
 <p><strong>Issues closed: 1</strong> (#96) <strong>Issues created: 2</strong> (#98, #99)</p>
 <div class="section level4">
 <h4 id="rankings-bump-chart-96">Rankings bump chart (#96)<a class="anchor" aria-label="anchor" href="#rankings-bump-chart-96"></a></h4>
@@ -371,12 +424,12 @@
 </ul></div>
 </div>
 <div class="section level3">
-<h3 id="accuracy--metrics-4">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-4"></a></h3>
+<h3 id="accuracy--metrics-6">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-6"></a></h3>
 <ul><li>Tests: 923 passing, 0 failures</li>
 <li>CI: passing (green)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
+<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
 <ul><li>12 chronic risk factors still missing from #99 (GLP-1, vaping, sleep dose-response, social connection, DASH/MIND diets, nuts, coffee, aspirin, sauna, dancing, HRT)</li>
 <li>docs_qa_precommit.sh hook still buggy</li>
 <li>Quarto 1.8.26 strips scripts — requires Python post-injection for causes_of_death</li>
@@ -385,7 +438,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-25-to-2026-05-03">2026-04-25 to 2026-05-03<a class="anchor" aria-label="anchor" href="#id_2026-04-25-to-2026-05-03"></a></h2>
 <div class="section level3">
-<h3 id="completed-2">Completed<a class="anchor" aria-label="anchor" href="#completed-2"></a></h3>
+<h3 id="completed-4">Completed<a class="anchor" aria-label="anchor" href="#completed-4"></a></h3>
 <p><strong>Version bump: 0.1.0 → 0.2.0</strong> <strong>Issues closed: 2</strong> (#93, #95) <strong>Issues created: 3</strong> (#95, #96, #97)</p>
 <div class="section level4">
 <h4 id="causes-of-death-by-country-vignette-93-95">Causes of Death by Country vignette (#93, #95)<a class="anchor" aria-label="anchor" href="#causes-of-death-by-country-vignette-93-95"></a></h4>
@@ -423,13 +476,13 @@
 <strong>Full <code>build_site()</code></strong> crashed on Closeread article (quarto render error). Individual <code>build_article()</code> calls work for all except chronic_vs_acute (pkgdown skips it).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-5">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-5"></a></h3>
+<h3 id="accuracy--metrics-7">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-7"></a></h3>
 <ul><li>CI: passing (0 HTML content errors in checked articles)</li>
 <li>Version: 0.2.0</li>
 <li>New vignette: causes_of_death (pure JS, 80KB deployed)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
+<h3 id="known-limitations-6">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-6"></a></h3>
 <ul><li>chronic_vs_acute still has 4 “not found in targets” in deployed HTML (Closeread, pkgdown can’t rebuild — quarto direct render is clean)</li>
 <li>docs_qa_precommit.sh hook has a bug (exits non-zero even with 0 errors) — requires python workaround to stage docs/ files</li>
 <li>OWID catalog URLs defunct (#94 blocks #90-92)</li>
@@ -440,7 +493,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-24">2026-04-24<a class="anchor" aria-label="anchor" href="#id_2026-04-24"></a></h2>
 <div class="section level3">
-<h3 id="completed-3">Completed<a class="anchor" aria-label="anchor" href="#completed-3"></a></h3>
+<h3 id="completed-5">Completed<a class="anchor" aria-label="anchor" href="#completed-5"></a></h3>
 <p><strong>Issues created: 5</strong> (#90, #91, #92, #93, #94)</p>
 <div class="section level4">
 <h4 id="owidgbd-gap-analysis">OWID/GBD gap analysis<a class="anchor" aria-label="anchor" href="#owidgbd-gap-analysis"></a></h4>
@@ -471,7 +524,7 @@
 <li>OWID grapher CSV download pattern also returns 404 for GBD charts specifically (licensing restriction, not general breakage)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
+<h3 id="known-limitations-7">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-7"></a></h3>
 <ul><li>#94 blocks #90, #91, #92 — all need manual IHME account creation + download</li>
 <li>Existing bundled data frozen at GBD 2019 (via 2024-05-20 OWID snapshot)</li>
 <li>Pending from prior sessions: glossary/reference page fixes, text selectability, “click to expand” broken, article rebuilds for acronym link fixes</li>
@@ -480,7 +533,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-21">2026-04-21<a class="anchor" aria-label="anchor" href="#id_2026-04-21"></a></h2>
 <div class="section level3">
-<h3 id="completed-4">Completed<a class="anchor" aria-label="anchor" href="#completed-4"></a></h3>
+<h3 id="completed-6">Completed<a class="anchor" aria-label="anchor" href="#completed-6"></a></h3>
 <p><strong>Issues closed: 3</strong> (#30, #63, #82) <strong>Issues created: 4</strong> (#84, #85, #86, #87)</p>
 <div class="section level4">
 <h4 id="portfolio-risk-builder-30-63-merged">Portfolio Risk Builder (#30, #63 merged)<a class="anchor" aria-label="anchor" href="#portfolio-risk-builder-30-63-merged"></a></h4>
@@ -539,7 +592,7 @@
 <div class="section level2">
 <h2 id="id_2026-04-20">2026-04-20<a class="anchor" aria-label="anchor" href="#id_2026-04-20"></a></h2>
 <div class="section level3">
-<h3 id="completed-5">Completed<a class="anchor" aria-label="anchor" href="#completed-5"></a></h3>
+<h3 id="completed-7">Completed<a class="anchor" aria-label="anchor" href="#completed-7"></a></h3>
 <p><strong>Issues closed: 13</strong> (#47, #58, #59, #61, #64, #71, #72, #75, #78, #79, #81, #83) <strong>Issues created: 2</strong> (#82, #83)</p>
 <div class="section level4">
 <h4 id="new-exported-functions-7">New exported functions (7)<a class="anchor" aria-label="anchor" href="#new-exported-functions-7"></a></h4>
@@ -607,14 +660,14 @@
 <li>Moving sections into tab panes via <code>appendChild</code>: sections rendered above nav because <code>parentContainer</code> reference became stale after DOM moves. Fixed by capturing parent before moves.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="accuracy--metrics-6">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-6"></a></h3>
+<h3 id="accuracy--metrics-8">Accuracy / Metrics<a class="anchor" aria-label="anchor" href="#accuracy--metrics-8"></a></h3>
 <ul><li>Tests: 914 passing, 0 failures</li>
 <li>New tests this session: ~112</li>
 <li>New exported functions: 7</li>
 <li>New bundled datasets: 4 CSVs (chronic diseases, infectious diseases, LD50, combined quiz pairs)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-6">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-6"></a></h3>
+<h3 id="known-limitations-8">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-8"></a></h3>
 <ul><li>Introduction page build-info shows stale date (2026-04-18) — vig_build_info target needs rebuild</li>
 <li>
 <code>noUiSlider</code> JS error in DT filter widgets (cosmetic, doesn’t affect functionality)</li>

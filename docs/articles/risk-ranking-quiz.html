@@ -485,11 +485,46 @@ function computeMeanConfidence() {
   return rated.reduce(function(a, b) { return a + b; }, 0) / rated.length;
 }
 
+// ---- Per-question JSON payload builder (#183/#184) ----
+// Serializes the full per-question detail for the just-completed attempt.
+// ADAPTED for this quiz: there is no single binary right/wrong outcome for
+// a ranking question, so `answer` is the user's submitted order (joined
+// item names) and `correct` carries the continuous Kendall's Tau
+// percentage for that question rather than a boolean. Not yet wired into
+// the live Form submission -- see the commented-out data.append(...) stub
+// in submitScore() below -- ready the moment a real Google Form field
+// exists to receive it (see #183).
+function buildPerQuestionPayload() {
+  const n = S.nQuestions;
+  const payload = [];
+  for (let i = 0; i < n; i++) {
+    const items = S.questions[i];
+    const sc = S.scores[i];
+    const userOrder = S.userOrders[i];
+    const conf = S.confidences[i];
+    const userNames = (userOrder && items) ? userOrder.map(function(idx) { return items[idx].item_name; }) : null;
+    payload.push({
+      q: (items && items[0]) ? items[0].question_id : null,
+      answer: userNames ? userNames.join(' > ') : null,
+      correct: sc ? sc.pct : null,
+      difficulty: (items && items[0] && items[0].difficulty) || null,
+      confidence: (conf === null || conf === undefined) ? null : conf
+    });
+  }
+  return JSON.stringify(payload);
+}
+
 function submitScore(scorePct, nQuestions) {
   if (scoreSubmitted) return;
   const btn = document.getElementById('submit_btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; btn.className = 'btn btn-secondary btn-lg'; }
   const data = new URLSearchParams();
+  // TODO(#183/#184): submit per-question detail once a new Google Form field exists.
+  // const perQuestionJson = buildPerQuestionPayload();
+  // data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID', perQuestionJson);
+  // TODO(#185): submit anonymous device ID once a new Google Form field exists.
+  // const anonId = getAnonId();
+  // data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID_2', anonId);
   data.append('entry.335579146', scorePct);
   data.append('entry.2122920576', 100);
   data.append('entry.621716914', new Date().toISOString());
@@ -631,7 +666,9 @@ function renderCalibrationComparison(dCalib, meanConf, myScorePct) {
 // quiz pages are unaffected. This is browser-local only — no confidence
 // data is sent to the Form/Sheet/leaderboard pipeline beyond the single
 // attempt-level mean handled by submitScore()/computeMeanConfidence() above.
-function recordScoreHistory(quizType, scorePct, score, total, confidences, outcomes) {
+// `difficulties` (#184) is additive in the same way: only recorded when at
+// least one question carried a difficulty label.
+function recordScoreHistory(quizType, scorePct, score, total, confidences, outcomes, difficulties) {
   const HISTORY_KEY = 'micromort_quiz_history';
   let hist;
   try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { hist = []; }
@@ -640,9 +677,47 @@ function recordScoreHistory(quizType, scorePct, score, total, confidences, outco
     entry.confidences = confidences;
     entry.outcomes = outcomes;
   }
+  if (Array.isArray(difficulties) && difficulties.some(d => d !== null && d !== undefined)) {
+    entry.difficulties = difficulties;
+  }
   hist.push(entry);
   if (hist.length > 200) hist = hist.slice(-200);
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(hist)); } catch (e) { /* localStorage unavailable/full */ }
+}
+
+// ---- "My Progress" view (#185 quick win) ----
+// Reads the existing micromort_quiz_history localStorage object (already
+// written by recordScoreHistory() above) and renders the user's own past
+// attempts on THIS quiz type, most recent first, capped at 20 rows. Purely
+// local/same-device -- no server round trip, no new schema.
+function renderMyProgressTable(quizType) {
+  const HISTORY_KEY = 'micromort_quiz_history';
+  let hist;
+  try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { hist = []; }
+  const mine = Array.isArray(hist) ? hist.filter(function(e) { return e && e.type === quizType; }) : [];
+  if (mine.length === 0) {
+    return '<p style="color:#8899bb;font-size:0.85rem;">No past attempts recorded yet on this device.</p>';
+  }
+  const recent = mine.slice(-20).reverse();
+  const rows = recent.map(function(e) {
+    const d = new Date(e.date);
+    const dateStr = isNaN(d.getTime()) ? escHtml(String(e.date)) :
+      d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    const scorePct = Math.round(e.score);
+    let meanConf = '—';
+    if (Array.isArray(e.confidences)) {
+      const rated = e.confidences.filter(function(c) { return c !== null && c !== undefined; });
+      if (rated.length > 0) {
+        meanConf = Math.round(rated.reduce(function(a, b) { return a + b; }, 0) / rated.length) + '%';
+      }
+    }
+    return '<tr><td>' + dateStr + '</td><td>' + scorePct + '%</td><td>' + meanConf + '</td></tr>';
+  }).join('');
+  return '<div class="detail-scroll"><table class="table table-striped table-hover detail-table" style="font-size:0.85rem;">' +
+    '<thead><tr><th>Date</th><th>Score</th><th>Mean confidence</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>' +
+    '<p style="color:#8899bb;font-size:0.8rem;margin-top:0.5rem;">Showing your ' + recent.length +
+    ' most recent attempt' + (recent.length === 1 ? '' : 's') + ' on this quiz, on this device/browser only.</p>';
 }
 
 // ---- Streak tracking (ported from the retired Shinylive quizzes, 2026-09-05) ----
@@ -701,7 +776,29 @@ function recordCompletedQuiz() {
     else { outcomes.push(null); }
   });
   const overallPct = totalPairs > 0 ? Math.round(totalConc / totalPairs * 100) : 0;
-  recordScoreHistory('ranking', overallPct, totalConc, totalPairs, S.confidences, outcomes);
+  const difficulties = S.questions.map(function(items) {
+    return (items && items[0] && items[0].difficulty) || null;
+  });
+  recordScoreHistory('ranking', overallPct, totalConc, totalPairs, S.confidences, outcomes, difficulties);
+}
+
+// ---- Anonymous device ID (#185) ----
+// Persistent, anonymous per-browser identifier, shared across all 3 quiz
+// pages via the same localStorage key -- generated once, then reused.
+// Not yet submitted anywhere (see the commented-out data.append(...) stub
+// in submitScore() above); generated and stored now so it's ready the
+// moment a Google Form field exists to receive it.
+function getAnonId() {
+  const KEY = 'micromort_anon_id';
+  let id;
+  try { id = localStorage.getItem(KEY); } catch (e) { id = null; }
+  if (!id) {
+    id = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'anon-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    try { localStorage.setItem(KEY, id); } catch (e) { /* localStorage unavailable */ }
+  }
+  return id;
 }
 
 // Self-only calibration: predicted score (confidence-weighted expectation,
@@ -1076,7 +1173,14 @@ function renderResults() {
       <small id="percentile_text" class="text-muted"></small><br>
       <small class="text-muted">Scores are recorded anonymously (score, total, timestamp, and — if you rated any answers — your mean confidence for this attempt only).</small>
     </div>
-    <div id="qr-results"></div>`;
+    <div id="qr-results"></div>
+    <details style="margin-top:1rem;">
+      <summary style="cursor:pointer;">View my history</summary>
+      <div class="analytics-section" style="margin-top:0.5rem;">
+        <h3>My Progress</h3>
+        <div id="my_progress_body">${renderMyProgressTable('ranking')}</div>
+      </div>
+    </details>`;
 }
 
 function shareResult(pct) {
@@ -1125,6 +1229,7 @@ function renderDetail() {
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', function() {
   loadData();
+  getAnonId();
   render();
 });
 </script><script id="quarto-html-after-body" type="application/javascript">

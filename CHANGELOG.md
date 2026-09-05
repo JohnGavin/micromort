@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-05 — Quiz history/progress UI + per-question/anon-ID capture scaffolding (issues #182-#185)
+
+### Completed
+
+**"My Progress" view (all 3 live JS quizzes):** `micromort-quiz.qmd`, `microlife-quiz.qmd`, and `risk-ranking-quiz.qmd` each gained a collapsible "View my history" panel on the results screen, reading the existing `micromort_quiz_history` localStorage object (already written by `recordScoreHistory()`), filtered to that page's quiz type, most recent 20 attempts first. Purely local/same-device — no server round trip, no schema change. Addresses the "quick win" from [#185](https://github.com/JohnGavin/micromort/issues/185).
+
+**Per-question difficulty now recorded locally ([#184](https://github.com/JohnGavin/micromort/issues/184)):** `recordScoreHistory()` in all 3 files gained an additive `difficulties` array parameter (one entry per question, `null` when absent), populated from each question's own `.difficulty` field (`quizPool`'s `pair.difficulty` for the two pairwise quizzes, `items[0].difficulty` for the ranking quiz). Backward-compatible: old history entries and pages without any difficulty data are unaffected.
+
+**Per-question JSON payload builder, stubbed pending a Form field ([#183](https://github.com/JohnGavin/micromort/issues/183)):** each file gained `buildPerQuestionPayload()`, serializing `{q, answer, correct, difficulty, confidence}` per question for the just-completed attempt (the ranking quiz adapts `correct` to the continuous Kendall's Tau percentage, since it has no binary right/wrong outcome). NOT wired into the live Form submission — a commented-out `data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID', ...)` stub sits directly above the live `data.append(...)` calls in each `submitScore()`, ready to activate once a real Google Form field exists.
+
+**Anonymous device ID, stubbed pending a Form field ([#185](https://github.com/JohnGavin/micromort/issues/185)):** each file gained `getAnonId()` — a `crypto.randomUUID()`-backed identifier generated once and persisted under the same `micromort_anon_id` localStorage key across all 3 pages, called eagerly at page load. Same stub-and-wait pattern as the per-question payload: a commented-out `data.append(...)` line, not live.
+
+**Issue comments posted** on [#183](https://github.com/JohnGavin/micromort/issues/183), [#184](https://github.com/JohnGavin/micromort/issues/184), and [#185](https://github.com/JohnGavin/micromort/issues/185) summarizing what's live vs. what needs a manual Google Form-editor step (add a field, publish, find its `entry.NNNNNNNN` id) to finish server-side capture. None of #182-#185 closed — the Form-side work remains open.
+
+### Accuracy / Metrics
+
+- `devtools::test()`: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (skips pre-existing/unrelated — see #185 below for one full-suite artifact).
+- `check_dark_contrast.sh` (via `file://` against the freshly rebuilt local `docs/`): clean (0 unprotected light inline backgrounds) on all 3 edited quiz pages.
+- Puppeteer + system Chrome interactive verification (played a full attempt end-to-end on each of the 3 pages): "My Progress" table renders the just-completed attempt and persists correctly across a page reload; `buildPerQuestionPayload()` and `getAnonId()` both execute without throwing (confirmed via direct in-page evaluation) even though neither is wired into the network call yet; the anon ID is stable across calls and survives a reload; `grep` confirms the live `fetch(FORM_URL, ...)` submission in all 3 files still sends the exact same `entry.*` field set as before this change — nothing new actually reaches the Form.
+
+### Known Limitations
+
+- **Data gap found, not fixed (out of scope for this task):** the chronic quiz's embedded `quiz-data` JSON (`vig_chronic_quiz_json_script` / `vig_chronic_pairs`) carries no `difficulty` field per pair at all — confirmed by inspecting the raw embedded JSON in the rebuilt `microlife-quiz.html`. This pre-dates this change (no `R/` file was touched); it means the new `difficulties` array in `micromort_quiz_history` will be empty for chronic-quiz attempts until that data-pipeline gap is separately fixed. The acute and ranking quizzes do carry per-question difficulty correctly (verified in the same interactive test).
+- A full `pkgdown::build_site()` rebuild (`site_verify` target) was required to un-stale the 3 edited articles, which regenerated build-info footers/htmlwidget IDs across every article in `docs/` — expected churn from this project's existing full-site-rebuild architecture, not a scope creep of this change.
+
 ## 2026-09-05 — Retire the 3 Shinylive quizzes, JS-only going forward
 
 ### Completed
