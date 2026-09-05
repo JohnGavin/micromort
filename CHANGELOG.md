@@ -1,5 +1,72 @@
 # Changelog
 
+## 2026-09-05 — Session (part 2): #179 verification + archive tag advance + housekeeping cleanup
+
+### Completed
+- Merged [JohnGavin/llm#1165](https://github.com/JohnGavin/llm/pull/1165) — the
+  `shinylive-vs-js-duplication` global decision-framework rule (see part 1
+  entry below for the case study it documents).
+- Filed [JohnGavin/llm#1167](https://github.com/JohnGavin/llm/issues/1167) —
+  `generate_ctx()` in the `llm` project's `plan_pkgctx.R` swallows stderr via
+  `2>/dev/null`, hiding the real cause of any `ctx_sync()` failure.
+- Diagnosed the `/bye` `ctx_sync("DESCRIPTION")` failure from part 1: all 28
+  package refreshes failed because crates.io is returning HTTP 403 to this
+  sandbox's network egress (confirmed even for definitely-real crates like
+  `serde`), breaking the `pkgctx` tool's own Rust-crate build step. Sandbox
+  network limitation, not a code bug.
+- Diagnosed and resolved the `/bye` telemetry-export duckdb failure from
+  part 1: a genuine bug (`tail -5` truncating the real R error message,
+  showing only backtrace frames) plus a likely-transient DB write-lock
+  contention. Retried the export — succeeded.
+- Interactively verified the #179 fix with a real rebuild + Puppeteer
+  click-through (not just static checks): reliably reproduced the original
+  race 6/6 times on the pre-fix commit, and confirmed 6/6 clean runs on the
+  fix branch with the app actually progressing into the quiz. Left #179
+  open (the fixed file has no live surface to close against) and pushed an
+  advanced archive tag, `archive/shinylive-quizzes-2026-09-05-fixed`,
+  pointing at the verified fix commit — the recommended starting point for
+  any future resurrection, superseding the original archive tag (left
+  untouched).
+- Filed [#181](https://github.com/JohnGavin/micromort/issues/181) — a
+  separate, pre-existing tag-selection JS/visual-state desync bug found
+  during that verification, marked low-priority since the page is archived.
+- Found and cleaned up a real housekeeping incident: `~/.claude/scripts/
+  export_and_deploy_data.sh`, invoked while this session's Bash cwd was the
+  micromort worktree, left ~5.2MB / 40 files of unmistakably llmtelemetry
+  dashboard data (cost/roborev/session telemetry) as untracked stray files
+  under `inst/extdata/` and `vignettes/data/` here. No data was lost — the
+  correct copies were also written and pushed to the actual `llmtelemetry`
+  repo. Removed the stray files (`git clean -xdf`, dry-run verified first)
+  and filed [JohnGavin/llmtelemetry#361](https://github.com/JohnGavin/llmtelemetry/issues/361)
+  (private repo, since the incident's detail is about that repo's own data)
+  with evidence pointing at a likely concurrent-invocation race (a second,
+  independently-running instance of the same export script was confirmed
+  alive during one reproduction attempt) rather than a simple cwd leak —
+  every solo run this session completed cleanly.
+
+### Failed Approaches
+- Assumed the telemetry-export duckdb failure and the stray-write incident
+  were the same kind of "run script, see error, done" issue. They weren't —
+  diagnosing them required actually re-running the underlying steps with
+  fuller error capture and a genuine reproduction attempt, not just reading
+  the (deliberately or accidentally) truncated wrapper output.
+- Initial "clean retry disproves reproducibility" conclusion on the
+  stray-write incident was wrong — that retry had actually been silently
+  skipped by the export script's own concurrency lock (a competing PID was
+  live at that moment), not a real non-reproduction. Caught and corrected
+  before writing anything into the issue as a false negative.
+
+### Accuracy / Metrics
+- No test/build changes this part of the session — verification and
+  housekeeping only.
+
+### Known Limitations
+- The stray-write incident's root cause is still not conclusively pinned to
+  a specific line/mechanism — flagged as a concurrency-race hypothesis in
+  the filed issue, not a confirmed fix.
+- #181 (tag-selection JS/visual desync in the archived ranking quiz) is
+  filed but not fixed — low priority, archived page.
+
 ## 2026-09-05 — Session: quiz correctness fixes, confidence-before-reveal, Shinylive retirement
 
 ### Completed

@@ -2,54 +2,52 @@
 
 _Ephemeral session-state file. Overwritten each session end._
 
-## Last session: 2026-09-05
+## Last session: 2026-09-05 (two /bye rounds)
 
-### Status: session complete, all planned work merged and live-verified
+### Status: session complete, all planned work merged, verified, and housekeeping cleaned up
 
-Everything from this session's task list shipped and is live on
-https://johngavin.github.io/micromort/:
+Everything from this session is live on https://johngavin.github.io/micromort/
+(quiz correctness fixes, Shinylive retirement — see the two 2026-09-05
+CHANGELOG entries for the full list). Second round, after the first /bye,
+added:
 
-- Reopened and correctly fixed #142 (quiz-page banner/footer/Source-line
-  clutter) and #132 (per-question confidence capture) across all 6 quiz
-  vignettes, after prior sessions had incorrectly claimed these fixed.
-- Next-button green highlight after submit, all 6 quizzes.
-- Confidence-before-reveal correctness fix (confidence must be captured
-  BEFORE the answer is revealed, not simultaneously) — PRs #172-#177, all
-  merged.
-- Page-title font-size shrink on all 6 quiz pages — PR #178, merged.
-- Confirmed no historical confidence data was lost (a user-raised concern);
-  root-caused to a 1-day-old full rollout, working as designed.
-- Filed #179 (tag-selection race condition in `ranking_quiz_shinylive.qmd`
-  — now moot, page just redirects, kept open at low priority).
-- Architecture review of the 6-quiz JS/Shinylive duplication -> retired the
-  3 Shinylive quizzes (PR #180, merged). ~181MB recovered from `docs/`.
-  Archived, not deleted — full old content at git tag
-  `archive/shinylive-quizzes-2026-09-05`.
-- Documented the general decision framework in a new global rule
-  (`shinylive-vs-js-duplication.md` in the `llm` project) for future
-  projects choosing between Shinylive and JS-only implementations.
+- Merged `llm#1165` (the new `shinylive-vs-js-duplication` global rule) and
+  filed `llm#1167` (a real bug: `generate_ctx()` swallows stderr, hiding
+  `ctx_sync()` failure causes).
+- Diagnosed both failures flagged at the first `/bye`: `ctx_sync` fails due
+  to crates.io blocking this sandbox's network (not a code bug); the
+  telemetry export failure was a transient DB-lock plus a real `tail -5`
+  truncation bug in the wrapper script — retried successfully.
+- Interactively verified the #179 fix (real rebuild + Puppeteer, not just
+  static checks) — 6/6 reproductions pre-fix, 6/6 clean post-fix. Pushed
+  `archive/shinylive-quizzes-2026-09-05-fixed` as the recommended
+  resurrection point. Left #179 open (no live surface to close against).
+- Filed #181 (separate low-priority archived-page bug found during that
+  verification).
+- Found and cleaned up a real incident: `export_and_deploy_data.sh` left
+  ~5.2MB of llmtelemetry data as stray untracked files in this worktree
+  (no data lost — correct copies also landed in `llmtelemetry`). Removed
+  them, filed `llmtelemetry#361` (private repo) with evidence pointing at a
+  likely concurrent-invocation race, not a simple bug.
 
 ### Next session should
 
-1. If continuing quiz work: nothing urgent — the 3-quiz site is stable and
-   JS-only now. Population-confidence panels will start showing content
-   once >=5 rated attempts land per topic (currently accumulating).
-2. Optional housekeeping (not urgent): commit the new
-   `shinylive-vs-js-duplication.md` rule to the `llm` repo via its own PR
-   (currently only local on this machine) and add its RULES.md index
-   pointer.
-3. #179 (ranking-quiz tag-selection race) is low priority now that the page
-   redirects to JS — only worth fixing if the archived Shinylive version is
-   ever resurrected from the `archive/shinylive-quizzes-2026-09-05` tag.
-4. roborev backlog note: at session-end check, `verdicts.failed=27` vs.
-   `verdicts.addressed=10` (17 outstanding, unrelated to this session's own
-   changes — 0 crash, 0 quota). Not actioned this session; worth a backlog
-   sweep if it keeps growing.
+1. Nothing urgent on the quiz work — site is stable, JS-only, live.
+2. If `llmtelemetry#361` (private repo — stray write during concurrent
+   script invocations) recurs, that issue has the diagnostic next-step
+   (instrument `pkg_root` resolution in `export_dashboard_data.R`).
+3. `llm#1167` (generate_ctx stderr swallowing) and #181 (archived-page
+   desync bug) are both filed, low-priority, unfixed — pick up if ever
+   relevant again.
+4. roborev backlog note (unchanged from first /bye check): 17 outstanding
+   unaddressed verdict failures, 0 crash, 0 quota — not actioned, not
+   related to this session's changes. Worth a sweep if it keeps growing.
 
 ### Branch state
 
-This session's own branch (`feat/cc-20260903-092557`) carries no unique
-commits of its own beyond this CHANGELOG/CURRENT_WORK append — all real
-code changes landed via separate dispatched-agent branches, each already
-merged to `main` (PRs #172-#180). This branch was fast-forwarded to
-`origin/main` before this update.
+This session's own branch (`feat/cc-20260903-092557`) carries only
+documentation commits (CHANGELOG/CURRENT_WORK appends) — all real code
+changes landed via separate dispatched-agent branches, each merged to
+`main` (PRs #172-#180) or, for #179, pushed as a standalone archive-tag
+branch with no `main` target. This branch is fast-forwarded to
+`origin/main` as of this update.
