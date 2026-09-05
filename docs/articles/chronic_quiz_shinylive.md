@@ -98,6 +98,21 @@ quiz_css <- "
   .detail-table { white-space: nowrap; width: auto; min-width: 100%; }
   .detail-table th, .detail-table td { padding: 6px 10px; }
   #submit_btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* Population confidence-calibration comparison (#132 replication).
+     Same dark 'analytics' panel styling as micromort-quiz.qmd/quiz_analytics.qmd,
+     so the population comparison reads as one visual family across the site. */
+  .analytics-section {
+    background: #1a1a2e; border: 1px solid #2a2a4e; border-radius: 8px;
+    padding: 1rem 1.25rem; margin-bottom: 1.25rem; text-align: left;
+  }
+  .analytics-section h3 {
+    color: #e0e0e0; border-bottom: 1px solid #2a2a4e; padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem; font-size: 1.05rem;
+  }
+  svg.history-chart { overflow: visible; }
+  .chart-dot { cursor: pointer; }
+  .chart-dot:hover { r: 6; }
 "
 
 # ---- Leaderboard (reuses acute quiz Google Form + Sheet) ----
@@ -166,7 +181,7 @@ function resetLeaderboard() {
   var el = document.getElementById('percentile_text');
   if (el) el.textContent = '';
 }
-function submitScore(score, total, difficulty, nQuestions, nSkipped) {
+function submitScore(score, total, difficulty, nQuestions, nSkipped, meanConf) {
   if (scoreSubmitted) return;
   var meta = collectMetadata(difficulty, nQuestions, nSkipped);
   console.log('Quiz metadata (chronic):', meta);
@@ -183,13 +198,14 @@ function submitScore(score, total, difficulty, nQuestions, nSkipped) {
   data.append('entry.268026248', 'chronic');
   data.append('entry.232879816', difficulty || '');
   data.append('entry.2010782223', nQuestions || '');
+  if (meanConf !== null && meanConf !== undefined) data.append('entry.1681143871', meanConf);
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(function() {
     scoreSubmitted = true;
     if (btn) {
       btn.textContent = 'Submitted!';
       btn.className = 'btn btn-success btn-lg';
     }
-    getPercentile(score, total, difficulty, nQuestions);
+    getPercentile(score, total, difficulty, nQuestions, meanConf);
   }).catch(function() {
     scoreSubmitted = true;
     if (btn) {
@@ -207,7 +223,7 @@ function interpolatePercentile(scorePct, group) {
   }
   return 0;
 }
-function getPercentile(score, total, difficulty, nQuestions) {
+function getPercentile(score, total, difficulty, nQuestions, meanConf) {
   var pct = score / total * 100;
   fetch(STATS_URL).then(function(r) {
     if (!r.ok) throw new Error('stats unavailable');
@@ -225,10 +241,96 @@ function getPercentile(score, total, difficulty, nQuestions) {
     msg += '! (' + data.overall.n + ' submissions)';
     var el = document.getElementById('percentile_text');
     if (el) el.textContent = msg;
+    renderCalibrationComparison(data.calibration, meanConf, pct);
   }).catch(function(err) {
     console.log('Stats JSON fetch failed:', err, '— trying live Sheet');
     getPercentileLive(score, total);
   });
+}
+
+// ---- Population confidence-calibration comparison (#132 replication) ----
+// SIMPLIFICATION: the population 'calibration score' compared against here
+// is a coarse, ATTEMPT-level approximation of a Brier score --
+// (mean_confidence/100 - score_pct/100)^2 -- computed server-side in
+// plan_leaderboard_stats.R from the single confidence value the Form
+// accepts per submission. It is not a true per-question Brier score; the
+// real per-question version stays self-only (see compute_calibration() in
+// the R server code above and quiz_analytics.qmd's 'Calibration' section).
+
+// Generic descending-is-better percentile lookup: returns the percentile of
+// the population whose value is <= `value` (population as-good-or-better
+// than `value` when LOWER values are better, e.g. a calibration score).
+function percentileOfAscending(value, percentiles, values) {
+  if (!Array.isArray(values) || values.length === 0) return 0;
+  for (var i = values.length - 1; i >= 0; i--) { if (value >= values[i]) return percentiles[i]; }
+  return 0;
+}
+
+function renderCalibrationScatter(points, myConf, myScorePct) {
+  var W = 320, H = 320, PAD = { l: 34, r: 12, t: 12, b: 32 };
+  var innerW = W - PAD.l - PAD.r, innerH = H - PAD.t - PAD.b;
+  function xPos(v) { return PAD.l + innerW * (Math.max(0, Math.min(100, v)) / 100); }
+  function yPos(v) { return PAD.t + innerH * (1 - Math.max(0, Math.min(100, v)) / 100); }
+
+  var grid = [0, 25, 50, 75, 100].map(function(v) {
+    var gx = xPos(v), gy = yPos(v);
+    return '<line x1=\"' + PAD.l + '\" y1=\"' + gy + '\" x2=\"' + (W - PAD.r) + '\" y2=\"' + gy + '\" stroke=\"#2a2a4e\" stroke-width=\"1\"/>' +
+           '<line x1=\"' + gx + '\" y1=\"' + PAD.t + '\" x2=\"' + gx + '\" y2=\"' + (H - PAD.b) + '\" stroke=\"#2a2a4e\" stroke-width=\"1\"/>' +
+           '<text x=\"' + (PAD.l - 4) + '\" y=\"' + (gy + 3) + '\" text-anchor=\"end\" fill=\"#6677aa\" font-size=\"9\">' + v + '</text>' +
+           '<text x=\"' + gx + '\" y=\"' + (H - PAD.b + 12) + '\" text-anchor=\"middle\" fill=\"#6677aa\" font-size=\"9\">' + v + '</text>';
+  }).join('');
+
+  // Perfect-calibration reference line (confidence == score)
+  var diag = '<line x1=\"' + xPos(0) + '\" y1=\"' + yPos(0) + '\" x2=\"' + xPos(100) + '\" y2=\"' + yPos(100) +
+    '\" stroke=\"#3a4e7c\" stroke-width=\"1\" stroke-dasharray=\"4,3\"/>';
+
+  var popDots = points.map(function(p) {
+    return '<circle class=\"chart-dot\" cx=\"' + xPos(p.confidence_pct) + '\" cy=\"' + yPos(p.score_pct) +
+      '\" r=\"3.5\" fill=\"#5b9de5\" fill-opacity=\"0.55\"><title>Confidence ' + Math.round(p.confidence_pct) +
+      '%, score ' + Math.round(p.score_pct) + '%</title></circle>';
+  }).join('');
+
+  var myDot = '<circle cx=\"' + xPos(myConf) + '\" cy=\"' + yPos(myScorePct) +
+    '\" r=\"7\" fill=\"#ffbe4d\" stroke=\"#1a1a2e\" stroke-width=\"1.5\"><title>You: ' + Math.round(myConf) +
+    '% confident, ' + Math.round(myScorePct) + '% correct</title></circle>';
+
+  var axisLabels =
+    '<text x=\"' + (PAD.l + innerW / 2) + '\" y=\"' + (H - 2) + '\" text-anchor=\"middle\" fill=\"#8899bb\" font-size=\"10\">Mean confidence (%)</text>' +
+    '<text x=\"10\" y=\"' + (PAD.t + innerH / 2) + '\" text-anchor=\"middle\" fill=\"#8899bb\" font-size=\"10\" transform=\"rotate(-90 10 ' + (PAD.t + innerH / 2) + ')\">Score (%)</text>';
+
+  return '<svg class=\"history-chart\" viewBox=\"0 0 ' + W + ' ' + H + '\" style=\"width:100%;max-width:320px;display:block;margin:0 auto;\">' +
+    grid + diag + popDots + myDot + axisLabels + '</svg>';
+}
+
+function renderCalibrationComparison(dCalib, meanConf, myScorePct) {
+  var section = document.getElementById('pop_calibration_section');
+  var body = document.getElementById('pop_calibration_body');
+  if (!section || !body) return;
+  // No confidence rated this attempt -- nothing to compare, leave hidden.
+  if (meanConf === null || meanConf === undefined) return;
+
+  var popN = (dCalib && dCalib.n) || 0;
+  if (popN < 5) {
+    section.style.display = '';
+    body.innerHTML = '<p style=\"color:#8899bb;font-size:0.85rem;\">Not enough population confidence data yet ' +
+      '(need 5+ rated attempts, have ' + popN + '). Check back soon!</p>';
+    return;
+  }
+
+  var myCalibScore = Math.pow(meanConf / 100 - myScorePct / 100, 2);
+  var q = dCalib.quantiles;
+  var belowOrEqualPct = percentileOfAscending(myCalibScore, q.percentiles, q.calibration_scores);
+  var betterThanPct = Math.max(0, 100 - belowOrEqualPct);
+
+  section.style.display = '';
+  body.innerHTML =
+    '<p style=\"color:#8899bb;font-size:0.85rem;margin-bottom:0.75rem;\">Your calibration score (' +
+    myCalibScore.toFixed(3) + ') is better than ~' + Math.round(betterThanPct) + '% of the ' + popN +
+    ' players who rated their confidence. Lower is better — 0 means your mean confidence exactly matched ' +
+    'your score. This compares your <em>attempt-level</em> mean confidence against your score, a coarser ' +
+    'measure than the per-question calibration above and in your local ' +
+    '<a href=\"quiz_analytics.html\">Quiz Analytics</a>.</p>' +
+    renderCalibrationScatter(dCalib.points || [], meanConf, myScorePct);
 }
 function getPercentileLive(score, total) {
   var el = document.getElementById('percentile_text');
@@ -299,12 +401,22 @@ function updateStreakDisplay(scorePct) {
 }
 
 // ---- Score history (#59) ----
-function recordScoreHistory(quizType, scorePct, score, total) {
+// confidences/outcomes are optional (#132 replication): additive to the
+// {date, type, score, correct, total} schema shared with the other quiz
+// variants, only added when at least one question was rated so older
+// entries and entries from other quiz pages are unaffected.
+function recordScoreHistory(quizType, scorePct, score, total, confidences, outcomes) {
   var HISTORY_KEY = 'micromort_quiz_history';
-  var hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  hist.push({ date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total });
+  var hist;
+  try { hist = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { hist = []; }
+  var entry = { date: new Date().toISOString(), type: quizType, score: scorePct, correct: score, total: total };
+  if (Array.isArray(confidences) && confidences.some(function(c) { return c !== null && c !== undefined; })) {
+    entry.confidences = confidences;
+    entry.outcomes = outcomes;
+  }
+  hist.push(entry);
   if (hist.length > 200) hist = hist.slice(-200);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(hist)); } catch (e) { /* localStorage unavailable/full */ }
 }
 
 // ---- Per-question stats (#78) ----
@@ -367,6 +479,28 @@ chronic_result_phrase <- function(pct) {
     if (pct >= p$min) return(p)
   }
   phrases[[length(phrases)]]
+}
+
+# ---- Self-only calibration (#132 replication) ----
+# Predicted score (confidence-weighted expectation) and Brier score over the
+# questions the participant rated a confidence for. R-translation of
+# computeCalibration() in micromort-quiz.qmd's <script>.
+compute_calibration <- function(state) {
+  n <- state$n_questions
+  rated <- 0L
+  predicted <- 0
+  brier_sum <- 0
+  for (i in seq_len(n)) {
+    conf <- state$confidences[i]
+    if (is.na(conf)) next
+    frac <- conf / 100
+    outcome <- if (!is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]) 1 else 0
+    predicted <- predicted + frac
+    brier_sum <- brier_sum + (frac - outcome)^2
+    rated <- rated + 1L
+  }
+  list(rated = rated, predicted = predicted,
+       brier = if (rated > 0) brier_sum / rated else NA_real_)
 }
 
 # ---- Encouragement lines ----
@@ -569,6 +703,27 @@ question_ui <- function(state) {
     )
   }
 
+  # Confidence capture (#132 replication: self-only, no server persistence
+  # per question -- only the attempt-level mean is later sent to the Form).
+  # R-translation of the confidenceHtml block in micromort-quiz.qmd's
+  # renderQuestion(): actionButton + onclick="selectInGroup(...)" mirrors
+  # the diff_easy/nq_5 idiom already used elsewhere in this file.
+  confidence_ui <- NULL
+  if (revealed && !is.na(answer)) {
+    conf_val <- state$confidences[q]
+    conf_choices <- c(0, 25, 50, 75, 100)
+    confidence_ui <- div(class = "text-center mt-2",
+      tags$small(class = "text-muted d-block mb-1", "How confident were you in that pick?"),
+      div(class = "option-btn-group justify-content-center", id = "grp_conf",
+        lapply(conf_choices, function(v) {
+          cls <- if (!is.na(conf_val) && conf_val == v) "option-btn selected" else "option-btn"
+          actionButton(paste0("conf_", v), paste0(v, "%"), class = cls,
+            onclick = "selectInGroup('grp_conf', this)")
+        })
+      )
+    )
+  }
+
   # Global score
   all_qs <- seq_len(n)
   answered_so_far <- sum(!is.na(state$answers[all_qs]) & state$revealed[all_qs])
@@ -621,7 +776,8 @@ question_ui <- function(state) {
         })
     ),
     result_text,
-    explanation_panel
+    explanation_panel,
+    confidence_ui
   )
 }
 
@@ -641,6 +797,42 @@ results_summary_ui <- function(state) {
 
   result_info <- chronic_result_phrase(pct)
 
+  # ---- Confidence calibration (#132 replication) ----
+  calib <- compute_calibration(state)
+  calib_ui <- if (calib$rated > 0) {
+    tagList(
+      div(class = "row mb-3",
+        div(class = "col-12",
+          div(class = "card text-white bg-info mb-2",
+            div(class = "card-body text-center",
+              tags$small("Predicted (your confidence)"),
+              h2(sprintf("%.1f / %d", calib$predicted, n), class = "mb-0")))
+        )
+      ),
+      div(class = "text-center mb-3",
+        tags$small(class = "text-muted",
+          sprintf(
+            paste0("Your Brier score: %.3f \u2014 lower is better calibrated ",
+                   "(0 = perfect, 0.25 = \"always say 50%%\" baseline)%s"),
+            calib$brier,
+            if (calib$rated < n) {
+              sprintf(" \u00b7 based on %d/%d rated question%s",
+                      calib$rated, n, if (calib$rated == 1) "" else "s")
+            } else ""
+          )
+        )
+      )
+    )
+  }
+
+  # Mean confidence (0-100) across questions rated this attempt -- the most
+  # granular value the Google Form's single confidence field accepts.
+  # NULL/NA when nothing was rated (JS receives literal `null`, matching
+  # computeMeanConfidence()'s contract in micromort-quiz.qmd).
+  rated_conf <- state$confidences[seq_len(n)]
+  rated_conf <- rated_conf[!is.na(rated_conf)]
+  mean_conf_js <- if (length(rated_conf) > 0) as.character(round(mean(rated_conf))) else "null"
+
   tagList(
     h2("Results", class = "text-center mb-4"),
     div(class = "row mb-4",
@@ -653,14 +845,19 @@ results_summary_ui <- function(state) {
           div(class = "card-body text-center",
             tags$small("Random Guessing"), h2(sprintf("~%.1f / %d", baseline, n), class = "mb-0"))))
     ),
+    calib_ui,
+    div(class = "analytics-section", id = "pop_calibration_section", style = "display:none;",
+      h3("Calibration vs. other players"),
+      div(id = "pop_calibration_body")
+    ),
     div(class = "text-center mb-4",
       h3(result_info$phrase),
       tags$em(result_info$fact), br(),
       tags$a(href = result_info$link, target = "_blank", "Learn more \u2192")),
     div(class = "d-flex justify-content-center gap-3",
       tags$button(id = "submit_btn", class = "btn btn-warning btn-lg",
-        onclick = sprintf("submitScore(%d, %d, '%s', %d, %d)", score, n,
-                          state$sel_difficulty, state$sel_nq, n_skipped), "Submit Score"),
+        onclick = sprintf("submitScore(%d, %d, '%s', %d, %d, %s)", score, n,
+                          state$sel_difficulty, state$sel_nq, n_skipped, mean_conf_js), "Submit Score"),
       tags$button(id = "share_btn", class = "btn btn-success btn-lg",
         onclick = sprintf(paste0(
           "var pEl=document.getElementById('percentile_text');",
@@ -715,14 +912,23 @@ results_summary_ui <- function(state) {
                              round(pct, 1)))),
     if (!isTRUE(state$attempt_logged)) {
       state$attempt_logged <- TRUE
+      # Per-question confidences/outcomes JS array literals (#132
+      # replication) -- null for unrated questions, matching S.confidences
+      # in micromort-quiz.qmd's recordCompletedQuiz().
+      conf_js <- paste(vapply(seq_len(n), function(i) {
+        if (is.na(state$confidences[i])) "null" else as.character(state$confidences[i])
+      }, character(1)), collapse = ",")
+      outcomes_js <- paste(vapply(seq_len(n), function(i) {
+        if (is.na(state$answers[i])) "null" else if (correct[i]) "1" else "0"
+      }, character(1)), collapse = ",")
       tags$script(HTML(sprintf(
         paste0("(function(){",
-               "recordScoreHistory('chronic', %s, %d, %d);",
+               "recordScoreHistory('chronic', %s, %d, %d, [%s], [%s]);",
                "var keys=[%s];",
                "var corr=[%s];",
                "recordQuestionStats(keys, corr);",
                "})();"),
-        round(pct, 1), score, n,
+        round(pct, 1), score, n, conf_js, outcomes_js,
         paste(sprintf("simpleHash('%s|%s')",
                       gsub("'", "\\\\'", pairs$factor_a[seq_len(n)]),
                       gsub("'", "\\\\'", pairs$factor_b[seq_len(n)])),
@@ -844,6 +1050,7 @@ server <- function(input, output, session) {
   state <- reactiveValues(
     phase = "instructions", n_questions = 5L, current_q = 1L,
     pairs = NULL, answers = NULL, display_order = NULL, revealed = NULL,
+    confidences = NULL,
     sel_difficulty = "mixed", sel_nq = 5L,
     seen_pairs = character(), attempt_logged = FALSE)
 
@@ -889,6 +1096,7 @@ server <- function(input, output, session) {
     state$seen_pairs <- c(state$seen_pairs, new_keys)
     state$pairs <- selected
     state$answers <- rep(NA_character_, n)
+    state$confidences <- rep(NA_real_, n)
     state$display_order <- lapply(seq_len(n), function(i) sample(c("a", "b")))
     state$revealed <- rep(FALSE, n)
     state$current_q <- 1L
@@ -908,6 +1116,14 @@ server <- function(input, output, session) {
     state$answers[q] <- state$display_order[[q]][2]
     state$revealed[q] <- TRUE
   })
+  # Confidence button handlers (#132 replication) -- same idiom as the
+  # diff_easy/diff_medium/... handlers above: static ids re-registered on
+  # every re-render, state$current_q identifies the question at click time.
+  observeEvent(input$conf_0, { state$confidences[state$current_q] <- 0 })
+  observeEvent(input$conf_25, { state$confidences[state$current_q] <- 25 })
+  observeEvent(input$conf_50, { state$confidences[state$current_q] <- 50 })
+  observeEvent(input$conf_75, { state$confidences[state$current_q] <- 75 })
+  observeEvent(input$conf_100, { state$confidences[state$current_q] <- 100 })
   observeEvent(input$next_q, {
     if (state$current_q < state$n_questions) state$current_q <- state$current_q + 1L
     else state$phase <- "results_summary"
