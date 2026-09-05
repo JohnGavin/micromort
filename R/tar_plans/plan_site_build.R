@@ -8,13 +8,16 @@
 #' Targets (in dependency order):
 #'   - site_source_hash: Hash of all source files that affect the site
 #'   - site_pkgdown: Build pkgdown site (docs/)
-#'   - site_quiz_shinylive: Render micromort quiz via quarto
-#'   - site_chronic_shinylive: Render microlife quiz via quarto
-#'   - site_ranking_shinylive: Render risk-ranking quiz via quarto
 #'   - site_portfolio_shinylive: Render risk portfolio builder via quarto
 #'   - site_details: Render Details page via quarto (pkgdown mangles its tabset)
 #'   - site_deploy_shinylive: Copy shinylive outputs into docs/articles/
 #'   - site_verify: Check all navbar articles exist in docs/
+#'
+#' NOTE (2026-09-05): the three quiz Shinylive vignettes (quiz_shinylive,
+#' chronic_quiz_shinylive, ranking_quiz_shinylive) were retired — see
+#' vignettes/details.qmd's "Retired: Shinylive quizzes" tab and the
+#' archive/shinylive-quizzes-2026-09-05 git tag. site_portfolio_shinylive
+#' (the risk portfolio builder) is unaffected and still renders.
 
 plan_site_build <- list(
 
@@ -49,33 +52,16 @@ plan_site_build <- list(
   ),
 
   # ── P1: Export quiz CSV when quiz_pairs() changes ──────────────────────
-  # Writes to inst/extdata/ AND updates the embedded CSV in the .qmd
+  # Writes the canonical CSV to inst/extdata/ (consumed by the instant JS
+  # quiz via vig_quiz_json_script). Historically this also rewrote an
+  # embedded CSV inside vignettes/quiz_shinylive.qmd — that vignette was
+  # retired 2026-09-05 (see plan_site_build.R's top-of-file note), so that
+  # step was removed rather than left as a permanent no-op file-exists check.
   targets::tar_target(
     site_quiz_csv_export,
     {
-      # 1. Write to inst/extdata/
       csv_path <- "inst/extdata/vignettes/quiz_pairs.csv"
       utils::write.csv(vig_quiz_pairs, csv_path, row.names = FALSE)
-
-      # 2. Update embedded CSV in shinylive qmd (## file: directive)
-      qmd_path <- "vignettes/quiz_shinylive.qmd"
-      if (fs::file_exists(qmd_path)) {
-        lines <- readLines(qmd_path, warn = FALSE)
-        marker <- grep("^## file: quiz_pairs\\.csv", lines)[1]
-        if (!is.na(marker)) {
-          csv_start <- marker + 1L
-          if (grepl("^## type:", lines[csv_start])) csv_start <- csv_start + 1L
-          fences <- grep("^```$", lines)
-          csv_end <- fences[fences > marker][1] - 1L
-          csv_text <- utils::capture.output(
-            utils::write.csv(vig_quiz_pairs, stdout(), row.names = FALSE)
-          )
-          new_lines <- c(lines[1:(csv_start - 1)], csv_text,
-                         lines[(csv_end + 1):length(lines)])
-          writeLines(new_lines, qmd_path)
-          cli::cli_alert_success("Embedded CSV updated in {qmd_path}")
-        }
-      }
 
       cli::cli_alert_success("Quiz CSV exported: {nrow(vig_quiz_pairs)} pairs")
       list(path = csv_path, n_rows = nrow(vig_quiz_pairs), timestamp = Sys.time())
@@ -200,96 +186,6 @@ plan_site_build <- list(
         n_articles = length(fs::dir_ls("docs/articles", glob = "*.html")),
         timestamp = Sys.time()
       )
-    }
-  ),
-
-  # Render micromort quiz (Shinylive article)
-  targets::tar_target(
-    site_quiz_shinylive,
-    {
-      # Depend on site_pkgdown so docs/ exists first
-      force(site_pkgdown)
-
-      qmd_path <- "vignettes/quiz_shinylive.qmd"
-      if (!fs::file_exists(qmd_path)) {
-        cli::cli_abort("Missing {qmd_path}")
-      }
-
-      cli::cli_alert_info("Rendering {qmd_path} with quarto...")
-      result <- system2(
-        "quarto", c("render", qmd_path),
-        stdout = TRUE, stderr = TRUE
-      )
-      status <- attr(result, "status")
-      if (!is.null(status) && status != 0) {
-        cli::cli_abort(c(
-          "x" = "quarto render failed for {qmd_path}",
-          "i" = paste(utils::tail(result, 20), collapse = "\n")
-        ))
-      }
-
-      cli::cli_alert_success("Quiz shinylive rendered")
-      list(qmd = qmd_path, output = result, timestamp = Sys.time())
-    }
-  ),
-
-  # Render microlife quiz (Shinylive article)
-  targets::tar_target(
-    site_chronic_shinylive,
-    {
-      # Depend on site_pkgdown so docs/ exists first
-      force(site_pkgdown)
-
-      qmd_path <- "vignettes/chronic_quiz_shinylive.qmd"
-      if (!fs::file_exists(qmd_path)) {
-        cli::cli_abort("Missing {qmd_path}")
-      }
-
-      cli::cli_alert_info("Rendering {qmd_path} with quarto...")
-      result <- system2(
-        "quarto", c("render", qmd_path),
-        stdout = TRUE, stderr = TRUE
-      )
-      status <- attr(result, "status")
-      if (!is.null(status) && status != 0) {
-        cli::cli_abort(c(
-          "x" = "quarto render failed for {qmd_path}",
-          "i" = paste(utils::tail(result, 20), collapse = "\n")
-        ))
-      }
-
-      cli::cli_alert_success("Chronic quiz shinylive rendered")
-      list(qmd = qmd_path, output = result, timestamp = Sys.time())
-    }
-  ),
-
-  # Render ranking quiz (Shinylive article)
-  targets::tar_target(
-    site_ranking_shinylive,
-    {
-      force(site_pkgdown)
-
-      qmd_path <- "vignettes/ranking_quiz_shinylive.qmd"
-      if (!fs::file_exists(qmd_path)) {
-        cli::cli_alert_info("Ranking quiz qmd not found — skipping")
-        return(list(qmd = qmd_path, skipped = TRUE, timestamp = Sys.time()))
-      }
-
-      cli::cli_alert_info("Rendering {qmd_path} with quarto...")
-      result <- system2(
-        "quarto", c("render", qmd_path),
-        stdout = TRUE, stderr = TRUE
-      )
-      status <- attr(result, "status")
-      if (!is.null(status) && status != 0) {
-        cli::cli_abort(c(
-          "x" = "quarto render failed for {qmd_path}",
-          "i" = paste(utils::tail(result, 20), collapse = "\n")
-        ))
-      }
-
-      cli::cli_alert_success("Ranking quiz shinylive rendered")
-      list(qmd = qmd_path, output = result, timestamp = Sys.time())
     }
   ),
 
@@ -438,13 +334,15 @@ plan_site_build <- list(
   ),
 
   # Copy shinylive outputs into docs/articles/
+  #
+  # NOTE (2026-09-05): only portfolio_shinylive remains here — the three
+  # quiz Shinylive vignettes (quiz_shinylive, chronic_quiz_shinylive,
+  # ranking_quiz_shinylive) were retired; see plan_site_build.R's top-of-file
+  # note and vignettes/details.qmd's "Retired: Shinylive quizzes" tab.
   targets::tar_target(
     site_deploy_shinylive,
     {
-      # Depend on all shinylive renders
-      force(site_quiz_shinylive)
-      force(site_chronic_shinylive)
-      force(site_ranking_shinylive)
+      # Depend on the remaining shinylive render
       force(site_portfolio_shinylive)
 
       articles_dir <- "docs/articles"
@@ -455,8 +353,7 @@ plan_site_build <- list(
       copied <- character()
 
       # Copy each shinylive article's HTML and _files/ directory
-      for (article in c("quiz_shinylive", "chronic_quiz_shinylive",
-                         "ranking_quiz_shinylive", "portfolio_shinylive")) {
+      for (article in c("portfolio_shinylive")) {
         html_src <- file.path("vignettes", paste0(article, ".html"))
         files_src <- file.path("vignettes", paste0(article, "_files"))
 

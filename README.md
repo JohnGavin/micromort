@@ -153,13 +153,13 @@ common_risks(profile = list(country = "NG")) |>
 
 ## Quizzes
 
-| Quiz | Instant (static JS) | Shinylive (30-60s load) | Local |
-|------|:-------------------:|:----------------------:|:-----:|
-| Which Is Riskier? | [Play](https://johngavin.github.io/micromort/articles/micromort-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/quiz_shinylive.html) | `launch_quiz()` |
-| Microlife Quiz | [Play](https://johngavin.github.io/micromort/articles/microlife-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html) | `launch_chronic_quiz()` |
-| Rank the Risks | [Play](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html) | [Play](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html) | `ranking_quiz_questions()` |
+| Quiz | Play | Local |
+|------|:----:|:-----:|
+| Which Is Riskier? | [Play](https://johngavin.github.io/micromort/articles/micromort-quiz.html) | `launch_quiz()` |
+| Microlife Quiz | [Play](https://johngavin.github.io/micromort/articles/microlife-quiz.html) | `launch_chronic_quiz()` |
+| Rank the Risks | [Play](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html) | `ranking_quiz_questions()` |
 
-All quizzes have score submission + percentile ranking via Google Forms. Static JS versions load instantly; Shinylive versions use WebR (30-60s load).
+All quizzes have score submission + percentile ranking via Google Forms and load instantly (static JS). Each quiz also used to have a slower Shinylive (WebR) version; those were retired 2026-09-05 — see [Details](https://johngavin.github.io/micromort/articles/details.html) for the archive link.
 
 ```r
 # Generate geography-specific quiz pairs

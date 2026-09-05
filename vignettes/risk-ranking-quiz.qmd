@@ -114,7 +114,7 @@ format:
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<p class="quiz-meta-link">Also on <a href="ranking_quiz_shinylive.html">Shinylive</a> (richer UI) &middot; <a href="details.html">page details &amp; source</a></p>
+<p class="quiz-meta-link"><a href="details.html">Page details &amp; source</a></p>
 
 <div id="quiz-app">Loading quiz data...</div>
 ```
@@ -450,6 +450,53 @@ function recordScoreHistory(quizType, scorePct, score, total, confidences, outco
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(hist)); } catch (e) { /* localStorage unavailable/full */ }
 }
 
+// ---- Streak tracking (ported from the retired Shinylive quizzes, 2026-09-05) ----
+// Shares its localStorage keys with the other two quiz pages, so a streak
+// is per-site (any quiz played counts), matching the prior Shinylive behavior.
+function localDateKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function updateStreakDisplay(scorePct) {
+  const STREAK_KEY = 'micromort_quiz_streak';
+  const LAST_PLAY_KEY = 'micromort_quiz_last_play';
+  const BEST_KEY = 'micromort_quiz_best_score';
+  const now = new Date();
+  const today = localDateKey(now);
+  const yestD = new Date(); yestD.setDate(yestD.getDate() - 1);
+  const yest = localDateKey(yestD);
+  const lastPlay = localStorage.getItem(LAST_PLAY_KEY);
+  let streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  if (lastPlay === today) {
+    if (streak === 0) streak = 1;
+  } else if (lastPlay === yest) {
+    streak = streak + 1;
+  } else {
+    streak = 1;
+  }
+  localStorage.setItem(STREAK_KEY, streak);
+  localStorage.setItem(LAST_PLAY_KEY, today);
+  let best = parseFloat(localStorage.getItem(BEST_KEY) || '0');
+  if (scorePct > best) {
+    best = scorePct;
+    localStorage.setItem(BEST_KEY, best);
+  }
+  const el = document.getElementById('streak_display');
+  if (!el) return;
+  const streakHtml = streak > 1 ? '<span style="font-size:1.2rem;">&#x1F525; Streak: ' + streak + ' days</span>' : '';
+  let msg = '';
+  if (scorePct <= 33) msg = 'Keep learning! Try again to improve.';
+  else if (scorePct <= 66) msg = "Good effort! You're getting better.";
+  else if (scorePct < 100) msg = 'Great job! Almost perfect.';
+  else msg = 'Perfect score! &#x1F3AF;';
+  const bestHtml = best > 0 ? ' &middot; Best: ' + Math.round(best) + '%' : '';
+  el.innerHTML = '<div style="text-align:center;margin:8px 0;">' +
+    (streakHtml ? '<div>' + streakHtml + '</div>' : '') +
+    '<div style="margin-top:4px;">' + msg + bestHtml + '</div></div>';
+}
+
 function recordCompletedQuiz() {
   const n = S.nQuestions;
   let totalPairs = 0, totalConc = 0;
@@ -521,7 +568,7 @@ function render() {
   switch (S.phase) {
     case 'instructions': app.innerHTML = renderInstructions(); renderQR('qr-instructions', 3); break;
     case 'question': app.innerHTML = renderQuestion(); initSortable(); break;
-    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); break;
+    case 'results_summary': app.innerHTML = renderResults(); renderQR('qr-results', 3); updateStreakDisplay(S.lastScorePct); break;
     case 'results_detail': app.innerHTML = renderDetail(); break;
   }
 }
@@ -789,6 +836,7 @@ function renderResults() {
     if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; }
   });
   const overallPct = totalPairs > 0 ? Math.round(totalConc / totalPairs * 100) : 0;
+  S.lastScorePct = overallPct;
   const info = getPhrase(overallPct);
   const calib = computeCalibration();
   const calibHtml = calib.rated > 0 ? `
@@ -812,6 +860,7 @@ function renderResults() {
         <small>Random Ordering</small><h2 class="mb-0">~50%</h2>
       </div></div></div>
     </div>
+    <div id="streak_display"></div>
     ${calibHtml}
     <div class="analytics-section" id="pop_calibration_section" style="display:none;">
       <h3>Calibration vs. other players</h3>
