@@ -616,10 +616,12 @@ function renderQuestion() {
   const items = S.questions[q];
   const revealed = S.revealed[q];
   const userOrder = S.userOrders[q];
+  const submitted = S.scores[q] !== null;
+  const awaitingConfidence = submitted && !revealed;
 
   // Build rank items
   let rankHtml = '';
-  if (!revealed) {
+  if (!submitted) {
     rankHtml += '<div class="rank-label mb-1"><strong><span class="rank-arrow">&uarr;</span> Biggest effect</strong></div>';
     rankHtml += '<div id="sortable-list">';
     userOrder.forEach(idx => {
@@ -636,6 +638,24 @@ function renderQuestion() {
       </div>`;
     });
     rankHtml += '</div>';
+    rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
+  } else if (awaitingConfidence) {
+    // Submitted but not yet revealed: show the user's order locked (no drag
+    // handle, no id="sortable-list" so Sortable.js does not re-attach), and
+    // withhold correctness/score until confidence is captured.
+    rankHtml += '<div class="rank-label mb-1"><strong><span class="rank-arrow">&uarr;</span> Biggest effect</strong></div>';
+    userOrder.forEach(idx => {
+      const item = items[idx];
+      const srcBadge = item.item_source === 'acute'
+        ? '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>'
+        : (item.microlives_per_day != null && item.microlives_per_day > 0
+          ? '<span class="badge" style="background:#198754;color:#fff;">gain</span>'
+          : '<span class="badge" style="background:#dc3545;color:#fff;">lose</span>');
+      rankHtml += `<div class="rank-item" style="opacity:0.7;cursor:default;" data-idx="${idx}">
+        <span class="item-name">${formatName(escHtml(item.item_name))}</span>
+        <div class="rank-badges">${srcBadge}<span class="badge bg-secondary">${escHtml(item.category)}</span></div>
+      </div>`;
+    });
     rankHtml += '<div class="rank-label mt-1"><strong><span class="rank-arrow">&darr;</span> Smallest effect</strong></div>';
   } else {
     // Show correct order with green/red
@@ -675,14 +695,17 @@ function renderQuestion() {
   // single attempt-level mean sent by submitScore()). Shown once the
   // ranking is submitted, mirroring the acute quiz's per-question prompt.
   let confidenceHtml = '';
-  if (revealed) {
-    const conf = S.confidences[q];
+  if (awaitingConfidence) {
     const confOptions = [0, 25, 50, 75, 100];
     confidenceHtml = `<div class="text-center mt-2">
       <small class="text-muted d-block mb-1">How confident were you in that ranking?</small>
       <div class="option-btn-group justify-content-center" id="grp_conf">
-        ${confOptions.map(pct => `<button class="option-btn${conf === pct ? ' selected' : ''}" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
+        ${confOptions.map(pct => `<button class="option-btn" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
       </div>
+    </div>`;
+  } else if (revealed && S.confidences[q] !== null && S.confidences[q] !== undefined) {
+    confidenceHtml = `<div class="text-center mt-2">
+      <small class="text-muted">Your confidence: <strong>${S.confidences[q]}%</strong></small>
     </div>`;
   }
 
@@ -694,9 +717,10 @@ function renderQuestion() {
     return `<span class="badge me-2" style="${style}">${escHtml(d)}</span>`;
   })();
 
-  // Tally
+  // Tally (revealed-only, so the "so far" hint never leaks the current
+  // question's correctness before confidence has been captured)
   let totalPairs = 0, totalConc = 0;
-  S.scores.forEach(sc => { if (sc) { totalPairs += sc.maxScore; totalConc += sc.score; } });
+  S.scores.forEach((sc, i) => { if (sc && S.revealed[i]) { totalPairs += sc.maxScore; totalConc += sc.score; } });
   const answeredCount = S.revealed.filter(Boolean).length;
   const nextBtnClass = revealed ? 'btn btn-success' : 'btn btn-primary';
 
@@ -705,7 +729,7 @@ function renderQuestion() {
       <button class="btn btn-secondary" onclick="prevQ()">&larr; Back</button>
       <span class="text-muted">${diffBadge}${q+1} of ${n} ${answeredCount > 0 ? '<small>' + Math.round(totalConc / totalPairs * 100) + '% so far</small>' : ''}</span>
       <div style="display:flex;gap:8px;">
-        ${!revealed ? '<button class="btn" style="background:#b85c0a;color:#fff" onclick="submitOrder()">Submit</button>' : ''}
+        ${!submitted ? '<button class="btn" style="background:#b85c0a;color:#fff" onclick="submitOrder()">Submit</button>' : ''}
         <button class="${nextBtnClass}" onclick="nextQ()">${q === n-1 ? 'Finish' : 'Next &rarr;'}</button>
       </div>
     </div>
@@ -714,7 +738,8 @@ function renderQuestion() {
 
 function chooseConfidence(pct, el) {
   S.confidences[S.currentQ] = pct;
-  selectInGroup('grp_conf', el);
+  S.revealed[S.currentQ] = true;
+  render();
 }
 
 function initSortable() {
@@ -744,7 +769,6 @@ function submitOrder() {
   const userNames = userOrder.map(i => items[i].item_name);
   const correctNames = correctOrder.map(i => items[i].item_name);
   S.scores[q] = kendallTau(userNames, correctNames);
-  S.revealed[q] = true;
   render();
 }
 
