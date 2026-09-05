@@ -718,6 +718,7 @@ function startQuiz() {
 function renderQuestion() {
   const q = S.currentQ, n = S.nQuestions, pair = S.pairs[q];
   const ord = S.displayOrder[q], revealed = S.revealed[q], answer = S.answers[q];
+  const awaitingConfidence = answer !== null && !revealed;
   const L = ord[0], R = ord[1];
 
   function side(s) {
@@ -731,7 +732,10 @@ function renderQuestion() {
   const left = side(L), right = side(R);
 
   function btnClass(s, isMore) {
-    if (!revealed) return 'quiz-btn';
+    if (!revealed) {
+      if (answer === s) return 'quiz-btn quiz-btn-neutral';
+      return 'quiz-btn';
+    }
     if (isMore) return 'quiz-btn quiz-btn-correct';
     if (answer === s) return 'quiz-btn quiz-btn-wrong';
     return 'quiz-btn quiz-btn-neutral';
@@ -745,8 +749,9 @@ function renderQuestion() {
       : '<span class="badge bg-danger">lose</span>';
     const mlText = revealed ? `<strong style="font-size:1.4rem;color:#333;">${fmtML(d.ml)} ml/day</strong>` : '';
     const helpLink = d.help ? `<a class="help-link" href="${escHtml(safeHref(d.help))}" target="_blank" onclick="event.stopPropagation()">Learn more &rarr;</a>` : '';
-    const clickAttr = revealed ? '' : `onclick="choose('${s}')"`;
-    return `<div class="${cls}" ${clickAttr}>
+    const clickAttr = (answer === null) ? `onclick="choose('${s}')"` : '';
+    const dimStyle = (awaitingConfidence && answer !== s) ? ' style="opacity:0.5"' : '';
+    return `<div class="${cls}" ${clickAttr}${dimStyle}>
       <span class="activity-name">${formatName(escHtml(d.factor))}</span>
       <div><span class="badge bg-secondary me-1">${escHtml(d.category)}</span>${dirBadge}</div>
       ${mlText}${helpLink}
@@ -778,17 +783,22 @@ function renderQuestion() {
     </div>`;
   }
 
-  // Confidence capture (replicated from micromort-quiz.qmd's #132 Phase 1:
-  // self-only, no server persistence)
+  // Confidence capture (replicated from micromort-quiz.qmd's #132 Phase 1,
+  // timing fixed per #172: confidence is captured BEFORE the result is
+  // revealed, so it measures a genuine prediction rather than a
+  // trivially-informed guess. Self-only, no server persistence.)
   let confidenceHtml = '';
-  if (revealed && answer !== null) {
-    const conf = S.confidences[q];
+  if (awaitingConfidence) {
     const confOptions = [0, 25, 50, 75, 100];
     confidenceHtml = `<div class="text-center mt-2">
       <small class="text-muted d-block mb-1">How confident were you in that pick?</small>
       <div class="option-btn-group justify-content-center" id="grp_conf">
-        ${confOptions.map(pct => `<button class="option-btn${conf === pct ? ' selected' : ''}" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
+        ${confOptions.map(pct => `<button class="option-btn" onclick="chooseConfidence(${pct}, this)">${pct}%</button>`).join('')}
       </div>
+    </div>`;
+  } else if (revealed && S.confidences[q] !== null && S.confidences[q] !== undefined) {
+    confidenceHtml = `<div class="text-center mt-2">
+      <small class="text-muted">Your confidence: <strong>${S.confidences[q]}%</strong></small>
     </div>`;
   }
 
@@ -822,12 +832,12 @@ function renderQuestion() {
 
 function choose(side) {
   S.answers[S.currentQ] = side;
-  S.revealed[S.currentQ] = true;
   render();
 }
 function chooseConfidence(pct, el) {
   S.confidences[S.currentQ] = pct;
-  selectInGroup('grp_conf', el);
+  S.revealed[S.currentQ] = true;
+  render();
 }
 function nextQ() {
   if (S.currentQ < S.nQuestions - 1) { S.currentQ++; render(); }
