@@ -1,5 +1,69 @@
 # Changelog
 
+## 2026-09-05 — Session: quiz correctness fixes, confidence-before-reveal, Shinylive retirement
+
+### Completed
+- Fixed #142 (banner/footer/Source-line clutter on quiz question pages) and #132
+  (per-question confidence capture) correctly across all 6 quiz vignettes, after
+  prior sessions had claimed these fixed while leaving the underlying issues
+  unaddressed — reopened, re-verified live, closed with an honest caveat on
+  Shinylive-CDN verification limits in this sandbox.
+- Added Next-button green highlight after submit across all 6 quizzes, so the
+  user's next action is visually distinguished from the answer/result boxes.
+- Fixed a correctness bug: confidence was being captured simultaneously with
+  the answer reveal instead of before it, undermining the calibration
+  measurement. Restructured the state machine (`answered`/`submitted` vs.
+  `revealed`, derived `awaiting_confidence`) across all 6 quizzes (PRs
+  #172-#177), fixing two tally leaks along the way (a "score so far" running
+  total that counted a just-submitted-but-not-yet-confidence-rated question).
+- Shrunk the oversized page-title H1 on all 6 quiz pages (PR #178) — the fix
+  needed two different CSS selectors depending on page family (pkgdown vs.
+  standalone Shinylive), found by inspecting the actual rendered HTML rather
+  than assuming the source selector matched.
+- Investigated and closed out a user-reported "have we lost historical
+  confidence data?" concern: confirmed via the live `quiz_stats.json` that no
+  data was lost — the population-confidence panel legitimately had 0 rated
+  attempts because full confidence-capture rollout completed only ~1 day
+  earlier per-page, and the exclusion of pre-rollout rows is intentional,
+  documented behavior in `compute_calibration_stats()`.
+- Filed #179 (pre-existing race condition in `ranking_quiz_shinylive.qmd`'s
+  tag-selection JS, unrelated to this session's fixes, found in passing).
+- Ran an architecture review of the 6-quiz duplication (3 topics x 2 tech
+  stacks) and, per its finding that the Shinylive versions' only remaining
+  exclusive capability (a small streak-tracking feature) had already been
+  effectively subsumed by JS gaining feature parity, retired the 3 Shinylive
+  quizzes (PR #180 — see the entry immediately below for details). Archived,
+  not deleted: full old content recoverable at git tag
+  `archive/shinylive-quizzes-2026-09-05`.
+- Documented the general decision framework for future Shinylive-vs-JS
+  duplication choices as a new global rule
+  (`shinylive-vs-js-duplication.md`, in the `llm` project's rule set) so
+  future projects don't have to re-derive this from scratch.
+
+### Failed Approaches
+- N/A this session beyond what's captured in prior dated entries — most
+  "failures" this session were upstream sessions' incomplete fixes being
+  reopened and redone correctly (see #142/#132 above), not new dead ends.
+
+### Accuracy / Metrics
+- `devtools::test()`: `FAIL 0 | PASS 1049` after the Shinylive retirement
+  (PR #180); `FAIL 0 | PASS 1087` at points earlier in the session before
+  the Shinylive vignette files were removed (test count drop reflects fewer
+  vignettes to check, not new failures).
+- `docs/` site size: 288MB -> 107MB (~181MB recovered) after retiring the 3
+  Shinylive WASM bundles.
+
+### Known Limitations
+- The new `shinylive-vs-js-duplication.md` global rule exists locally in the
+  `llm` project's worktree but has not yet been committed/pushed there via
+  its own PR — the RULES.md index in that repo also still needs a one-line
+  pointer added (blocked by that repo's own file-protection hook from a
+  direct edit in this session).
+- #179 (tag-selection race condition in the now-archived
+  `ranking_quiz_shinylive.qmd`) is filed but not fixed — low priority now
+  that the page redirects to the JS version, kept for the archive tag's
+  sake.
+
 ## 2026-09-05 — Retire the 3 Shinylive quizzes, JS-only going forward
 
 ### Completed
