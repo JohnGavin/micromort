@@ -1208,6 +1208,40 @@ ui <- page_fluid(
         clicked.classList.add('selected');
       }
       var selectedTags = {};
+      // #179: on first paint the tag buttons are already clickable (they are
+      // wired via inline onclick, not a post-init listener) but Shiny's
+      // client JS can still be mid-boot, so Shiny.setInputValue may not be
+      // attached yet. Route every tag sync through this guarded helper
+      // instead of calling Shiny.setInputValue directly, so a click that
+      // lands before Shiny is ready updates the visible selection (that part
+      // never depended on Shiny) without throwing, and the value is pushed
+      // to the server as soon as Shiny becomes ready.
+      var tagSyncShinyReady = false;
+      function syncSelectedTags() {
+        if (typeof Shiny !== 'undefined' && typeof Shiny.setInputValue === 'function') {
+          Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+        }
+        // else: Shiny not ready yet. selectedTags already holds the correct
+        // state; flushPendingTagSync() re-runs this once Shiny is ready.
+      }
+      function flushPendingTagSync() {
+        if (tagSyncShinyReady) return;
+        tagSyncShinyReady = true;
+        syncSelectedTags();
+      }
+      // shiny:sessioninitialized is the idiomatic Shiny ready event (this
+      // file already listens for shiny:value below). Poll as a fallback in
+      // case Shiny.setInputValue attaches slightly after that event fires,
+      // which has been observed in Shinylive's WASM boot sequence.
+      $(document).on('shiny:sessioninitialized', flushPendingTagSync);
+      (function pollForShinyReady() {
+        if (tagSyncShinyReady) return;
+        if (typeof Shiny !== 'undefined' && typeof Shiny.setInputValue === 'function') {
+          flushPendingTagSync();
+          return;
+        }
+        setTimeout(pollForShinyReady, 50);
+      })();
       function toggleTag(el, tag) {
         if (el.classList.contains('selected')) {
           el.classList.remove('selected');
@@ -1216,7 +1250,7 @@ ui <- page_fluid(
           el.classList.add('selected');
           selectedTags[tag] = true;
         }
-        Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+        syncSelectedTags();
       }
       function selectAllTags(selectAll) {
         var tagBtns = document.querySelectorAll('.tag-btn');
@@ -1229,7 +1263,7 @@ ui <- page_fluid(
             tagBtns[i].classList.remove('selected');
           }
         }
-        Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
+        syncSelectedTags();
       }
       // Initialize all tags as selected on load
       function initSelectedTags() {
@@ -1237,9 +1271,7 @@ ui <- page_fluid(
         for (var i = 0; i < tagBtns.length; i++) {
           selectedTags[tagBtns[i].getAttribute('data-tag')] = true;
         }
-        if (typeof Shiny !== 'undefined') {
-          Shiny.setInputValue('selected_tags', Object.keys(selectedTags));
-        }
+        syncSelectedTags();
       }
       if (document.readyState === 'complete') { initSelectedTags(); }
       else { window.addEventListener('load', initSelectedTags); }
