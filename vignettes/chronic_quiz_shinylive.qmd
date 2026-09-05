@@ -606,6 +606,12 @@ question_ui <- function(state) {
   left_side <- ord[1]
   right_side <- ord[2]
 
+  # Awaiting-confidence: an answer has been picked but not yet revealed
+  # (reveal is now gated on confidence -- see conf_* handlers above).
+  awaiting_confidence <- !is.na(answer) && !revealed
+  chose_left  <- !is.na(answer) && answer == left_side
+  chose_right <- !is.na(answer) && answer == right_side
+
   left_factor <- pair[[paste0("factor_", left_side)]]
   left_category <- pair[[paste0("category_", left_side)]]
   left_ml <- pair[[paste0("microlives_", left_side)]]
@@ -627,16 +633,12 @@ question_ui <- function(state) {
   left_extra <- ""
   right_extra <- ""
 
-  if (revealed) {
+  if (awaiting_confidence) {
+    left_class <- paste(left_class, if (chose_left) "quiz-btn-neutral" else "")
+    right_class <- paste(right_class, if (chose_right) "quiz-btn-neutral" else "")
+  } else if (revealed) {
     left_bigger <- abs(left_ml) > abs(right_ml)
     right_bigger <- abs(right_ml) > abs(left_ml)
-    if (!is.na(answer)) {
-      chose_left <- answer == left_side
-      chose_right <- answer == right_side
-    } else {
-      chose_left <- FALSE
-      chose_right <- FALSE
-    }
     if (left_bigger) {
       left_class <- paste(left_class, "quiz-btn-correct")
       right_class <- paste(right_class, if (chose_right) "quiz-btn-wrong" else "quiz-btn-neutral")
@@ -727,18 +729,19 @@ question_ui <- function(state) {
   # renderQuestion(): actionButton + onclick="selectInGroup(...)" mirrors
   # the diff_easy/nq_5 idiom already used elsewhere in this file.
   confidence_ui <- NULL
-  if (revealed && !is.na(answer)) {
-    conf_val <- state$confidences[q]
+  if (awaiting_confidence) {
     conf_choices <- c(0, 25, 50, 75, 100)
     confidence_ui <- div(class = "text-center mt-2",
       tags$small(class = "text-muted d-block mb-1", "How confident were you in that pick?"),
       div(class = "option-btn-group justify-content-center", id = "grp_conf",
         lapply(conf_choices, function(v) {
-          cls <- if (!is.na(conf_val) && conf_val == v) "option-btn selected" else "option-btn"
-          actionButton(paste0("conf_", v), paste0(v, "%"), class = cls,
-            onclick = "selectInGroup('grp_conf', this)")
+          actionButton(paste0("conf_", v), paste0(v, "%"), class = "option-btn")
         })
       )
+    )
+  } else if (revealed && !is.na(state$confidences[q])) {
+    confidence_ui <- div(class = "text-center mt-2",
+      tags$small(class = "text-muted", sprintf("Your confidence: %d%%", as.integer(state$confidences[q])))
     )
   }
 
@@ -746,7 +749,7 @@ question_ui <- function(state) {
   all_qs <- seq_len(n)
   answered_so_far <- sum(!is.na(state$answers[all_qs]) & state$revealed[all_qs])
   correct_so_far <- sum(vapply(all_qs, function(i) {
-    !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
+    state$revealed[i] && !is.na(state$answers[i]) && state$answers[i] == state$pairs$answer[i]
   }, logical(1)))
   tally_text <- sprintf("Score: %d/%d correct", correct_so_far, answered_so_far)
 
@@ -770,25 +773,27 @@ question_ui <- function(state) {
     nav_ui,
     div(class = "row align-items-center",
       div(class = "col-5",
-        if (!revealed) {
+        if (is.na(answer)) {
           actionButton("choose_left",
             tagList(make_btn_content(left_factor, left_category, left_dir,
                                      left_extra, left_desc, left_help)),
             class = left_class)
         } else {
           div(class = left_class,
+              style = if (awaiting_confidence && !chose_left) "opacity:0.5" else NULL,
               make_btn_content(left_factor, left_category, left_dir,
                                left_extra, left_desc, left_help))
         }),
       div(class = "col-2 text-center", h3("VS", class = "text-muted mb-0")),
       div(class = "col-5",
-        if (!revealed) {
+        if (is.na(answer)) {
           actionButton("choose_right",
             tagList(make_btn_content(right_factor, right_category, right_dir,
                                      right_extra, right_desc, right_help)),
             class = right_class)
         } else {
           div(class = right_class,
+              style = if (awaiting_confidence && !chose_right) "opacity:0.5" else NULL,
               make_btn_content(right_factor, right_category, right_dir,
                                right_extra, right_desc, right_help))
         })
@@ -1127,21 +1132,25 @@ server <- function(input, output, session) {
   observeEvent(input$choose_left, {
     q <- state$current_q
     state$answers[q] <- state$display_order[[q]][1]
-    state$revealed[q] <- TRUE
   })
   observeEvent(input$choose_right, {
     q <- state$current_q
     state$answers[q] <- state$display_order[[q]][2]
-    state$revealed[q] <- TRUE
   })
   # Confidence button handlers (#132 replication) -- same idiom as the
   # diff_easy/diff_medium/... handlers above: static ids re-registered on
   # every re-render, state$current_q identifies the question at click time.
-  observeEvent(input$conf_0, { state$confidences[state$current_q] <- 0 })
-  observeEvent(input$conf_25, { state$confidences[state$current_q] <- 25 })
-  observeEvent(input$conf_50, { state$confidences[state$current_q] <- 50 })
-  observeEvent(input$conf_75, { state$confidences[state$current_q] <- 75 })
-  observeEvent(input$conf_100, { state$confidences[state$current_q] <- 100 })
+  # Confidence capture now GATES the reveal (matches micromort-quiz.qmd /
+  # risk-ranking-quiz.qmd / microlife-quiz.qmd / quiz_shinylive.qmd fix,
+  # PRs #172/#173/#174/#175): the answer is recorded on the choice click,
+  # but revealed[] only flips to TRUE once confidence is given -- otherwise
+  # the confidence prompt would appear simultaneously with the right/wrong
+  # reveal, invalidating the calibration measurement.
+  observeEvent(input$conf_0,   { state$confidences[state$current_q] <- 0;   state$revealed[state$current_q] <- TRUE })
+  observeEvent(input$conf_25,  { state$confidences[state$current_q] <- 25;  state$revealed[state$current_q] <- TRUE })
+  observeEvent(input$conf_50,  { state$confidences[state$current_q] <- 50;  state$revealed[state$current_q] <- TRUE })
+  observeEvent(input$conf_75,  { state$confidences[state$current_q] <- 75;  state$revealed[state$current_q] <- TRUE })
+  observeEvent(input$conf_100, { state$confidences[state$current_q] <- 100; state$revealed[state$current_q] <- TRUE })
   observeEvent(input$next_q, {
     if (state$current_q < state$n_questions) state$current_q <- state$current_q + 1L
     else state$phase <- "results_summary"
