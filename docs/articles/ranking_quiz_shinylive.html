@@ -1199,6 +1199,8 @@ question_ui &lt;- function(state) {
 
   revealed &lt;- state$revealed[q]
   user_order &lt;- state$user_orders[[q]]
+  submitted &lt;- !is.null(user_order)
+  awaiting_confidence &lt;- submitted &amp;&amp; !revealed
   items_k &lt;- nrow(q_data)
 
   # Display items in shuffled order (or user's current order if they've reordered)
@@ -1209,7 +1211,7 @@ question_ui &lt;- function(state) {
   }
 
   # Build rank items
-  if (!revealed) {
+  if (!submitted) {
     rank_items &lt;- lapply(seq_len(items_k), function(i) {
       row &lt;- display_data[i, ]
       item_id &lt;- which(q_data$item_name == row$item_name)
@@ -1227,6 +1229,33 @@ question_ui &lt;- function(state) {
         class = "rank-item",
         `data-item-id` = item_id,
         tags$span(class = "drag-handle", "\u2630"),
+        tags$span(class = "item-name", format_activity_name(row$item_name)),
+        source_badge,
+        tags$span(class = "badge bg-secondary", row$category)
+      )
+    })
+  } else if (awaiting_confidence) {
+    # Submitted but not yet revealed: show the submitted order LOCKED
+    # (no drag handle, no id="sortable_list") -- must not leak
+    # correctness (no checkmark/color/LLE-reveal text) before the
+    # confidence prompt is answered.
+    rank_items &lt;- lapply(seq_len(items_k), function(i) {
+      row &lt;- display_data[i, ]
+      item_id &lt;- which(q_data$item_name == row$item_name)
+      source_badge &lt;- if (row$item_source == "acute") {
+        tags$span(class = "badge bg-danger", "acute")
+      } else {
+        dir_label &lt;- if (!is.na(row$microlives_per_day) &amp;&amp; row$microlives_per_day &gt; 0) {
+          "chronic +life"
+        } else {
+          "chronic -life"
+        }
+        tags$span(class = "badge bg-info", dir_label)
+      }
+      tags$div(
+        class = "rank-item",
+        style = "opacity:0.7;cursor:default;",
+        `data-item-id` = item_id,
         tags$span(class = "item-name", format_activity_name(row$item_name)),
         source_badge,
         tags$span(class = "badge bg-secondary", row$category)
@@ -1299,7 +1328,7 @@ question_ui &lt;- function(state) {
   tally_text &lt;- sprintf("Score: %d/%d pairs", total_concordant, total_pairs)
 
   # Submit / revealed status
-  action_btn &lt;- if (!revealed) {
+  action_btn &lt;- if (!submitted) {
     actionButton("submit_order", "Submit Order", class = "btn-warning btn-lg",
       onclick = "readCurrentOrder()")
   } else {
@@ -1344,7 +1373,7 @@ question_ui &lt;- function(state) {
   # onclick="selectInGroup(...)" mirrors the items_3/nq_5 idiom already
   # used elsewhere in this file.
   confidence_ui &lt;- NULL
-  if (revealed &amp;&amp; !is.null(state$user_orders[[q]])) {
+  if (awaiting_confidence) {
     conf_val &lt;- state$confidences[q]
     conf_choices &lt;- c(0, 25, 50, 75, 100)
     confidence_ui &lt;- div(class = "text-center mt-2",
@@ -1357,12 +1386,16 @@ question_ui &lt;- function(state) {
         })
       )
     )
+  } else if (revealed &amp;&amp; !is.na(state$confidences[q])) {
+    confidence_ui &lt;- div(class = "text-center mt-2",
+      tags$small(class = "text-muted", sprintf("Your confidence: %d%%", as.integer(state$confidences[q])))
+    )
   }
 
   tagList(
     nav_ui,
     div(class = "rank-label mb-1", "\u2191 Biggest effect on lifespan"),
-    if (!revealed) {
+    if (!submitted) {
       tags$div(id = "sortable_list", class = "rank-container", rank_items)
     } else {
       tags$div(class = "rank-container", rank_items)
@@ -1371,7 +1404,7 @@ question_ui &lt;- function(state) {
     if (!is.null(action_btn)) div(class = "text-center mt-3", action_btn),
     result_text,
     confidence_ui,
-    if (!revealed) {
+    if (!submitted) {
       tags$script(HTML("setTimeout(initSortable, 100);"))
     }
   )
@@ -1801,22 +1834,41 @@ server &lt;- function(input, output, session) {
     user_ord &lt;- input$user_order
     if (!is.null(user_ord) &amp;&amp; length(user_ord) &gt; 0) {
       state$user_orders[[q]] &lt;- as.integer(user_ord)
-      state$revealed[q] &lt;- TRUE
     }
   })
   # Confidence button handlers (#132 replication) -- same idiom as the
   # items_3/nq_5 handlers above: static ids re-registered on every
   # re-render, state$current_q identifies the question at click time.
-  observeEvent(input$conf_0, { state$confidences[state$current_q] &lt;- 0 })
-  observeEvent(input$conf_25, { state$confidences[state$current_q] &lt;- 25 })
-  observeEvent(input$conf_50, { state$confidences[state$current_q] &lt;- 50 })
-  observeEvent(input$conf_75, { state$confidences[state$current_q] &lt;- 75 })
-  observeEvent(input$conf_100, { state$confidences[state$current_q] &lt;- 100 })
+  # Each handler ALSO reveals the answer -- the confidence prompt must be
+  # answered BEFORE the correct order/checkmarks are shown, so revealing
+  # happens here rather than in the submit_order handler above.
+  observeEvent(input$conf_0, {
+    state$confidences[state$current_q] &lt;- 0
+    state$revealed[state$current_q] &lt;- TRUE
+  })
+  observeEvent(input$conf_25, {
+    state$confidences[state$current_q] &lt;- 25
+    state$revealed[state$current_q] &lt;- TRUE
+  })
+  observeEvent(input$conf_50, {
+    state$confidences[state$current_q] &lt;- 50
+    state$revealed[state$current_q] &lt;- TRUE
+  })
+  observeEvent(input$conf_75, {
+    state$confidences[state$current_q] &lt;- 75
+    state$revealed[state$current_q] &lt;- TRUE
+  })
+  observeEvent(input$conf_100, {
+    state$confidences[state$current_q] &lt;- 100
+    state$revealed[state$current_q] &lt;- TRUE
+  })
 
   observeEvent(input$next_q, {
     q &lt;- state$current_q
-    # Auto-submit if not revealed yet (user didn't click Submit)
-    if (!state$revealed[q]) {
+    # Auto-submit if the user never clicked Submit at all (skip path) --
+    # checked via user_orders (submission), not revealed (confidence),
+    # since the two are no longer the same event.
+    if (is.null(state$user_orders[[q]])) {
       user_ord &lt;- input$user_order
       if (!is.null(user_ord) &amp;&amp; length(user_ord) &gt; 0) {
         state$user_orders[[q]] &lt;- as.integer(user_ord)
