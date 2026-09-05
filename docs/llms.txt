@@ -492,8 +492,8 @@ Each quiz has an instant (static JS) and Shinylive (richer UI) version.
   Interactive quiz comparing chronic lifestyle factors measured in
   microlives — 30 minutes of life expectancy per day.
 
-- [Rank these risks by their effect on
-  lifespan](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.md):
+- [Rank lifespan
+  risks](https://johngavin.github.io/micromort/articles/risk-ranking-quiz.md):
 
   Interactive drag-and-drop quiz. Rank everyday risks by their effect on
   life expectancy. Each risk shows how much life you gain or lose per

@@ -19,6 +19,7 @@ filters:
 <style>
   .quarto-title-meta { display: none; }
   header#title-block-header { margin-bottom: 0; padding-bottom: 0; }
+  header#title-block-header .title { font-size: 1.5rem !important; }
   .description { margin-bottom: 0 !important; }
   main.content { max-width: 100% !important; padding: 0 10px; }
   #quarto-content { padding: 0; }
