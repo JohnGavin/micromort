@@ -738,6 +738,8 @@ question_ui <- function(state) {
 
   revealed <- state$revealed[q]
   user_order <- state$user_orders[[q]]
+  submitted <- !is.null(user_order)
+  awaiting_confidence <- submitted && !revealed
   items_k <- nrow(q_data)
 
   # Display items in shuffled order (or user's current order if they've reordered)
@@ -748,7 +750,7 @@ question_ui <- function(state) {
   }
 
   # Build rank items
-  if (!revealed) {
+  if (!submitted) {
     rank_items <- lapply(seq_len(items_k), function(i) {
       row <- display_data[i, ]
       item_id <- which(q_data$item_name == row$item_name)
@@ -766,6 +768,33 @@ question_ui <- function(state) {
         class = "rank-item",
         `data-item-id` = item_id,
         tags$span(class = "drag-handle", "\u2630"),
+        tags$span(class = "item-name", format_activity_name(row$item_name)),
+        source_badge,
+        tags$span(class = "badge bg-secondary", row$category)
+      )
+    })
+  } else if (awaiting_confidence) {
+    # Submitted but not yet revealed: show the submitted order LOCKED
+    # (no drag handle, no id="sortable_list") -- must not leak
+    # correctness (no checkmark/color/LLE-reveal text) before the
+    # confidence prompt is answered.
+    rank_items <- lapply(seq_len(items_k), function(i) {
+      row <- display_data[i, ]
+      item_id <- which(q_data$item_name == row$item_name)
+      source_badge <- if (row$item_source == "acute") {
+        tags$span(class = "badge bg-danger", "acute")
+      } else {
+        dir_label <- if (!is.na(row$microlives_per_day) && row$microlives_per_day > 0) {
+          "chronic +life"
+        } else {
+          "chronic -life"
+        }
+        tags$span(class = "badge bg-info", dir_label)
+      }
+      tags$div(
+        class = "rank-item",
+        style = "opacity:0.7;cursor:default;",
+        `data-item-id` = item_id,
         tags$span(class = "item-name", format_activity_name(row$item_name)),
         source_badge,
         tags$span(class = "badge bg-secondary", row$category)
@@ -838,7 +867,7 @@ question_ui <- function(state) {
   tally_text <- sprintf("Score: %d/%d pairs", total_concordant, total_pairs)
 
   # Submit / revealed status
-  action_btn <- if (!revealed) {
+  action_btn <- if (!submitted) {
     actionButton("submit_order", "Submit Order", class = "btn-warning btn-lg",
       onclick = "readCurrentOrder()")
   } else {
@@ -883,7 +912,7 @@ question_ui <- function(state) {
   # onclick="selectInGroup(...)" mirrors the items_3/nq_5 idiom already
   # used elsewhere in this file.
   confidence_ui <- NULL
-  if (revealed && !is.null(state$user_orders[[q]])) {
+  if (awaiting_confidence) {
     conf_val <- state$confidences[q]
     conf_choices <- c(0, 25, 50, 75, 100)
     confidence_ui <- div(class = "text-center mt-2",
@@ -896,12 +925,16 @@ question_ui <- function(state) {
         })
       )
     )
+  } else if (revealed && !is.na(state$confidences[q])) {
+    confidence_ui <- div(class = "text-center mt-2",
+      tags$small(class = "text-muted", sprintf("Your confidence: %d%%", as.integer(state$confidences[q])))
+    )
   }
 
   tagList(
     nav_ui,
     div(class = "rank-label mb-1", "\u2191 Biggest effect on lifespan"),
-    if (!revealed) {
+    if (!submitted) {
       tags$div(id = "sortable_list", class = "rank-container", rank_items)
     } else {
       tags$div(class = "rank-container", rank_items)
@@ -910,7 +943,7 @@ question_ui <- function(state) {
     if (!is.null(action_btn)) div(class = "text-center mt-3", action_btn),
     result_text,
     confidence_ui,
-    if (!revealed) {
+    if (!submitted) {
       tags$script(HTML("setTimeout(initSortable, 100);"))
     }
   )
@@ -1340,22 +1373,41 @@ server <- function(input, output, session) {
     user_ord <- input$user_order
     if (!is.null(user_ord) && length(user_ord) > 0) {
       state$user_orders[[q]] <- as.integer(user_ord)
-      state$revealed[q] <- TRUE
     }
   })
   # Confidence button handlers (#132 replication) -- same idiom as the
   # items_3/nq_5 handlers above: static ids re-registered on every
   # re-render, state$current_q identifies the question at click time.
-  observeEvent(input$conf_0, { state$confidences[state$current_q] <- 0 })
-  observeEvent(input$conf_25, { state$confidences[state$current_q] <- 25 })
-  observeEvent(input$conf_50, { state$confidences[state$current_q] <- 50 })
-  observeEvent(input$conf_75, { state$confidences[state$current_q] <- 75 })
-  observeEvent(input$conf_100, { state$confidences[state$current_q] <- 100 })
+  # Each handler ALSO reveals the answer -- the confidence prompt must be
+  # answered BEFORE the correct order/checkmarks are shown, so revealing
+  # happens here rather than in the submit_order handler above.
+  observeEvent(input$conf_0, {
+    state$confidences[state$current_q] <- 0
+    state$revealed[state$current_q] <- TRUE
+  })
+  observeEvent(input$conf_25, {
+    state$confidences[state$current_q] <- 25
+    state$revealed[state$current_q] <- TRUE
+  })
+  observeEvent(input$conf_50, {
+    state$confidences[state$current_q] <- 50
+    state$revealed[state$current_q] <- TRUE
+  })
+  observeEvent(input$conf_75, {
+    state$confidences[state$current_q] <- 75
+    state$revealed[state$current_q] <- TRUE
+  })
+  observeEvent(input$conf_100, {
+    state$confidences[state$current_q] <- 100
+    state$revealed[state$current_q] <- TRUE
+  })
 
   observeEvent(input$next_q, {
     q <- state$current_q
-    # Auto-submit if not revealed yet (user didn't click Submit)
-    if (!state$revealed[q]) {
+    # Auto-submit if the user never clicked Submit at all (skip path) --
+    # checked via user_orders (submission), not revealed (confidence),
+    # since the two are no longer the same event.
+    if (is.null(state$user_orders[[q]])) {
       user_ord <- input$user_order
       if (!is.null(user_ord) && length(user_ord) > 0) {
         state$user_orders[[q]] <- as.integer(user_ord)
