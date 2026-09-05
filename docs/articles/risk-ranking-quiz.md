@@ -1,4 +1,4 @@
-# Rank these risks by their effect on lifespan
+# Rank lifespan risks
 
 Also on
 [Shinylive](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.md)
