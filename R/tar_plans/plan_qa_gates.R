@@ -451,28 +451,10 @@ plan_qa_gates <- list(
     cue = targets::tar_cue(mode = "always")
   ),
 
-  # Enforce chronic CSV freshness: non-OK status is a build-failing gate
-  targets::tar_target(
-    qa_chronic_csv_gate,
-    {
-      check <- vig_chronic_csv_check
-      status <- check$status
-      if (status != "OK") {
-        cli::cli_abort(c(
-          "x" = "Chronic CSV gate FAILED: embedded CSV in chronic_quiz_shinylive.qmd is {status}",
-          "i" = "canonical_rows = {check$canonical_rows}, embedded_rows = {check$embedded_rows}",
-          "i" = "canonical_hash = {check$canonical_hash}",
-          "i" = "embedded_hash  = {check$embedded_hash}",
-          "i" = "Re-run the chronic_pairs pipeline target and update the embedded CSV"
-        ))
-      }
-      cli::cli_alert_success(
-        "Chronic CSV gate: embedded CSV matches canonical ({check$canonical_rows} rows)"
-      )
-      list(status = status, rows = check$canonical_rows, timestamp = Sys.time())
-    },
-    cue = targets::tar_cue(mode = "always")
-  ),
+  # NOTE (2026-09-05): qa_chronic_csv_gate (enforced vig_chronic_csv_check
+  # status) was removed along with the retired chronic_quiz_shinylive.qmd
+  # Shinylive vignette it gated — see plan_vignette_outputs.R's "QUIZ DATA"
+  # section note and vignettes/details.qmd's "Retired: Shinylive quizzes" tab.
 
   # Article title integrity: verify each docs/articles/*.html title and h1
   # match the source vignette YAML title, and the filename slug matches _pkgdown.yml.

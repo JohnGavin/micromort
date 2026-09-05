@@ -80,9 +80,9 @@ jobs:
             base_url <- \"https://johngavin.github.io/micromort/articles\"
             quiz_links <- paste0(
               \"Quiz links:\\n\",
-              \"  Acute:   \", base_url, \"/quiz_shinylive.html\\n\",
-              \"  Chronic: \", base_url, \"/chronic_quiz_shinylive.html\\n\",
-              \"  Ranking: \", base_url, \"/ranking_quiz_shinylive.html\\n\"
+              \"  Acute:   \", base_url, \"/micromort-quiz.html\\n\",
+              \"  Chronic: \", base_url, \"/microlife-quiz.html\\n\",
+              \"  Ranking: \", base_url, \"/risk-ranking-quiz.html\\n\"
             )
 
             # Overall totals

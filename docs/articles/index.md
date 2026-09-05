@@ -11,8 +11,6 @@
 
 ### Quizzes
 
-Each quiz has an instant (static JS) and Shinylive (richer UI) version.
-
 - [Which lifestyle event is more likely to kill
   you?](https://johngavin.github.io/micromort/articles/micromort-quiz.md):
 
@@ -34,32 +32,14 @@ Each quiz has an instant (static JS) and Shinylive (richer UI) version.
 
 - [Details](https://johngavin.github.io/micromort/articles/details.md):
 
-  Shinylive app links, source locations, and site build info for the
-  micromort package — consolidated off the quiz pages so they don’t
-  interrupt quiz-taking.
+  Retired Shinylive quiz links, source locations, and site build info
+  for the micromort package — consolidated off the quiz pages so they
+  don’t interrupt quiz-taking.
 
-### Quizzes (Shinylive)
+### Quiz Analytics & Portfolio
 
-Full Shiny apps with score submission and percentile ranking. 30-60s
-load.
-
-- [Which lifestyle event is more likely to kill
-  you?](https://johngavin.github.io/micromort/articles/quiz_shinylive.md):
-
-  Interactive quiz comparing everyday risks measured in micromorts — a
-  one-in-a-million chance of death.
-
-- [Which daily habit affects your lifespan
-  more?](https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.md):
-
-  Interactive quiz comparing chronic lifestyle factors measured in
-  microlives — 30 minutes of life expectancy per day.
-
-- [Rank these risks by their effect on
-  lifespan](https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.md):
-
-  Interactive drag-and-drop quiz ranking everyday risks by their effect
-  on life expectancy. Combining acute micromorts and chronic microlives.
+Your local quiz history and calibration (static), plus the Risk
+Portfolio Builder (Shinylive, 30-60s load).
 
 - [Your Quiz
   Analytics](https://johngavin.github.io/micromort/articles/quiz_analytics.md):

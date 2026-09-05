@@ -171,9 +171,9 @@ format:
       '<p><strong>No quiz data yet.</strong></p>' +
       '<p>Complete a quiz to see your personal analytics here.<br>' +
       'Your data is stored only in this browser — it never leaves your device.</p>' +
-      '<p><a href="quiz_shinylive.html">Micromort Quiz</a> &nbsp;|&nbsp; ' +
-      '<a href="chronic_quiz_shinylive.html">Microlife Quiz</a> &nbsp;|&nbsp; ' +
-      '<a href="ranking_quiz_shinylive.html">Ranking Quiz</a></p>' +
+      '<p><a href="micromort-quiz.html">Micromort Quiz</a> &nbsp;|&nbsp; ' +
+      '<a href="microlife-quiz.html">Microlife Quiz</a> &nbsp;|&nbsp; ' +
+      '<a href="risk-ranking-quiz.html">Ranking Quiz</a></p>' +
       '</div>';
     return;
   }

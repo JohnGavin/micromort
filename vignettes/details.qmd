@@ -1,6 +1,6 @@
 ---
 title: "Details"
-description: "Shinylive app links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don't interrupt quiz-taking."
+description: "Retired Shinylive quiz links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don't interrupt quiz-taking."
 format:
   html:
     code-fold: true
@@ -34,19 +34,27 @@ history.
 
 ::: {.panel-tabset}
 
-## Shinylive apps
+## Retired: Shinylive quizzes
 
-Each of the three instant quizzes also has a full Shiny app version
-("Shinylive") with score submission, percentile ranking, and streak
-tracking. The Shinylive version takes 30-60 seconds to load in the browser
-(it runs R compiled to WebAssembly) — the instant quiz has no load delay but
-does not submit scores.
+The three quizzes each used to have a second, full Shiny app version
+("Shinylive") alongside the instant (static JS) version below, offering
+score submission and percentile ranking. Those Shinylive versions were
+retired on 2026-09-05: an audit found their only remaining capability not
+already in the instant version was a small played-N-days-in-a-row streak
+indicator, which has since been ported to the instant quizzes. Retiring the
+Shinylive copies removed roughly 180MB of duplicate WASM bundles from this
+site and stopped every quiz-page fix from needing two parallel
+implementations kept in sync.
 
-| Quiz | Instant version | Shinylive version |
-|---|---|---|
-| Which lifestyle event is more likely to kill you? (micromorts) | [micromort-quiz.html](micromort-quiz.html) | [quiz_shinylive.html](quiz_shinylive.html) |
-| Which daily habit has a bigger effect on your lifespan? (microlives) | [microlife-quiz.html](microlife-quiz.html) | [chronic_quiz_shinylive.html](chronic_quiz_shinylive.html) |
-| Risk ranking | [risk-ranking-quiz.html](risk-ranking-quiz.html) | [ranking_quiz_shinylive.html](ranking_quiz_shinylive.html) |
+The retired pages are still available in the repository history at the
+[`archive/shinylive-quizzes-2026-09-05`](https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05)
+tag.
+
+| Quiz | Instant version |
+|---|---|
+| Which lifestyle event is more likely to kill you? (micromorts) | [micromort-quiz.html](micromort-quiz.html) |
+| Which daily habit has a bigger effect on your lifespan? (microlives) | [microlife-quiz.html](microlife-quiz.html) |
+| Risk ranking | [risk-ranking-quiz.html](risk-ranking-quiz.html) |
 
 ## Source
 

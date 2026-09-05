@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Shinylive app links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don’t interrupt quiz-taking.">
+<meta name="description" content="Retired Shinylive quiz links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don’t interrupt quiz-taking.">
 
 <title>Details</title>
 <style>
@@ -457,7 +457,7 @@ body.dark-mode .btn-outline-primary:focus {
 
 <div>
   <div class="description">
-    Shinylive app links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don’t interrupt quiz-taking.
+    Retired Shinylive quiz links, source locations, and site build info for the micromort package — consolidated off the quiz pages so they don’t interrupt quiz-taking.
   </div>
 </div>
 
@@ -476,33 +476,30 @@ body.dark-mode .btn-outline-primary:focus {
 
 <p>This page collects information that used to sit at the bottom of the quiz pages: the Shinylive app links, how to view a page’s source, and site build info. It was moved here because on the quiz pages that content sat directly below the interactive quiz area, so it was encountered on every scroll while answering questions — see <a href="https://github.com/JohnGavin/micromort/issues/142">issue #142</a> for the full history.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Shinylive apps</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Source</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Site info</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Retired: Shinylive quizzes</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Source</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Site info</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p>Each of the three instant quizzes also has a full Shiny app version (“Shinylive”) with score submission, percentile ranking, and streak tracking. The Shinylive version takes 30-60 seconds to load in the browser (it runs R compiled to WebAssembly) — the instant quiz has no load delay but does not submit scores.</p>
+<p>The three quizzes each used to have a second, full Shiny app version (“Shinylive”) alongside the instant (static JS) version below, offering score submission and percentile ranking. Those Shinylive versions were retired on 2026-09-05: an audit found their only remaining capability not already in the instant version was a small played-N-days-in-a-row streak indicator, which has since been ported to the instant quizzes. Retiring the Shinylive copies removed roughly 180MB of duplicate WASM bundles from this site and stopped every quiz-page fix from needing two parallel implementations kept in sync.</p>
+<p>The retired pages are still available in the repository history at the <a href="https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05"><code>archive/shinylive-quizzes-2026-09-05</code></a> tag.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Quiz</th>
 <th>Instant version</th>
-<th>Shinylive version</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>Which lifestyle event is more likely to kill you? (micromorts)</td>
 <td><a href="micromort-quiz.html">micromort-quiz.html</a></td>
-<td><a href="quiz_shinylive.html">quiz_shinylive.html</a></td>
 </tr>
 <tr class="even">
 <td>Which daily habit has a bigger effect on your lifespan? (microlives)</td>
 <td><a href="microlife-quiz.html">microlife-quiz.html</a></td>
-<td><a href="chronic_quiz_shinylive.html">chronic_quiz_shinylive.html</a></td>
 </tr>
 <tr class="odd">
 <td>Risk ranking</td>
 <td><a href="risk-ranking-quiz.html">risk-ranking-quiz.html</a></td>
-<td><a href="ranking_quiz_shinylive.html">ranking_quiz_shinylive.html</a></td>
 </tr>
 </tbody>
 </table>

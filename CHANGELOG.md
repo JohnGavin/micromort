@@ -1,5 +1,33 @@
 # Changelog
 
+## 2026-09-05 — Retire the 3 Shinylive quizzes, JS-only going forward
+
+### Completed
+
+**Retired `vignettes/quiz_shinylive.qmd`, `chronic_quiz_shinylive.qmd`, and `ranking_quiz_shinylive.qmd`.** An architecture review found the site shipped 3 quiz topics twice — a vanilla-JS "instant" vignette and a standalone R/Shiny Shinylive (WASM) vignette per topic — and that the confidence-capture/calibration/scoring work landed this session (issue #132, PRs #134/#140/#172-#178) had made the JS versions functionally equivalent to their Shinylive twins. The only capability still exclusive to Shinylive was a small localStorage-based "played N days in a row" streak counter; that has been ported verbatim (same `micromort_quiz_streak`/`micromort_quiz_last_play`/`micromort_quiz_best_score` localStorage keys, so an existing streak carries over) to `micromort-quiz.qmd`, `microlife-quiz.qmd`, and `risk-ranking-quiz.qmd`.
+
+**Maintenance-cost evidence for the decision:** every quiz-page fix this session (confidence-before-reveal, page-title sizing) needed two parallel PRs to keep the JS and Shinylive copies in sync (#172-#178 pairs). Retiring the Shinylive copies removes that duplication going forward.
+
+**Site-size recovery:** `docs/` dropped from 288M to 107M (~181MB) — three ~60MB Shinylive WASM/webR asset bundles (`docs/articles/{quiz,chronic_quiz,ranking_quiz}_shinylive_files/`) removed.
+
+**Build pipeline cleanup (`R/tar_plans/`):** removed the `site_quiz_shinylive`/`site_chronic_shinylive`/`site_ranking_shinylive` render targets and the embedded-CSV-staleness check targets that existed solely because Shinylive's WebR runtime couldn't fetch an external data file at runtime (`vig_quiz_csv_check`, `vig_ranking_csv_check`, `vig_chronic_csv_check`, and the `qa_chronic_csv_gate` that enforced the last one). `site_deploy_shinylive` now only handles the still-live `portfolio_shinylive.qmd` (Risk Portfolio Builder, unaffected by this change). `site_quiz_csv_export`'s now-dead "update embedded CSV in `quiz_shinylive.qmd`" branch was removed rather than left as a permanent no-op file-exists check.
+
+**Navbar/content updates:** `_pkgdown.yml` navbar and `articles:` sections no longer reference the 3 retired slugs; the "Quizzes (Shinylive)" article group was renamed "Quiz Analytics & Portfolio" (its only remaining members). `vignettes/details.qmd`'s "Shinylive apps" tab was rewritten to "Retired: Shinylive quizzes", explaining the retirement and linking the archive tag. Each JS quiz page's "Also on Shinylive (richer UI)" link line was removed. `README.qmd`'s quiz table dropped its Shinylive column. `quiz_analytics.qmd`'s empty-state links and the weekly leaderboard-email links (`.github/workflows/leaderboard-refresh.yml`) were repointed from the retired Shinylive URLs to the JS quiz URLs.
+
+**Redirects + archive:** `docs/articles/{quiz,chronic_quiz,ranking_quiz}_shinylive.html` replaced with minimal `<meta http-equiv="refresh">` redirect stubs pointing at the corresponding JS quiz page, so any existing bookmark/external link doesn't 404. The full pre-retirement content is preserved at the `archive/shinylive-quizzes-2026-09-05` git tag: https://github.com/JohnGavin/micromort/tree/archive/shinylive-quizzes-2026-09-05.
+
+### Accuracy / Metrics
+
+- `devtools::test()`: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (2 of the 4 skips are the expected `vignettes/quiz_shinylive.qmd not found` graceful-skip guards in `test-quiz.R`/`test-quiz-streak.R`; the other 2 are pre-existing, unrelated sampling skips in `test-combined-quiz.R`).
+- `check_dark_contrast.sh` (via `file://` URLs against the freshly rebuilt local `docs/`): clean (0 unprotected light inline backgrounds) on all 3 surviving quiz pages plus `details.html`.
+- `docs/` size: 288M → 107M (~181MB recovered), matching the ~180MB estimate from the 3× ~60MB WASM asset directories.
+- Removed `tests/testthat/test-qa-chronic-csv-gate.R` and its snapshot (`_snaps/qa-chronic-csv-gate.md`) — the `qa_chronic_csv_gate` target they simulated no longer exists.
+
+### Known Limitations
+
+- Puppeteer/system-Chrome click-through verification (used successfully for the confidence-capture work earlier this session) was not re-run for the streak indicator specifically — `puppeteer-core` was not installed in this worktree's node environment and installing it was judged not worth the time for this one check, per static/grep verification already covering: JS syntax validity (`node --check`) of all 3 edited quiz files, streak code present in both source `.qmd` and the rebuilt `docs/articles/*.html`, and the `#streak_display` element wired into each results view.
+- `site_rds_export` reported `0/94 vig_* targets exported` during the narrowed rebuild — expected: this worktree's `_targets` store doesn't have the other (unrelated) `vig_*` targets already built, and a full `tar_make()` was intentionally not run (would pull in a live Google Sheets fetch via `leaderboard_raw`/`site_verify`). Does not affect the retirement itself.
+
 ## 2026-08-30/09-01 — Worktree cleanup + quiz confidence feature (issue #132) + site layout fixes
 
 ### Completed

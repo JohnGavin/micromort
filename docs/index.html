@@ -49,13 +49,13 @@
     <li><a class="dropdown-item" href="articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="articles/palatable_units.html">Palatable Units</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Quizzes (instant | Shinylive)</h6></li>
-    <li><a class="dropdown-item" href="articles/micromort-quiz.html">☠️ Micromort: instant | Shinylive</a></li>
-    <li><a class="dropdown-item" href="articles/microlife-quiz.html">⏳ Microlife: instant | Shinylive</a></li>
-    <li><a class="dropdown-item" href="articles/risk-ranking-quiz.html">📊 Ranking: instant | Shinylive</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Quizzes</h6></li>
+    <li><a class="dropdown-item" href="articles/micromort-quiz.html">☠️ Micromort</a></li>
+    <li><a class="dropdown-item" href="articles/microlife-quiz.html">⏳ Microlife</a></li>
+    <li><a class="dropdown-item" href="articles/risk-ranking-quiz.html">📊 Ranking</a></li>
     <li><a class="dropdown-item" href="articles/portfolio_shinylive.html">🎯 Risk Portfolio Builder</a></li>
     <li><a class="dropdown-item" href="articles/quiz_analytics.html">📈 Your Quiz Analytics</a></li>
-    <li><a class="dropdown-item" href="articles/details.html">ℹ️ Details (Shinylive links, source, site info)</a></li>
+    <li><a class="dropdown-item" href="articles/details.html">ℹ️ Details (source, site info)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Storytelling</h6></li>
     <li><a class="dropdown-item" href="articles/chronic_vs_acute.html">The Invisible Risk (closeread)</a></li>
@@ -231,39 +231,34 @@ Risk comparison in micromorts (log scale). Bars show death probability per event
 </h2>
 <table class="table">
 <colgroup>
-<col width="10%">
+<col width="31%">
+<col width="31%">
 <col width="36%">
-<col width="41%">
-<col width="12%">
 </colgroup>
 <thead><tr>
 <th>Quiz</th>
-<th align="center">Instant (static JS)</th>
-<th align="center">Shinylive (30-60s load)</th>
+<th align="center">Play</th>
 <th align="center">Local</th>
 </tr></thead>
 <tbody>
 <tr>
 <td>Which Is Riskier?</td>
 <td align="center"><a href="https://johngavin.github.io/micromort/articles/micromort-quiz.html">Play</a></td>
-<td align="center"><a href="https://johngavin.github.io/micromort/articles/quiz_shinylive.html">Play</a></td>
 <td align="center"><code><a href="reference/launch_quiz.html">launch_quiz()</a></code></td>
 </tr>
 <tr>
 <td>Microlife Quiz</td>
 <td align="center"><a href="https://johngavin.github.io/micromort/articles/microlife-quiz.html">Play</a></td>
-<td align="center"><a href="https://johngavin.github.io/micromort/articles/chronic_quiz_shinylive.html">Play</a></td>
 <td align="center"><code><a href="reference/launch_chronic_quiz.html">launch_chronic_quiz()</a></code></td>
 </tr>
 <tr>
 <td>Rank the Risks</td>
 <td align="center"><a href="https://johngavin.github.io/micromort/articles/risk-ranking-quiz.html">Play</a></td>
-<td align="center"><a href="https://johngavin.github.io/micromort/articles/ranking_quiz_shinylive.html">Play</a></td>
 <td align="center"><code><a href="reference/ranking_quiz_questions.html">ranking_quiz_questions()</a></code></td>
 </tr>
 </tbody>
 </table>
-<p>All quizzes have score submission + percentile ranking via Google Forms. Static JS versions load instantly; Shinylive versions use WebR (30-60s load).</p>
+<p>All quizzes have score submission + percentile ranking via Google Forms and load instantly (static JS). Each quiz also used to have a slower Shinylive (WebR) version; those were retired 2026-09-05 — see <a href="https://johngavin.github.io/micromort/articles/details.html">Details</a> for the archive link.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate geography-specific quiz pairs</span></span>
 <span><span class="fu"><a href="reference/geography_quiz_pairs.html">geography_quiz_pairs</a></span><span class="op">(</span>countries <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UK"</span>, <span class="st">"NG"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span></code></pre></div>
