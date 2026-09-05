@@ -1,27 +1,55 @@
 # Current Work — micromort
 
-**Branch:** `main` (session worktree `feat/cc-20260830-194708` had no local commits — all work landed via merged PRs)
-**Last session:** 2026-08-30/09-01 — worktree cleanup, quiz-confidence feature (#132), site layout fixes
+_Ephemeral session-state file. Overwritten each session end._
 
-## Status
+## Last session: 2026-09-05
 
-Main is fully current at `4b892b3` — all 9 PRs from this session merged and deployed (#133, #120, #135, #136, #137, #139, #134, #140, #143). Live: https://johngavin.github.io/micromort/articles/micromort-quiz.html
+### Status: session complete, all planned work merged and live-verified
 
-## What just shipped
+Everything from this session's task list shipped and is live on
+https://johngavin.github.io/micromort/:
 
-- **Quiz confidence, Phase 1+2, `micromort-quiz.qmd` only**: per-question confidence capture, self-only Brier score, population comparison wired to the shared Google Form (`entry.1681143871`) — see [issue #132](https://github.com/JohnGavin/micromort/issues/132).
-- **Site layout fix**: Shinylive banner / Source line / footer moved off the quiz scroll path into a new `vignettes/details.qmd` tabset page; toolbar (A−/A+/theme) root-cause fixed to actually render `position:fixed` top-right (was silently losing its CSS via a pkgdown/quarto `include-in-header` content-drop bug); 20 WCAG-AA contrast failures fixed. See [issue #142](https://github.com/JohnGavin/micromort/issues/142) for why this took 3 attempts.
-- **PR #120 unstuck**: 101-day-stale branch had a real rounding bug (`combined_quiz_pairs()` period-row scaling) plus a frozen merge-base from prior squash-merges — both fixed, merged.
+- Reopened and correctly fixed #142 (quiz-page banner/footer/Source-line
+  clutter) and #132 (per-question confidence capture) across all 6 quiz
+  vignettes, after prior sessions had incorrectly claimed these fixed.
+- Next-button green highlight after submit, all 6 quizzes.
+- Confidence-before-reveal correctness fix (confidence must be captured
+  BEFORE the answer is revealed, not simultaneously) — PRs #172-#177, all
+  merged.
+- Page-title font-size shrink on all 6 quiz pages — PR #178, merged.
+- Confirmed no historical confidence data was lost (a user-raised concern);
+  root-caused to a 1-day-old full rollout, working as designed.
+- Filed #179 (tag-selection race condition in `ranking_quiz_shinylive.qmd`
+  — now moot, page just redirects, kept open at low priority).
+- Architecture review of the 6-quiz JS/Shinylive duplication -> retired the
+  3 Shinylive quizzes (PR #180, merged). ~181MB recovered from `docs/`.
+  Archived, not deleted — full old content at git tag
+  `archive/shinylive-quizzes-2026-09-05`.
+- Documented the general decision framework in a new global rule
+  (`shinylive-vs-js-duplication.md` in the `llm` project) for future
+  projects choosing between Shinylive and JS-only implementations.
 
-## Next session — priorities
+### Next session should
 
-1. **Replicate quiz-confidence Phase 2 to the other 2 quizzes** (`microlife-quiz.qmd`, `risk-ranking-quiz.qmd`) — per `project_quiz-confidence-phase2-definition-of-done` memory, the pattern is now proven on `micromort-quiz.qmd`; copy it rather than rebuilding from scratch.
-2. **Watch for real population confidence data** to start flowing into `docs/api/quiz_stats.json`'s `calibration` block (currently `n: 0`) — once it does, sanity-check the attempt-level Brier approximation against real submissions.
-3. Fix the `docs/pkgdown.yml`-sentinel-after-`git rm -rf docs` workaround properly (hit 4 times this session) — maybe a `site_pre_check`/`site_verify` target that seeds it automatically.
-4. `worktree-agent-a57cb96f` branch/worktree still un-triaged (deferred, ambiguous salvage signal).
-5. Any new UI/layout claim about the quiz pages MUST be verified with real puppeteer-core browser interaction (proven working this session) before being reported as fixed — static grep/curl checks have been wrong twice.
+1. If continuing quiz work: nothing urgent — the 3-quiz site is stable and
+   JS-only now. Population-confidence panels will start showing content
+   once >=5 rated attempts land per topic (currently accumulating).
+2. Optional housekeeping (not urgent): commit the new
+   `shinylive-vs-js-duplication.md` rule to the `llm` repo via its own PR
+   (currently only local on this machine) and add its RULES.md index
+   pointer.
+3. #179 (ranking-quiz tag-selection race) is low priority now that the page
+   redirects to JS — only worth fixing if the archived Shinylive version is
+   ever resurrected from the `archive/shinylive-quizzes-2026-09-05` tag.
+4. roborev backlog note: at session-end check, `verdicts.failed=27` vs.
+   `verdicts.addressed=10` (17 outstanding, unrelated to this session's own
+   changes — 0 crash, 0 quota). Not actioned this session; worth a backlog
+   sweep if it keeps growing.
 
-## Roborev
+### Branch state
 
-- 16 reviews since 2026-08-26: 12 failed verdicts, 6 addressed (6 open, all `gemini`, no crash/quota).
-- 3 phantom "High severity" findings (#9962/#9963/#9968, all "couldn't read my own diff snapshot") closed as invalid — root cause tracked in [llm#1127](https://github.com/JohnGavin/llm/issues/1127).
+This session's own branch (`feat/cc-20260903-092557`) carries no unique
+commits of its own beyond this CHANGELOG/CURRENT_WORK append — all real
+code changes landed via separate dispatched-agent branches, each already
+merged to `main` (PRs #172-#180). This branch was fast-forwarded to
+`origin/main` before this update.
