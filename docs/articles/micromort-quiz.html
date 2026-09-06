@@ -443,12 +443,10 @@ function submitScore(score, total, difficulty, nQuestions) {
   const btn = document.getElementById('submit_btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; btn.className = 'btn btn-secondary btn-lg'; }
   const data = new URLSearchParams();
-  // TODO(#183/#184): submit per-question detail once a new Google Form field exists.
-  // const perQuestionJson = buildPerQuestionPayload();
-  // data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID', perQuestionJson);
-  // TODO(#185): submit anonymous device ID once a new Google Form field exists.
-  // const anonId = getAnonId();
-  // data.append('entry.REPLACE_WITH_REAL_FORM_FIELD_ID_2', anonId);
+  const perQuestionJson = buildPerQuestionPayload();
+  data.append('entry.601346678', perQuestionJson);
+  const anonId = getAnonId();
+  data.append('entry.201945648', anonId);
   data.append('entry.335579146', score);
   data.append('entry.2122920576', total);
   data.append('entry.621716914', new Date().toISOString());
