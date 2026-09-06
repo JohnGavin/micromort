@@ -18,8 +18,9 @@
 #
 # Key insight: 100 lifetime chest X-rays (10 mm) > 40-year X-ray tech career (2 mm)
 
-# ── Verification ──────────────────────────────────────────────────────────
-if (FALSE) {
+# ── Verification (manual only -- copy into console; not run automatically) ─
+run_manual_verification <- FALSE
+if (run_manual_verification) {
   library(micromort)
 
   # Check row counts

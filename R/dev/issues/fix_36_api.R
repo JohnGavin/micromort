@@ -30,8 +30,9 @@
 #   Group 7: Metadata         — 3 endpoints
 #   Total                     — 27
 
-# Verify
-if (FALSE) {
+# Verify (manual only -- copy into console; not run automatically)
+run_manual_verify <- FALSE
+if (run_manual_verify) {
   devtools::document()
   devtools::test(filter = "api")
   pkgload::load_all()

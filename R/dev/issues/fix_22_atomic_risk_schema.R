@@ -36,8 +36,9 @@
 # Verification:
 # 154 tests pass, R CMD check 0 errors
 
-# Quick smoke test
-if (FALSE) {
+# Quick smoke test (manual only -- copy into console; not run automatically)
+run_manual_smoke_test <- FALSE
+if (run_manual_smoke_test) {
   library(micromort)
 
   # Phase 1: atomic schema
