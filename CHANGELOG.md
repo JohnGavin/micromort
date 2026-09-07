@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-09-07 — Fix stale chronic-quiz RDS snapshot: `difficulty` field missing from deployed JSON (issue #187)
+
+### Completed
+
+**Root cause was a stale build artifact, not a missing feature ([#187](https://github.com/JohnGavin/micromort/issues/187)):** issue #187 claimed `microlife-quiz.qmd`'s question pool "has no per-pair difficulty field at all." That's wrong about the cause, though the symptom was real. `chronic_quiz_pairs()` in `R/quiz.R` has returned a populated `difficulty` column since a very old commit (`bba58ce`, issue #49), and the `vig_chronic_pairs` target (`R/tar_plans/plan_vignette_outputs.R`) correctly `rbind()`s difficulty-tagged easy/medium/hard rows. The bug was downstream: the committed `inst/extdata/vignettes/vig_chronic_quiz_json_script.rds` snapshot (and the `docs/articles/microlife-quiz.html` built from it) predated the last time `vig_chronic_pairs` was actually rebuilt in a store that got exported — the 2026-09-05 session (see that day's CHANGELOG "Known Limitations" entry below) had already found and correctly diagnosed this exact symptom ("no `difficulty` field... confirmed by inspecting the raw embedded JSON") but did not rebuild it, since it was out of scope for that session's task. This left the live JS on `microlife-quiz.qmd` (difficulty selector filter, per-question badge, the `difficulties` history array) silently reading `undefined`/`null` `pair.difficulty` for every chronic-quiz pair — a real functional bug (the difficulty filter on that page has likely been non-functional for chronic-quiz questions), not just cosmetic data staleness.
+
+**Fix:** invalidated `vig_chronic_pairs` and `vig_chronic_quiz_json_script` and rebuilt them (and the full `site_pkgdown` site) inside the project's nix shell, against an isolated worktree-local `_targets` store (never touching the shared main-checkout store). This also surfaced and worked around a pre-existing quirk in `site_rds_export`'s target code: it resolves its own export store via `targets::tar_config_get("store")`, which does NOT honour a `store=` argument passed to the outer `tar_make()` call — the store must be the conventional relative `_targets/` directory for the two resolution paths to agree. No `R/` or `_targets.R` source was touched — this is purely a rebuild-and-recommit of regenerated artifacts.
+
+### Accuracy / Metrics
+
+- `grep -c '"difficulty"' docs/articles/microlife-quiz.html`: 1 (matching line; the embedded JSON is a single line). Value distribution: `grep -o '"difficulty":"[a-z]*"' ... | sort | uniq -c` → `27 easy / 18 medium / 37 hard` (61 total pairs — zero degenerate/null values), matching the known-good distribution from `chronic_quiz_pairs()`.
+- `inst/extdata/vignettes/vig_chronic_quiz_json_script.rds` re-verified via `readRDS()` + `grepl("difficulty", ...)`: `TRUE`.
+- `devtools::test()`: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (same 4 pre-existing/unrelated skips as prior sessions).
+- `parse("_targets.R")`: OK, 6 top-level expressions, no errors.
+
+### Known Limitations
+
+- `site_rds_export` still reports `85/94 vig_* targets exported` after this fix (up from 83/94 before) — the remaining 9 missing targets (`vig_arch_tar_visnetwork`, `vig_pipeline_dependency_graph`, `vig_telemetry_commit_velocity_chart`, `vig_whatis_mundane_comparison_sentence`, `vig_whatis_mundane_table`, `vig_whatis_quiz_intro_sentence`, `vig_ranking_quiz_json_script`, `vig_regional_le_gap_text`, `vig_quiz_json_script`) are a pre-existing, unrelated gap referenced directly in the `site_rds_export` target's own code comment (micromort#126) — out of scope for this fix.
+- The full `site_pkgdown` rebuild (required because `site_rds_export` re-exports every `vig_*` target and doesn't statically depend on individual ones in the targets DAG) touched several other `docs/articles/*.html` files and `inst/extdata/vignettes/*.rds` snapshots beyond the two directly relevant to #187. Spot-checked: the `docs/articles/*.html` diffs are cosmetic random `htmlwidget-*` instance-ID regeneration (data payload byte-identical); `vig_quiz_pairs.rds`/`vig_palatable_*.rds` content differences are pre-existing drift between the git-committed snapshot and the (unrelated, untouched-by-this-fix) cached store value — same class of staleness bug as #187 itself, just on different targets, and out of scope here.
+
 ## 2026-09-05 — Quiz history/progress UI + per-question/anon-ID capture scaffolding (issues #182-#185)
 
 ### Completed
