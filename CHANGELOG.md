@@ -1,5 +1,59 @@
 # Changelog
 
+## 2026-09-06/07 — Session: per-question server-side capture finished, issue triage, stale PR cleanup
+
+### Completed
+- Filed 4 follow-up issues after auditing what the Google Sheet submission
+  pipeline actually captures ([#182](https://github.com/JohnGavin/micromort/issues/182)
+  analysis, [#183](https://github.com/JohnGavin/micromort/issues/183) ASAP
+  per-question capture, [#184](https://github.com/JohnGavin/micromort/issues/184)
+  per-question difficulty, [#185](https://github.com/JohnGavin/micromort/issues/185)
+  user identification) plus [#187](https://github.com/JohnGavin/micromort/issues/187)
+  (chronic quiz's question pool has no per-pair difficulty field at all,
+  found while implementing #184).
+- Grouped all open issues by similarity, ordered by priority, and executed
+  the highest-priority group (#182-#185) end to end: shipped the "My
+  Progress" localStorage view + per-question difficulty tracking (PR #186),
+  then — once the user manually added the two needed fields to the Google
+  Form (found via the linked Sheet's `Form > Edit form` menu, entry IDs
+  identified by directly parsing the live form's own `FB_PUBLIC_LOAD_DATA_`
+  JSON rather than guessed) — wired real per-question JSON + anonymous
+  device-ID submission into all 3 live quizzes (PR #188). Verified end to
+  end by intercepting the actual `fetch(FORM_URL, ...)` request body during
+  a real quiz playthrough: exactly 9 fields present, the 2 new ones
+  non-empty, the 7 old ones unchanged.
+- Triaged 3 old open PRs found during that pass: merged
+  [#153](https://github.com/JohnGavin/micromort/pull/153) (lint fix, rebased
+  onto current main after a stale-CI-cancellation), closed
+  [#155](https://github.com/JohnGavin/micromort/pull/155) as moot (touched
+  the 3 Shinylive quiz files retired in #180 — confirmed via `mergeable:
+  CONFLICTING`) and [#156](https://github.com/JohnGavin/micromort/pull/156)
+  as superseded (verified the actual live fix for #142 is a different,
+  already-merged mechanism — a global `body:has(#quiz-app):not(.quiz-results)`
+  CSS rule in PR #144 — not #156's per-file `<details>`-wrapping approach).
+- Answered a user question about what's needed for direct programmatic
+  Google Sheets/Forms access going forward (service account + Cloud
+  project + API enablement + credential storage) without setting anything
+  up, since it's a rare enough need that the manual pre-filled-link
+  workflow used this session is a reasonable fallback.
+
+### Failed Approaches
+- N/A — this round was mostly triage/verification/wiring, not new
+  implementation with dead ends.
+
+### Accuracy / Metrics
+- `devtools::test()` after PR #188: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049`.
+- `check_dark_contrast.sh`: clean on all 3 rebuilt pages, both PR #186 and
+  PR #188.
+
+### Known Limitations
+- [#187](https://github.com/JohnGavin/micromort/issues/187) (chronic quiz
+  missing per-pair difficulty at the data source) is filed, not fixed —
+  the new per-question difficulty tracking is empty for chronic-quiz
+  attempts until that's addressed.
+- Historical/pre-this-session Sheet rows have no per-question JSON or
+  anonymous ID — only new submissions from PR #188 onward carry it.
+
 ## 2026-09-05 — Quiz history/progress UI + per-question/anon-ID capture scaffolding (issues #182-#185)
 
 ### Completed
