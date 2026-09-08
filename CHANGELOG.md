@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-08 — Fix confidence-field format mismatch dropping every quiz confidence submission (issue #190)
+
+### Completed
+
+**Root cause: a live Form field-type mismatch, not a code bug in isolation ([#190](https://github.com/JohnGavin/micromort/issues/190)):** all three live quiz pages (`micromort-quiz.qmd`, `microlife-quiz.qmd`, `risk-ranking-quiz.qmd`) sent the attempt's mean confidence to the Google Form as a bare rounded integer (`data.append('entry.1681143871', Math.round(meanConf))`, e.g. `73`). The live Form's confidence question (field id 891316964) is a strict multiple-choice field whose only valid answers are the literal strings `"0%"`, `"25%"`, `"50%"`, `"75%"`, `"100%"` — confirmed by fetching the live `viewform` page and parsing its embedded `FB_PUBLIC_LOAD_DATA_` JSON. Because the submission `fetch()` runs with `mode: 'no-cors'`, Google Forms silently dropped the non-matching answer with no error visible to the page, so 0/61 real submissions in the live Sheet carried a confidence value, including post-launch and fully-rated attempts.
+
+**Fix:** each `submitScore()` now snaps the computed mean confidence to the nearest of the five valid 25%-wide buckets and appends the percent-suffixed string the Form actually accepts: `const snapped = Math.round(meanConf / 25) * 25; data.append('entry.1681143871', snapped + '%');`. No other field or line was touched — the per-question-JSON and anon-ID stubs from [#188](https://github.com/JohnGavin/micromort/issues/188) are unaffected, and this does not address the other open questions in [#182](https://github.com/JohnGavin/micromort/issues/182)/[#132](https://github.com/JohnGavin/micromort/issues/132) (per-question data capture, user identification).
+
+### Accuracy / Metrics
+
+- `grep -n "entry.1681143871" vignettes/{micromort,microlife,risk-ranking}-quiz.qmd`: all three show the new `snapped + '%'` form; no bare `Math.round(meanConf))` form remains anywhere.
+- Node logic check (throwaway script, not committed) replaying `computeMeanConfidence()` + the new snap/format logic across 14 representative confidence combinations (including edge cases `[33]`, `[62.5]`, `[87.5]`, mixed `null`/`undefined` ratings): 14/14 PASS — output always matches `/^(0|25|50|75|100)%$/`.
+- `devtools::test()`: `FAIL 0` (post-rebuild).
+- No POST was ever made to the live Google Form during verification — the fix was verified purely via the Node-level logic check per the shared-production-data constraint.
+
 ## 2026-09-07 — Fix stale chronic-quiz RDS snapshot: `difficulty` field missing from deployed JSON (issue #187)
 
 ### Completed
