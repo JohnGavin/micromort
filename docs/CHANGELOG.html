@@ -77,6 +77,12 @@
 <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code>: <code>FAIL 0</code> (post-rebuild).</li>
 <li>No POST was ever made to the live Google Form during verification — the fix was verified purely via the Node-level logic check per the shared-production-data constraint.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<ul><li>
+<strong>The full <code>site_pkgdown</code> rebuild caused one real regression, since fixed in a follow-up commit:</strong> built against a fresh worktree-local <code>_targets</code> store, <code>tar_make(names = "site_pkgdown")</code> only ran 7 targets (<code>site_rds_export</code>/<code>readme</code>/<code>source_hash</code>, <code>vig_quiz_pairs</code>, <code>site_document</code>/<code>quiz_csv_export</code>/<code>pkgdown</code>) — the same pre-existing <code>site_rds_export</code> store-resolution quirk documented in the #187 entry above meant the <code>vig_*</code> target chain never built live. Every vignette except <code>what-is-a-micromort.qmd</code> reads <code>vig_build_info</code> via <code>safe_tar_read()</code>, which falls back to the committed RDS snapshot and rendered correctly; <code>what-is-a-micromort.qmd</code> alone calls <code>targets::tar_read_raw("vig_build_info", ...)</code> directly, bypassing that fallback, so its build-info footer (“micromort 0.1.0 | Git … | Built …”) silently vanished from both <code>docs/articles/what-is-a-micromort.html</code> and <code>.md</code>. Restored to the pre-rebuild content in a follow-up commit on this branch; the underlying <code>tar_read_raw()</code> vs. <code>safe_tar_read()</code> inconsistency in that one vignette is a pre-existing code-quality gap, out of scope here — worth its own follow-up issue.</li>
+<li>Collateral drift across the other 7 unrelated <code>docs/articles/*.html</code> files from the same full rebuild was spot-checked and confirmed cosmetic (htmlwidget instance-ID/hash-key churn only — actual <code>x</code>/<code>y</code>/<code>z</code>/<code>text</code>/<code>values</code>/<code>labels</code> chart data byte-identical against <code>origin/main</code>), matching the #187 precedent. <code>inst/extdata/vignettes/quiz_pairs.csv</code> content differences are the same already-documented staleness class as #187 (deterministic <code>seed = 42</code> generation; the diff reflects new activities added to the underlying risk-value dataset since the CSV was last regenerated, confirmed via a sorted-file diff, not non-determinism) — out of scope here, same as #187.</li>
+</ul></div>
 </div>
 <div class="section level2">
 <h2 id="id_2026-09-07--fix-stale-chronic-quiz-rds-snapshot-difficulty-field-missing-from-deployed-json-issue-187">2026-09-07 — Fix stale chronic-quiz RDS snapshot: <code>difficulty</code> field missing from deployed JSON (issue #187)<a class="anchor" aria-label="anchor" href="#id_2026-09-07--fix-stale-chronic-quiz-rds-snapshot-difficulty-field-missing-from-deployed-json-issue-187"></a></h2>
@@ -97,7 +103,7 @@
 <code>parse("_targets.R")</code>: OK, 6 top-level expressions, no errors.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations"></a></h3>
+<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
 <ul><li>
 <code>site_rds_export</code> still reports <code>85/94 vig_* targets exported</code> after this fix (up from 83/94 before) — the remaining 9 missing targets (<code>vig_arch_tar_visnetwork</code>, <code>vig_pipeline_dependency_graph</code>, <code>vig_telemetry_commit_velocity_chart</code>, <code>vig_whatis_mundane_comparison_sentence</code>, <code>vig_whatis_mundane_table</code>, <code>vig_whatis_quiz_intro_sentence</code>, <code>vig_ranking_quiz_json_script</code>, <code>vig_regional_le_gap_text</code>, <code>vig_quiz_json_script</code>) are a pre-existing, unrelated gap referenced directly in the <code>site_rds_export</code> target’s own code comment (micromort#126) — out of scope for this fix.</li>
 <li>The full <code>site_pkgdown</code> rebuild (required because <code>site_rds_export</code> re-exports every <code>vig_*</code> target and doesn’t statically depend on individual ones in the targets DAG) touched several other <code>docs/articles/*.html</code> files and <code>inst/extdata/vignettes/*.rds</code> snapshots beyond the two directly relevant to #187. Spot-checked: the <code>docs/articles/*.html</code> diffs are cosmetic random <code>htmlwidget-*</code> instance-ID regeneration (data payload byte-identical); <code>vig_quiz_pairs.rds</code>/<code>vig_palatable_*.rds</code> content differences are pre-existing drift between the git-committed snapshot and the (unrelated, untouched-by-this-fix) cached store value — same class of staleness bug as #187 itself, just on different targets, and out of scope here.</li>
@@ -122,7 +128,7 @@
 <li>Puppeteer + system Chrome interactive verification (played a full attempt end-to-end on each of the 3 pages): “My Progress” table renders the just-completed attempt and persists correctly across a page reload; <code>buildPerQuestionPayload()</code> and <code>getAnonId()</code> both execute without throwing (confirmed via direct in-page evaluation) even though neither is wired into the network call yet; the anon ID is stable across calls and survives a reload; <code>grep</code> confirms the live <code>fetch(FORM_URL, ...)</code> submission in all 3 files still sends the exact same <code>entry.*</code> field set as before this change — nothing new actually reaches the Form.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-1">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-1"></a></h3>
+<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
 <ul><li>
 <strong>Data gap found, not fixed (out of scope for this task):</strong> the chronic quiz’s embedded <code>quiz-data</code> JSON (<code>vig_chronic_quiz_json_script</code> / <code>vig_chronic_pairs</code>) carries no <code>difficulty</code> field per pair at all — confirmed by inspecting the raw embedded JSON in the rebuilt <code>microlife-quiz.html</code>. This pre-dates this change (no <code>R/</code> file was touched); it means the new <code>difficulties</code> array in <code>micromort_quiz_history</code> will be empty for chronic-quiz attempts until that data-pipeline gap is separately fixed. The acute and ranking quizzes do carry per-question difficulty correctly (verified in the same interactive test).</li>
 <li>A full <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> rebuild (<code>site_verify</code> target) was required to un-stale the 3 edited articles, which regenerated build-info footers/htmlwidget IDs across every article in <code>docs/</code> — expected churn from this project’s existing full-site-rebuild architecture, not a scope creep of this change.</li>
@@ -150,7 +156,7 @@
 <li>Removed <code>tests/testthat/test-qa-chronic-csv-gate.R</code> and its snapshot (<code>_snaps/qa-chronic-csv-gate.md</code>) — the <code>qa_chronic_csv_gate</code> target they simulated no longer exists.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-2">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-2"></a></h3>
+<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
 <ul><li>Puppeteer/system-Chrome click-through verification (used successfully for the confidence-capture work earlier this session) was not re-run for the streak indicator specifically — <code>puppeteer-core</code> was not installed in this worktree’s node environment and installing it was judged not worth the time for this one check, per static/grep verification already covering: JS syntax validity (<code>node --check</code>) of all 3 edited quiz files, streak code present in both source <code>.qmd</code> and the rebuilt <code>docs/articles/*.html</code>, and the <code>#streak_display</code> element wired into each results view.</li>
 <li>
 <code>site_rds_export</code> reported <code>0/94 vig_* targets exported</code> during the narrowed rebuild — expected: this worktree’s <code>_targets</code> store doesn’t have the other (unrelated) <code>vig_*</code> targets already built, and a full <code>tar_make()</code> was intentionally not run (would pull in a live Google Sheets fetch via <code>leaderboard_raw</code>/<code>site_verify</code>). Does not affect the retirement itself.</li>
@@ -190,7 +196,7 @@
 <li>roborev: 16 reviews since 2026-08-26, 12 failed verdicts / 6 addressed (6 open, all <code>gemini</code>, no crash/quota — see session’s own filed llm#1127 for a related root-cause investigation into false “High severity” phantom findings).</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-3">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-3"></a></h3>
+<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
 <ul><li>
 <strong>Quiz confidence Phase 2 is only live on <code>micromort-quiz.qmd</code>.</strong> <code>microlife-quiz.qmd</code> and <code>risk-ranking-quiz.qmd</code> still need the same confidence-capture + calibration wiring — per project memory (<code>project_quiz-confidence-phase2-definition-of-done.md</code>), get one quiz’s full population-comparison + Brier-score + actual-vs-predicted chart genuinely working (it now is) before replicating.</li>
 <li>
@@ -251,7 +257,7 @@
 <li>Zero residual stale labels: <code>grep "Air pollution (high)" docs/articles/*.html</code> returns no matches.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-4">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-4"></a></h3>
+<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
 <ul><li>The 3rd roborev #3523 finding (freshness guard structurally only compares timestamps, not content) was addressed <em>by symptom</em> (the site has now been rebuilt) but not <em>by root cause</em> (the guard still can’t detect future content drift). Next session should add a content-hash check to <code>tests/testthat/test-vignette-outputs.R</code> so future PM2.5-style drift trips CI rather than slipping through to a roborev review.</li>
 <li>4 stale chronic_risks-dependent vignette RDS were regenerated by hand-ported tar code in a one-shot Rscript rather than by <code>tar_make()</code> on the worktree (which has no <code>_targets/</code> store). If new vignette targets are added that depend on <code><a href="reference/chronic_risks.html">chronic_risks()</a></code>, they will be missed by this manual list.</li>
 <li>Three shinylive vignettes rebuilt via direct <code>quarto render</code> rather than pkgdown — they show the warning <code>WARN: Refusing to remove directory … _files since it is not a subdirectory of the main project directory.</code> This is the documented limitation; harmless but cosmetic.</li>
@@ -423,7 +429,7 @@
 <strong>XSS surface:</strong> 7 paths sanitized in Cluster C + 16 paths in Round 3A across 3 quiz vignettes. <code>safeHref()</code> URL allowlist now blocks <code>javascript:</code>, <code>data:</code>, <code>vbscript:</code> injection vectors.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-5">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-5"></a></h3>
+<h3 id="known-limitations-6">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-6"></a></h3>
 <ul><li>
 <strong><code>docs/articles/what-is-a-micromort.{md,html}</code> are stale relative to source.</strong> Task #21 (docs rebuild) hit org budget cap before commit. Site shows old 7-row wine table; source has 6-row table with bicycle/coffee prose. Next session: run <code>pkgdown::build_article("what-is-a-micromort")</code> or full <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code>.</li>
 <li>
@@ -471,7 +477,7 @@
 <li>CI: passing (green)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-6">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-6"></a></h3>
+<h3 id="known-limitations-7">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-7"></a></h3>
 <ul><li>12 chronic risk factors still missing from #99 (GLP-1, vaping, sleep dose-response, social connection, DASH/MIND diets, nuts, coffee, aspirin, sauna, dancing, HRT)</li>
 <li>docs_qa_precommit.sh hook still buggy</li>
 <li>Quarto 1.8.26 strips scripts — requires Python post-injection for causes_of_death</li>
@@ -524,7 +530,7 @@
 <li>New vignette: causes_of_death (pure JS, 80KB deployed)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-7">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-7"></a></h3>
+<h3 id="known-limitations-8">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-8"></a></h3>
 <ul><li>chronic_vs_acute still has 4 “not found in targets” in deployed HTML (Closeread, pkgdown can’t rebuild — quarto direct render is clean)</li>
 <li>docs_qa_precommit.sh hook has a bug (exits non-zero even with 0 errors) — requires python workaround to stage docs/ files</li>
 <li>OWID catalog URLs defunct (#94 blocks #90-92)</li>
@@ -566,7 +572,7 @@
 <li>OWID grapher CSV download pattern also returns 404 for GBD charts specifically (licensing restriction, not general breakage)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-8">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-8"></a></h3>
+<h3 id="known-limitations-9">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-9"></a></h3>
 <ul><li>#94 blocks #90, #91, #92 — all need manual IHME account creation + download</li>
 <li>Existing bundled data frozen at GBD 2019 (via 2024-05-20 OWID snapshot)</li>
 <li>Pending from prior sessions: glossary/reference page fixes, text selectability, “click to expand” broken, article rebuilds for acronym link fixes</li>
@@ -709,7 +715,7 @@
 <li>New bundled datasets: 4 CSVs (chronic diseases, infectious diseases, LD50, combined quiz pairs)</li>
 </ul></div>
 <div class="section level3">
-<h3 id="known-limitations-9">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-9"></a></h3>
+<h3 id="known-limitations-10">Known Limitations<a class="anchor" aria-label="anchor" href="#known-limitations-10"></a></h3>
 <ul><li>Introduction page build-info shows stale date (2026-04-18) — vig_build_info target needs rebuild</li>
 <li>
 <code>noUiSlider</code> JS error in DT filter widgets (cosmetic, doesn’t affect functionality)</li>

@@ -46,6 +46,38 @@ are unaffected, and this does not address the other open questions in
   the fix was verified purely via the Node-level logic check per the
   shared-production-data constraint.
 
+### Known Limitations
+
+- **The full `site_pkgdown` rebuild caused one real regression, since
+  fixed in a follow-up commit:** built against a fresh worktree-local
+  `_targets` store, `tar_make(names = "site_pkgdown")` only ran 7
+  targets (`site_rds_export`/`readme`/`source_hash`, `vig_quiz_pairs`,
+  `site_document`/`quiz_csv_export`/`pkgdown`) — the same pre-existing
+  `site_rds_export` store-resolution quirk documented in the \#187 entry
+  above meant the `vig_*` target chain never built live. Every vignette
+  except `what-is-a-micromort.qmd` reads `vig_build_info` via
+  `safe_tar_read()`, which falls back to the committed RDS snapshot and
+  rendered correctly; `what-is-a-micromort.qmd` alone calls
+  `targets::tar_read_raw("vig_build_info", ...)` directly, bypassing
+  that fallback, so its build-info footer (“micromort 0.1.0 \| Git … \|
+  Built …”) silently vanished from both
+  `docs/articles/what-is-a-micromort.html` and `.md`. Restored to the
+  pre-rebuild content in a follow-up commit on this branch; the
+  underlying `tar_read_raw()` vs. `safe_tar_read()` inconsistency in
+  that one vignette is a pre-existing code-quality gap, out of scope
+  here — worth its own follow-up issue.
+- Collateral drift across the other 7 unrelated `docs/articles/*.html`
+  files from the same full rebuild was spot-checked and confirmed
+  cosmetic (htmlwidget instance-ID/hash-key churn only — actual
+  `x`/`y`/`z`/`text`/`values`/`labels` chart data byte-identical against
+  `origin/main`), matching the \#187 precedent.
+  `inst/extdata/vignettes/quiz_pairs.csv` content differences are the
+  same already-documented staleness class as \#187 (deterministic
+  `seed = 42` generation; the diff reflects new activities added to the
+  underlying risk-value dataset since the CSV was last regenerated,
+  confirmed via a sorted-file diff, not non-determinism) — out of scope
+  here, same as \#187.
+
 ## 2026-09-07 — Fix stale chronic-quiz RDS snapshot: `difficulty` field missing from deployed JSON (issue \#187)
 
 ### Completed
