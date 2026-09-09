@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-09-09 — Fix `tar_read_raw()` fragility in what-is-a-micromort's build-info footer (issue #192)
+
+### Completed
+
+**Follow-up to the #190 "Known Limitations" gap:** every other vignette's build-info footer reads `vig_build_info` via `safe_tar_read()`, which falls back to the committed `inst/extdata/vignettes/vig_build_info.rds` snapshot whenever the live `_targets` store doesn't have the target built. `vignettes/what-is-a-micromort.qmd` alone called `targets::tar_read_raw("vig_build_info", store = ...)` directly inside a bare `tryCatch()` — with no RDS fallback, an unbuilt/unreachable live target silently dropped the whole footer, which is exactly what happened during the #190 full-site rebuild ([#190](https://github.com/JohnGavin/micromort/issues/190) "Known Limitations", fixed in a same-branch follow-up commit at the time). [#192](https://github.com/JohnGavin/micromort/issues/192) tracked converting this one vignette to the same `safe_tar_read()` pattern everyone else already uses, closing the gap for good.
+
+**Fix:** replaced the bare `tryCatch(targets::tar_read_raw(...))` block in the `build-info` chunk with a single `safe_tar_read("vig_build_info")` call — no other chunk, line, or file touched.
+
+### Accuracy / Metrics
+
+- `grep -n "tar_read_raw\|safe_tar_read" vignettes/what-is-a-micromort.qmd`: only `safe_tar_read("vig_build_info")` remains; no `tar_read_raw(` call left in the file.
+- Normal-conditions render (`quarto render ... --to html`): `grep -c "Built" <output>` = 1.
+- Regression proof — simulated the exact #192/#190 failure mode by pointing `TARGETS_STORE` at a nonexistent directory before rendering: `grep -c "Built" <output>` = 1 (still present, footer text carries the RDS snapshot's static "Built 2026-04-18" date, confirming the fallback path was actually exercised rather than a live store coincidentally succeeding).
+- `devtools::test()`: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049`.
+- `docs/articles/what-is-a-micromort.html` rebuilt via `pkgdown::build_article("what-is-a-micromort")` (single-article, not a full `site_pkgdown` rebuild) to satisfy the repo's own source/output staleness test (`test-vignette-outputs.R`); diff against the prior committed copy is limited to four randomly-regenerated `htmlwidget-*` div/script instance IDs — all chart/table data, categories, and the build-info footer text are byte-identical to the previously deployed page.
+
 ## 2026-09-08 — Fix confidence-field format mismatch dropping every quiz confidence submission (issue #190)
 
 ### Completed
