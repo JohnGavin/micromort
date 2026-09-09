@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-09-08 — Fix confidence-field format mismatch dropping every quiz confidence submission (issue #190)
+
+### Completed
+
+**Root cause: a live Form field-type mismatch, not a code bug in isolation ([#190](https://github.com/JohnGavin/micromort/issues/190)):** all three live quiz pages (`micromort-quiz.qmd`, `microlife-quiz.qmd`, `risk-ranking-quiz.qmd`) sent the attempt's mean confidence to the Google Form as a bare rounded integer (`data.append('entry.1681143871', Math.round(meanConf))`, e.g. `73`). The live Form's confidence question (field id 891316964) is a strict multiple-choice field whose only valid answers are the literal strings `"0%"`, `"25%"`, `"50%"`, `"75%"`, `"100%"` — confirmed by fetching the live `viewform` page and parsing its embedded `FB_PUBLIC_LOAD_DATA_` JSON. Because the submission `fetch()` runs with `mode: 'no-cors'`, Google Forms silently dropped the non-matching answer with no error visible to the page, so 0/61 real submissions in the live Sheet carried a confidence value, including post-launch and fully-rated attempts.
+
+**Fix:** each `submitScore()` now snaps the computed mean confidence to the nearest of the five valid 25%-wide buckets and appends the percent-suffixed string the Form actually accepts: `const snapped = Math.round(meanConf / 25) * 25; data.append('entry.1681143871', snapped + '%');`. No other field or line was touched — the per-question-JSON and anon-ID stubs from [#188](https://github.com/JohnGavin/micromort/issues/188) are unaffected, and this does not address the other open questions in [#182](https://github.com/JohnGavin/micromort/issues/182)/[#132](https://github.com/JohnGavin/micromort/issues/132) (per-question data capture, user identification).
+
+### Accuracy / Metrics
+
+- `grep -n "entry.1681143871" vignettes/{micromort,microlife,risk-ranking}-quiz.qmd`: all three show the new `snapped + '%'` form; no bare `Math.round(meanConf))` form remains anywhere.
+- Node logic check (throwaway script, not committed) replaying `computeMeanConfidence()` + the new snap/format logic across 14 representative confidence combinations (including edge cases `[33]`, `[62.5]`, `[87.5]`, mixed `null`/`undefined` ratings): 14/14 PASS — output always matches `/^(0|25|50|75|100)%$/`.
+- `devtools::test()`: `FAIL 0` (post-rebuild).
+- No POST was ever made to the live Google Form during verification — the fix was verified purely via the Node-level logic check per the shared-production-data constraint.
+
+### Known Limitations
+
+- **The full `site_pkgdown` rebuild caused one real regression, since fixed in a follow-up commit:** built against a fresh worktree-local `_targets` store, `tar_make(names = "site_pkgdown")` only ran 7 targets (`site_rds_export`/`readme`/`source_hash`, `vig_quiz_pairs`, `site_document`/`quiz_csv_export`/`pkgdown`) — the same pre-existing `site_rds_export` store-resolution quirk documented in the #187 entry above meant the `vig_*` target chain never built live. Every vignette except `what-is-a-micromort.qmd` reads `vig_build_info` via `safe_tar_read()`, which falls back to the committed RDS snapshot and rendered correctly; `what-is-a-micromort.qmd` alone calls `targets::tar_read_raw("vig_build_info", ...)` directly, bypassing that fallback, so its build-info footer ("micromort 0.1.0 \| Git ... \| Built ...") silently vanished from both `docs/articles/what-is-a-micromort.html` and `.md`. Restored to the pre-rebuild content in a follow-up commit on this branch; the underlying `tar_read_raw()` vs. `safe_tar_read()` inconsistency in that one vignette is a pre-existing code-quality gap, out of scope here — worth its own follow-up issue.
+- Collateral drift across the other 7 unrelated `docs/articles/*.html` files from the same full rebuild was spot-checked and confirmed cosmetic (htmlwidget instance-ID/hash-key churn only — actual `x`/`y`/`z`/`text`/`values`/`labels` chart data byte-identical against `origin/main`), matching the #187 precedent. `inst/extdata/vignettes/quiz_pairs.csv` content differences are the same already-documented staleness class as #187 (deterministic `seed = 42` generation; the diff reflects new activities added to the underlying risk-value dataset since the CSV was last regenerated, confirmed via a sorted-file diff, not non-determinism) — out of scope here, same as #187.
+
 ## 2026-09-07 — Fix stale chronic-quiz RDS snapshot: `difficulty` field missing from deployed JSON (issue #187)
 
 ### Completed

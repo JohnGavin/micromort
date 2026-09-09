@@ -258,7 +258,10 @@ function submitScore(score, total, difficulty, nQuestions) {
   data.append('entry.232879816', difficulty || '');
   data.append('entry.2010782223', nQuestions || '');
   const meanConf = computeMeanConfidence();
-  if (meanConf !== null) data.append('entry.1681143871', Math.round(meanConf));
+  if (meanConf !== null) {
+    const snapped = Math.round(meanConf / 25) * 25;
+    data.append('entry.1681143871', snapped + '%');
+  }
   fetch(FORM_URL, {method: 'POST', mode: 'no-cors', body: data}).then(() => {
     scoreSubmitted = true;
     if (btn) { btn.textContent = 'Submitted!'; btn.className = 'btn btn-success btn-lg'; }
