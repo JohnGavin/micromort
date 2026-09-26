@@ -2,12 +2,19 @@ name: Leaderboard Stats Refresh
 
 on:
   schedule:
-    # Every Monday at 06:00 UTC
+    # Two crons so a new submission is counted within a day, not a week:
+    #  - Monday 06:00 UTC: full run, including the weekly email report.
+    #  - Every other day 06:00 UTC: refresh stats + deploy only. The
+    #    "Send email report" step is gated on github.event.schedule
+    #    (must match this second cron string exactly) so it stays silent.
     - cron: '0 6 * * 1'
+    - cron: '0 6 * * 0,2-6'
   workflow_dispatch:
 
 permissions:
   contents: write
+  # gh workflow run pkgdown.yaml (see "Trigger Pages deploy" step)
+  actions: write
 
 jobs:
   refresh-stats:
@@ -110,15 +117,45 @@ jobs:
           '"
 
       - name: Commit updated stats
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/api/quiz_stats.json
-          git diff --cached --quiet || git commit -m "chore: Refresh leaderboard stats [automated]"
-          git push
+          # generated_at changes on every run, so a plain "did the file
+          # change" test would commit (and redeploy) daily even with no new
+          # submissions. Ignore hunks made only of generated_at lines
+          # (-I): exit 0 = nothing else changed, 1 = real change.
+          # --exit-code (not --quiet) so -I is honoured on every git version.
+          rc=0
+          git diff --cached --exit-code --no-ext-diff -I'"generated_at"' > /dev/null || rc=$?
+          if [ "$rc" -eq 1 ]; then
+            git commit -m "chore: Refresh leaderboard stats [automated]"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$rc" -eq 0 ]; then
+            echo "Only generated_at changed; not committing or deploying."
+            git restore --staged docs/api/quiz_stats.json
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::git diff exited $rc; cannot tell whether stats changed"
+            exit "$rc"
+          fi
+
+      # Pushes made with the default GITHUB_TOKEN deliberately do NOT trigger
+      # other workflows, so the push above never fires pkgdown.yaml's
+      # `push: paths: docs/**` trigger and the refreshed JSON was never
+      # deployed to Pages (the live JSON stayed weeks stale). A
+      # workflow_dispatch run IS exempt from that restriction, so dispatch
+      # the Pages deploy explicitly. Requires `actions: write` above.
+      - name: Trigger Pages deploy
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pkgdown.yaml --ref main
 
       - name: Send email report
-        if: steps.report.outputs.SEND_EMAIL == 'true'
+        if: steps.report.outputs.SEND_EMAIL == 'true' && github.event.schedule != '0 6 * * 0,2-6'
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
