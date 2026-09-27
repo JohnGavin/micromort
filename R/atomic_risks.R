@@ -934,6 +934,67 @@ atomic_risks <- function() {
     "daily_alcohol_mortality", "alcohol use", owid_alcohol_url
   )
 
+  # ── Part 13: Age/country-conditioned home-safety mortality ─────────────
+  # A single new data point from a forensic-pathology retrospective study;
+  # NOT merged with or a replacement for the general-population "Taking a
+  # bath" row in Part 4 above (0.07 mm, Wikipedia-sourced, unconditioned
+  # population), nor the age-conditioned "Taking a bath (age-conditioned)"
+  # / bath_age rows in Part 10 (US CDC, per-bath) -- this is a different,
+  # narrower question (Japan, age 75+, annual rate) and is complementary,
+  # not comparable-by-substitution.
+  # Source: Satoh et al. 2013, Am J Forensic Med Pathol 34(2):164-168.
+  satoh_bathtub_url <- "https://doi.org/10.1097/PAF.0b013e31828d68c7"
+
+  home_safety <- tibble::tribble(
+    ~activity, ~condition_value, ~micromorts,
+
+    # 33 accidental-drowning deaths / 100,000 population / yr, Japan age 75+
+    # NOTE: label says "(per year)", not "(annual)" -- the test suite's
+    # `grepl("_annual$", activity_id)` filter identifies Part 5's annual
+    # radiation rows; ending this activity_id in "_annual" would falsely
+    # match that filter and corrupt its row-count/schema assertions.
+    "Accidental drowning, Japan age 75+ (per year)", "JP", 330
+  ) |>
+    dplyr::mutate(
+      activity_id = make_activity_id(activity),
+      component = "drowning",
+      risk_category = "physical",
+      component_label = paste0(
+        "Accidental drowning (predominantly bathtub-related in this ",
+        "population)"
+      ),
+      category = "Daily Life",
+      period = "per year",
+      period_type = "year",
+      source_url = satoh_bathtub_url,
+      component_id = paste0(activity_id, "_", component, "_", condition_value),
+      duration_hours = NA_real_,
+      hedgeable = TRUE,
+      hedge_description = paste0(
+        "Lower bath water temperature, non-slip mat, check-in routine for ",
+        "elderly relatives, avoid bathing alone"
+      ),
+      hedge_reduction_pct = dplyr::if_else(hedgeable, 30, NA_real_),
+      condition_variable = "country",
+      confidence = "medium",
+      notes = paste0(
+        "Satoh et al. 2013 (Am J Forensic Med Pathol 34(2):164-168): 33 ",
+        "accidental-drowning deaths per 100,000 population/year among ",
+        "Japanese aged >75; the paper's own subject is specifically ",
+        "hot-bathtub deaths (268 cases reviewed) but this exact figure is ",
+        "for accidental drowning broadly in that age/country group, not ",
+        "narrowed to bathtub incidents in this one statistic. The authors ",
+        "state the true rate 'may be considerably underestimated' because ",
+        "pathologists tend to classify ambiguous cases as natural death ",
+        "absent clear water-inhalation evidence. Distinct from the ",
+        "'Taking a bath' row above (general/unconditioned population, ",
+        "much lower value) -- different question, not a replacement."
+      ),
+      validation_status = "single_source",
+      source_count = 1L,
+      estimate_range = NA_character_
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -974,7 +1035,8 @@ atomic_risks <- function() {
     smoking_mortality[, all_cols],
     pollution_mortality[, all_cols],
     obesity_mortality[, all_cols],
-    alcohol_mortality[, all_cols]
+    alcohol_mortality[, all_cols],
+    home_safety[, all_cols]
   )
 }
 

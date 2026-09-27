@@ -42,13 +42,13 @@ test_that("atomic_risks() has expected row count", {
   ar <- atomic_risks()
   # 62 legacy + 16 flights + 8 medical + 6 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned
-  # + 24 disease-by-country + 24 risk-factor-attributed = 193
+  # + 24 disease-by-country + 24 risk-factor-attributed + 1 home-safety = 194
   # (wine moved from atomic to chronic_risks)
-  expect_equal(nrow(ar), 193)
+  expect_equal(nrow(ar), 194)
   # 62 legacy + 4 flights + 8 medical + 6 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned
-  # + 4 disease-by-country + 4 risk-factor = 120 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 120)
+  # + 4 disease-by-country + 4 risk-factor + 1 home-safety = 121 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 121)
 })
 
 test_that("component_id values are unique", {
@@ -606,8 +606,8 @@ test_that("homicide included with country profile", {
 test_that("country-conditioned entries hidden from default view", {
   ar <- atomic_risks()
   country <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "country", ]
-  # 6 road + 6 homicide + 24 disease + 24 risk-factor = 60
-  expect_equal(nrow(country), 60)
+  # 6 road + 6 homicide + 24 disease + 24 risk-factor + 1 home-safety (JP) = 61
+  expect_equal(nrow(country), 61)
 
   cr <- common_risks()
   # None of these should appear in default common_risks

@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-09-27 — Add Japan elderly (75+) accidental-drowning annual risk (Satoh et al. 2013)
+
+### Completed
+
+**New atomic risk row, `R/atomic_risks.R` Part 13 (`home_safety`):** one row, "Accidental drowning, Japan age 75+ (per year)" — **330 micromorts/year**, `condition_variable = "country"`, `condition_value = "JP"`, `confidence = "medium"`, `validation_status = "single_source"`. Source: Satoh F, Osawa M, Hasegawa I, Seto Y, Tsuboi A. "Dead in Hot Bathtub" Phenomenon — Accidental Drowning or Natural Disease? *Am J Forensic Med Pathol.* 2013;34(2):164-168. `doi:10.1097/PAF.0b013e31828d68c7`. Quoted figure: "Annual mortality in Japan from accidental drowning in persons older than 75 years is 33 deaths per 100,000 population" → 3.3e-4/yr = 330 micromorts/yr.
+
+**Caveats preserved in the row's `notes` field:**
+- The paper's own subject is specifically hot-bathtub deaths (268 cases reviewed retrospectively), but the quoted 33/100,000/yr figure is for accidental drowning broadly among Japanese aged 75+, not narrowed to bathtub incidents in that one statistic — stated plainly, not overstated as bathtub-specific.
+- The authors state the true rate "may be considerably underestimated" because pathologists tend to classify ambiguous cases as natural death absent clear water-inhalation evidence.
+- This row is Japan-specific and age-75+-specific; it does **not** touch, replace, or get merged with either existing bath-drowning row: the general-population "Taking a bath" row in Part 4 (0.07 mm, Wikipedia-sourced, unconditioned) or the US-CDC age-stratified "Taking a bath (age-conditioned)" / `bath_age` rows in Part 10 (per-bath, not annual). All three answer different questions and remain independent, uncombined data points.
+
+**Naming note:** the activity was deliberately labelled "(per year)" rather than "(annual)" — the test suite's `grepl("_annual$", activity_id)` filter identifies Part 5's annual-radiation rows specifically, and an activity_id ending in `_annual` would have falsely matched that filter and corrupted its row-count/schema assertions. Documented inline in `R/atomic_risks.R`.
+
+**Test updates (`tests/testthat/test-atomic-risks.R`):** three row-count assertions bumped to reflect the one added row: total `nrow(atomic_risks())` 193→194, unique `activity_id` count 120→121, country-conditioned row count 60→61. No other assertion needed updating (`common_risks()`'s default-profile count of 107 is unaffected, since `condition_value = "JP"` is not in the default profile set — consistent with the existing `road_traffic`/`homicide` country rows, which are likewise excluded from the default quiz/common-risks view).
+
+### Accuracy / Metrics
+
+- `grep -rn -i "bathtub|hot bath|paf.0b013e|satoh" R data-raw inst/extdata` before the edit: no existing row covered this figure (only unrelated US-CDC "Bathtub drowning" age-stratified rows already in Part 10).
+- Manual check: `atomic_risks() |> dplyr::filter(activity_id == make_activity_id("Accidental drowning, Japan age 75+ (per year)"))` → 1 row, `micromorts = 330`, `condition_variable = "country"`, `condition_value = "JP"`, `period = "per year"`; confirmed no `_annual$` regex collision.
+- `devtools::test()`: `[ FAIL 2 | WARN 0 | SKIP 4 | PASS 1046 ]` — the 2 remaining failures are a pre-existing CHANGELOG-vs-`docs/CHANGELOG.html` pkgdown-staleness gate, present identically before this change (a full pkgdown/site rebuild is out of scope for this PR); the `atomic-risks` test context itself is fully green (188/188).
+- `parse("_targets.R")`: no parse errors.
+- `data-raw/generate_quiz_csv.R` regenerated `inst/extdata/vignettes/{quiz_pairs,geography_quiz_pairs}.csv`: byte-identical to the committed versions (the new JP row is correctly excluded from the default quiz sample, same as the existing country-conditioned `road_traffic`/`homicide` rows).
+- Scoped `tar_make(names = c("vig_intro_common_risks", "vig_reliability_validation_summary"))`: both completed; neither writes a committed `inst/extdata/vignettes/*.rds` file (targets-store-only outputs), so `git status` shows no `.rds` changes.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: ast-grep 0 violations, jarl "All checks passed!", no provisional-constant or MANUAL-marker flags.
+
 ## 2026-09-09 — Fix `tar_read_raw()` fragility in what-is-a-micromort's build-info footer (issue #192)
 
 ### Completed
