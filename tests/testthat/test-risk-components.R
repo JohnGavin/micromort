@@ -53,7 +53,8 @@ test_that("risk_components for medical radiation is atomic", {
   expect_equal(nrow(rc), 1)
   expect_equal(rc$component, "radiation")
   expect_equal(rc$risk_category, "radiation")
-  expect_equal(rc$micromorts, 0.1)
+  # FDA: 0.02 mSv per chest X-ray, at 50 micromorts/mSv = 1 (was 0.1 pre-fix)
+  expect_equal(rc$micromorts, 1)
 })
 
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## 2026-09-27 — Radiation-to-micromort conversion was 1000x too low (FDA + ICRP 103 confirmed)
+
+### Completed
+
+**Root cause: a units-label mismatch, not a disputed judgment call.** `msv_to_micromorts()` in `R/atomic_risks.R` converted millisieverts to micromorts via `msv * 0.05` — its own comment read "50 micromorts per Sv = 0.05 mm/mSv", but 50 micromorts per **Sv** is only 0.05 micromorts per **mSv**, and 50 micromorts per **mSv** is the figure both primary sources actually give: the FDA's patient-facing CT-risk guidance ("a CT examination with an effective dose of 10 millisieverts... may be associated with an increase in the possibility of fatal cancer of approximately 1 chance in 2000" = 5e-5/mSv = 50 micromorts/mSv) and ICRP Publication 103 (synopsis in US NRC SECY-08-0197 Enclosure 1: "5 x 10-4 per rem (5 x 10-2 per Sv)" = 5e-5/mSv = 50 micromorts/mSv). The two independent sources agree exactly; the prior code was 1000x too low.
+
+**Fix:** `msv_to_micromorts()` now computes `msv * 50`. Six rows that depend on it were corrected via a `dplyr::mutate()` override chained after each tribble's existing pipeline (tribble literal values left untouched, to keep the diff auditable):
+
+| Row | Old | New |
+|---|---|---|
+| Chest X-ray (radiation per scan) | 0.1 | 1 |
+| CT scan head (radiation per scan) | 2 | 100 |
+| CT scan chest (radiation per scan) | 7 | 350 |
+| CT scan abdomen (radiation per scan) | 10 | 400 |
+| Flying radiation component (2h / 5h / 8h / 12h) | 0.1 / 0.25 / 0.4 / 0.6 | 0.7 / 1.75 / 2.8 / 4.2 |
+| Normal background radiation (annual) | 0.12 | 155.5 |
+
+The flights radiation row's rate is now derived from CDC's "Air Travel" page (~0.035 mSv cosmic dose for a one-way US transcontinental flight, ~5h) instead of the prior flat per-hour literal, linear in `duration_hours` per NCRP Report 160. The annual background row is now derived from CDC's natural-background table (2.28 inhalation + 0.33 cosmic + 0.29 ingestion + 0.21 terrestrial = 3.11 mSv/year).
+
+**Known deliberately NOT fixed ([#196](https://github.com/JohnGavin/micromort/issues/196)):** 8 rows share the same pre-fix conversion-factor bug — the four other `med_rad` rows (Mammogram, Dental X-ray, Coronary angiogram, Barium enema; these also cite `nrc_url`, which 404s/403s as of 2026-09-27) and 9 of 11 `annual_rad` rows (every row except "Normal background radiation": airline pilot, X-ray technician, dental radiographer, nuclear plant worker, interventional cardiologist, and five annual-cosmic/radon rows). This PR does not have a freshly-verified authoritative dose for them, and inventing one would be exactly the hand-typed-provisional-value anti-pattern this codebase's own conventions forbid. Flagged with code comments above both tribbles and tracked in #196.
+
+**Also discovered, NOT fixed here (folded into #196):** the separate legacy `data-raw/sources/acute_risks_base.csv` → `acute_risks_merged` → `export_acute` → `inst/extdata/acute_risks.parquet` pipeline (`R/tar_plans/plan_data_acquisition.R`/`plan_normalization.R`) is a stale, hand-maintained snapshot carrying the same pre-fix radiation values, entirely disconnected from `R/atomic_risks.R`. It could not be regenerated in this session regardless, because of an unrelated pre-existing bug: a "Drinking a glass of wine (daily chronic risk)" row has a non-numeric `micromorts` field that coerces the whole CSV column to character, breaking `acute_risks_merged`'s `data[order(-data$micromorts), ]` with `invalid argument to unary operator`. Confirmed pre-existing (present before this fix; `data-raw/` had zero uncommitted changes at session start). `inst/extdata/acute_risks.parquet` is therefore **unchanged** by this PR.
+
+**Live site not yet rebuilt:** `docs/articles/*.html` still show the old numbers until a separate full `quarto render`/pkgdown rebuild runs (explicitly out of scope here, matching the pattern used in PR #195).
+
+### Accuracy / Metrics
+
+- Manual check, `msv_to_micromorts(c(0.02,2,7,8,3.11,0.014,0.035,0.056,0.084))` → `1 100 350 400 155.5 0.7 1.75 2.8 4.2` — matches hand-derived expectations exactly.
+- `devtools::test()`: `FAIL 0 | WARN 0 | SKIP 4 | PASS 1043` after updating 4 pre-existing hardcoded-old-value test assertions (`msv_to_micromorts()` unit test, chest-X-ray-equivalence tests, flight-aggregation totals/hedgeable_pct) that were legitimately asserting the old, wrong numbers.
+- A first implementation attempt (matching the literal fix instructions) additionally overrode `source_url` for the flights radiation sub-component to a CDC citation — this broke `common_risks()`'s `dplyr::group_by(..., source_url)` aggregation (R/risks.R, out of this PR's scope), splitting each flight activity into two summed rows instead of one. Fixed by keeping `source_url` uniform per flight activity and recording the CDC citation in `notes` instead; verified via a full `devtools::test()` re-run showing the 4 previously-broken tests (`common_risks() has correct activity count`, `flight activities are aggregated correctly` x2, `risk_exchange_matrix returns correct dimensions`) now pass.
+- `parse("_targets.R")`: OK.
+- Quiz CSV regenerated via `data-raw/generate_quiz_csv.R`. **Quiz answers that flip:** 0, among the 115 (of 150) quiz pairs whose exact two-activity pairing survived unchanged between the old and new generation. The other 35 pairs (28 of which directly involve one of the six corrected activities) were reassigned to different partner activities entirely by the difficulty-bucketing algorithm, because the size of the correction (up to 1000x) moved the affected activity out of its old near-1:1-ratio neighborhood — so there is no case of "same two activities, answer flipped from A to B"; the correction was large enough to change *which* activity gets paired with the corrected one, not to flip an existing pairing's answer.
+- Scoped `tar_make()` regenerated exports/vignette RDS relevant to this fix; `inst/extdata/vignettes/*.rds` files updated: `vig_equiv_flight_components`, `vig_equiv_flight_duration`, `vig_equiv_flight_duration_chart`, `vig_equiv_radiation_timeline_chart`, `vig_intro_common_risks`, `vig_palatable_risk_plot`, `vig_palatable_risk_plot_interactive`, `vig_palatable_risks_filtered`, `vig_quiz_json_script`, `vig_quiz_pairs`, `vig_radiation_profiles`, `vig_radiation_regulatory`, `vig_radiation_timeline_data`. `vig_radiation_key_insights.rds` and `vig_radiation_patient_vs_occ.rds` are unchanged, confirmed correct: both derive from `patient_radiation_comparison()` (`R/radiation_profiles.R`, out of scope), which hardcodes its own `xray_mm <- 0.1` literal rather than reading the corrected `med_rad` value, and both also depend on the still-unfixed `airline_pilot_annual`/`xray_tech_annual` annual_rad rows (#196) — a separate, tracked inconsistency.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: clean (no ast-grep violations, no hardcoded paths, jarl "All checks passed!", no provisional-constant markers).
+
+### Known Limitations
+
+- The 8 rows and the legacy CSV pipeline described above are tracked in [#196](https://github.com/JohnGavin/micromort/issues/196), not fixed here.
+- `docs/articles/*.html` (the live pkgdown site) is not rebuilt by this PR and will show the pre-fix numbers until a separate full-site rebuild runs.
+- `inst/extdata/acute_risks.parquet` is unchanged (blocked by the unrelated pre-existing CSV bug above).
+
 ## 2026-09-09 — Fix `tar_read_raw()` fragility in what-is-a-micromort's build-info footer (issue #192)
 
 ### Completed
