@@ -6,14 +6,15 @@ test_that("risk_equivalence returns correct structure", {
                      "reference_micromorts", "ratio", "equivalence") %in% names(re)))
   expect_true(nrow(re) > 0)
   expect_equal(unique(re$reference), "Chest X-ray (radiation per scan)")
-  expect_equal(unique(re$reference_micromorts), 0.1)
+  # FDA: 0.02 mSv per chest X-ray, at 50 micromorts/mSv = 1 (was 0.1 pre-fix)
+  expect_equal(unique(re$reference_micromorts), 1)
 })
 
 test_that("risk_equivalence ratios are correct", {
   re <- risk_equivalence("Chest X-ray (radiation per scan)")
-  # Skydiving US = 8 mm, X-ray = 0.1 mm → ratio = 80
+  # Skydiving US = 8 mm, X-ray = 1 mm → ratio = 8
   sky <- re[re$activity == "Skydiving (US)", ]
-  expect_equal(sky$ratio, 80)
+  expect_equal(sky$ratio, 8)
 })
 
 test_that("self-comparison is excluded", {
@@ -36,7 +37,8 @@ test_that("unknown reference activity raises error", {
 
 test_that("equivalence strings avoid scientific notation", {
   re <- risk_equivalence("Chest X-ray (radiation per scan)")
-  # Mt. Everest has ratio 379320 - must NOT show "e+"
+  # Mt. Everest has ratio 37932 (was 379320 pre-fix, X-ray reference now 1
+  # not 0.1) - must NOT show "e+"
   expect_false(any(grepl("e\\+", re$equivalence)))
 })
 

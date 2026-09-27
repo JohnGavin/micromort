@@ -1,13 +1,15 @@
 # ── msv_to_micromorts() ────────────────────────────────────────────────────────
 
 test_that("msv_to_micromorts() converts correctly using LNT model", {
-  # LNT: 50 mm/Sv = 0.05 mm/mSv
+  # LNT: 50 mm/mSv (FDA CT-risk guidance + ICRP 103 via NRC SECY-08-0197;
+  # a prior version of this function used 50 mm/Sv = 0.05 mm/mSv, a 1000x
+  # units-label mismatch fixed in this PR)
 
-  expect_equal(msv_to_micromorts(1), 0.05)
+  expect_equal(msv_to_micromorts(1), 50)
   expect_equal(msv_to_micromorts(0), 0)
-  expect_equal(msv_to_micromorts(20), 1)       # ICRP annual occupational limit
-  expect_equal(msv_to_micromorts(2.4), 0.12)   # Global average background
-  expect_equal(msv_to_micromorts(1000), 50)    # 1 Sv
+  expect_equal(msv_to_micromorts(20), 1000)     # ICRP annual occupational limit
+  expect_equal(msv_to_micromorts(2.4), 120)     # Global average background
+  expect_equal(msv_to_micromorts(1000), 50000)  # 1 Sv
 })
 
 

@@ -57,6 +57,8 @@ atomic_risks <- function() {
   mm_rip <- "https://micromorts.rip/"
   cdc_mmwr <- "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
   nrc_url <- "https://www.nrc.gov/about-nrc/radiation/health-effects.html"
+  cdc_air_url <- "https://www.cdc.gov/radiation-health/data-research/facts-stats/air-travel.html"
+  fda_ct_risk_url <- "https://www.fda.gov/radiation-emitting-products/medical-x-ray-imaging/what-are-radiation-risks-ct"
 
   # ── Part 1: Legacy all_causes activities (undecomposed) ──────────────────
   # "Flying (1000 miles)" removed — replaced by decomposed flight rows
@@ -165,6 +167,12 @@ atomic_risks <- function() {
   # Sources: Aviation Safety Network, Boeing Statistical Summary, Lancet Haematology, NCRP Report 160
   flight_source <- wiki_mm
 
+  # CDC: ~0.035 mSv cosmic dose for a one-way US coast-to-coast flight
+  # (~5h block time) -> linear per-hour rate. Treated as constant per
+  # flight-hour (per NCRP Report 160's linearity assumption, already
+  # referenced in this table's notes).
+  cosmic_msv_per_hour <- 0.035 / 5
+
   flights <- tibble::tribble(
     ~activity, ~activity_id, ~component, ~risk_category, ~component_label,
     ~micromorts, ~duration_hours, ~period,
@@ -271,9 +279,39 @@ atomic_risks <- function() {
         component == "dvt" ~ "Zero below 4h threshold; nonlinear growth above",
         component == "radiation" ~ "Linear ~0.05 mm/hour; NCRP Report 160"
       )
+    ) |>
+    dplyr::mutate(
+      # NOTE: source_url is intentionally NOT swapped to cdc_air_url here
+      # (unlike the med_rad/annual_rad overrides below), even though the
+      # radiation rate now comes from CDC not flight_source. common_risks()
+      # (R/risks.R) does `dplyr::group_by(..., source_url)` when summing
+      # crash+dvt+radiation into one activity total; giving the radiation
+      # row a different source_url than its sibling crash/dvt rows splits
+      # a single flight activity into two aggregated rows. R/risks.R is
+      # out of this PR's write scope, so the CDC citation is recorded in
+      # `notes` instead of `source_url` for these rows.
+      micromorts = dplyr::if_else(
+        component == "radiation",
+        msv_to_micromorts(cosmic_msv_per_hour * duration_hours),
+        micromorts
+      ),
+      notes = dplyr::if_else(
+        component == "radiation",
+        paste0(
+          "Linear ~0.35 micromorts/hour (CDC: ~0.035 mSv per one-way US ",
+          "transcontinental flight, ", cdc_air_url,
+          ", at 50 micromorts/mSv); NCRP Report 160 basis for linearity assumption"
+        ),
+        notes
+      )
     )
 
   # ── Part 3: Medical radiation activities (already atomic) ────────────────
+  # KNOWN AFFECTED, NOT YET FIXED (see #196): Mammogram, Dental
+  # X-ray, Coronary angiogram and Barium enema below use the same pre-fix
+  # micromorts-as-literal-mSv convention as the four rows fixed above, but
+  # this PR does not have a freshly-verified authoritative dose for them.
+  # Their nrc_url citation also 404s/403s as of 2026-09-27.
   med_rad <- tibble::tribble(
     ~activity, ~micromorts, ~component, ~component_label,
     "Chest X-ray (radiation per scan)", 0.1, "radiation", "Ionizing radiation dose",
@@ -301,6 +339,23 @@ atomic_risks <- function() {
       condition_value = NA_character_,
       confidence = "high",
       notes = "Radiation dose is the primary risk; procedural risks separate"
+    ) |>
+    dplyr::mutate(
+      micromorts = dplyr::case_when(
+        activity == "Chest X-ray (radiation per scan)" ~ msv_to_micromorts(0.02),
+        activity == "CT scan head (radiation per scan)" ~ msv_to_micromorts(2),
+        activity == "CT scan chest (radiation per scan)" ~ msv_to_micromorts(7),
+        activity == "CT scan abdomen (radiation per scan)" ~ msv_to_micromorts(8),
+        TRUE ~ micromorts
+      ),
+      source_url = dplyr::if_else(
+        activity %in% c(
+          "Chest X-ray (radiation per scan)", "CT scan head (radiation per scan)",
+          "CT scan chest (radiation per scan)", "CT scan abdomen (radiation per scan)"
+        ),
+        fda_ct_risk_url,
+        source_url
+      )
     )
 
   # ── Part 4: Mundane everyday activities ──────────────────────────────────
@@ -336,8 +391,16 @@ atomic_risks <- function() {
     )
 
   # ── Part 5: Annual occupational/environmental/passenger radiation ────────
-  # LNT model (Brenner & Hall 2007 NEJM): 50 micromorts per Sv = 0.05 mm/mSv
+  # LNT model (ICRP 103 / FDA CT risk guidance): 50 micromorts per mSv
   # Annual doses from UNSCEAR 2020, ICRP 103, FAA CARI-7
+  # KNOWN AFFECTED, NOT YET FIXED (see #196): every row below
+  # except "Normal background radiation" (airline pilot, X-ray technician,
+  # dental radiographer, nuclear plant worker, interventional cardiologist,
+  # frequent executive flyer, business traveller, annual tourist flyer,
+  # granite resident, high-altitude resident) uses the same pre-fix
+  # 1000x-too-low conversion-factor convention this PR fixes for background
+  # radiation, but this PR does not have a freshly-verified authoritative
+  # annual dose for them.
   unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
 
   annual_rad <- tibble::tribble(
@@ -404,6 +467,19 @@ atomic_risks <- function() {
       condition_variable = NA_character_,
       condition_value = NA_character_,
       notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+    ) |>
+    dplyr::mutate(
+      micromorts = dplyr::if_else(
+        activity == "Normal background radiation",
+        msv_to_micromorts(3.11),
+        micromorts
+      ),
+      source_url = dplyr::if_else(activity == "Normal background radiation", cdc_air_url, source_url),
+      notes = dplyr::if_else(
+        activity == "Normal background radiation",
+        "CDC natural-background table: 2.28 (inhalation) + 0.33 (cosmic) + 0.29 (ingestion) + 0.21 (terrestrial) = 3.11 mSv/year, at 50 micromorts/mSv",
+        notes
+      )
     )
 
   # ── Part 6: Wildlife encounters ──────────────────────────────────────────
@@ -1307,15 +1383,23 @@ risk_for_duration <- function(activity_prefix, duration_hours, profile = list(),
 
 #' Convert millisieverts to micromorts
 #'
-#' Uses the Linear No-Threshold (LNT) model: 50 micromorts per Sv,
-#' i.e. 0.05 micromorts per mSv.
+#' Uses the linear no-threshold (LNT) cancer-risk model. ICRP Publication 103
+#' gives a nominal fatal-cancer risk coefficient of 5 x 10^-2 per Sv (rounded);
+#' the FDA's patient-facing CT-risk guidance states the same figure as
+#' "approximately 1 chance in 2000" for a 10 mSv exam. Both give
+#' **50 micromorts per mSv** (not per Sv -- a previous version of this
+#' function used 0.05 micromorts per mSv, understating risk 1000x; the
+#' original comment's own units label never matched its arithmetic).
 #'
 #' @param msv Numeric vector of doses in millisieverts.
 #' @return Numeric vector of micromorts.
 #' @references
-#' Brenner DJ, Hall EJ (2007). "Computed Tomography — An Increasing Source
-#' of Radiation Exposure." NEJM 357:2277-2284.
+#' Food and Drug Administration. "What are the Radiation Risks from CT?"
+#' \url{https://www.fda.gov/radiation-emitting-products/medical-x-ray-imaging/what-are-radiation-risks-ct}
+#'
+#' ICRP Publication 103 (2007), synopsis in US NRC SECY-08-0197 Enclosure 1.
+#' \url{https://www.nrc.gov/docs/ML0833/ML083360609.pdf}
 #' @noRd
 msv_to_micromorts <- function(msv) {
-  round(msv * 0.05, 4)
+  round(msv * 50, 4)
 }
