@@ -1,5 +1,51 @@
 # Changelog
 
+## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
+
+### Completed
+
+Follow-up to the 1000x-conversion-factor fix below. [#196](https://github.com/JohnGavin/micromort/issues/196) tracked 14 rows deliberately left unfixed because that PR lacked a freshly-verified authoritative dose for them. 9 of the 14 are fixed here; 5 remain genuinely unresourced.
+
+**`med_rad` (4 rows, all now fixed — no rows remain unfixed in this tribble):**
+
+| Row | Old | New | Source |
+|---|---|---|---|
+| Mammogram (radiation per scan) | 0.1 | 14 | ACR/RSNA reference card via radiologyinfo.org (0.28 mSv) |
+| Dental X-ray (radiation per scan) | 0.05 | 0.25 | Same source (0.005 mSv) |
+| Barium enema (radiation per scan) | 3 | 300 | Same source (6 mSv) |
+| Coronary angiogram (radiation per scan) | 5 | 250 | Converging invasive-angiography literature, ~4.6-5.6 mSv range; 5 mSv representative point estimate (confidence downgraded high→medium — wider range than the FDA-anchored CT rows) |
+
+The `nrc_url` citation these rows previously shared 404s/403s (documented in #196); the first 3 now cite `radiologyinfo_dose_url`, the 4th cites a verified-live PMC study (`coronary_angiogram_dose_url`).
+
+**`annual_rad` (5 of 9 remaining rows fixed self-consistently from this file's own `cosmic_msv_per_hour` constant, established for the flights radiation component):**
+
+| Row | Old | New | Derivation |
+|---|---|---|---|
+| Airline pilot (annual radiation) | 0.15 | 245 | `cosmic_msv_per_hour x 700` flight-hours/yr (R/activity_descriptions.R) |
+| Frequent executive flyer (annual cosmic) | 0.15 | 105 | `cosmic_msv_per_hour x (150,000/500)` hrs, ~500mph avg cruise |
+| Business traveller (annual cosmic) | 0.0375 | 28 | `cosmic_msv_per_hour x (40,000/500)` hrs |
+| Annual tourist flyer (annual cosmic) | 0.006 | 4.2 | `cosmic_msv_per_hour x (6,000/500)` hrs |
+| High-altitude resident (annual cosmic) | 0.035 | 40 | EPA "radiation-sources-and-doses" page: Denver (~1,609m) cosmic dose 0.8 mSv/yr, used as a representative/conservative figure for this row's "2,000m+" framing (a true 2,000m+ resident would receive more) |
+
+Deliberately reused this file's own already-CDC-sourced `cosmic_msv_per_hour` (Part 2) rather than pulling in new external literature for the 4 mileage/hours-based rows — the in-repo mileage/hours assumptions were taken verbatim from `R/activity_descriptions.R` (`~700 flight hours per year`, `~150,000 miles/year`, `~40,000 miles`, `~6,000 miles/year`). `source_url` for these 4 rows now points at `cdc_air_url` (already in scope in this function and already the citation for `cosmic_msv_per_hour`'s own derivation), rather than `flight_source` (generic Wikipedia link, wrong citation for a CDC-derived number).
+
+**Still genuinely unfixed ([#196](https://github.com/JohnGavin/micromort/issues/196), narrowed):** 5 `annual_rad` rows — X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist, Granite resident — each has a specific reason no clean current point-estimate exists (see narrowed issue body). The separate legacy `acute_risks_base.csv`/`acute_risks.parquet` pipeline bug (wine-row CSV parsing) also remains untouched and separately tracked.
+
+### Accuracy / Metrics
+
+- Manual check, `msv_to_micromorts(c(0.28,0.005,6,5,4.9,2.1,0.56,0.084,0.8))` → `14 0.25 300 250 245 105 28 4.2 40` — matches hand-derived expectations exactly.
+- Confirmed `cosmic_msv_per_hour` (`0.035 / 5`) evaluates to exactly `0.007` before deriving the 5 flight-hours/mileage doses.
+- Verified all newly-cited URLs live (HTTP 200) before use: `radiologyinfo.org/en/pdf/safety-xray.pdf`, `pmc.ncbi.nlm.nih.gov/articles/PMC8789964/`, `epa.gov/radiation/radiation-sources-and-doses`.
+- `devtools::test()`: `FAIL 2 | WARN 0 | SKIP 4 | PASS 1043`. The 2 failures (`test-vignette-outputs.R:351`, `test-vignette-outputs.R:402` — pkgdown top-level page / CHANGELOG.html staleness) are a **pre-existing baseline condition**, not a regression from this PR: `docs/CHANGELOG.html` was last committed 2026-09-08, while `CHANGELOG.md` was last committed 2026-09-27 as part of the merge-base PR #198 — the staleness predates this PR's changes entirely (confirmed via `git log` on both paths before touching CHANGELOG.md in this session). A full pkgdown rebuild is explicitly out of this PR's scope.
+- `parse("_targets.R")`: OK.
+- Quiz CSVs regenerated via `data-raw/generate_quiz_csv.R`: 150 standard pairs + 25 geography pairs written to `inst/extdata/vignettes/quiz_pairs.csv` / `geography_quiz_pairs.csv`.
+- Scoped `tar_make()` for the 16 targets named in this PR's dispatch: 15 completed successfully (`vig_radiation_profiles`, `vig_radiation_patient_vs_occ`, `vig_radiation_timeline_data`, `vig_radiation_regulatory`, `vig_radiation_key_insights`, `vig_intro_common_risks`, `vig_palatable_risks_filtered`, `vig_palatable_risk_plot`, `vig_palatable_risk_plot_interactive`, `vig_equiv_flight_components`, `vig_equiv_flight_duration`, `vig_equiv_flight_duration_chart`, `vig_equiv_radiation_timeline_chart`, `vig_quiz_json_script`, `vig_quiz_pairs`); `export_acute`/`export_validation` failed on the same pre-existing unrelated `acute_risks_merged` "invalid argument to unary operator" bug documented in #196 (wine-row CSV, `data-raw/sources/acute_risks_base.csv`, untouched by this PR) — confirmed pre-existing, not introduced here.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: clean (no ast-grep violations, no hardcoded paths, jarl "All checks passed!", no provisional-constant markers).
+
+### Known Limitations
+
+- 5 `annual_rad` rows (X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist, Granite resident) and the legacy CSV pipeline bug remain tracked in [#196](https://github.com/JohnGavin/micromort/issues/196), not fixed here.
+
 ## 2026-09-27 — Radiation-to-micromort conversion was 1000x too low (FDA + ICRP 103 confirmed)
 
 ### Completed
