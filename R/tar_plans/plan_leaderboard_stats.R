@@ -62,6 +62,11 @@ plan_leaderboard_stats <- list(
       # Columns: 1=form_timestamp, 2=Score, 3=Total, 4=Timestamp(ISO),
       #          5=quiz_type, 6=difficulty, 7=n_questions,
       #          8=avg_confidence_pct (#132, entry.1681143871).
+      # Column 8 is PERCENT-FORMATTED in the Sheet ("75%"), so gviz returns
+      # a FRACTION (0.75), not 75. It is converted to 0-100
+      # (avg_confidence_pct) by confidence_fraction_to_pct(), which rejects
+      # (NA + cli_warn) anything outside [0, 1] so a Sheet format change
+      # is loud rather than silently mis-scaled.
       # Google Forms appends new-question columns at the end of the Sheet.
       # Rows submitted before this question existed simply have no 8th
       # cell — extract_val() already returns NA_character_ for a col_idx
@@ -78,7 +83,9 @@ plan_leaderboard_stats <- list(
         quiz_type = vapply(rows, extract_val, character(1), col_idx = 5),
         difficulty = vapply(rows, extract_val, character(1), col_idx = 6),
         n_questions = as.numeric(vapply(rows, extract_val, character(1), col_idx = 7)),
-        avg_confidence_pct = as.numeric(vapply(rows, extract_val, character(1), col_idx = 8))
+        avg_confidence_pct = confidence_fraction_to_pct(
+          as.numeric(vapply(rows, extract_val, character(1), col_idx = 8))
+        )
       )
       # Default quiz_type for old submissions without the field
       df$quiz_type[is.na(df$quiz_type)] <- "acute"
@@ -191,9 +198,9 @@ plan_leaderboard_stats <- list(
           ))
         }
 
-        predicted <- valid$avg_confidence_pct / 100
-        actual <- valid$score_pct / 100
-        calibration_score <- (predicted - actual)^2
+        calibration_score <- confidence_calibration_score(
+          valid$avg_confidence_pct, valid$score_pct
+        )
 
         # Cap scatter points to the most recent MAX_POINTS so the JSON
         # payload stays bounded as the leaderboard grows; the quantile

@@ -128,6 +128,25 @@ The flights radiation row's rate is now derived from CDC's "Air Travel" page (~0
 - `data-raw/generate_quiz_csv.R` regenerated `inst/extdata/vignettes/{quiz_pairs,geography_quiz_pairs}.csv`: byte-identical to the committed versions (the new JP row is correctly excluded from the default quiz sample, same as the existing country-conditioned `road_traffic`/`homicide` rows).
 - Scoped `tar_make(names = c("vig_intro_common_risks", "vig_reliability_validation_summary"))`: both completed; neither writes a committed `inst/extdata/vignettes/*.rds` file (targets-store-only outputs), so `git status` shows no `.rds` changes.
 - `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: ast-grep 0 violations, jarl "All checks passed!", no provisional-constant or MANUAL-marker flags.
+## 2026-09-26 — Fix population confidence stats: percent-scale bug, stale Pages deploy, weekly-only cadence (issue #132)
+
+### Completed
+
+**Symptom:** the acute quiz page said "Not enough population confidence data yet (need 5+ rated attempts, have 0)" although rated attempts existed in the Sheet. Three separate defects:
+
+**A. Unit bug (code fix).** The Sheet's confidence column H is percent-formatted, so the gviz JSON returns FRACTIONS (0.75 for "75%"; the Form only accepts 0/25/50/75/100%). `plan_leaderboard_stats.R` read it as `avg_confidence_pct` and treated it as 0-100. Evidence in the deployed JSON: points had `confidence_pct: 0.75` and calibration score 0.3511 = (0.0075 - 0.6)^2 instead of (0.75 - 0.60)^2 = 0.0225. New internal helpers in `R/confidence_scale.R`: `confidence_fraction_to_pct()` multiplies by 100 and turns any non-NA value outside [0, 1] into NA with a `cli::cli_warn()` stating how many were rejected (so a future change of the Sheet's column format is loud, never silently mis-scaled); `confidence_calibration_score()` holds the calibration arithmetic so it is testable. The plan now calls both. Tests: `tests/testthat/test-confidence-scale.R` (12 expectations).
+
+**B. Stale deploy.** `leaderboard-refresh.yml` committed `docs/api/quiz_stats.json` with `GITHUB_TOKEN`; pushes made that way do not trigger other workflows, so `pkgdown.yaml` (Pages deploy, `push: paths: docs/**`) never ran after the 2026-09-14 and 2026-09-21 refreshes. The workflow now has `actions: write`, commits only when something other than `generated_at` changed (`git diff --cached --exit-code -I'"generated_at"'`, checked in a scratch repo: exit 0 for a generated_at-only change, 1 for a real change), and then runs `gh workflow run pkgdown.yaml --ref main` (workflow_dispatch is exempt from the GITHUB_TOKEN restriction).
+
+**C. Stale cadence.** The refresh ran only Mondays, so a new submission waited up to a week. Two crons now: `0 6 * * 1` (Monday, full run including the weekly email) and `0 6 * * 0,2-6` (other days: refresh + deploy only; the "Send email report" step is gated on `github.event.schedule`).
+
+**D. Regenerated `docs/api/quiz_stats.json`** in the worktree with the fixed code: acute calibration now `confidence_pct: 75`, score 0.0225 (n = 2, unchanged); ranking calibration n 0 -> 1 (confidence 75, score 87 -> 0.0144); ranking overall n 16 -> 17 from a newly arrived row.
+
+### Accuracy / Metrics
+
+- Falsification: with the helper temporarily returning its input unchanged, `test-confidence-scale.R` went `[ FAIL 9 | PASS 3 ]` for the expected reason (0.75 stayed 0.75-scale, calibration 0.35 not 0.0225); restored: `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 12 ]`. The first GREEN run also caught a real bug in the new warning (pluralisation without a quantity), fixed before commit.
+- Not tested here: the workflow itself (no dispatch was run; `actionlint` not available, YAML parse only). Needs one `workflow_dispatch` of `Leaderboard Stats Refresh` after merge.
+- Not addressed: the page still says "have N" until 5 rated attempts exist; the threshold is unchanged.
 
 ## 2026-09-09 — Fix `tar_read_raw()` fragility in what-is-a-micromort's build-info footer (issue #192)
 
