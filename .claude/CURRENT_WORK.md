@@ -1,25 +1,33 @@
 # Current Work — micromort
 
-**Branch:** `feat/cc-20260907-100536` (own worktree had no unique commits this session — all real work landed via dispatched agents' branches, merged to main directly)
-**Last session:** 2026-09-07/09 — Sheet-data analysis (#182) → confidence-submission bug chain (#187, #190, #192)
+**Branch:** `feat/cc-20260926-134325` (own worktree had no unique commits this session — all real work landed via dispatched agents' branches, merged to main directly, then fast-forwarded into this branch)
+**Last session:** 2026-09-26/30 — quiz leaderboard-stats deploy fix (#132) → radiation-conversion-factor audit and fix (#196)
 
 ## Status
 
-Main is fully current at `5feff91` — 3 PRs from this session merged and deployed (#189, #191, #193). Live: https://johngavin.github.io/micromort/articles/micromort-quiz.html (and microlife-quiz, risk-ranking-quiz, what-is-a-micromort — all independently curl-verified post-deploy, not just CI-green).
+Main is fully current at `445338b` — PRs #195 (opened, not merged — leaderboard stats/deploy fix, still open), #197, #198, #199 all merged. A separate cross-repo fix, `llm` PR #1289 (private_repo_detail_guard.sh word-boundary bug), also merged.
 
 ## What just shipped
 
-- **#187 — stale chronic-quiz difficulty JSON**: `microlife-quiz.qmd`'s embedded quiz JSON was missing per-pair `difficulty` despite the R code computing it correctly — a stale `inst/extdata/vignettes/vig_chronic_quiz_json_script.rds` snapshot, not a missing feature. Rebuilt + verified live (27 easy/18 medium/37 hard).
-- **#182 — Sheet-data analysis**: pulled the actual live Google Sheet (61 real submissions via the public gviz endpoint) rather than just reading code. Found `avg_confidence_pct` was NA for 100% of submissions, including post-launch and (per user) fully-rated attempts — this contradicted my first "just low engagement" read and led straight to #190.
-- **#190 — confidence value never reached the Sheet, for anyone**: root cause is a Form field-type mismatch — the live Google Form's confidence question is strict multiple-choice (`"0%"`/`"25%"`/`"50%"`/`"75%"`/`"100%"` only), but the JS sent a bare unformatted number. Fixed in all 3 quiz pages (snap to nearest 25%, append `%` suffix). A dispatched `fixer` agent authored and verified the fix but stalled mid-task (never committed/pushed/PR'd); I found the live worktree, waited out its in-progress background rebuild, and finished it myself — catching my own `nix-shell`-doesn't-`cd` mistake in the process. The agent then woke up on its own, found my commit, and caught a real regression I'd introduced (lost build-info footer on `what-is-a-micromort.html` from an incomplete `_targets` rebuild) — fixed in a follow-up commit before I ever saw it.
-- **#192 — follow-up code-quality fix**: `what-is-a-micromort.qmd` was the only vignette calling `targets::tar_read_raw()` directly instead of `safe_tar_read()`'s RDS-fallback pattern, which is *why* #190's rebuild could silently drop its footer. Small single-chunk fix, verified by deliberately simulating the failure (pointed `TARGETS_STORE` at a nonexistent dir, confirmed the footer still rendered via the RDS fallback).
+- **Quiz leaderboard stats — percent-scale bug + stale deploy**: the Google Sheet's confidence column returns a *fraction* (0.75) via gviz, but `plan_leaderboard_stats.R` treated it as already-0-100. Fixed with a `confidence_fraction_to_pct()` helper that also rejects out-of-range values loudly. Separately, the refresh workflow committed with `GITHUB_TOKEN`, which doesn't trigger the Pages deploy workflow — added an explicit `gh workflow run pkgdown.yaml` step, and moved the refresh from weekly-only to daily. PR #195, opened, **not yet merged** — pending review.
+- **Radiation-to-micromort conversion was 1000x too low**: `msv_to_micromorts()` used 0.05 micromorts/mSv; two independent primary sources (FDA's CT-risk guidance, ICRP 103 via the NRC synopsis) agree on 50/mSv. Fixed in PR #197 (6 rows), then PR #199 (9 more rows, 4 medical-scan doses + 5 flight/altitude rows derived self-consistently from the file's own already-fixed cosmic-dose-per-hour constant). Both merged.
+- **Added a new data point**: "Accidental drowning, Japan age 75+ (annual)" — 330 micromorts/year, Satoh et al. 2013, JP-conditioned, does not touch/replace the existing general-population "Taking a bath" row. PR #198, merged.
+- **Fixed a real guard false-positive in `llm`**: `private_repo_detail_guard.sh`'s candidate-name match was a bare substring (`grep -F`), so a 6-char private repo name matched inside an unrelated longer English word. Fixed with `-w` (whole-word). **Live-disclosure incident during the fix**: a dispatched agent's first commit named the actual private repo in its own commit message before self-correcting in a second commit — which does NOT remove it from pushed history. Caught, history rewritten (squashed to one clean commit), force-pushed before merge. `llm` PR #1289, merged.
+- **Split #196 into per-row issues**: the 5 rows PR #199 couldn't source (genuinely conflicting/too-variable literature, not a research gap) are now individually tracked as #200 (nuclear plant worker), #201 (dental radiographer), #202 (interventional cardiologist), #203 (granite resident/radon), #204 (X-ray technician). #196 itself is narrowed to just the separate legacy `acute_risks_base.csv` pipeline bug (stale snapshot + a wine-row CSV parsing bug).
+
+## Roborev finding — NOT actioned this session (deferred, tracked)
+
+A roborev review on PR #197 (job 13730, verdict FAIL) was never addressed and is still accurate as of today:
+
+1. **The quiz currently ships internally-inconsistent comparisons.** 5 of the 14 originally-wrong rows (#200-#204) are still at ~1000x-too-low values, mixed into the same `common_risks()`/quiz output as the 9 now-fixed rows. Concretely: "Granite resident (annual radon)" (0.10) vs "Normal background radiation" (155.5) — backwards by construction.
+2. **A second, independent duplicate**: `R/radiation_profiles.R:89` hardcodes `xray_mm <- 0.1` separately from the now-corrected `med_rad` chest X-ray row (`1`).
+
+User was asked to choose a stopgap (scale-by-1000 or exclude-from-quiz) vs. defer; re-ran `/bye` without picking, so this was logged as [#205](https://github.com/JohnGavin/micromort/issues/205) rather than fixed. **This needs a decision next session**, not silent deferral again.
 
 ## Next session — priorities
 
-1. **#182's other open questions still unresolved** (per-question-level data capture, user identification) — the analysis is posted as a comment on #182; no decision made yet on whether to pursue either. Needs your product/privacy call, not a default "just build it."
-2. **Now that the Form-field bug is fixed, watch for real confidence data** to start landing in the Sheet and flowing into `docs/api/quiz_stats.json`'s `calibration` block (was `n: 0` all session, for structural reasons now fixed — but genuinely-rated real submissions still need to arrive going forward).
-3. **roborev has zero real coverage of this session's work** — see below. Worth fixing the global model misconfiguration before it silently blind-spots the next session too.
-
-## Roborev — ACTION NEEDED (found at session-end, 2026-09-10)
-
-All 5 automatic post-commit review attempts for this session's commits (the #190 and #192 fix commits, plus the range on my own session branch) **crashed** with the same error: agent `claude-code` was invoked with `model=gemini-2.5-flash-lite`, which claude-code's CLI doesn't recognize (`unrecognized_model`). This is a **global roborev config issue** (no `.roborev.toml` in this repo — must be a global `default_agent`/`model` setting), not caused by anything in this session's changes. Net effect: **none of #189/#191/#193's commits received an actual roborev code review.** Confirmed via direct `~/.roborev/reviews.db` query, not just the summary CLI (the summary tooling's `--repo` flag and `roborev_project_backlog.sh`/`roborev_consistency_check.sh` scripts didn't scope correctly to this repo/worktree during this check — logged as friction, not otherwise chased down this session). Separately, of the 12 verdict="failed" reviews in the 7-day window, 1 remains unaddressed (11/12) — not yet identified which one; `roborev list --open` needed `--branch main` to surface anything (defaults to current branch, which was empty for my session branch).
+1. **Decide and fix [#205](https://github.com/JohnGavin/micromort/issues/205)** (the interim-inconsistency issue).
+2. **Merge or review PR #195** (leaderboard stats/deploy fix) — still open from earlier this session, never explicitly asked about again.
+3. **Work #200-#204** (the 5 genuinely-unresourced radiation rows) as real research tasks — each has a clear "what done looks like" bar already written.
+4. **#196** (narrowed) — fix the wine-row CSV parsing bug in the legacy `acute_risks_base.csv` pipeline, then decide whether that dataset should be re-derived from `R/atomic_risks.R` or kept independently sourced.
+5. **Network on this machine was intermittently dropping ALL outbound HTTPS** (not just GitHub) for extended periods this session — worth checking if it recurs.

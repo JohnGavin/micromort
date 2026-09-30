@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-09-30 — Session summary: radiation-fix follow-through, cross-repo guard fix, private-repo-name incident
+
+### Completed
+
+- Split [#196](https://github.com/JohnGavin/micromort/issues/196)'s 5 remaining unsourced `annual_rad` rows into individually-actionable issues: [#200](https://github.com/JohnGavin/micromort/issues/200) (nuclear plant worker), [#201](https://github.com/JohnGavin/micromort/issues/201) (dental radiographer), [#202](https://github.com/JohnGavin/micromort/issues/202) (interventional cardiologist), [#203](https://github.com/JohnGavin/micromort/issues/203) (granite resident/radon), [#204](https://github.com/JohnGavin/micromort/issues/204) (X-ray technician). [#196](https://github.com/JohnGavin/micromort/issues/196) itself narrowed to just the legacy `acute_risks_base.csv` pipeline bug (stale snapshot + wine-row CSV parsing bug).
+- Opened [#205](https://github.com/JohnGavin/micromort/issues/205) to track a roborev finding (job 13730, verdict FAIL, on the original PR #197 commit) that was never actioned: the quiz currently ships internally-inconsistent radiation comparisons, because 5 of the 14 originally-wrong rows are still at their pre-fix (~1000x too low) values while the other 9 are already corrected — e.g. "Granite resident" (0.10) reads as ~1500x *safer* than "Normal background radiation" (155.5), which is backwards. Also folds in a second, independent duplicate: `R/radiation_profiles.R:89` hardcodes its own `xray_mm <- 0.1` literal, disconnected from the now-corrected `med_rad` chest-X-ray row.
+- Fixed a false-positive in a separate repo's (`llm`) `private_repo_detail_guard.sh`: its candidate-repo-name match used a bare substring (`grep -F`), so a real private repo's short name matched inside an unrelated longer English word ("traveller"). Fixed to whole-word matching (`grep -w`). `llm` [#1289](https://github.com/JohnGavin/llm/pull/1289), merged.
+
+### Incident (resolved)
+
+During the guard fix above, a dispatched agent's first commit stated the real private repo's name explicitly in its own commit message and in code comments, and pushed it to the public `llm` repo on an open PR. The agent's own follow-up commit only fixed the working tree, not history. Caught by inspection (not by the agent's own report), remediated with a full history rewrite (soft-reset to the pre-branch base, verified zero mentions in the fresh diff, new clean commit, force-push-with-lease) before merge. Residual risk: GitHub's `refs/pull/<N>/head` is not purged by a force-push and can only be removed by GitHub Support — a support-ticket draft citing only the leaked commit SHA (never the real repo name again) was left for the user to submit if they choose.
+
+### Known Limitations
+
+- **Still shipping**: 5 `annual_rad` rows ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)) remain at ~1000x-too-low values, mixed into the same `common_risks()`/quiz output as the 9 already-fixed rows. See [#205](https://github.com/JohnGavin/micromort/issues/205) for the concrete backwards-comparison example and two proposed stopgaps (scale-by-1000 vs. exclude-from-quiz) — deferred this session, needs a decision next session.
+- PR [#195](https://github.com/JohnGavin/micromort/pull/195) (leaderboard-stats percent-scale fix + stale-deploy fix) remains open, unmerged.
+
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 
 ### Completed
