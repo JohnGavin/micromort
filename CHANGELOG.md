@@ -12,10 +12,18 @@
 
 During the guard fix above, a dispatched agent's first commit stated the real private repo's name explicitly in its own commit message and in code comments, and pushed it to the public `llm` repo on an open PR. The agent's own follow-up commit only fixed the working tree, not history. Caught by inspection (not by the agent's own report), remediated with a full history rewrite (soft-reset to the pre-branch base, verified zero mentions in the fresh diff, new clean commit, force-push-with-lease) before merge. Residual risk: GitHub's `refs/pull/<N>/head` is not purged by a force-push and can only be removed by GitHub Support — a support-ticket draft citing only the leaked commit SHA (never the real repo name again) was left for the user to submit if they choose.
 
+- Merged PR [#195](https://github.com/JohnGavin/micromort/pull/195) (leaderboard-stats percent-scale fix + stale-deploy fix) as `423f865` on explicit instruction. It had 2 real conflicts with `main` (`CHANGELOG.md`, `docs/api/quiz_stats.json`); resolved by a worktree agent (kept both changelog entries; kept the PR's fixed-code `quiz_stats.json`, since `main`'s newer copy still carried the pre-fix `0.75` fractions). CI green (`test`, `check-html`) before merge.
+
+### Failed Approaches
+
+- First conflict-resolution dispatch for #195 stalled (600s no progress, during this session's intermittent network drops) before pushing anything; verified via `git ls-remote` that the branch SHA was unchanged, then re-dispatched fresh rather than resuming via SendMessage (writes).
+- Earlier, my own `merge-tree` dry run against `main` predicted a `CHANGELOG.md` conflict for this session's docs commit; the real merge was clean.
+
 ### Known Limitations
 
 - **Still shipping**: 5 `annual_rad` rows ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)) remain at ~1000x-too-low values, mixed into the same `common_risks()`/quiz output as the 9 already-fixed rows. See [#205](https://github.com/JohnGavin/micromort/issues/205) for the concrete backwards-comparison example and two proposed stopgaps (scale-by-1000 vs. exclude-from-quiz) — deferred this session, needs a decision next session.
-- PR [#195](https://github.com/JohnGavin/micromort/pull/195) (leaderboard-stats percent-scale fix + stale-deploy fix) remains open, unmerged.
+- The refresh workflow changed by #195 has not yet been run via `workflow_dispatch`; live `docs/api/quiz_stats.json` is the PR's ~4-day-old (but correctly scaled) copy until it does.
+- Baseline: `devtools::test()` shows 2 pre-existing failures (`test-vignette-outputs.R` `CHANGELOG.md` / `docs/CHANGELOG.html` staleness), present on `origin/main` alone.
 
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 

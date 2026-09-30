@@ -5,7 +5,7 @@
 
 ## Status
 
-Main is fully current at `445338b` — PRs #195 (opened, not merged — leaderboard stats/deploy fix, still open), #197, #198, #199 all merged. A separate cross-repo fix, `llm` PR #1289 (private_repo_detail_guard.sh word-boundary bug), also merged.
+Main is at `423f865` — PRs #195 (leaderboard stats/deploy fix, merged last, after a conflict resolution), #197, #198, #199 all merged. A separate cross-repo fix, `llm` PR #1289 (private_repo_detail_guard.sh word-boundary bug), also merged.
 
 ## What just shipped
 
@@ -27,7 +27,7 @@ User was asked to choose a stopgap (scale-by-1000 or exclude-from-quiz) vs. defe
 ## Next session — priorities
 
 1. **Decide and fix [#205](https://github.com/JohnGavin/micromort/issues/205)** (the interim-inconsistency issue).
-2. **Merge or review PR #195** (leaderboard stats/deploy fix) — still open from earlier this session, never explicitly asked about again.
+2. **Dispatch "Leaderboard Stats Refresh" once** (`workflow_dispatch`) — #195 changed that workflow and it has never run; confirm stats regenerate and Pages deploys. Also tidy the two leftover agent worktrees (`agent-a64c4e12df0c34abb`, `agent-ac56acae76cbf4429`).
 3. **Work #200-#204** (the 5 genuinely-unresourced radiation rows) as real research tasks — each has a clear "what done looks like" bar already written.
 4. **#196** (narrowed) — fix the wine-row CSV parsing bug in the legacy `acute_risks_base.csv` pipeline, then decide whether that dataset should be re-derived from `R/atomic_risks.R` or kept independently sourced.
 5. **Network on this machine was intermittently dropping ALL outbound HTTPS** (not just GitHub) for extended periods this session — worth checking if it recurs.
