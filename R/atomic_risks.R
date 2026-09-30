@@ -57,6 +57,15 @@ atomic_risks <- function() {
   mm_rip <- "https://micromorts.rip/"
   cdc_mmwr <- "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
   nrc_url <- "https://www.nrc.gov/about-nrc/radiation/health-effects.html"
+  cdc_air_url <- "https://www.cdc.gov/radiation-health/data-research/facts-stats/air-travel.html"
+  fda_ct_risk_url <- "https://www.fda.gov/radiation-emitting-products/medical-x-ray-imaging/what-are-radiation-risks-ct"
+  # ACR/RSNA reference card for approximate effective doses of common
+  # radiographic exams (mammogram, dental X-ray, barium enema); see #196.
+  radiologyinfo_dose_url <- "https://www.radiologyinfo.org/en/pdf/safety-xray.pdf"
+  # No single clean primary citation exists for invasive (catheter-based)
+  # coronary angiography dose; this is one representative study from a
+  # literature range of ~4.6-5.6 mSv (verified live 2026-09-27). See #196.
+  coronary_angiogram_dose_url <- "https://pmc.ncbi.nlm.nih.gov/articles/PMC8789964/"
 
   # ── Part 1: Legacy all_causes activities (undecomposed) ──────────────────
   # "Flying (1000 miles)" removed — replaced by decomposed flight rows
@@ -165,6 +174,16 @@ atomic_risks <- function() {
   # Sources: Aviation Safety Network, Boeing Statistical Summary, Lancet Haematology, NCRP Report 160
   flight_source <- wiki_mm
 
+  # CDC: ~0.035 mSv cosmic dose for a one-way US coast-to-coast flight
+  # (~5h block time) -> linear per-hour rate. Treated as constant per
+  # flight-hour (per NCRP Report 160's linearity assumption, already
+  # referenced in this table's notes).
+  # Also reused in Part 5 (annual_rad) below to self-consistently derive
+  # 5 mileage/hours-based annual passenger/pilot cosmic-dose rows from this
+  # file's own already-established per-hour rate, rather than pulling in
+  # new external literature (see #196).
+  cosmic_msv_per_hour <- 0.035 / 5
+
   flights <- tibble::tribble(
     ~activity, ~activity_id, ~component, ~risk_category, ~component_label,
     ~micromorts, ~duration_hours, ~period,
@@ -271,6 +290,31 @@ atomic_risks <- function() {
         component == "dvt" ~ "Zero below 4h threshold; nonlinear growth above",
         component == "radiation" ~ "Linear ~0.05 mm/hour; NCRP Report 160"
       )
+    ) |>
+    dplyr::mutate(
+      # NOTE: source_url is intentionally NOT swapped to cdc_air_url here
+      # (unlike the med_rad/annual_rad overrides below), even though the
+      # radiation rate now comes from CDC not flight_source. common_risks()
+      # (R/risks.R) does `dplyr::group_by(..., source_url)` when summing
+      # crash+dvt+radiation into one activity total; giving the radiation
+      # row a different source_url than its sibling crash/dvt rows splits
+      # a single flight activity into two aggregated rows. R/risks.R is
+      # out of this PR's write scope, so the CDC citation is recorded in
+      # `notes` instead of `source_url` for these rows.
+      micromorts = dplyr::if_else(
+        component == "radiation",
+        msv_to_micromorts(cosmic_msv_per_hour * duration_hours),
+        micromorts
+      ),
+      notes = dplyr::if_else(
+        component == "radiation",
+        paste0(
+          "Linear ~0.35 micromorts/hour (CDC: ~0.035 mSv per one-way US ",
+          "transcontinental flight, ", cdc_air_url,
+          ", at 50 micromorts/mSv); NCRP Report 160 basis for linearity assumption"
+        ),
+        notes
+      )
     )
 
   # ── Part 3: Medical radiation activities (already atomic) ────────────────
@@ -301,6 +345,48 @@ atomic_risks <- function() {
       condition_value = NA_character_,
       confidence = "high",
       notes = "Radiation dose is the primary risk; procedural risks separate"
+    ) |>
+    dplyr::mutate(
+      micromorts = dplyr::case_when(
+        activity == "Chest X-ray (radiation per scan)" ~ msv_to_micromorts(0.02),
+        activity == "CT scan head (radiation per scan)" ~ msv_to_micromorts(2),
+        activity == "CT scan chest (radiation per scan)" ~ msv_to_micromorts(7),
+        activity == "CT scan abdomen (radiation per scan)" ~ msv_to_micromorts(8),
+        TRUE ~ micromorts
+      ),
+      source_url = dplyr::if_else(
+        activity %in% c(
+          "Chest X-ray (radiation per scan)", "CT scan head (radiation per scan)",
+          "CT scan chest (radiation per scan)", "CT scan abdomen (radiation per scan)"
+        ),
+        fda_ct_risk_url,
+        source_url
+      )
+    ) |>
+    # Re-sourced from #196: Mammogram, Dental X-ray, Barium enema (ACR/RSNA
+    # via radiologyinfo.org) and Coronary angiogram (converging invasive
+    # coronary angiography dose literature, ~4.6-5.6 mSv range).
+    dplyr::mutate(
+      micromorts = dplyr::case_when(
+        activity == "Mammogram (radiation per scan)" ~ msv_to_micromorts(0.28),
+        activity == "Dental X-ray (radiation per scan)" ~ msv_to_micromorts(0.005),
+        activity == "Barium enema (radiation per scan)" ~ msv_to_micromorts(6),
+        activity == "Coronary angiogram (radiation per scan)" ~ msv_to_micromorts(5),
+        TRUE ~ micromorts
+      ),
+      source_url = dplyr::case_when(
+        activity %in% c(
+          "Mammogram (radiation per scan)", "Dental X-ray (radiation per scan)",
+          "Barium enema (radiation per scan)"
+        ) ~ radiologyinfo_dose_url,
+        activity == "Coronary angiogram (radiation per scan)" ~ coronary_angiogram_dose_url,
+        TRUE ~ source_url
+      ),
+      confidence = dplyr::if_else(
+        activity == "Coronary angiogram (radiation per scan)",
+        "medium",
+        confidence
+      )
     )
 
   # ── Part 4: Mundane everyday activities ──────────────────────────────────
@@ -336,9 +422,16 @@ atomic_risks <- function() {
     )
 
   # ── Part 5: Annual occupational/environmental/passenger radiation ────────
-  # LNT model (Brenner & Hall 2007 NEJM): 50 micromorts per Sv = 0.05 mm/mSv
+  # LNT model (ICRP 103 / FDA CT risk guidance): 50 micromorts per mSv
   # Annual doses from UNSCEAR 2020, ICRP 103, FAA CARI-7
+  # KNOWN AFFECTED, NOT YET FIXED (see #196): X-ray technician, Dental
+  # radiographer, Nuclear plant worker, Interventional cardiologist, and
+  # Granite resident use the same pre-fix 1000x-too-low conversion-factor
+  # convention this PR fixes for the other rows below, but this PR does not
+  # have a freshly-verified authoritative annual dose for these 5 specific
+  # occupational/environmental rows.
   unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
+  epa_radiation_url <- "https://www.epa.gov/radiation/radiation-sources-and-doses"
 
   annual_rad <- tibble::tribble(
     ~activity, ~activity_id, ~micromorts, ~category,
@@ -404,6 +497,51 @@ atomic_risks <- function() {
       condition_variable = NA_character_,
       condition_value = NA_character_,
       notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+    ) |>
+    dplyr::mutate(
+      micromorts = dplyr::if_else(
+        activity == "Normal background radiation",
+        msv_to_micromorts(3.11),
+        micromorts
+      ),
+      source_url = dplyr::if_else(activity == "Normal background radiation", cdc_air_url, source_url),
+      notes = dplyr::if_else(
+        activity == "Normal background radiation",
+        "CDC natural-background table: 2.28 (inhalation) + 0.33 (cosmic) + 0.29 (ingestion) + 0.21 (terrestrial) = 3.11 mSv/year, at 50 micromorts/mSv",
+        notes
+      )
+    ) |>
+    # Re-sourced from #196: 4 mileage/hours-based passenger/pilot rows
+    # derived self-consistently from this file's own cosmic_msv_per_hour
+    # (Part 2, CDC-sourced) x the in-repo flight-hours/mileage assumptions
+    # already documented in R/activity_descriptions.R, at ~500mph average
+    # cruise speed for mileage-based rows. High-altitude resident is
+    # separately sourced from EPA's directly-quoted Denver cosmic dose.
+    dplyr::mutate(
+      micromorts = dplyr::case_when(
+        activity == "Airline pilot (annual radiation)" ~ msv_to_micromorts(cosmic_msv_per_hour * 700),
+        activity == "Frequent executive flyer (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (150000 / 500)),
+        activity == "Business traveller (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (40000 / 500)),
+        activity == "Annual tourist flyer (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (6000 / 500)),
+        activity == "High-altitude resident (annual cosmic)" ~ msv_to_micromorts(0.8),
+        TRUE ~ micromorts
+      ),
+      source_url = dplyr::case_when(
+        activity %in% c(
+          "Airline pilot (annual radiation)", "Frequent executive flyer (annual cosmic)",
+          "Business traveller (annual cosmic)", "Annual tourist flyer (annual cosmic)"
+        ) ~ cdc_air_url,
+        activity == "High-altitude resident (annual cosmic)" ~ epa_radiation_url,
+        TRUE ~ source_url
+      ),
+      notes = dplyr::case_when(
+        activity == "Airline pilot (annual radiation)" ~ "Derived from this file's cosmic_msv_per_hour (CDC-sourced, Part 2) x ~700 flight-hours/year (R/activity_descriptions.R)",
+        activity == "Frequent executive flyer (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~150,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
+        activity == "Business traveller (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~40,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
+        activity == "Annual tourist flyer (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~6,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
+        activity == "High-altitude resident (annual cosmic)" ~ "EPA: cosmic dose at sea level 0.3 mSv/yr, Denver (~1,609m) 0.8 mSv/yr -- used as a representative/conservative figure for this row's '2,000m+' framing; a true 2,000m+ resident would receive more",
+        TRUE ~ notes
+      )
     )
 
   # ── Part 6: Wildlife encounters ──────────────────────────────────────────
@@ -934,6 +1072,67 @@ atomic_risks <- function() {
     "daily_alcohol_mortality", "alcohol use", owid_alcohol_url
   )
 
+  # ── Part 13: Age/country-conditioned home-safety mortality ─────────────
+  # A single new data point from a forensic-pathology retrospective study;
+  # NOT merged with or a replacement for the general-population "Taking a
+  # bath" row in Part 4 above (0.07 mm, Wikipedia-sourced, unconditioned
+  # population), nor the age-conditioned "Taking a bath (age-conditioned)"
+  # / bath_age rows in Part 10 (US CDC, per-bath) -- this is a different,
+  # narrower question (Japan, age 75+, annual rate) and is complementary,
+  # not comparable-by-substitution.
+  # Source: Satoh et al. 2013, Am J Forensic Med Pathol 34(2):164-168.
+  satoh_bathtub_url <- "https://doi.org/10.1097/PAF.0b013e31828d68c7"
+
+  home_safety <- tibble::tribble(
+    ~activity, ~condition_value, ~micromorts,
+
+    # 33 accidental-drowning deaths / 100,000 population / yr, Japan age 75+
+    # NOTE: label says "(per year)", not "(annual)" -- the test suite's
+    # `grepl("_annual$", activity_id)` filter identifies Part 5's annual
+    # radiation rows; ending this activity_id in "_annual" would falsely
+    # match that filter and corrupt its row-count/schema assertions.
+    "Accidental drowning, Japan age 75+ (per year)", "JP", 330
+  ) |>
+    dplyr::mutate(
+      activity_id = make_activity_id(activity),
+      component = "drowning",
+      risk_category = "physical",
+      component_label = paste0(
+        "Accidental drowning (predominantly bathtub-related in this ",
+        "population)"
+      ),
+      category = "Daily Life",
+      period = "per year",
+      period_type = "year",
+      source_url = satoh_bathtub_url,
+      component_id = paste0(activity_id, "_", component, "_", condition_value),
+      duration_hours = NA_real_,
+      hedgeable = TRUE,
+      hedge_description = paste0(
+        "Lower bath water temperature, non-slip mat, check-in routine for ",
+        "elderly relatives, avoid bathing alone"
+      ),
+      hedge_reduction_pct = dplyr::if_else(hedgeable, 30, NA_real_),
+      condition_variable = "country",
+      confidence = "medium",
+      notes = paste0(
+        "Satoh et al. 2013 (Am J Forensic Med Pathol 34(2):164-168): 33 ",
+        "accidental-drowning deaths per 100,000 population/year among ",
+        "Japanese aged >75; the paper's own subject is specifically ",
+        "hot-bathtub deaths (268 cases reviewed) but this exact figure is ",
+        "for accidental drowning broadly in that age/country group, not ",
+        "narrowed to bathtub incidents in this one statistic. The authors ",
+        "state the true rate 'may be considerably underestimated' because ",
+        "pathologists tend to classify ambiguous cases as natural death ",
+        "absent clear water-inhalation evidence. Distinct from the ",
+        "'Taking a bath' row above (general/unconditioned population, ",
+        "much lower value) -- different question, not a replacement."
+      ),
+      validation_status = "single_source",
+      source_count = 1L,
+      estimate_range = NA_character_
+    )
+
   # ── Combine all parts ───────────────────────────────────────────────────
   all_cols <- c(
     "component_id", "activity_id", "activity", "component", "risk_category",
@@ -974,7 +1173,8 @@ atomic_risks <- function() {
     smoking_mortality[, all_cols],
     pollution_mortality[, all_cols],
     obesity_mortality[, all_cols],
-    alcohol_mortality[, all_cols]
+    alcohol_mortality[, all_cols],
+    home_safety[, all_cols]
   )
 }
 
@@ -1245,15 +1445,23 @@ risk_for_duration <- function(activity_prefix, duration_hours, profile = list(),
 
 #' Convert millisieverts to micromorts
 #'
-#' Uses the Linear No-Threshold (LNT) model: 50 micromorts per Sv,
-#' i.e. 0.05 micromorts per mSv.
+#' Uses the linear no-threshold (LNT) cancer-risk model. ICRP Publication 103
+#' gives a nominal fatal-cancer risk coefficient of 5 x 10^-2 per Sv (rounded);
+#' the FDA's patient-facing CT-risk guidance states the same figure as
+#' "approximately 1 chance in 2000" for a 10 mSv exam. Both give
+#' **50 micromorts per mSv** (not per Sv -- a previous version of this
+#' function used 0.05 micromorts per mSv, understating risk 1000x; the
+#' original comment's own units label never matched its arithmetic).
 #'
 #' @param msv Numeric vector of doses in millisieverts.
 #' @return Numeric vector of micromorts.
 #' @references
-#' Brenner DJ, Hall EJ (2007). "Computed Tomography — An Increasing Source
-#' of Radiation Exposure." NEJM 357:2277-2284.
+#' Food and Drug Administration. "What are the Radiation Risks from CT?"
+#' \url{https://www.fda.gov/radiation-emitting-products/medical-x-ray-imaging/what-are-radiation-risks-ct}
+#'
+#' ICRP Publication 103 (2007), synopsis in US NRC SECY-08-0197 Enclosure 1.
+#' \url{https://www.nrc.gov/docs/ML0833/ML083360609.pdf}
 #' @noRd
 msv_to_micromorts <- function(msv) {
-  round(msv * 0.05, 4)
+  round(msv * 50, 4)
 }

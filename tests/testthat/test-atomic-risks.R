@@ -42,13 +42,13 @@ test_that("atomic_risks() has expected row count", {
   ar <- atomic_risks()
   # 62 legacy + 16 flights + 8 medical + 6 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 6 road traffic + 6 homicide + 14 age-conditioned
-  # + 24 disease-by-country + 24 risk-factor-attributed = 193
+  # + 24 disease-by-country + 24 risk-factor-attributed + 1 home-safety = 194
   # (wine moved from atomic to chronic_risks)
-  expect_equal(nrow(ar), 193)
+  expect_equal(nrow(ar), 194)
   # 62 legacy + 4 flights + 8 medical + 6 mundane + 11 annual radiation + 7 wildlife
   # + 9 occupational + 1 road traffic + 1 homicide + 3 age-conditioned
-  # + 4 disease-by-country + 4 risk-factor = 120 unique IDs
-  expect_equal(length(unique(ar$activity_id)), 120)
+  # + 4 disease-by-country + 4 risk-factor + 1 home-safety = 121 unique IDs
+  expect_equal(length(unique(ar$activity_id)), 121)
 })
 
 test_that("component_id values are unique", {
@@ -200,17 +200,19 @@ test_that("common_risks() ordering is deterministic across calls", {
 test_that("flight activities are aggregated correctly", {
   cr <- common_risks()
   fly8 <- cr[cr$activity == "Flying (8h long-haul)", ]
-  # crash(1.0) + dvt_healthy(2.5) + radiation(0.4) = 3.9
-  expect_equal(fly8$micromorts, 3.9)
+  # crash(1.0) + dvt_healthy(2.5) + radiation(2.8) = 6.3
+  # (radiation updated: CDC ~0.035 mSv/5h cosmic dose at 50 micromorts/mSv,
+  # replacing a 1000x-too-low conversion factor)
+  expect_equal(fly8$micromorts, 6.3)
   expect_equal(fly8$n_components, 3L)
-  expect_equal(fly8$hedgeable_pct, 64.1, tolerance = 0.1)
+  expect_equal(fly8$hedgeable_pct, 39.7, tolerance = 0.1)
 })
 
 test_that("common_risks() with DVT risk profile changes flight totals", {
   cr_dvt <- common_risks(profile = list(health_profile = "dvt_risk_factors"))
   fly8 <- cr_dvt[cr_dvt$activity == "Flying (8h long-haul)", ]
-  # crash(1.0) + dvt_risk(8.0) + radiation(0.4) = 9.4
-  expect_equal(fly8$micromorts, 9.4)
+  # crash(1.0) + dvt_risk(8.0) + radiation(2.8) = 11.8
+  expect_equal(fly8$micromorts, 11.8)
 })
 
 test_that("n_components is 1 for undecomposed activities", {
@@ -245,7 +247,8 @@ test_that("new medical radiation activities present", {
   expect_true("Chest X-ray (radiation per scan)" %in% cr$activity)
   expect_true("CT scan chest (radiation per scan)" %in% cr$activity)
   xray <- cr[cr$activity == "Chest X-ray (radiation per scan)", ]
-  expect_equal(xray$micromorts, 0.1)
+  # FDA: 0.02 mSv per chest X-ray, at 50 micromorts/mSv = 1 (was 0.1 pre-fix)
+  expect_equal(xray$micromorts, 1)
   expect_equal(xray$category, "Medical")
 })
 
@@ -606,8 +609,8 @@ test_that("homicide included with country profile", {
 test_that("country-conditioned entries hidden from default view", {
   ar <- atomic_risks()
   country <- ar[!is.na(ar$condition_variable) & ar$condition_variable == "country", ]
-  # 6 road + 6 homicide + 24 disease + 24 risk-factor = 60
-  expect_equal(nrow(country), 60)
+  # 6 road + 6 homicide + 24 disease + 24 risk-factor + 1 home-safety (JP) = 61
+  expect_equal(nrow(country), 61)
 
   cr <- common_risks()
   # None of these should appear in default common_risks
