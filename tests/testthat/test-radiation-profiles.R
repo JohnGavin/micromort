@@ -66,10 +66,28 @@ test_that("regulatory limits are correct", {
   expect_true(all(public$regulatory_limit_msv == 1))
 })
 
-test_that("xray_equivalents_per_year is correct", {
+test_that("xray_equivalents_per_year is derived from the atomic_risks chest X-ray row", {
   rp <- radiation_profiles()
-  # xray_equivalents = annual_micromorts / 0.1 (chest X-ray = 0.1 mm)
-  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / 0.1)
+  ar <- atomic_risks()
+  chest <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  expect_length(chest, 1)
+  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / chest)
+})
+
+test_that("annual radiation rows all use the corrected 50 micromorts/mSv scale (roborev 13730)", {
+  rp <- radiation_profiles()
+  # Every annual dose here is between ~0.05 and ~20 mSv/yr, i.e. roughly
+  # 2.5-1000 micromorts/yr. A row left on the old 0.05 mm/mSv scale falls
+  # far below 1.
+  expect_true(all(rp$annual_micromorts >= 1))
+  expect_true(all(rp$annual_micromorts <= 1000))
+})
+
+test_that("annual_msv is the inverse of msv_to_micromorts()", {
+  rp <- radiation_profiles()
+  bg <- rp[rp$activity_id == "background_radiation_annual", ]
+  expect_equal(bg$annual_msv, 3.11)
+  expect_equal(rp$annual_msv, round(rp$annual_micromorts / msv_to_micromorts(1), 2))
 })
 
 
@@ -92,14 +110,24 @@ test_that("patient_radiation_comparison() has correct dimensions", {
   expect_equal(nrow(prc), 45)
 })
 
-test_that("100 X-rays > 40-year X-ray tech career", {
+test_that("patient_micromorts uses the atomic_risks chest X-ray value", {
+  prc <- patient_radiation_comparison(xray_counts = 1, career_years = 10)
+  ar <- atomic_risks()
+  chest <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  expect_true(all(prc$patient_micromorts == chest))
+})
+
+test_that("100 X-rays < 40-year X-ray tech career on the corrected scale", {
   prc <- patient_radiation_comparison()
   row <- prc[prc$occupation == "X-ray technician (annual radiation)" &
              prc$xray_count == 100 &
              prc$career_years == 40, ]
-  # 100 X-rays = 10 mm, 40 years at 0.05 mm/yr = 2 mm
-  expect_gt(row$patient_micromorts, row$occupational_micromorts)
-  expect_gt(row$ratio, 1)
+  # 100 chest X-rays = 100 mm; 40 years at 50 mm/yr (1 mSv/yr) = 2000 mm.
+  # The pre-fix "100 X-rays exceed a career" claim only held because both
+  # sides were on the stale 0.05 mm/mSv scale.
+  expect_equal(row$patient_micromorts, 100)
+  expect_equal(unname(row$occupational_micromorts), 2000)
+  expect_lt(row$ratio, 1)
 })
 
 test_that("custom xray_counts and career_years work", {

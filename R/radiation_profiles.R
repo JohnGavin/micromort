@@ -34,12 +34,12 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
   ar <- atomic_risks()
   annual <- ar[grepl("_annual$", ar$activity_id), ]
 
-  # Annual dose in mSv (reverse LNT: mm / 0.05 = mSv)
+  # Annual dose in mSv (reverse LNT: mm / (micromorts per mSv) = mSv)
   result <- tibble::tibble(
     activity_id = annual$activity_id,
     activity = annual$activity,
     category = annual$category,
-    annual_msv = round(annual$micromorts / 0.05, 2),
+    annual_msv = round(annual$micromorts / msv_to_micromorts(1), 2),
     annual_micromorts = annual$micromorts
   )
 
@@ -56,19 +56,32 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
     1    # 1 mSv/yr public limit
   )
 
-  # Chest X-ray equivalents per year (1 chest X-ray = 0.1 mm)
-  result$xray_equivalents_per_year <- result$annual_micromorts / 0.1
+  # Chest X-ray equivalents per year (chest X-ray value read from atomic_risks)
+  result$xray_equivalents_per_year <- result$annual_micromorts / chest_xray_micromorts(ar)
 
   result
+}
+
+# Chest X-ray micromorts per scan, read from atomic_risks() so there is one
+# home for the value (roborev 13730).
+chest_xray_micromorts <- function(ar = atomic_risks()) {
+  val <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  if (length(val) != 1L || is.na(val)) {
+    cli::cli_abort(c(
+      "x" = "Expected exactly one non-NA chest X-ray row in {.fn atomic_risks}.",
+      "i" = "Found {length(val)} row{?s}."
+    ))
+  }
+  val
 }
 
 
 #' Patient vs Occupational Radiation Comparison
 #'
 #' Cross-tabulates patient X-ray exposure against occupational career
-#' radiation to reveal surprising equivalences. For example, 100 lifetime
-#' chest X-rays (10 micromorts) exceeds a 40-year X-ray technician career
-#' (2 micromorts).
+#' radiation to compare scan doses with occupational exposure. For example,
+#' 100 lifetime chest X-rays (100 micromorts) are still well below a 40-year
+#' X-ray technician career (2000 micromorts).
 #'
 #' @param xray_counts Integer vector of patient X-ray counts to compare.
 #'   Default `c(1, 10, 100)`.
@@ -85,8 +98,8 @@ patient_radiation_comparison <- function(
   xray_counts = c(1, 10, 100),
   career_years = c(10, 20, 40)
 ) {
-  # Chest X-ray = 0.1 micromorts
-  xray_mm <- 0.1
+  # Chest X-ray micromorts per scan, from atomic_risks()
+  xray_mm <- chest_xray_micromorts()
 
   # Get occupational profiles
   rp <- radiation_profiles(milestones = integer(0))

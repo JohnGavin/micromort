@@ -309,7 +309,8 @@ atomic_risks <- function() {
       notes = dplyr::if_else(
         component == "radiation",
         paste0(
-          "Linear ~0.35 micromorts/hour (CDC: ~0.035 mSv per one-way US ",
+          "Linear ~", format(msv_to_micromorts(cosmic_msv_per_hour), trim = TRUE),
+          " micromorts/hour (CDC: ~0.035 mSv per one-way US ",
           "transcontinental flight, ", cdc_air_url,
           ", at 50 micromorts/mSv); NCRP Report 160 basis for linearity assumption"
         ),
@@ -424,12 +425,12 @@ atomic_risks <- function() {
   # ── Part 5: Annual occupational/environmental/passenger radiation ────────
   # LNT model (ICRP 103 / FDA CT risk guidance): 50 micromorts per mSv
   # Annual doses from UNSCEAR 2020, ICRP 103, FAA CARI-7
-  # KNOWN AFFECTED, NOT YET FIXED (see #196): X-ray technician, Dental
-  # radiographer, Nuclear plant worker, Interventional cardiologist, and
-  # Granite resident use the same pre-fix 1000x-too-low conversion-factor
-  # convention this PR fixes for the other rows below, but this PR does not
-  # have a freshly-verified authoritative annual dose for these 5 specific
-  # occupational/environmental rows.
+  # X-ray technician, Dental radiographer, Nuclear plant worker,
+  # Interventional cardiologist and Granite resident: the stored values were
+  # on the pre-fix 0.05 mm/mSv scale. They are now msv_to_micromorts(dose),
+  # with dose back-derived as old_value / 0.05 (1, 0.2, 2, 3.5, 2 mSv/yr), a
+  # pure units correction (roborev 13730). These doses are NOT freshly
+  # verified against an authoritative source; that remains open in #196.
   unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
   epa_radiation_url <- "https://www.epa.gov/radiation/radiation-sources-and-doses"
 
@@ -443,19 +444,19 @@ atomic_risks <- function() {
     TRUE, "Flight hour limits + route planning", "medium",
 
     "X-ray technician (annual radiation)", "xray_tech_annual",
-    0.05, "Occupation",
+    msv_to_micromorts(1), "Occupation",
     TRUE, "Lead shielding + ALARA protocols", "medium",
 
     "Dental radiographer (annual radiation)", "dental_radiographer_annual",
-    0.01, "Occupation",
+    msv_to_micromorts(0.2), "Occupation",
     TRUE, "Lead apron + distance protocols", "medium",
 
     "Nuclear plant worker (annual radiation)", "nuclear_worker_annual",
-    0.10, "Occupation",
+    msv_to_micromorts(2), "Occupation",
     TRUE, "Shielding + dosimetry + ALARA", "medium",
 
     "Interventional cardiologist (annual radiation)", "interventional_cardiologist_annual",
-    0.175, "Occupation",
+    msv_to_micromorts(3.5), "Occupation",
     TRUE, "Lead apron + ceiling shield + dosimetry", "medium",
 
     # Passenger (cosmic)
@@ -473,7 +474,7 @@ atomic_risks <- function() {
 
     # Environmental
     "Granite resident (annual radon)", "granite_resident_annual",
-    0.10, "Environment",
+    msv_to_micromorts(2), "Environment",
     TRUE, "Radon mitigation + ventilation", "medium",
 
     "High-altitude resident (annual cosmic)", "high_altitude_resident_annual",
@@ -496,7 +497,7 @@ atomic_risks <- function() {
       hedge_reduction_pct = dplyr::if_else(hedgeable, 50, NA_real_),
       condition_variable = NA_character_,
       condition_value = NA_character_,
-      notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+      notes = "LNT model: 50 micromorts/mSv (Brenner & Hall 2007 NEJM)"
     ) |>
     dplyr::mutate(
       micromorts = dplyr::if_else(
