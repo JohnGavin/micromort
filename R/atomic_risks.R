@@ -173,7 +173,7 @@ atomic_risks <- function() {
   #   ~80% of fatal accidents occur during takeoff, initial climb, approach,
   #   and landing — phases whose duration is independent of flight length.
   # DVT: zero below 4h, then nonlinear, medical, IS hedgeable (~65% reduction)
-  # Cosmic radiation: ~0.05 mm/hour (linear), radiation, NOT hedgeable
+  # Cosmic radiation: 0.35 mm/hour (linear; 0.007 mSv/h x 50 mm/mSv), radiation, NOT hedgeable
   # Sources: Aviation Safety Network, Boeing Statistical Summary, Lancet Haematology, NCRP Report 160
   flight_source <- wiki_mm
 
@@ -293,7 +293,7 @@ atomic_risks <- function() {
       notes = dplyr::case_when(
         component == "crash" ~ "~1 mm per flight; dominated by takeoff/landing phases (Boeing Statistical Summary)",
         component == "dvt" ~ "Zero below 4h threshold; nonlinear growth above",
-        component == "radiation" ~ "Linear ~0.05 mm/hour; NCRP Report 160"
+        component == "radiation" ~ "Linear ~0.35 mm/hour; NCRP Report 160"
       )
     ) |>
     dplyr::mutate(
@@ -1423,4 +1423,17 @@ risk_for_duration <- function(activity_prefix, duration_hours, profile = list(),
 #' @noRd
 msv_to_micromorts <- function(msv) {
   round(msv * 50, 4)
+}
+
+
+#' Convert micromorts to millisieverts
+#'
+#' Exact inverse of [msv_to_micromorts()]; shares its single 50 micromorts
+#' per mSv factor.
+#'
+#' @param micromorts Numeric vector of micromorts.
+#' @return Numeric vector of doses in millisieverts.
+#' @noRd
+micromorts_to_msv <- function(micromorts) {
+  micromorts / msv_to_micromorts(1)
 }

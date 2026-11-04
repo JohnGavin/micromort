@@ -83,7 +83,7 @@ Key observations:
 
 - **Crash risk** is roughly constant per flight (~1 mm) regardless of duration --- dominated by takeoff and landing phases (~80% of fatal accidents per Boeing Statistical Summary) --- and is NOT hedgeable
 - **DVT risk** is zero below 4 hours, then grows nonlinearly --- and IS hedgeable (compression socks reduce risk ~65%)
-- **Cosmic radiation** is linear (~0.05 mm/hour) and NOT hedgeable
+- **Cosmic radiation** is linear (~0.35 mm/hour) and NOT hedgeable
 - For an 8-hour flight, DVT is the dominant hedgeable component
 
 ### By Health Status
@@ -178,7 +178,7 @@ show_target("vig_equiv_hedgeable_chart")
 
 ## Radiation Exposure Profiles {.tabset}
 
-How does occupational radiation exposure compare across careers, and how do patient X-ray doses stack up? This section uses annual dose data from UNSCEAR and the LNT model (0.05 micromorts per mSv) to answer these questions.
+How does occupational radiation exposure compare across careers, and how do patient X-ray doses stack up? This section uses annual dose data from UNSCEAR and the LNT model (50 micromorts per mSv) to answer these questions.
 
 ### Occupational Comparison
 

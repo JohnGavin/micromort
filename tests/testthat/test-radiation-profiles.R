@@ -114,3 +114,23 @@ test_that("custom xray_counts and career_years work", {
   expect_equal(length(unique(prc$xray_count)), 2)
   expect_equal(length(unique(prc$career_years)), 2)
 })
+
+
+# ── annual_msv is consistent with annual_micromorts (one home) ────────────────
+
+test_that("micromorts_to_msv() inverts msv_to_micromorts()", {
+  expect_equal(micromorts_to_msv(50), 1)
+  expect_equal(micromorts_to_msv(0), 0)
+  expect_equal(micromorts_to_msv(msv_to_micromorts(3.11)), 3.11)
+})
+
+test_that("radiation_profiles() annual_msv round-trips to annual_micromorts", {
+  rp <- radiation_profiles()
+  # Old bug: annual_msv = micromorts / 0.05 was 1000x too large.
+  expect_equal(msv_to_micromorts(rp$annual_msv), rp$annual_micromorts,
+               tolerance = 0.01, scale = 1)
+  bg <- rp[rp$activity_id == "background_radiation_annual", ]
+  expect_equal(bg$annual_msv, 3.11)
+  pilot <- rp[rp$activity_id == "airline_pilot_annual", ]
+  expect_equal(pilot$annual_msv, round(0.035 / 5 * 700, 4))
+})

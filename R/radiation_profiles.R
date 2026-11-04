@@ -50,12 +50,12 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
   ar <- atomic_risks()
   annual <- ar[grepl("_annual$", ar$activity_id), ]
 
-  # Annual dose in mSv (reverse LNT: mm / 0.05 = mSv)
+  # Annual dose in mSv: inverse of msv_to_micromorts() (single factor home)
   result <- tibble::tibble(
     activity_id = annual$activity_id,
     activity = annual$activity,
     category = annual$category,
-    annual_msv = round(annual$micromorts / 0.05, 2),
+    annual_msv = round(micromorts_to_msv(annual$micromorts), 4),
     annual_micromorts = annual$micromorts
   )
 

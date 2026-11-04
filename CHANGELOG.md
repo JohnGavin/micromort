@@ -13,9 +13,12 @@ Triage of three open HIGH roborev findings. 13730 was partly fixed by #199 and i
 - `patient_radiation_comparison()` and `radiation_profiles()` read the chest X-ray value from `atomic_risks()` (1 micromort) instead of the literal 0.1. Patient X-ray comparison values are therefore 10x higher than before.
 - New `tests/testthat/test-radiation-consistency.R`.
 
-### Not fixed
+### Follow-up fix
 
-- `radiation_profiles()` still derives `annual_msv` with the old `/ 0.05` inverse (1000x off for converted rows); not named by the findings, flagged for follow-up.
+- `radiation_profiles()` derived `annual_msv` with the old `/ 0.05` inverse, 1000x off. It now uses a new `micromorts_to_msv()` (next to `msv_to_micromorts()`, same single 50 micromorts/mSv factor), rounded to 4 places. New tests in `tests/testthat/test-radiation-profiles.R`.
+- Stale prose fixed: cosmic radiation is 0.35 micromorts/hour (0.007 mSv/h x 50), not 0.05 (comments and a notes string in `R/atomic_risks.R`, `vignettes/risk_equivalence.qmd`); "0.05 micromorts per mSv" in that vignette is now 50.
+- Regenerated the six `vig_*radiation*` RDS files in `inst/extdata/vignettes/` from the targets (`tar_make(names = ...)`). The full `tar_make()` cannot complete: `vig_telemetry_commit_velocity_chart` calls `safe_tar_read()`, which is defined nowhere (pre-existing, not touched).
+- Left alone: the 5 legacy unsourced rows and their `annual_rad_notes` text ("0.05 mm/mSv") remain for the owner ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)).
 
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 
