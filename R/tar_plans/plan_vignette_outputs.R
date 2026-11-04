@@ -1460,7 +1460,7 @@ plan_vignette_outputs <- list(
   targets::tar_target(
     vig_telemetry_commit_velocity_chart,
     {
-      velocity <- safe_tar_read("vig_commit_velocity")
+      velocity <- vig_commit_velocity
       if (is.null(velocity)) return(NULL)
       p <- ggplot2::ggplot(velocity, ggplot2::aes(x = week, y = commits)) +
         ggplot2::geom_col(fill = "#1976D2") +

@@ -20,6 +20,12 @@ Triage of three open HIGH roborev findings. 13730 was partly fixed by #199 and i
 - Regenerated the six `vig_*radiation*` RDS files in `inst/extdata/vignettes/` from the targets (`tar_make(names = ...)`). The full `tar_make()` cannot complete: `vig_telemetry_commit_velocity_chart` calls `safe_tar_read()`, which is defined nowhere (pre-existing, not touched).
 - Left alone: the 5 legacy unsourced rows and their `annual_rad_notes` text ("0.05 mm/mSv") remain for the owner ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)).
 
+### Pipeline and site fixes
+
+- `vig_telemetry_commit_velocity_chart` (`R/tar_plans/plan_vignette_outputs.R`) called `safe_tar_read()`, which exists only in `inst/vignette_utils.R` for vignette chunks, so the target failed under `tar_make()`. It now depends on `vig_commit_velocity` directly, which also gives targets the correct dependency edge. New `tests/testthat/test-plan-no-safe-tar-read.R` fails if any plan calls `safe_tar_read()`.
+- Rebuilt `docs/` (pkgdown) and the `inst/extdata/vignettes/` RDS files so the three staleness checks in `test-vignette-outputs.R` pass.
+- Known, not fixed here: `qa_coverage` needs `covr`, which is not in the micromort nix shell (declared nowhere), and `qa_deployed_html` fails against the currently deployed site (quiz and portfolio pages contain "Error:") until this branch is deployed. A full `tar_make()` therefore stops at those two gates.
+
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 
 ### Completed
