@@ -68,8 +68,11 @@ test_that("regulatory limits are correct", {
 
 test_that("xray_equivalents_per_year is correct", {
   rp <- radiation_profiles()
-  # xray_equivalents = annual_micromorts / 0.1 (chest X-ray = 0.1 mm)
-  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / 0.1)
+  # xray_equivalents = annual_micromorts / chest X-ray micromorts (read from
+  # atomic_risks(); see test-radiation-consistency.R)
+  ar <- atomic_risks()
+  xray <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / xray)
 })
 
 
@@ -97,7 +100,8 @@ test_that("100 X-rays > 40-year X-ray tech career", {
   row <- prc[prc$occupation == "X-ray technician (annual radiation)" &
              prc$xray_count == 100 &
              prc$career_years == 40, ]
-  # 100 X-rays = 10 mm, 40 years at 0.05 mm/yr = 2 mm
+  # 100 chest X-rays = 100 mm (50 micromorts/mSv x 0.02 mSv x 100);
+  # 40 years of the (still unsourced, #201-#204) technician literal = 2 mm
   expect_gt(row$patient_micromorts, row$occupational_micromorts)
   expect_gt(row$ratio, 1)
 })

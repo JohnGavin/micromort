@@ -58,6 +58,9 @@ atomic_risks <- function() {
   cdc_mmwr <- "https://www.cdc.gov/mmwr/volumes/72/wr/mm7206a3.htm"
   nrc_url <- "https://www.nrc.gov/about-nrc/radiation/health-effects.html"
   cdc_air_url <- "https://www.cdc.gov/radiation-health/data-research/facts-stats/air-travel.html"
+  # CDC natural-background radiation (terrestrial/inhalation = 2.28 mSv/yr,
+  # ~73% of natural exposure; verified live 2026-11-04)
+  cdc_background_url <- "https://www.cdc.gov/radiation-health/data-research/facts-stats/terrestrial-radiation.html"
   fda_ct_risk_url <- "https://www.fda.gov/radiation-emitting-products/medical-x-ray-imaging/what-are-radiation-risks-ct"
   # ACR/RSNA reference card for approximate effective doses of common
   # radiographic exams (mammogram, dental X-ray, barium enema); see #196.
@@ -186,6 +189,8 @@ atomic_risks <- function() {
 
   flights <- tibble::tribble(
     ~activity, ~activity_id, ~component, ~risk_category, ~component_label,
+    # Radiation rows carry NA here: their micromorts are computed once below
+    # from cosmic_msv_per_hour via msv_to_micromorts() (no stale literals).
     ~micromorts, ~duration_hours, ~period,
     ~hedgeable, ~hedge_description, ~hedge_reduction_pct,
     ~condition_variable, ~condition_value, ~confidence,
@@ -202,7 +207,7 @@ atomic_risks <- function() {
     "health_profile", "healthy", "medium",
 
     "Flying (2h short-haul)", "flying_2h", "radiation", "radiation", "Cosmic radiation",
-    0.1, 2, "per 2h flight",
+    NA_real_, 2, "per 2h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -229,7 +234,7 @@ atomic_risks <- function() {
     "health_profile", "dvt_risk_factors", "medium",
 
     "Flying (5h medium-haul)", "flying_5h", "radiation", "radiation", "Cosmic radiation",
-    0.25, 5, "per 5h flight",
+    NA_real_, 5, "per 5h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -250,7 +255,7 @@ atomic_risks <- function() {
     "health_profile", "dvt_risk_factors", "medium",
 
     "Flying (8h long-haul)", "flying_8h", "radiation", "radiation", "Cosmic radiation",
-    0.4, 8, "per 8h flight",
+    NA_real_, 8, "per 8h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high",
 
@@ -271,7 +276,7 @@ atomic_risks <- function() {
     "health_profile", "dvt_risk_factors", "medium",
 
     "Flying (12h ultra-long-haul)", "flying_12h", "radiation", "radiation", "Cosmic radiation",
-    0.6, 12, "per 12h flight",
+    NA_real_, 12, "per 12h flight",
     FALSE, NA_character_, NA_real_,
     NA_character_, NA_character_, "high"
   ) |>
@@ -309,7 +314,8 @@ atomic_risks <- function() {
       notes = dplyr::if_else(
         component == "radiation",
         paste0(
-          "Linear ~0.35 micromorts/hour (CDC: ~0.035 mSv per one-way US ",
+          "Linear ~", format(msv_to_micromorts(cosmic_msv_per_hour)),
+          " micromorts/hour (CDC: ~0.035 mSv per one-way US ",
           "transcontinental flight, ", cdc_air_url,
           ", at 50 micromorts/mSv); NCRP Report 160 basis for linearity assumption"
         ),
@@ -318,18 +324,24 @@ atomic_risks <- function() {
     )
 
   # ── Part 3: Medical radiation activities (already atomic) ────────────────
+  # Doses (mSv per exam) are the single stored value; micromorts are derived
+  # via msv_to_micromorts(). Dose citations: the FDA CT-risk page (chest
+  # X-ray, CT head/chest/abdomen); ACR/RSNA radiologyinfo.org (mammogram, dental
+  # X-ray, barium enema); coronary angiography literature range ~4.6-5.6 mSv
+  # (see #196).
   med_rad <- tibble::tribble(
-    ~activity, ~micromorts, ~component, ~component_label,
-    "Chest X-ray (radiation per scan)", 0.1, "radiation", "Ionizing radiation dose",
+    ~activity, ~dose_msv, ~component, ~component_label,
+    "Chest X-ray (radiation per scan)", 0.02, "radiation", "Ionizing radiation dose",
     "CT scan chest (radiation per scan)", 7, "radiation", "Ionizing radiation dose",
-    "CT scan abdomen (radiation per scan)", 10, "radiation", "Ionizing radiation dose",
-    "Mammogram (radiation per scan)", 0.1, "radiation", "Ionizing radiation dose",
-    "Dental X-ray (radiation per scan)", 0.05, "radiation", "Ionizing radiation dose",
+    "CT scan abdomen (radiation per scan)", 8, "radiation", "Ionizing radiation dose",
+    "Mammogram (radiation per scan)", 0.28, "radiation", "Ionizing radiation dose",
+    "Dental X-ray (radiation per scan)", 0.005, "radiation", "Ionizing radiation dose",
     "Coronary angiogram (radiation per scan)", 5, "radiation", "Ionizing radiation dose",
-    "Barium enema (radiation per scan)", 3, "radiation", "Ionizing radiation dose",
+    "Barium enema (radiation per scan)", 6, "radiation", "Ionizing radiation dose",
     "CT scan head (radiation per scan)", 2, "radiation", "Ionizing radiation dose"
   ) |>
     dplyr::mutate(
+      micromorts = msv_to_micromorts(dose_msv),
       activity_id = make_activity_id(activity),
       risk_category = "radiation",
       category = "Medical",
@@ -346,35 +358,13 @@ atomic_risks <- function() {
       confidence = "high",
       notes = "Radiation dose is the primary risk; procedural risks separate"
     ) |>
+    dplyr::select(-dose_msv) |>
     dplyr::mutate(
-      micromorts = dplyr::case_when(
-        activity == "Chest X-ray (radiation per scan)" ~ msv_to_micromorts(0.02),
-        activity == "CT scan head (radiation per scan)" ~ msv_to_micromorts(2),
-        activity == "CT scan chest (radiation per scan)" ~ msv_to_micromorts(7),
-        activity == "CT scan abdomen (radiation per scan)" ~ msv_to_micromorts(8),
-        TRUE ~ micromorts
-      ),
-      source_url = dplyr::if_else(
+      source_url = dplyr::case_when(
         activity %in% c(
           "Chest X-ray (radiation per scan)", "CT scan head (radiation per scan)",
           "CT scan chest (radiation per scan)", "CT scan abdomen (radiation per scan)"
-        ),
-        fda_ct_risk_url,
-        source_url
-      )
-    ) |>
-    # Re-sourced from #196: Mammogram, Dental X-ray, Barium enema (ACR/RSNA
-    # via radiologyinfo.org) and Coronary angiogram (converging invasive
-    # coronary angiography dose literature, ~4.6-5.6 mSv range).
-    dplyr::mutate(
-      micromorts = dplyr::case_when(
-        activity == "Mammogram (radiation per scan)" ~ msv_to_micromorts(0.28),
-        activity == "Dental X-ray (radiation per scan)" ~ msv_to_micromorts(0.005),
-        activity == "Barium enema (radiation per scan)" ~ msv_to_micromorts(6),
-        activity == "Coronary angiogram (radiation per scan)" ~ msv_to_micromorts(5),
-        TRUE ~ micromorts
-      ),
-      source_url = dplyr::case_when(
+        ) ~ fda_ct_risk_url,
         activity %in% c(
           "Mammogram (radiation per scan)", "Dental X-ray (radiation per scan)",
           "Barium enema (radiation per scan)"
@@ -432,117 +422,86 @@ atomic_risks <- function() {
   # occupational/environmental rows.
   unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
   epa_radiation_url <- "https://www.epa.gov/radiation/radiation-sources-and-doses"
+  # Legacy note text, kept verbatim for the 5 unsourced rows (#200-#204).
+  annual_rad_notes <- "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
 
+  # dose_msv is the single stored value for each sourced row;
+  # micromorts_unsourced holds the legacy literal ONLY for the 5 rows with no
+  # freshly verified dose (#200-#204), left for the owner. Exactly one of the
+  # two is non-NA per row; micromorts are derived once below.
   annual_rad <- tibble::tribble(
-    ~activity, ~activity_id, ~micromorts, ~category,
-    ~hedgeable, ~hedge_description, ~confidence,
+    ~activity, ~activity_id, ~dose_msv, ~micromorts_unsourced, ~category,
+    ~hedgeable, ~hedge_description, ~confidence, ~source_url, ~notes,
 
     # Occupational
     "Airline pilot (annual radiation)", "airline_pilot_annual",
-    0.15, "Occupation",
-    TRUE, "Flight hour limits + route planning", "medium",
+    cosmic_msv_per_hour * 700, NA_real_, "Occupation",
+    TRUE, "Flight hour limits + route planning", "medium", cdc_air_url,
+    "Derived from this file's cosmic_msv_per_hour (CDC-sourced, Part 2) x ~700 flight-hours/year (R/activity_descriptions.R)",
 
     "X-ray technician (annual radiation)", "xray_tech_annual",
-    0.05, "Occupation",
-    TRUE, "Lead shielding + ALARA protocols", "medium",
+    NA_real_, 0.05, "Occupation",
+    TRUE, "Lead shielding + ALARA protocols", "medium", unscear_url, annual_rad_notes,
 
     "Dental radiographer (annual radiation)", "dental_radiographer_annual",
-    0.01, "Occupation",
-    TRUE, "Lead apron + distance protocols", "medium",
+    NA_real_, 0.01, "Occupation",
+    TRUE, "Lead apron + distance protocols", "medium", unscear_url, annual_rad_notes,
 
     "Nuclear plant worker (annual radiation)", "nuclear_worker_annual",
-    0.10, "Occupation",
-    TRUE, "Shielding + dosimetry + ALARA", "medium",
+    NA_real_, 0.10, "Occupation",
+    TRUE, "Shielding + dosimetry + ALARA", "medium", unscear_url, annual_rad_notes,
 
     "Interventional cardiologist (annual radiation)", "interventional_cardiologist_annual",
-    0.175, "Occupation",
-    TRUE, "Lead apron + ceiling shield + dosimetry", "medium",
+    NA_real_, 0.175, "Occupation",
+    TRUE, "Lead apron + ceiling shield + dosimetry", "medium", unscear_url, annual_rad_notes,
 
     # Passenger (cosmic)
     "Frequent executive flyer (annual cosmic)", "executive_flyer_annual",
-    0.15, "Travel",
-    FALSE, NA_character_, "medium",
+    cosmic_msv_per_hour * (150000 / 500), NA_real_, "Travel",
+    FALSE, NA_character_, "medium", cdc_air_url,
+    "Derived from cosmic_msv_per_hour x ~150,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     "Business traveller (annual cosmic)", "business_traveller_annual",
-    0.0375, "Travel",
-    FALSE, NA_character_, "estimated",
+    cosmic_msv_per_hour * (40000 / 500), NA_real_, "Travel",
+    FALSE, NA_character_, "estimated", cdc_air_url,
+    "Derived from cosmic_msv_per_hour x ~40,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     "Annual tourist flyer (annual cosmic)", "annual_tourist_annual",
-    0.006, "Travel",
-    FALSE, NA_character_, "estimated",
+    cosmic_msv_per_hour * (6000 / 500), NA_real_, "Travel",
+    FALSE, NA_character_, "estimated", cdc_air_url,
+    "Derived from cosmic_msv_per_hour x ~6,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     # Environmental
     "Granite resident (annual radon)", "granite_resident_annual",
-    0.10, "Environment",
-    TRUE, "Radon mitigation + ventilation", "medium",
+    NA_real_, 0.10, "Environment",
+    TRUE, "Radon mitigation + ventilation", "medium", unscear_url, annual_rad_notes,
 
     "High-altitude resident (annual cosmic)", "high_altitude_resident_annual",
-    0.035, "Environment",
-    FALSE, NA_character_, "medium",
+    0.8, NA_real_, "Environment",
+    FALSE, NA_character_, "medium", epa_radiation_url,
+    "EPA: cosmic dose at sea level 0.3 mSv/yr, Denver (~1,609m) 0.8 mSv/yr -- used as a representative/conservative figure for this row's '2,000m+' framing; a true 2,000m+ resident would receive more",
 
     "Normal background radiation", "background_radiation_annual",
-    0.12, "Environment",
-    FALSE, NA_character_, "high"
+    3.11, NA_real_, "Environment",
+    FALSE, NA_character_, "high", cdc_background_url,
+    "CDC natural-background table: 2.28 (inhalation) + 0.33 (cosmic) + 0.29 (ingestion) + 0.21 (terrestrial) = 3.11 mSv/year, at 50 micromorts/mSv"
   ) |>
     dplyr::mutate(
+      micromorts = dplyr::coalesce(
+        msv_to_micromorts(dose_msv), micromorts_unsourced
+      ),
       component = "radiation",
       risk_category = "radiation",
       component_label = "Ionizing radiation dose",
       period = "per year",
       period_type = "year",
-      source_url = unscear_url,
       component_id = paste0(activity_id, "_radiation"),
       duration_hours = NA_real_,
       hedge_reduction_pct = dplyr::if_else(hedgeable, 50, NA_real_),
       condition_variable = NA_character_,
-      condition_value = NA_character_,
-      notes = "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+      condition_value = NA_character_
     ) |>
-    dplyr::mutate(
-      micromorts = dplyr::if_else(
-        activity == "Normal background radiation",
-        msv_to_micromorts(3.11),
-        micromorts
-      ),
-      source_url = dplyr::if_else(activity == "Normal background radiation", cdc_air_url, source_url),
-      notes = dplyr::if_else(
-        activity == "Normal background radiation",
-        "CDC natural-background table: 2.28 (inhalation) + 0.33 (cosmic) + 0.29 (ingestion) + 0.21 (terrestrial) = 3.11 mSv/year, at 50 micromorts/mSv",
-        notes
-      )
-    ) |>
-    # Re-sourced from #196: 4 mileage/hours-based passenger/pilot rows
-    # derived self-consistently from this file's own cosmic_msv_per_hour
-    # (Part 2, CDC-sourced) x the in-repo flight-hours/mileage assumptions
-    # already documented in R/activity_descriptions.R, at ~500mph average
-    # cruise speed for mileage-based rows. High-altitude resident is
-    # separately sourced from EPA's directly-quoted Denver cosmic dose.
-    dplyr::mutate(
-      micromorts = dplyr::case_when(
-        activity == "Airline pilot (annual radiation)" ~ msv_to_micromorts(cosmic_msv_per_hour * 700),
-        activity == "Frequent executive flyer (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (150000 / 500)),
-        activity == "Business traveller (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (40000 / 500)),
-        activity == "Annual tourist flyer (annual cosmic)" ~ msv_to_micromorts(cosmic_msv_per_hour * (6000 / 500)),
-        activity == "High-altitude resident (annual cosmic)" ~ msv_to_micromorts(0.8),
-        TRUE ~ micromorts
-      ),
-      source_url = dplyr::case_when(
-        activity %in% c(
-          "Airline pilot (annual radiation)", "Frequent executive flyer (annual cosmic)",
-          "Business traveller (annual cosmic)", "Annual tourist flyer (annual cosmic)"
-        ) ~ cdc_air_url,
-        activity == "High-altitude resident (annual cosmic)" ~ epa_radiation_url,
-        TRUE ~ source_url
-      ),
-      notes = dplyr::case_when(
-        activity == "Airline pilot (annual radiation)" ~ "Derived from this file's cosmic_msv_per_hour (CDC-sourced, Part 2) x ~700 flight-hours/year (R/activity_descriptions.R)",
-        activity == "Frequent executive flyer (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~150,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
-        activity == "Business traveller (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~40,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
-        activity == "Annual tourist flyer (annual cosmic)" ~ "Derived from cosmic_msv_per_hour x ~6,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
-        activity == "High-altitude resident (annual cosmic)" ~ "EPA: cosmic dose at sea level 0.3 mSv/yr, Denver (~1,609m) 0.8 mSv/yr -- used as a representative/conservative figure for this row's '2,000m+' framing; a true 2,000m+ resident would receive more",
-        TRUE ~ notes
-      )
-    )
+    dplyr::select(-dose_msv, -micromorts_unsourced)
 
   # ── Part 6: Wildlife encounters ──────────────────────────────────────────
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-11-04 — One home per radiation dose (roborev 13730 residual findings)
+
+### Completed
+
+Triage of three open HIGH roborev findings. 13730 was partly fixed by #199 and is closed out here; 13839 and 13851 concern a stale branch, not `main` (tracked in [#207](https://github.com/JohnGavin/micromort/issues/207)).
+
+- `med_rad` and `annual_rad` in `R/atomic_risks.R` now store `dose_msv` and derive micromorts once via `msv_to_micromorts()`; the stale tribble micromorts literals and the later override blocks are gone. Output values are identical to before (checked row by row), so no data or vignette regeneration is needed.
+- The 5 `annual_rad` rows with no verified dose (X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist, Granite resident; [#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)) keep their legacy literal in a separate `micromorts_unsourced` column. No new dose was typed in; they remain for the owner.
+- Flight radiation rows no longer carry stale per-flight literals; the notes string builds the hourly rate from `msv_to_micromorts()`.
+- Normal background radiation now cites the CDC terrestrial-radiation page instead of the air-travel page.
+- `patient_radiation_comparison()` and `radiation_profiles()` read the chest X-ray value from `atomic_risks()` (1 micromort) instead of the literal 0.1. Patient X-ray comparison values are therefore 10x higher than before.
+- New `tests/testthat/test-radiation-consistency.R`.
+
+### Not fixed
+
+- `radiation_profiles()` still derives `annual_msv` with the old `/ 0.05` inverse (1000x off for converted rows); not named by the findings, flagged for follow-up.
+
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 
 ### Completed
