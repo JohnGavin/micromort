@@ -100,10 +100,12 @@ plot_risks()
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
+#> Warning: log-10 transformation introduced infinite values.
 
 
 # Light theme
 plot_risks(dark = FALSE)
+#> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
@@ -134,8 +136,6 @@ prepare_risks_plot(categories = "Sport") |> plot_risks()
 # Exclude COVID-19 and show top 20
 prepare_risks_plot(exclude_categories = "COVID-19", top_n = 20) |>
   plot_risks(facet = FALSE)
-#> Warning: log-10 transformation introduced infinite values.
-#> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.
 #> Warning: log-10 transformation introduced infinite values.

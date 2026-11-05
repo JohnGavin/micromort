@@ -80,7 +80,7 @@ risk_sensitivity("Skydiving (US)")
 #> # A tibble: 1 × 6
 #>   activity  micromorts_base micromorts_low micromorts_high rank_base rank_change
 #>   <chr>               <dbl>          <dbl>           <dbl>     <int>       <int>
-#> 1 Skydivin…               8            6.4             9.6        32           9
+#> 1 Skydivin…               8            6.4             9.6        43           7
 
 # Sensitivity for all activities at ±10%
 risk_sensitivity(pct = 10)
@@ -94,9 +94,9 @@ risk_sensitivity(pct = 10)
 #>  5 Matterh…            2840          2556            3124          5           1
 #>  6 Living …             500           450             550          6           1
 #>  7 Living …             463           417.            509.         7           3
-#>  8 Base ju…             430           387             473          8           2
-#>  9 First d…             430           387             473          8           2
-#> 10 COVID-1…             234           211.            257.        10           0
+#>  8 Base ju…             430           387             473          8           3
+#>  9 First d…             430           387             473          8           3
+#> 10 COVID-1…             234           211.            257.        15           2
 #> # ℹ 97 more rows
 
 # Activities with the largest rank uncertainty
@@ -104,15 +104,15 @@ risk_sensitivity() |> dplyr::arrange(dplyr::desc(rank_change))
 #> # A tibble: 107 × 6
 #>    activity micromorts_base micromorts_low micromorts_high rank_base rank_change
 #>    <chr>              <dbl>          <dbl>           <dbl>     <int>       <int>
-#>  1 COVID-1…               1            0.8             1.2        60          15
-#>  2 Living …               1            0.8             1.2        60          15
-#>  3 Walking…               1            0.8             1.2        60          15
-#>  4 Driving…               1            0.8             1.2        60          15
-#>  5 Train (…               1            0.8             1.2        60          15
-#>  6 Eating …               1            0.8             1.2        60          15
-#>  7 1 hour …               1            0.8             1.2        60          15
-#>  8 Eating …               1            0.8             1.2        60          15
-#>  9 Eating …               1            0.8             1.2        60          15
-#> 10 Living …               1            0.8             1.2        60          15
+#>  1 COVID-1…               1            0.8             1.2        67          15
+#>  2 Living …               1            0.8             1.2        67          15
+#>  3 Walking…               1            0.8             1.2        67          15
+#>  4 Driving…               1            0.8             1.2        67          15
+#>  5 Train (…               1            0.8             1.2        67          15
+#>  6 Eating …               1            0.8             1.2        67          15
+#>  7 1 hour …               1            0.8             1.2        67          15
+#>  8 Eating …               1            0.8             1.2        67          15
+#>  9 Eating …               1            0.8             1.2        67          15
+#> 10 Living …               1            0.8             1.2        67          15
 #> # ℹ 97 more rows
 ```

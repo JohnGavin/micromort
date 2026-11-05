@@ -1,5 +1,516 @@
 # Changelog
 
+## 2026-11-04 — One home per radiation dose (roborev 13730 residual findings)
+
+### Completed
+
+Triage of three open HIGH roborev findings. 13730 was partly fixed by
+\#199 and is closed out here; 13839 and 13851 concern a stale branch,
+not `main` (tracked in
+[\#207](https://github.com/JohnGavin/micromort/issues/207)).
+
+- `med_rad` and `annual_rad` in `R/atomic_risks.R` now store `dose_msv`
+  and derive micromorts once via `msv_to_micromorts()`; the stale
+  tribble micromorts literals and the later override blocks are gone.
+  Output values are identical to before (checked row by row), so no data
+  or vignette regeneration is needed.
+- The 5 `annual_rad` rows with no verified dose (X-ray technician,
+  Dental radiographer, Nuclear plant worker, Interventional
+  cardiologist, Granite resident;
+  [\#200](https://github.com/JohnGavin/micromort/issues/200)-[\#204](https://github.com/JohnGavin/micromort/issues/204))
+  keep their legacy literal in a separate `micromorts_unsourced` column.
+  No new dose was typed in; they remain for the owner.
+- Flight radiation rows no longer carry stale per-flight literals; the
+  notes string builds the hourly rate from `msv_to_micromorts()`.
+- Normal background radiation now cites the CDC terrestrial-radiation
+  page instead of the air-travel page.
+- [`patient_radiation_comparison()`](https://johngavin.github.io/micromort/reference/patient_radiation_comparison.md)
+  and
+  [`radiation_profiles()`](https://johngavin.github.io/micromort/reference/radiation_profiles.md)
+  read the chest X-ray value from
+  [`atomic_risks()`](https://johngavin.github.io/micromort/reference/atomic_risks.md)
+  (1 micromort) instead of the literal 0.1. Patient X-ray comparison
+  values are therefore 10x higher than before.
+- New `tests/testthat/test-radiation-consistency.R`.
+
+### Follow-up fix
+
+- [`radiation_profiles()`](https://johngavin.github.io/micromort/reference/radiation_profiles.md)
+  derived `annual_msv` with the old `/ 0.05` inverse, 1000x off. It now
+  uses a new `micromorts_to_msv()` (next to `msv_to_micromorts()`, same
+  single 50 micromorts/mSv factor), rounded to 4 places. New tests in
+  `tests/testthat/test-radiation-profiles.R`.
+- Stale prose fixed: cosmic radiation is 0.35 micromorts/hour (0.007
+  mSv/h x 50), not 0.05 (comments and a notes string in
+  `R/atomic_risks.R`, `vignettes/risk_equivalence.qmd`); “0.05
+  micromorts per mSv” in that vignette is now 50.
+- Regenerated the six `vig_*radiation*` RDS files in
+  `inst/extdata/vignettes/` from the targets (`tar_make(names = ...)`).
+  The full `tar_make()` cannot complete:
+  `vig_telemetry_commit_velocity_chart` calls `safe_tar_read()`, which
+  is defined nowhere (pre-existing, not touched).
+- Left alone: the 5 legacy unsourced rows and their `annual_rad_notes`
+  text (“0.05 mm/mSv”) remain for the owner
+  ([\#200](https://github.com/JohnGavin/micromort/issues/200)-[\#204](https://github.com/JohnGavin/micromort/issues/204)).
+
+### Pipeline and site fixes
+
+- `vig_telemetry_commit_velocity_chart`
+  (`R/tar_plans/plan_vignette_outputs.R`) called `safe_tar_read()`,
+  which exists only in `inst/vignette_utils.R` for vignette chunks, so
+  the target failed under `tar_make()`. It now depends on
+  `vig_commit_velocity` directly, which also gives targets the correct
+  dependency edge. New `tests/testthat/test-plan-no-safe-tar-read.R`
+  fails if any plan calls `safe_tar_read()`.
+- Rebuilt `docs/` (pkgdown) and the `inst/extdata/vignettes/` RDS files
+  so the three staleness checks in `test-vignette-outputs.R` pass.
+- Known, not fixed here: `qa_coverage` needs `covr`, which is not in the
+  micromort nix shell (declared nowhere), and `qa_deployed_html` fails
+  against the currently deployed site (quiz and portfolio pages contain
+  “Error:”) until this branch is deployed. A full `tar_make()` therefore
+  stops at those two gates.
+
+## 2026-09-27 — Re-source 9 more radiation rows from \#196 (medical scans + self-consistent flight-hours model)
+
+### Completed
+
+Follow-up to the 1000x-conversion-factor fix below.
+[\#196](https://github.com/JohnGavin/micromort/issues/196) tracked 14
+rows deliberately left unfixed because that PR lacked a freshly-verified
+authoritative dose for them. 9 of the 14 are fixed here; 5 remain
+genuinely unresourced.
+
+**`med_rad` (4 rows, all now fixed — no rows remain unfixed in this
+tribble):**
+
+| Row | Old | New | Source |
+|----|----|----|----|
+| Mammogram (radiation per scan) | 0.1 | 14 | ACR/RSNA reference card via radiologyinfo.org (0.28 mSv) |
+| Dental X-ray (radiation per scan) | 0.05 | 0.25 | Same source (0.005 mSv) |
+| Barium enema (radiation per scan) | 3 | 300 | Same source (6 mSv) |
+| Coronary angiogram (radiation per scan) | 5 | 250 | Converging invasive-angiography literature, ~4.6-5.6 mSv range; 5 mSv representative point estimate (confidence downgraded high→medium — wider range than the FDA-anchored CT rows) |
+
+The `nrc_url` citation these rows previously shared 404s/403s
+(documented in \#196); the first 3 now cite `radiologyinfo_dose_url`,
+the 4th cites a verified-live PMC study (`coronary_angiogram_dose_url`).
+
+**`annual_rad` (5 of 9 remaining rows fixed self-consistently from this
+file’s own `cosmic_msv_per_hour` constant, established for the flights
+radiation component):**
+
+| Row | Old | New | Derivation |
+|----|----|----|----|
+| Airline pilot (annual radiation) | 0.15 | 245 | `cosmic_msv_per_hour x 700` flight-hours/yr (R/activity_descriptions.R) |
+| Frequent executive flyer (annual cosmic) | 0.15 | 105 | `cosmic_msv_per_hour x (150,000/500)` hrs, ~500mph avg cruise |
+| Business traveller (annual cosmic) | 0.0375 | 28 | `cosmic_msv_per_hour x (40,000/500)` hrs |
+| Annual tourist flyer (annual cosmic) | 0.006 | 4.2 | `cosmic_msv_per_hour x (6,000/500)` hrs |
+| High-altitude resident (annual cosmic) | 0.035 | 40 | EPA “radiation-sources-and-doses” page: Denver (~1,609m) cosmic dose 0.8 mSv/yr, used as a representative/conservative figure for this row’s “2,000m+” framing (a true 2,000m+ resident would receive more) |
+
+Deliberately reused this file’s own already-CDC-sourced
+`cosmic_msv_per_hour` (Part 2) rather than pulling in new external
+literature for the 4 mileage/hours-based rows — the in-repo
+mileage/hours assumptions were taken verbatim from
+`R/activity_descriptions.R` (`~700 flight hours per year`,
+`~150,000 miles/year`, `~40,000 miles`, `~6,000 miles/year`).
+`source_url` for these 4 rows now points at `cdc_air_url` (already in
+scope in this function and already the citation for
+`cosmic_msv_per_hour`’s own derivation), rather than `flight_source`
+(generic Wikipedia link, wrong citation for a CDC-derived number).
+
+**Still genuinely unfixed
+([\#196](https://github.com/JohnGavin/micromort/issues/196),
+narrowed):** 5 `annual_rad` rows — X-ray technician, Dental
+radiographer, Nuclear plant worker, Interventional cardiologist, Granite
+resident — each has a specific reason no clean current point-estimate
+exists (see narrowed issue body). The separate legacy
+`acute_risks_base.csv`/`acute_risks.parquet` pipeline bug (wine-row CSV
+parsing) also remains untouched and separately tracked.
+
+### Accuracy / Metrics
+
+- Manual check,
+  `msv_to_micromorts(c(0.28,0.005,6,5,4.9,2.1,0.56,0.084,0.8))` →
+  `14 0.25 300 250 245 105 28 4.2 40` — matches hand-derived
+  expectations exactly.
+- Confirmed `cosmic_msv_per_hour` (`0.035 / 5`) evaluates to exactly
+  `0.007` before deriving the 5 flight-hours/mileage doses.
+- Verified all newly-cited URLs live (HTTP 200) before use:
+  `radiologyinfo.org/en/pdf/safety-xray.pdf`,
+  `pmc.ncbi.nlm.nih.gov/articles/PMC8789964/`,
+  `epa.gov/radiation/radiation-sources-and-doses`.
+- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+  `FAIL 2 | WARN 0 | SKIP 4 | PASS 1043`. The 2 failures
+  (`test-vignette-outputs.R:351`, `test-vignette-outputs.R:402` —
+  pkgdown top-level page / CHANGELOG.html staleness) are a
+  **pre-existing baseline condition**, not a regression from this PR:
+  `docs/CHANGELOG.html` was last committed 2026-09-08, while
+  `CHANGELOG.md` was last committed 2026-09-27 as part of the merge-base
+  PR \#198 — the staleness predates this PR’s changes entirely
+  (confirmed via `git log` on both paths before touching CHANGELOG.md in
+  this session). A full pkgdown rebuild is explicitly out of this PR’s
+  scope.
+- `parse("_targets.R")`: OK.
+- Quiz CSVs regenerated via `data-raw/generate_quiz_csv.R`: 150 standard
+  pairs + 25 geography pairs written to
+  `inst/extdata/vignettes/quiz_pairs.csv` / `geography_quiz_pairs.csv`.
+- Scoped `tar_make()` for the 16 targets named in this PR’s dispatch: 15
+  completed successfully (`vig_radiation_profiles`,
+  `vig_radiation_patient_vs_occ`, `vig_radiation_timeline_data`,
+  `vig_radiation_regulatory`, `vig_radiation_key_insights`,
+  `vig_intro_common_risks`, `vig_palatable_risks_filtered`,
+  `vig_palatable_risk_plot`, `vig_palatable_risk_plot_interactive`,
+  `vig_equiv_flight_components`, `vig_equiv_flight_duration`,
+  `vig_equiv_flight_duration_chart`,
+  `vig_equiv_radiation_timeline_chart`, `vig_quiz_json_script`,
+  `vig_quiz_pairs`); `export_acute`/`export_validation` failed on the
+  same pre-existing unrelated `acute_risks_merged` “invalid argument to
+  unary operator” bug documented in \#196 (wine-row CSV,
+  `data-raw/sources/acute_risks_base.csv`, untouched by this PR) —
+  confirmed pre-existing, not introduced here.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: clean (no
+  ast-grep violations, no hardcoded paths, jarl “All checks passed!”, no
+  provisional-constant markers).
+
+### Known Limitations
+
+- 5 `annual_rad` rows (X-ray technician, Dental radiographer, Nuclear
+  plant worker, Interventional cardiologist, Granite resident) and the
+  legacy CSV pipeline bug remain tracked in
+  [\#196](https://github.com/JohnGavin/micromort/issues/196), not fixed
+  here.
+
+## 2026-09-27 — Radiation-to-micromort conversion was 1000x too low (FDA + ICRP 103 confirmed)
+
+### Completed
+
+**Root cause: a units-label mismatch, not a disputed judgment call.**
+`msv_to_micromorts()` in `R/atomic_risks.R` converted millisieverts to
+micromorts via `msv * 0.05` — its own comment read “50 micromorts per Sv
+= 0.05 mm/mSv”, but 50 micromorts per **Sv** is only 0.05 micromorts per
+**mSv**, and 50 micromorts per **mSv** is the figure both primary
+sources actually give: the FDA’s patient-facing CT-risk guidance (“a CT
+examination with an effective dose of 10 millisieverts… may be
+associated with an increase in the possibility of fatal cancer of
+approximately 1 chance in 2000” = 5e-5/mSv = 50 micromorts/mSv) and ICRP
+Publication 103 (synopsis in US NRC SECY-08-0197 Enclosure 1: “5 x 10-4
+per rem (5 x 10-2 per Sv)” = 5e-5/mSv = 50 micromorts/mSv). The two
+independent sources agree exactly; the prior code was 1000x too low.
+
+**Fix:** `msv_to_micromorts()` now computes `msv * 50`. Six rows that
+depend on it were corrected via a
+[`dplyr::mutate()`](https://dplyr.tidyverse.org/reference/mutate.html)
+override chained after each tribble’s existing pipeline (tribble literal
+values left untouched, to keep the diff auditable):
+
+| Row | Old | New |
+|----|----|----|
+| Chest X-ray (radiation per scan) | 0.1 | 1 |
+| CT scan head (radiation per scan) | 2 | 100 |
+| CT scan chest (radiation per scan) | 7 | 350 |
+| CT scan abdomen (radiation per scan) | 10 | 400 |
+| Flying radiation component (2h / 5h / 8h / 12h) | 0.1 / 0.25 / 0.4 / 0.6 | 0.7 / 1.75 / 2.8 / 4.2 |
+| Normal background radiation (annual) | 0.12 | 155.5 |
+
+The flights radiation row’s rate is now derived from CDC’s “Air Travel”
+page (~0.035 mSv cosmic dose for a one-way US transcontinental flight,
+~5h) instead of the prior flat per-hour literal, linear in
+`duration_hours` per NCRP Report 160. The annual background row is now
+derived from CDC’s natural-background table (2.28 inhalation + 0.33
+cosmic + 0.29 ingestion + 0.21 terrestrial = 3.11 mSv/year).
+
+**Known deliberately NOT fixed
+([\#196](https://github.com/JohnGavin/micromort/issues/196)):** 8 rows
+share the same pre-fix conversion-factor bug — the four other `med_rad`
+rows (Mammogram, Dental X-ray, Coronary angiogram, Barium enema; these
+also cite `nrc_url`, which 404s/403s as of 2026-09-27) and 9 of 11
+`annual_rad` rows (every row except “Normal background radiation”:
+airline pilot, X-ray technician, dental radiographer, nuclear plant
+worker, interventional cardiologist, and five annual-cosmic/radon rows).
+This PR does not have a freshly-verified authoritative dose for them,
+and inventing one would be exactly the hand-typed-provisional-value
+anti-pattern this codebase’s own conventions forbid. Flagged with code
+comments above both tribbles and tracked in \#196.
+
+**Also discovered, NOT fixed here (folded into \#196):** the separate
+legacy `data-raw/sources/acute_risks_base.csv` → `acute_risks_merged` →
+`export_acute` → `inst/extdata/acute_risks.parquet` pipeline
+(`R/tar_plans/plan_data_acquisition.R`/`plan_normalization.R`) is a
+stale, hand-maintained snapshot carrying the same pre-fix radiation
+values, entirely disconnected from `R/atomic_risks.R`. It could not be
+regenerated in this session regardless, because of an unrelated
+pre-existing bug: a “Drinking a glass of wine (daily chronic risk)” row
+has a non-numeric `micromorts` field that coerces the whole CSV column
+to character, breaking `acute_risks_merged`’s
+`data[order(-data$micromorts), ]` with
+`invalid argument to unary operator`. Confirmed pre-existing (present
+before this fix; `data-raw/` had zero uncommitted changes at session
+start). `inst/extdata/acute_risks.parquet` is therefore **unchanged** by
+this PR.
+
+**Live site not yet rebuilt:** `docs/articles/*.html` still show the old
+numbers until a separate full `quarto render`/pkgdown rebuild runs
+(explicitly out of scope here, matching the pattern used in PR \#195).
+
+### Accuracy / Metrics
+
+- Manual check,
+  `msv_to_micromorts(c(0.02,2,7,8,3.11,0.014,0.035,0.056,0.084))` →
+  `1 100 350 400 155.5 0.7 1.75 2.8 4.2` — matches hand-derived
+  expectations exactly.
+- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+  `FAIL 0 | WARN 0 | SKIP 4 | PASS 1043` after updating 4 pre-existing
+  hardcoded-old-value test assertions (`msv_to_micromorts()` unit test,
+  chest-X-ray-equivalence tests, flight-aggregation
+  totals/hedgeable_pct) that were legitimately asserting the old, wrong
+  numbers.
+- A first implementation attempt (matching the literal fix instructions)
+  additionally overrode `source_url` for the flights radiation
+  sub-component to a CDC citation — this broke
+  [`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)’s
+  `dplyr::group_by(..., source_url)` aggregation (R/risks.R, out of this
+  PR’s scope), splitting each flight activity into two summed rows
+  instead of one. Fixed by keeping `source_url` uniform per flight
+  activity and recording the CDC citation in `notes` instead; verified
+  via a full
+  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+  re-run showing the 4 previously-broken tests
+  (`common_risks() has correct activity count`,
+  `flight activities are aggregated correctly` x2,
+  `risk_exchange_matrix returns correct dimensions`) now pass.
+- `parse("_targets.R")`: OK.
+- Quiz CSV regenerated via `data-raw/generate_quiz_csv.R`. **Quiz
+  answers that flip:** 0, among the 115 (of 150) quiz pairs whose exact
+  two-activity pairing survived unchanged between the old and new
+  generation. The other 35 pairs (28 of which directly involve one of
+  the six corrected activities) were reassigned to different partner
+  activities entirely by the difficulty-bucketing algorithm, because the
+  size of the correction (up to 1000x) moved the affected activity out
+  of its old near-1:1-ratio neighborhood — so there is no case of “same
+  two activities, answer flipped from A to B”; the correction was large
+  enough to change *which* activity gets paired with the corrected one,
+  not to flip an existing pairing’s answer.
+- Scoped `tar_make()` regenerated exports/vignette RDS relevant to this
+  fix; `inst/extdata/vignettes/*.rds` files updated:
+  `vig_equiv_flight_components`, `vig_equiv_flight_duration`,
+  `vig_equiv_flight_duration_chart`,
+  `vig_equiv_radiation_timeline_chart`, `vig_intro_common_risks`,
+  `vig_palatable_risk_plot`, `vig_palatable_risk_plot_interactive`,
+  `vig_palatable_risks_filtered`, `vig_quiz_json_script`,
+  `vig_quiz_pairs`, `vig_radiation_profiles`,
+  `vig_radiation_regulatory`, `vig_radiation_timeline_data`.
+  `vig_radiation_key_insights.rds` and
+  `vig_radiation_patient_vs_occ.rds` are unchanged, confirmed correct:
+  both derive from
+  [`patient_radiation_comparison()`](https://johngavin.github.io/micromort/reference/patient_radiation_comparison.md)
+  (`R/radiation_profiles.R`, out of scope), which hardcodes its own
+  `xray_mm <- 0.1` literal rather than reading the corrected `med_rad`
+  value, and both also depend on the still-unfixed
+  `airline_pilot_annual`/`xray_tech_annual` annual_rad rows (#196) — a
+  separate, tracked inconsistency.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: clean (no
+  ast-grep violations, no hardcoded paths, jarl “All checks passed!”, no
+  provisional-constant markers).
+
+### Known Limitations
+
+- The 8 rows and the legacy CSV pipeline described above are tracked in
+  [\#196](https://github.com/JohnGavin/micromort/issues/196), not fixed
+  here.
+- `docs/articles/*.html` (the live pkgdown site) is not rebuilt by this
+  PR and will show the pre-fix numbers until a separate full-site
+  rebuild runs.
+- `inst/extdata/acute_risks.parquet` is unchanged (blocked by the
+  unrelated pre-existing CSV bug above).
+
+## 2026-09-27 — Add Japan elderly (75+) accidental-drowning annual risk (Satoh et al. 2013)
+
+### Completed
+
+**New atomic risk row, `R/atomic_risks.R` Part 13 (`home_safety`):** one
+row, “Accidental drowning, Japan age 75+ (per year)” — **330
+micromorts/year**, `condition_variable = "country"`,
+`condition_value = "JP"`, `confidence = "medium"`,
+`validation_status = "single_source"`. Source: Satoh F, Osawa M,
+Hasegawa I, Seto Y, Tsuboi A. “Dead in Hot Bathtub” Phenomenon —
+Accidental Drowning or Natural Disease? *Am J Forensic Med Pathol.*
+2013;34(2):164-168. `doi:10.1097/PAF.0b013e31828d68c7`. Quoted figure:
+“Annual mortality in Japan from accidental drowning in persons older
+than 75 years is 33 deaths per 100,000 population” → 3.3e-4/yr = 330
+micromorts/yr.
+
+**Caveats preserved in the row’s `notes` field:** - The paper’s own
+subject is specifically hot-bathtub deaths (268 cases reviewed
+retrospectively), but the quoted 33/100,000/yr figure is for accidental
+drowning broadly among Japanese aged 75+, not narrowed to bathtub
+incidents in that one statistic — stated plainly, not overstated as
+bathtub-specific. - The authors state the true rate “may be considerably
+underestimated” because pathologists tend to classify ambiguous cases as
+natural death absent clear water-inhalation evidence. - This row is
+Japan-specific and age-75+-specific; it does **not** touch, replace, or
+get merged with either existing bath-drowning row: the
+general-population “Taking a bath” row in Part 4 (0.07 mm,
+Wikipedia-sourced, unconditioned) or the US-CDC age-stratified “Taking a
+bath (age-conditioned)” / `bath_age` rows in Part 10 (per-bath, not
+annual). All three answer different questions and remain independent,
+uncombined data points.
+
+**Naming note:** the activity was deliberately labelled “(per year)”
+rather than “(annual)” — the test suite’s
+`grepl("_annual$", activity_id)` filter identifies Part 5’s
+annual-radiation rows specifically, and an activity_id ending in
+`_annual` would have falsely matched that filter and corrupted its
+row-count/schema assertions. Documented inline in `R/atomic_risks.R`.
+
+**Test updates (`tests/testthat/test-atomic-risks.R`):** three row-count
+assertions bumped to reflect the one added row: total
+`nrow(atomic_risks())` 193→194, unique `activity_id` count 120→121,
+country-conditioned row count 60→61. No other assertion needed updating
+([`common_risks()`](https://johngavin.github.io/micromort/reference/common_risks.md)’s
+default-profile count of 107 is unaffected, since
+`condition_value = "JP"` is not in the default profile set — consistent
+with the existing `road_traffic`/`homicide` country rows, which are
+likewise excluded from the default quiz/common-risks view).
+
+### Accuracy / Metrics
+
+- `grep -rn -i "bathtub|hot bath|paf.0b013e|satoh" R data-raw inst/extdata`
+  before the edit: no existing row covered this figure (only unrelated
+  US-CDC “Bathtub drowning” age-stratified rows already in Part 10).
+- Manual check:
+  `atomic_risks() |> dplyr::filter(activity_id == make_activity_id("Accidental drowning, Japan age 75+ (per year)"))`
+  → 1 row, `micromorts = 330`, `condition_variable = "country"`,
+  `condition_value = "JP"`, `period = "per year"`; confirmed no
+  `_annual$` regex collision.
+- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+  `[ FAIL 2 | WARN 0 | SKIP 4 | PASS 1046 ]` — the 2 remaining failures
+  are a pre-existing CHANGELOG-vs-`docs/CHANGELOG.html`
+  pkgdown-staleness gate, present identically before this change (a full
+  pkgdown/site rebuild is out of scope for this PR); the `atomic-risks`
+  test context itself is fully green (188/188).
+- `parse("_targets.R")`: no parse errors.
+- `data-raw/generate_quiz_csv.R` regenerated
+  `inst/extdata/vignettes/{quiz_pairs,geography_quiz_pairs}.csv`:
+  byte-identical to the committed versions (the new JP row is correctly
+  excluded from the default quiz sample, same as the existing
+  country-conditioned `road_traffic`/`homicide` rows).
+- Scoped
+  `tar_make(names = c("vig_intro_common_risks", "vig_reliability_validation_summary"))`:
+  both completed; neither writes a committed
+  `inst/extdata/vignettes/*.rds` file (targets-store-only outputs), so
+  `git status` shows no `.rds` changes.
+- `~/.claude/scripts/r_code_check.sh R/atomic_risks.R`: ast-grep 0
+  violations, jarl “All checks passed!”, no provisional-constant or
+  MANUAL-marker flags. \## 2026-09-26 — Fix population confidence stats:
+  percent-scale bug, stale Pages deploy, weekly-only cadence (issue
+  \#132)
+
+### Completed
+
+**Symptom:** the acute quiz page said “Not enough population confidence
+data yet (need 5+ rated attempts, have 0)” although rated attempts
+existed in the Sheet. Three separate defects:
+
+**A. Unit bug (code fix).** The Sheet’s confidence column H is
+percent-formatted, so the gviz JSON returns FRACTIONS (0.75 for “75%”;
+the Form only accepts 0/25/50/75/100%). `plan_leaderboard_stats.R` read
+it as `avg_confidence_pct` and treated it as 0-100. Evidence in the
+deployed JSON: points had `confidence_pct: 0.75` and calibration score
+0.3511 = (0.0075 - 0.6)^2 instead of (0.75 - 0.60)^2 = 0.0225. New
+internal helpers in `R/confidence_scale.R`:
+`confidence_fraction_to_pct()` multiplies by 100 and turns any non-NA
+value outside \[0, 1\] into NA with a
+[`cli::cli_warn()`](https://cli.r-lib.org/reference/cli_abort.html)
+stating how many were rejected (so a future change of the Sheet’s column
+format is loud, never silently mis-scaled);
+`confidence_calibration_score()` holds the calibration arithmetic so it
+is testable. The plan now calls both. Tests:
+`tests/testthat/test-confidence-scale.R` (12 expectations).
+
+**B. Stale deploy.** `leaderboard-refresh.yml` committed
+`docs/api/quiz_stats.json` with `GITHUB_TOKEN`; pushes made that way do
+not trigger other workflows, so `pkgdown.yaml` (Pages deploy,
+`push: paths: docs/**`) never ran after the 2026-09-14 and 2026-09-21
+refreshes. The workflow now has `actions: write`, commits only when
+something other than `generated_at` changed
+(`git diff --cached --exit-code -I'"generated_at"'`, checked in a
+scratch repo: exit 0 for a generated_at-only change, 1 for a real
+change), and then runs `gh workflow run pkgdown.yaml --ref main`
+(workflow_dispatch is exempt from the GITHUB_TOKEN restriction).
+
+**C. Stale cadence.** The refresh ran only Mondays, so a new submission
+waited up to a week. Two crons now: `0 6 * * 1` (Monday, full run
+including the weekly email) and `0 6 * * 0,2-6` (other days: refresh +
+deploy only; the “Send email report” step is gated on
+`github.event.schedule`).
+
+**D. Regenerated `docs/api/quiz_stats.json`** in the worktree with the
+fixed code: acute calibration now `confidence_pct: 75`, score 0.0225 (n
+= 2, unchanged); ranking calibration n 0 -\> 1 (confidence 75, score 87
+-\> 0.0144); ranking overall n 16 -\> 17 from a newly arrived row.
+
+### Accuracy / Metrics
+
+- Falsification: with the helper temporarily returning its input
+  unchanged, `test-confidence-scale.R` went `[ FAIL 9 | PASS 3 ]` for
+  the expected reason (0.75 stayed 0.75-scale, calibration 0.35 not
+  0.0225); restored: `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 12 ]`. The first
+  GREEN run also caught a real bug in the new warning (pluralisation
+  without a quantity), fixed before commit.
+- Not tested here: the workflow itself (no dispatch was run;
+  `actionlint` not available, YAML parse only). Needs one
+  `workflow_dispatch` of `Leaderboard Stats Refresh` after merge.
+- Not addressed: the page still says “have N” until 5 rated attempts
+  exist; the threshold is unchanged.
+
+## 2026-09-09 — Fix `tar_read_raw()` fragility in what-is-a-micromort’s build-info footer (issue \#192)
+
+### Completed
+
+**Follow-up to the \#190 “Known Limitations” gap:** every other
+vignette’s build-info footer reads `vig_build_info` via
+`safe_tar_read()`, which falls back to the committed
+`inst/extdata/vignettes/vig_build_info.rds` snapshot whenever the live
+`_targets` store doesn’t have the target built.
+`vignettes/what-is-a-micromort.qmd` alone called
+`targets::tar_read_raw("vig_build_info", store = ...)` directly inside a
+bare [`tryCatch()`](https://rdrr.io/r/base/conditions.html) — with no
+RDS fallback, an unbuilt/unreachable live target silently dropped the
+whole footer, which is exactly what happened during the \#190 full-site
+rebuild ([\#190](https://github.com/JohnGavin/micromort/issues/190)
+“Known Limitations”, fixed in a same-branch follow-up commit at the
+time). [\#192](https://github.com/JohnGavin/micromort/issues/192)
+tracked converting this one vignette to the same `safe_tar_read()`
+pattern everyone else already uses, closing the gap for good.
+
+**Fix:** replaced the bare `tryCatch(targets::tar_read_raw(...))` block
+in the `build-info` chunk with a single
+`safe_tar_read("vig_build_info")` call — no other chunk, line, or file
+touched.
+
+### Accuracy / Metrics
+
+- `grep -n "tar_read_raw\|safe_tar_read" vignettes/what-is-a-micromort.qmd`:
+  only `safe_tar_read("vig_build_info")` remains; no `tar_read_raw(`
+  call left in the file.
+- Normal-conditions render (`quarto render ... --to html`):
+  `grep -c "Built" <output>` = 1.
+- Regression proof — simulated the exact \#192/#190 failure mode by
+  pointing `TARGETS_STORE` at a nonexistent directory before rendering:
+  `grep -c "Built" <output>` = 1 (still present, footer text carries the
+  RDS snapshot’s static “Built 2026-04-18” date, confirming the fallback
+  path was actually exercised rather than a live store coincidentally
+  succeeding).
+- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+  `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049`.
+- `docs/articles/what-is-a-micromort.html` rebuilt via
+  `pkgdown::build_article("what-is-a-micromort")` (single-article, not a
+  full `site_pkgdown` rebuild) to satisfy the repo’s own source/output
+  staleness test (`test-vignette-outputs.R`); diff against the prior
+  committed copy is limited to four randomly-regenerated `htmlwidget-*`
+  div/script instance IDs — all chart/table data, categories, and the
+  build-info footer text are byte-identical to the previously deployed
+  page.
+
 ## 2026-09-08 — Fix confidence-field format mismatch dropping every quiz confidence submission (issue \#190)
 
 ### Completed
