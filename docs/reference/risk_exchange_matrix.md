@@ -44,8 +44,8 @@ risk_exchange_matrix()
 #>  4 Scuba diving, t…                    0.5              0.6                  0.7
 #>  5 Driving (230 mi…                    0.1              0.1                  0.1
 #>  6 Skiing                              0.1              0.1                  0.1
-#>  7 Flying (8h long…                    0.4              0.5                  0.6
-#>  8 Chest X-ray (ra…                    0                0                    0  
+#>  7 Flying (8h long…                    0.6              0.8                  0.9
+#>  8 Chest X-ray (ra…                    0.1              0.1                  0.1
 #>  9 Cup of coffee                       0                0                    0  
 #> 10 Crossing a road                     0                0                    0  
 #> # ℹ abbreviated name: ¹​`General anesthesia (emergency)`

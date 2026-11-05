@@ -125,7 +125,7 @@ for the aggregated view.
 
 ``` r
 atomic_risks()
-#> # A tibble: 193 × 22
+#> # A tibble: 194 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 mt_everest_asce… mt_everest… Mt. Eve… all_caus… mixed         Mt. Everest as…
@@ -138,14 +138,14 @@ atomic_risks()
 #>  8 base_jumping_pe… base_jumpi… Base ju… all_caus… mixed         Base jumping (…
 #>  9 first_day_of_li… first_day_… First d… all_caus… mixed         First day of l…
 #> 10 covid_19_unvacc… covid_19_u… COVID-1… all_caus… mixed         COVID-19 unvac…
-#> # ℹ 183 more rows
+#> # ℹ 184 more rows
 #> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
 #> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
 #> #   source_count <int>, estimate_range <chr>
 atomic_risks() |> dplyr::filter(component != "all_causes")
-#> # A tibble: 66 × 22
+#> # A tibble: 67 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 flying_2h_2h_cr… flying_2h   Flying … crash     physical      Aircraft crash 
@@ -158,14 +158,14 @@ atomic_risks() |> dplyr::filter(component != "all_causes")
 #>  8 flying_5h_5h_ra… flying_5h   Flying … radiation radiation     Cosmic radiati…
 #>  9 flying_8h_8h_cr… flying_8h   Flying … crash     physical      Aircraft crash 
 #> 10 flying_8h_8h_dv… flying_8h   Flying … dvt       medical       Deep vein thro…
-#> # ℹ 56 more rows
+#> # ℹ 57 more rows
 #> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,
 #> #   confidence <chr>, source_url <chr>, notes <chr>, validation_status <chr>,
 #> #   source_count <int>, estimate_range <chr>
 atomic_risks() |> dplyr::filter(hedgeable)
-#> # A tibble: 45 × 22
+#> # A tibble: 46 × 22
 #>    component_id     activity_id activity component risk_category component_label
 #>    <chr>            <chr>       <chr>    <chr>     <chr>         <chr>          
 #>  1 flying_2h_2h_dv… flying_2h   Flying … dvt       medical       Deep vein thro…
@@ -178,7 +178,7 @@ atomic_risks() |> dplyr::filter(hedgeable)
 #>  8 flying_12h_12h_… flying_12h  Flying … dvt       medical       Deep vein thro…
 #>  9 airline_pilot_a… airline_pi… Airline… radiation radiation     Ionizing radia…
 #> 10 xray_tech_annua… xray_tech_… X-ray t… radiation radiation     Ionizing radia…
-#> # ℹ 35 more rows
+#> # ℹ 36 more rows
 #> # ℹ 16 more variables: micromorts <dbl>, duration_hours <dbl>, category <chr>,
 #> #   period <chr>, period_type <chr>, hedgeable <lgl>, hedge_description <chr>,
 #> #   hedge_reduction_pct <dbl>, condition_variable <chr>, condition_value <chr>,

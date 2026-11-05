@@ -96,12 +96,12 @@ head(pairs)
 #> # A tibble: 6 × 16
 #>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
 #>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
-#> 1 Airline pilot (an… Commuting…        0.13  Travel                   0 per trip
-#> 2 All US workers ba… Commuting…        0.13  Travel                   0 per trip
-#> 3 American football  COVID-19 …       23     COVID-19                 0 11 week…
-#> 4 Base jumping (per… Living in…      500     COVID-19                 0 per mon…
-#> 5 Bee/wasp sting (g… High-alti…        0.035 Environme…               0 per year
-#> 6 COVID-19 infectio… Himalayan…    12000     Mountaine…               0 per exp…
+#> 1 All US workers ba… Commuting…         0.13 Travel                   0 per trip
+#> 2 American football  COVID-19 …        23    COVID-19                 0 11 week…
+#> 3 Annual tourist fl… Scuba div…         5    Sport                    0 per dive
+#> 4 Base jumping (per… Living in…       500    COVID-19                 0 per mon…
+#> 5 Business travelle… COVID-19 …        23    COVID-19                 0 11 week…
+#> 6 Business travelle… US milita…        25    Military                 0 per day 
 #> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
 #> #   description_a <chr>, help_url_a <chr>, description_b <chr>,
@@ -113,12 +113,12 @@ head(easy)
 #> # A tibble: 6 × 17
 #>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
 #>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
-#> 1 Airline pilot (an… COVID-19 …            1 COVID-19                 0 11 week…
-#> 2 Airline pilot (an… Walking (…            1 Travel                   0 per trip
-#> 3 Airline pilot (an… Living 2 …            1 Environme…               0 per 2 m…
-#> 4 All US workers ba… Train (10…            1 Travel                   0 per trip
-#> 5 All US workers ba… Walking (…            1 Travel                   0 per trip
-#> 6 All US workers ba… Driving (…            1 Travel                   0 per trip
+#> 1 Agriculture (per … Annual to…          4.2 Travel                   0 per year
+#> 2 American football  Vaginal b…        120   Medical                  0 per eve…
+#> 3 Annual tourist fl… US milita…         25   Military                 0 per day 
+#> 4 Annual tourist fl… Skiing              0.7 Sport                    0 per day 
+#> 5 Barium enema (rad… Living in…         50   COVID-19                 0 per 8 w…
+#> 6 Business travelle… Caesarean…        170   Medical                  0 per eve…
 #> # ℹ 11 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, difficulty <chr>,
 #> #   answer <chr>, description_a <chr>, help_url_a <chr>, description_b <chr>,
@@ -130,12 +130,12 @@ head(ng_pairs)
 #> # A tibble: 6 × 16
 #>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
 #>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
-#> 1 Airline pilot (an… Commuting…        0.13  Travel                   0 per trip
-#> 2 All US workers ba… Commuting…        0.13  Travel                   0 per trip
-#> 3 American football  COVID-19 …       23     COVID-19                 0 11 week…
-#> 4 Base jumping (per… Living in…      500     COVID-19                 0 per mon…
-#> 5 Bee/wasp sting (g… High-alti…        0.035 Environme…               0 per year
-#> 6 COVID-19 monovale… General a…       10     Medical                  0 per eve…
+#> 1 All US workers ba… Commuting…         0.13 Travel                   0 per trip
+#> 2 American football  COVID-19 …        23    COVID-19                 0 11 week…
+#> 3 Annual tourist fl… Scuba div…         5    Sport                    0 per dive
+#> 4 Base jumping (per… Living in…       500    COVID-19                 0 per mon…
+#> 5 Business travelle… US milita…        25    Military                 0 per day 
+#> 6 COVID-19 infectio… Himalayan…     12000    Mountaine…               0 per exp…
 #> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
 #> #   description_a <chr>, help_url_a <chr>, description_b <chr>,
