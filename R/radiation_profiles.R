@@ -6,6 +6,22 @@ utils::globalVariables(c(
   "career_years"
 ))
 
+#' Chest X-ray micromorts from the single home (atomic_risks())
+#'
+#' @param ar Output of [atomic_risks()]; computed if omitted.
+#' @return Single numeric: micromorts for one chest X-ray.
+#' @noRd
+chest_xray_micromorts <- function(ar = atomic_risks()) {
+  value <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  if (length(value) != 1L || is.na(value)) {
+    cli::cli_abort(c(
+      "x" = "Expected exactly one non-missing chest X-ray row in {.fn atomic_risks}.",
+      "i" = "Found {length(value)} row{?s}."
+    ))
+  }
+  value
+}
+
 #' Radiation Exposure Profiles
 #'
 #' Compares annual and cumulative radiation exposure across occupational,
@@ -34,12 +50,12 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
   ar <- atomic_risks()
   annual <- ar[grepl("_annual$", ar$activity_id), ]
 
-  # Annual dose in mSv (reverse LNT: mm / 0.05 = mSv)
+  # Annual dose in mSv: inverse of msv_to_micromorts() (single factor home)
   result <- tibble::tibble(
     activity_id = annual$activity_id,
     activity = annual$activity,
     category = annual$category,
-    annual_msv = round(annual$micromorts / 0.05, 2),
+    annual_msv = round(micromorts_to_msv(annual$micromorts), 4),
     annual_micromorts = annual$micromorts
   )
 
@@ -56,8 +72,9 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
     1    # 1 mSv/yr public limit
   )
 
-  # Chest X-ray equivalents per year (1 chest X-ray = 0.1 mm)
-  result$xray_equivalents_per_year <- result$annual_micromorts / 0.1
+  # Chest X-ray equivalents per year (value read from atomic_risks())
+  result$xray_equivalents_per_year <-
+    result$annual_micromorts / chest_xray_micromorts(ar)
 
   result
 }
@@ -85,8 +102,8 @@ patient_radiation_comparison <- function(
   xray_counts = c(1, 10, 100),
   career_years = c(10, 20, 40)
 ) {
-  # Chest X-ray = 0.1 micromorts
-  xray_mm <- 0.1
+  # Chest X-ray micromorts: single home is the atomic_risks() med_rad row
+  xray_mm <- chest_xray_micromorts()
 
   # Get occupational profiles
   rp <- radiation_profiles(milestones = integer(0))

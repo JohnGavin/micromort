@@ -1,5 +1,31 @@
 # Changelog
 
+## 2026-11-04 — One home per radiation dose (roborev 13730 residual findings)
+
+### Completed
+
+Triage of three open HIGH roborev findings. 13730 was partly fixed by #199 and is closed out here; 13839 and 13851 concern a stale branch, not `main` (tracked in [#207](https://github.com/JohnGavin/micromort/issues/207)).
+
+- `med_rad` and `annual_rad` in `R/atomic_risks.R` now store `dose_msv` and derive micromorts once via `msv_to_micromorts()`; the stale tribble micromorts literals and the later override blocks are gone. Output values are identical to before (checked row by row), so no data or vignette regeneration is needed.
+- The 5 `annual_rad` rows with no verified dose (X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist, Granite resident; [#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)) keep their legacy literal in a separate `micromorts_unsourced` column. No new dose was typed in; they remain for the owner.
+- Flight radiation rows no longer carry stale per-flight literals; the notes string builds the hourly rate from `msv_to_micromorts()`.
+- Normal background radiation now cites the CDC terrestrial-radiation page instead of the air-travel page.
+- `patient_radiation_comparison()` and `radiation_profiles()` read the chest X-ray value from `atomic_risks()` (1 micromort) instead of the literal 0.1. Patient X-ray comparison values are therefore 10x higher than before.
+- New `tests/testthat/test-radiation-consistency.R`.
+
+### Follow-up fix
+
+- `radiation_profiles()` derived `annual_msv` with the old `/ 0.05` inverse, 1000x off. It now uses a new `micromorts_to_msv()` (next to `msv_to_micromorts()`, same single 50 micromorts/mSv factor), rounded to 4 places. New tests in `tests/testthat/test-radiation-profiles.R`.
+- Stale prose fixed: cosmic radiation is 0.35 micromorts/hour (0.007 mSv/h x 50), not 0.05 (comments and a notes string in `R/atomic_risks.R`, `vignettes/risk_equivalence.qmd`); "0.05 micromorts per mSv" in that vignette is now 50.
+- Regenerated the six `vig_*radiation*` RDS files in `inst/extdata/vignettes/` from the targets (`tar_make(names = ...)`). The full `tar_make()` cannot complete: `vig_telemetry_commit_velocity_chart` calls `safe_tar_read()`, which is defined nowhere (pre-existing, not touched).
+- Left alone: the 5 legacy unsourced rows and their `annual_rad_notes` text ("0.05 mm/mSv") remain for the owner ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)).
+
+### Pipeline and site fixes
+
+- `vig_telemetry_commit_velocity_chart` (`R/tar_plans/plan_vignette_outputs.R`) called `safe_tar_read()`, which exists only in `inst/vignette_utils.R` for vignette chunks, so the target failed under `tar_make()`. It now depends on `vig_commit_velocity` directly, which also gives targets the correct dependency edge. New `tests/testthat/test-plan-no-safe-tar-read.R` fails if any plan calls `safe_tar_read()`.
+- Rebuilt `docs/` (pkgdown) and the `inst/extdata/vignettes/` RDS files so the three staleness checks in `test-vignette-outputs.R` pass.
+- Known, not fixed here: `qa_coverage` needs `covr`, which is not in the micromort nix shell (declared nowhere), and `qa_deployed_html` fails against the currently deployed site (quiz and portfolio pages contain "Error:") until this branch is deployed. A full `tar_make()` therefore stops at those two gates.
+
 ## 2026-09-27 — Re-source 9 more radiation rows from #196 (medical scans + self-consistent flight-hours model)
 
 ### Completed

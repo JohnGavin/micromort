@@ -68,8 +68,11 @@ test_that("regulatory limits are correct", {
 
 test_that("xray_equivalents_per_year is correct", {
   rp <- radiation_profiles()
-  # xray_equivalents = annual_micromorts / 0.1 (chest X-ray = 0.1 mm)
-  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / 0.1)
+  # xray_equivalents = annual_micromorts / chest X-ray micromorts (read from
+  # atomic_risks(); see test-radiation-consistency.R)
+  ar <- atomic_risks()
+  xray <- ar$micromorts[ar$activity == "Chest X-ray (radiation per scan)"]
+  expect_equal(rp$xray_equivalents_per_year, rp$annual_micromorts / xray)
 })
 
 
@@ -97,7 +100,8 @@ test_that("100 X-rays > 40-year X-ray tech career", {
   row <- prc[prc$occupation == "X-ray technician (annual radiation)" &
              prc$xray_count == 100 &
              prc$career_years == 40, ]
-  # 100 X-rays = 10 mm, 40 years at 0.05 mm/yr = 2 mm
+  # 100 chest X-rays = 100 mm (50 micromorts/mSv x 0.02 mSv x 100);
+  # 40 years of the (still unsourced, #201-#204) technician literal = 2 mm
   expect_gt(row$patient_micromorts, row$occupational_micromorts)
   expect_gt(row$ratio, 1)
 })
@@ -109,4 +113,24 @@ test_that("custom xray_counts and career_years work", {
   )
   expect_equal(length(unique(prc$xray_count)), 2)
   expect_equal(length(unique(prc$career_years)), 2)
+})
+
+
+# ── annual_msv is consistent with annual_micromorts (one home) ────────────────
+
+test_that("micromorts_to_msv() inverts msv_to_micromorts()", {
+  expect_equal(micromorts_to_msv(50), 1)
+  expect_equal(micromorts_to_msv(0), 0)
+  expect_equal(micromorts_to_msv(msv_to_micromorts(3.11)), 3.11)
+})
+
+test_that("radiation_profiles() annual_msv round-trips to annual_micromorts", {
+  rp <- radiation_profiles()
+  # Old bug: annual_msv = micromorts / 0.05 was 1000x too large.
+  expect_equal(msv_to_micromorts(rp$annual_msv), rp$annual_micromorts,
+               tolerance = 0.01, scale = 1)
+  bg <- rp[rp$activity_id == "background_radiation_annual", ]
+  expect_equal(bg$annual_msv, 3.11)
+  pilot <- rp[rp$activity_id == "airline_pilot_annual", ]
+  expect_equal(pilot$annual_msv, round(0.035 / 5 * 700, 4))
 })
