@@ -190,7 +190,12 @@ Annual and cumulative radiation exposure across 11 profiles --- occupational, pa
 show_target("vig_radiation_profiles")
 ```
 
-Key insight: A 40-year airline pilot career accumulates ~6 micromorts of radiation --- equivalent to just 60 chest X-rays.
+```{r radiation-insights}
+#| echo: false
+ki <- safe_tar_read("vig_radiation_key_insights")
+```
+
+Key insight: A 40-year airline pilot career accumulates about `r format(round(ki$pilot_40y_mm))` micromorts of radiation --- equivalent to about `r format(round(ki$pilot_40y_xrays))` chest X-rays.
 
 ### Patient vs Occupational
 
@@ -202,14 +207,14 @@ How many patient X-rays equal a career of occupational exposure?
 show_target("vig_radiation_patient_vs_occ")
 ```
 
-Key insight: 100 lifetime chest X-rays (10 micromorts) exceeds a 40-year X-ray technician career (2 micromorts) by 5x.
+Key insight: 100 lifetime chest X-rays (`r format(round(ki$xray100_patient_mm, 1))` micromorts) compare with a 40-year X-ray technician career (`r format(round(ki$xray100_tech40_mm, 1))` micromorts), a ratio of `r format(ki$xray100_vs_tech40_ratio)`.
 
 ### Timeline
 
 Cumulative radiation exposure over a 40-year career:
 
 ```{r radiation-timeline, fig.width=9, fig.height=6}
-#| fig-cap: "Cumulative radiation micromorts over a 40-year career for different exposure profiles, showing that 100 lifetime chest X-rays exceeds occupational exposure."
+#| fig-cap: "Cumulative radiation micromorts over a 40-year career for different exposure profiles, comparing career exposure across occupational, passenger and environmental profiles."
 #| fig-alt: "Line chart of cumulative micromorts vs years of exposure. Multiple lines for different radiation scenarios (dental, X-ray tech, CT patient, annual cosmic). Lines diverge over time showing compounding differences."
 #| echo: false
 #| results: asis

@@ -45,3 +45,51 @@ test_that("background radiation cites its own source, not the air-travel page", 
   expect_false(grepl("air-travel", bg$source_url, fixed = TRUE))
   expect_match(bg$source_url, "^https://www\\.cdc\\.gov/")
 })
+
+# roborev 15234: the 5 rows with no independently sourced dose were on the old
+# 0.05 micromorts/mSv scale, 1000x below every other row.
+test_that("every annual radiation row sits on the single msv_to_micromorts() scale", {
+  rp <- radiation_profiles()
+  expect_gt(nrow(rp), 0)
+  expect_equal(
+    rp$annual_micromorts / rp$annual_msv,
+    rep(msv_to_micromorts(1), nrow(rp)),
+    tolerance = 1e-3
+  )
+})
+
+test_that("occupational annual doses are of order mSv, not micro-mSv", {
+  rp <- radiation_profiles()
+  occ <- rp[rp$category == "Occupation", ]
+  expect_gt(nrow(occ), 0)
+  expect_true(all(occ$annual_msv >= 0.1))
+})
+
+test_that("the 5 unsourced rows keep their legacy dose in mSv", {
+  rp <- radiation_profiles()
+  dose <- stats::setNames(rp$annual_msv, rp$activity_id)
+  ids <- c("xray_tech_annual", "dental_radiographer_annual",
+           "nuclear_worker_annual", "interventional_cardiologist_annual",
+           "granite_resident_annual")
+  expect_equal(
+    unname(dose[ids]),
+    c(1, 0.2, 2, 3.5, 2),
+    tolerance = 1e-6
+  )
+})
+
+test_that("patient_radiation_comparison() ratio equals the dose ratio in mSv", {
+  prc <- patient_radiation_comparison()
+  rp <- radiation_profiles()
+  dose <- stats::setNames(rp$annual_msv, rp$activity)
+  xray_msv <- micromorts_to_msv(chest_xray_mm())
+  expected <- round(
+    (prc$xray_count * xray_msv) / (dose[prc$occupation] * prc$career_years),
+    2
+  )
+  expect_equal(unname(prc$ratio), unname(expected), tolerance = 1e-6)
+  # One chest X-ray (0.02 mSv) must not exceed a 10-year technician career.
+  one <- prc[prc$occupation == "X-ray technician (annual radiation)" &
+               prc$xray_count == 1 & prc$career_years == 10, ]
+  expect_lt(one$ratio, 1)
+})

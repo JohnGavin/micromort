@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-06 — Put the 5 unsourced annual radiation rows on the dose scale (roborev 15234)
+
+- The X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist and Granite resident rows in `R/atomic_risks.R` kept micromorts literals calibrated at the old 0.05 micromorts/mSv factor, so their derived `annual_msv`, cumulative micromorts and X-ray equivalents were 1000x too low. Each now stores its legacy literal divided by 0.05 as `dose_msv` (1, 0.2, 2, 3.5 and 2 mSv/year) and goes through `msv_to_micromorts()`; the `micromorts_unsourced` column is gone. This is a units correction only: the doses are still not independently sourced ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)), and the row notes now say so.
+- `patient_radiation_comparison()` ratios now equal the dose ratio in mSv. A single chest X-ray no longer "exceeds" a 10-year technician career.
+- Removed the hand-typed "100 lifetime chest X-rays (10 micromorts) exceeds ... (2 micromorts)" sentence from the roxygen and from `vignettes/risk_equivalence.qmd`; the vignette now reads `vig_radiation_key_insights` inline. That target no longer divides by a literal 0.1 but by the chest X-ray row.
+- Tests: `tests/testthat/test-radiation-consistency.R` (scale, occupational dose floor, the 5 doses, ratio equals dose ratio); the old "100 X-rays > 40-year technician" assertion in `test-radiation-profiles.R` asserted the false claim and is replaced.
+- Not changed: stale snapshot copies of the old radiation values in `data-raw/sources/acute_risks_base.csv`, `inst/extdata/vignettes/portfolio_activities.csv` and `vignettes/portfolio_shinylive.qmd` (they predate [#209](https://github.com/JohnGavin/micromort/pull/209) for every radiation row; regenerate separately).
+
 ## 2026-11-04 — One home per radiation dose (roborev 13730 residual findings)
 
 ### Completed

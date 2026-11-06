@@ -838,7 +838,7 @@ plan_vignette_outputs <- list(
       prc <- patient_radiation_comparison()
 
       pilot_40y <- rp$annual_micromorts[rp$activity_id == "airline_pilot_annual"] * 40
-      pilot_xray_equiv <- pilot_40y / 0.1
+      pilot_xray_equiv <- pilot_40y / chest_xray_micromorts()
 
       xray100_vs_tech40 <- prc[prc$occupation == "X-ray technician (annual radiation)" &
                                 prc$xray_count == 100 &

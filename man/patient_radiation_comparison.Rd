@@ -22,9 +22,10 @@ patient_micromorts, occupational_micromorts, ratio.
 }
 \description{
 Cross-tabulates patient X-ray exposure against occupational career
-radiation to reveal surprising equivalences. For example, 100 lifetime
-chest X-rays (10 micromorts) exceeds a 40-year X-ray technician career
-(2 micromorts).
+radiation to reveal equivalences. Both sides are converted to micromorts
+with the same dose-to-risk factor, so \code{ratio} equals the ratio of the two
+cumulative doses in mSv. Values come from \code{\link[=atomic_risks]{atomic_risks()}}; none are
+hand-typed here.
 }
 \examples{
 patient_radiation_comparison()

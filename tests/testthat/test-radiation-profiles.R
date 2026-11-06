@@ -95,15 +95,15 @@ test_that("patient_radiation_comparison() has correct dimensions", {
   expect_equal(nrow(prc), 45)
 })
 
-test_that("100 X-rays > 40-year X-ray tech career", {
+test_that("100 X-rays are a small fraction of a 40-year X-ray tech career", {
   prc <- patient_radiation_comparison()
   row <- prc[prc$occupation == "X-ray technician (annual radiation)" &
              prc$xray_count == 100 &
              prc$career_years == 40, ]
-  # 100 chest X-rays = 100 mm (50 micromorts/mSv x 0.02 mSv x 100);
-  # 40 years of the (still unsourced, #201-#204) technician literal = 2 mm
-  expect_gt(row$patient_micromorts, row$occupational_micromorts)
-  expect_gt(row$ratio, 1)
+  # 100 chest X-rays = 2 mSv; 40 years at the (still unsourced, #201-#204)
+  # technician dose of 1 mSv/yr = 40 mSv, so the ratio is 2 / 40 = 0.05.
+  expect_lt(row$patient_micromorts, row$occupational_micromorts)
+  expect_equal(row$ratio, 0.05)
 })
 
 test_that("custom xray_counts and career_years work", {
