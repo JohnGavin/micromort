@@ -96,11 +96,11 @@ head(pairs)
 #> # A tibble: 6 × 16
 #>   activity_b         activity_a micromorts_a category_a hedgeable_pct_a period_a
 #>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
-#> 1 All US workers ba… Commuting…         0.13 Travel                   0 per trip
-#> 2 American football  COVID-19 …        23    COVID-19                 0 11 week…
-#> 3 Annual tourist fl… Scuba div…         5    Sport                    0 per dive
-#> 4 Base jumping (per… Living in…       500    COVID-19                 0 per mon…
-#> 5 Business travelle… COVID-19 …        23    COVID-19                 0 11 week…
+#> 1 Airline pilot (an… Barium en…       300    Medical                  0 per eve…
+#> 2 All US workers ba… Commuting…         0.13 Travel                   0 per trip
+#> 3 American football  COVID-19 …        23    COVID-19                 0 11 week…
+#> 4 Annual tourist fl… Scuba div…         5    Sport                    0 per dive
+#> 5 Base jumping (per… Living in…       500    COVID-19                 0 per mon…
 #> 6 Business travelle… US milita…        25    Military                 0 per day 
 #> # ℹ 10 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, answer <chr>,
@@ -115,10 +115,10 @@ head(easy)
 #>   <chr>              <chr>             <dbl> <chr>                <dbl> <chr>   
 #> 1 Agriculture (per … Annual to…          4.2 Travel                   0 per year
 #> 2 American football  Vaginal b…        120   Medical                  0 per eve…
-#> 3 Annual tourist fl… US milita…         25   Military                 0 per day 
-#> 4 Annual tourist fl… Skiing              0.7 Sport                    0 per day 
+#> 3 Annual tourist fl… Skiing              0.7 Sport                    0 per day 
+#> 4 Annual tourist fl… US milita…         25   Military                 0 per day 
 #> 5 Barium enema (rad… Living in…         50   COVID-19                 0 per 8 w…
-#> 6 Business travelle… Caesarean…        170   Medical                  0 per eve…
+#> 6 Business travelle… Scuba div…        164   Sport                    0 per year
 #> # ℹ 11 more variables: micromorts_b <dbl>, category_b <chr>,
 #> #   hedgeable_pct_b <dbl>, period_b <chr>, ratio <dbl>, difficulty <chr>,
 #> #   answer <chr>, description_a <chr>, help_url_a <chr>, description_b <chr>,
