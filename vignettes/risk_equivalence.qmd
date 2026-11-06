@@ -231,7 +231,13 @@ How do actual doses compare to ICRP regulatory limits?
 show_target("vig_radiation_regulatory")
 ```
 
-Key insight: Actual doses are typically 5-20x below regulatory limits.
+```{r radiation-regulatory-insight}
+#| echo: false
+reg <- safe_tar_read("vig_radiation_regulatory")
+occ <- reg[reg$category == "Occupation", ]
+```
+
+Key insight: The occupational profiles above sit at `r format(round(min(occ$pct_of_limit), 1))`% to `r format(round(max(occ$pct_of_limit), 1))`% of the occupational limit. The environmental rows are compared with the public limit, which excludes natural background, so background and radon can read above 100%.
 
 
 ## Cross-Activity Matrix
