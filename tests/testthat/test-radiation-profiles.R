@@ -103,7 +103,7 @@ test_that("100 X-rays are a small fraction of a 40-year X-ray tech career", {
   # 100 chest X-rays = 2 mSv; 40 years at the (still unsourced, #201-#204)
   # technician dose of 1 mSv/yr = 40 mSv, so the ratio is 2 / 40 = 0.05.
   expect_lt(row$patient_micromorts, row$occupational_micromorts)
-  expect_equal(row$ratio, 0.05)
+  expect_equal(unname(row$ratio), 0.05)
 })
 
 test_that("custom xray_counts and career_years work", {
