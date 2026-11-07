@@ -61,8 +61,8 @@ test_that("missing score or total is rejected and counted", {
 
 test_that("total must be a length the quiz can produce", {
   # acute/chronic: 1..max(quiz length options); ranking: always 100
-  expect_equal(nrow(validate_quiz_submissions(row(score = 1, total = 10), now = NOW)$kept), 1L)
-  res <- validate_quiz_submissions(row(score = 1, total = 11), now = NOW)
+  expect_equal(nrow(validate_quiz_submissions(row(score = 1, total = 10, n_questions = 10), now = NOW)$kept), 1L)
+  res <- validate_quiz_submissions(row(score = 1, total = 11, n_questions = 10), now = NOW)
   expect_equal(rej(res, "total_not_producible"), 1L)
   res0 <- validate_quiz_submissions(row(score = 0, total = 0), now = NOW)
   expect_equal(rej(res0, "total_not_producible"), 1L)
@@ -70,6 +70,21 @@ test_that("total must be a length the quiz can produce", {
   expect_equal(nrow(validate_quiz_submissions(rk, now = NOW)$kept), 1L)
   rk_bad <- row(score = 70, total = 99, quiz_type = "ranking", difficulty = "3items")
   expect_equal(rej(validate_quiz_submissions(rk_bad, now = NOW), "total_not_producible"), 1L)
+})
+
+test_that("early ranking rows with a raw pair-count total are kept only before the cutover", {
+  legacy <- row(score = 9, total = 15, quiz_type = "ranking", difficulty = "3items",
+                timestamp = "2026-03-25T10:00:00.000Z")
+  expect_equal(nrow(validate_quiz_submissions(legacy, now = NOW)$kept), 1L)
+  legacy_mixed <- legacy
+  legacy_mixed$difficulty <- "mixed" # early Shinylive version sent a plain difficulty
+  expect_equal(nrow(validate_quiz_submissions(legacy_mixed, now = NOW)$kept), 1L)
+  after <- legacy
+  after$timestamp <- "2026-04-01T10:00:00.000Z"
+  expect_equal(rej(validate_quiz_submissions(after, now = NOW), "total_not_producible"), 1L)
+  odd <- legacy
+  odd$total <- 14
+  expect_equal(rej(validate_quiz_submissions(odd, now = NOW), "total_not_producible"), 1L)
 })
 
 test_that("n_questions must be an offered length and cover total", {
