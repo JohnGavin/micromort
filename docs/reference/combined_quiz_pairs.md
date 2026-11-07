@@ -85,10 +85,10 @@ pairs[, c("activity_a", "factor_b", "correct_answer", "ratio")]
 #>   activity_a                        factor_b                correct_answer ratio
 #>   <chr>                             <chr>                   <chr>          <dbl>
 #> 1 Matterhorn ascent                 Average cancer diagnos… b               1.10
-#> 2 Logging (per work day)            4th-5th alcoholic drink a               1.16
-#> 3 Barium enema (radiation per scan) Air pollution (PM2.5 ~… a               1.15
-#> 4 Logging (per work day)            Blood pressure control  a               1.16
-#> 5 Spanish flu infection             Smoking 10 cigarettes   a               1.15
+#> 2 Barium enema (radiation per scan) Air pollution (PM2.5 ~… a               1.15
+#> 3 Spanish flu infection             Smoking 10 cigarettes   a               1.15
+#> 4 Logging (per work day)            High fiber diet         a               1.16
+#> 5 Logging (per work day)            Family history of hear… a               1.16
 
 # One year time period (default)
 pairs_year <- combined_quiz_pairs(n = 10, time_period_days = 365, seed = 1)

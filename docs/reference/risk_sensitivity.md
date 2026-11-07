@@ -80,7 +80,7 @@ risk_sensitivity("Skydiving (US)")
 #> # A tibble: 1 × 6
 #>   activity  micromorts_base micromorts_low micromorts_high rank_base rank_change
 #>   <chr>               <dbl>          <dbl>           <dbl>     <int>       <int>
-#> 1 Skydivin…               8            6.4             9.6        43           7
+#> 1 Skydivin…               8            6.4             9.6        48           7
 
 # Sensitivity for all activities at ±10%
 risk_sensitivity(pct = 10)
@@ -104,15 +104,15 @@ risk_sensitivity() |> dplyr::arrange(dplyr::desc(rank_change))
 #> # A tibble: 107 × 6
 #>    activity micromorts_base micromorts_low micromorts_high rank_base rank_change
 #>    <chr>              <dbl>          <dbl>           <dbl>     <int>       <int>
-#>  1 COVID-1…               1            0.8             1.2        67          15
-#>  2 Living …               1            0.8             1.2        67          15
-#>  3 Walking…               1            0.8             1.2        67          15
-#>  4 Driving…               1            0.8             1.2        67          15
-#>  5 Train (…               1            0.8             1.2        67          15
-#>  6 Eating …               1            0.8             1.2        67          15
-#>  7 1 hour …               1            0.8             1.2        67          15
-#>  8 Eating …               1            0.8             1.2        67          15
-#>  9 Eating …               1            0.8             1.2        67          15
-#> 10 Living …               1            0.8             1.2        67          15
+#>  1 COVID-1…               1            0.8             1.2        72          15
+#>  2 Living …               1            0.8             1.2        72          15
+#>  3 Walking…               1            0.8             1.2        72          15
+#>  4 Driving…               1            0.8             1.2        72          15
+#>  5 Train (…               1            0.8             1.2        72          15
+#>  6 Eating …               1            0.8             1.2        72          15
+#>  7 1 hour …               1            0.8             1.2        72          15
+#>  8 Eating …               1            0.8             1.2        72          15
+#>  9 Eating …               1            0.8             1.2        72          15
+#> 10 Living …               1            0.8             1.2        72          15
 #> # ℹ 97 more rows
 ```

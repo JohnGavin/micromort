@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026-11-06 — Put the 5 unsourced annual radiation rows on the dose scale (roborev 15234)
+
+- The X-ray technician, Dental radiographer, Nuclear plant worker,
+  Interventional cardiologist and Granite resident rows in
+  `R/atomic_risks.R` kept micromorts literals calibrated at the old 0.05
+  micromorts/mSv factor, so their derived `annual_msv`, cumulative
+  micromorts and X-ray equivalents were 1000x too low. Each now stores
+  its legacy literal divided by 0.05 as `dose_msv` (1, 0.2, 2, 3.5 and 2
+  mSv/year) and goes through `msv_to_micromorts()`; the
+  `micromorts_unsourced` column is gone. This is a units correction
+  only: the doses are still not independently sourced
+  ([\#200](https://github.com/JohnGavin/micromort/issues/200)-[\#204](https://github.com/JohnGavin/micromort/issues/204)),
+  and the row notes now say so.
+- [`patient_radiation_comparison()`](https://johngavin.github.io/micromort/reference/patient_radiation_comparison.md)
+  ratios now equal the dose ratio in mSv. A single chest X-ray no longer
+  “exceeds” a 10-year technician career.
+- Removed the hand-typed “100 lifetime chest X-rays (10 micromorts)
+  exceeds … (2 micromorts)” sentence from the roxygen and from
+  `vignettes/risk_equivalence.qmd`; the vignette now reads
+  `vig_radiation_key_insights` inline. That target no longer divides by
+  a literal 0.1 but by the chest X-ray row.
+- Tests: `tests/testthat/test-radiation-consistency.R` (scale,
+  occupational dose floor, the 5 doses, ratio equals dose ratio); the
+  old “100 X-rays \> 40-year technician” assertion in
+  `test-radiation-profiles.R` asserted the false claim and is replaced.
+- Not changed: stale snapshot copies of the old radiation values in
+  `data-raw/sources/acute_risks_base.csv`,
+  `inst/extdata/vignettes/portfolio_activities.csv` and
+  `vignettes/portfolio_shinylive.qmd` (they predate
+  [\#209](https://github.com/JohnGavin/micromort/pull/209) for every
+  radiation row; regenerate separately).
+
 ## 2026-11-04 — One home per radiation dose (roborev 13730 residual findings)
 
 ### Completed
@@ -138,7 +170,7 @@ parsing) also remains untouched and separately tracked.
   `radiologyinfo.org/en/pdf/safety-xray.pdf`,
   `pmc.ncbi.nlm.nih.gov/articles/PMC8789964/`,
   `epa.gov/radiation/radiation-sources-and-doses`.
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 2 | WARN 0 | SKIP 4 | PASS 1043`. The 2 failures
   (`test-vignette-outputs.R:351`, `test-vignette-outputs.R:402` —
   pkgdown top-level page / CHANGELOG.html staleness) are a
@@ -257,7 +289,7 @@ numbers until a separate full `quarto render`/pkgdown rebuild runs
   `msv_to_micromorts(c(0.02,2,7,8,3.11,0.014,0.035,0.056,0.084))` →
   `1 100 350 400 155.5 0.7 1.75 2.8 4.2` — matches hand-derived
   expectations exactly.
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0 | WARN 0 | SKIP 4 | PASS 1043` after updating 4 pre-existing
   hardcoded-old-value test assertions (`msv_to_micromorts()` unit test,
   chest-X-ray-equivalence tests, flight-aggregation
@@ -272,7 +304,7 @@ numbers until a separate full `quarto render`/pkgdown rebuild runs
   instead of one. Fixed by keeping `source_url` uniform per flight
   activity and recording the CDC citation in `notes` instead; verified
   via a full
-  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+  [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html)
   re-run showing the 4 previously-broken tests
   (`common_risks() has correct activity count`,
   `flight activities are aggregated correctly` x2,
@@ -381,7 +413,7 @@ likewise excluded from the default quiz/common-risks view).
   → 1 row, `micromorts = 330`, `condition_variable = "country"`,
   `condition_value = "JP"`, `period = "per year"`; confirmed no
   `_annual$` regex collision.
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `[ FAIL 2 | WARN 0 | SKIP 4 | PASS 1046 ]` — the 2 remaining failures
   are a pre-existing CHANGELOG-vs-`docs/CHANGELOG.html`
   pkgdown-staleness gate, present identically before this change (a full
@@ -500,7 +532,7 @@ touched.
   RDS snapshot’s static “Built 2026-04-18” date, confirming the fallback
   path was actually exercised rather than a live store coincidentally
   succeeding).
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049`.
 - `docs/articles/what-is-a-micromort.html` rebuilt via
   `pkgdown::build_article("what-is-a-micromort")` (single-article, not a
@@ -551,7 +583,7 @@ are unaffected, and this does not address the other open questions in
   representative confidence combinations (including edge cases `[33]`,
   `[62.5]`, `[87.5]`, mixed `null`/`undefined` ratings): 14/14 PASS —
   output always matches `/^(0|25|50|75|100)%$/`.
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0` (post-rebuild).
 - No POST was ever made to the live Google Form during verification —
   the fix was verified purely via the Node-level logic check per the
@@ -641,7 +673,7 @@ rebuild-and-recommit of regenerated artifacts.
 - `inst/extdata/vignettes/vig_chronic_quiz_json_script.rds` re-verified
   via [`readRDS()`](https://rdrr.io/r/base/readRDS.html) +
   `grepl("difficulty", ...)`: `TRUE`.
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (same 4 pre-existing/unrelated
   skips as prior sessions).
 - `parse("_targets.R")`: OK, 6 top-level expressions, no errors.
@@ -722,7 +754,7 @@ capture. None of \#182-#185 closed — the Form-side work remains open.
 
 ### Accuracy / Metrics
 
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (skips pre-existing/unrelated —
   see \#185 below for one full-suite artifact).
 - `check_dark_contrast.sh` (via `file://` against the freshly rebuilt
@@ -820,7 +852,7 @@ doesn’t 404. The full pre-retirement content is preserved at the
 
 ### Accuracy / Metrics
 
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `FAIL 0 | WARN 0 | SKIP 4 | PASS 1049` (2 of the 4 skips are the
   expected `vignettes/quiz_shinylive.qmd not found` graceful-skip guards
   in `test-quiz.R`/`test-quiz-streak.R`; the other 2 are pre-existing,
@@ -943,7 +975,7 @@ generalizing the SPA-verification lesson (below) into
   do a real trial merge in a scratch worktree.
 - **`nix-shell <absolute-path>/default.nix --run "..."` does not `cd`
   into that path** — it only selects the environment. Running
-  `tar_make()`/[`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+  `tar_make()`/[`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html)
   this way silently operates on whatever directory the *calling* shell
   is already in. This mistake was made 3 times this session (once
   modifying the orchestrator’s own session worktree by accident, cleaned
@@ -979,8 +1011,7 @@ generalizing the SPA-verification lesson (below) into
 
 ### Accuracy / Metrics
 
-- Final
-  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html)
+- Final [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html)
   across every merge this session: consistently `FAIL 0`, final count
   `PASS 1019` (`SKIP 2`).
 - Contrast audit: 20 WCAG-AA failures → 0, across the 3 quiz pages + new
@@ -1141,7 +1172,7 @@ fallback in `auto-delegation.md` “Bounded exceptions” tier.
 
 ### Accuracy / Metrics
 
-- [`devtools::test()`](https://devtools.r-lib.org/reference/test.html):
+- [`devtools::test()`](https://rdrr.io/pkg/devtools/man/test.html):
   `[ FAIL 0 | PASS 996 ]` after B1+B2 (pre-existing 2 failures in
   `test-vignette-outputs.R` for stale-render guard were exactly what the
   site rebuild then addressed).
@@ -1288,7 +1319,7 @@ data-driven from the same data frames driving the plots;
 - **[`testthat::test_file()`](https://testthat.r-lib.org/reference/test_file.html)
   doesn’t load the package** — Round-2 acute-risk-rounding tests failed
   with `could not find function "common_risks"`. Switched to
-  [`devtools::test_file()`](https://devtools.r-lib.org/reference/devtools-deprecated.html)
+  [`devtools::test_file()`](https://rdrr.io/pkg/devtools/man/devtools-deprecated.html)
   which calls
   [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
   first; 29/29 PASS. Documented for next session.

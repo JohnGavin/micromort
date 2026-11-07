@@ -122,7 +122,7 @@ to avoid invisible bars on log scale).</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># All risks</span></span></span>
 <span class="r-in"><span><span class="fu">prepare_risks_plot</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 95 × 16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 97 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… event            60    </span>
@@ -135,7 +135,7 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430       301  Sport    per j… event             0.003</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430       301  Daily L… per d… day               1    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> COVID-19 unvac…        234       164. COVID-19 11 we… period           77    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 85 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 87 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;,</span></span>
@@ -171,7 +171,7 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Exclude COVID-19</span></span></span>
 <span class="r-in"><span><span class="fu">prepare_risks_plot</span><span class="op">(</span>exclude_categories <span class="op">=</span> <span class="st">"COVID-19"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 77 × 16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 79 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… event            60    </span>
@@ -184,7 +184,7 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Caesarean birt…        170       119  Medical  per e… event             1    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Scuba diving, …        164       115. Sport    per y… year            365    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Vaginal birth …        120        84  Medical  per e… event             1    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 67 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 69 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;,</span></span>
@@ -213,20 +213,29 @@ to avoid invisible bars on log scale).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Top 20 risks</span></span></span>
 <span class="r-in"><span><span class="fu">prepare_risks_plot</span><span class="op">(</span>top_n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 21 × 16</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 20 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    activity        micromorts microlives category period period_type period_days</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…      <span style="text-decoration: underline;">37</span>932     <span style="text-decoration: underline;">26</span>552. Mountai… per a… event            60    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan moun…      <span style="text-decoration: underline;">12</span>000      <span style="text-decoration: underline;">8</span>400  Mountai… per e… event            45    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infec…      <span style="text-decoration: underline;">10</span>000      <span style="text-decoration: underline;">7</span>000  COVID-19 per i… event            14    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu in…       <span style="text-decoration: underline;">3</span>000      <span style="text-decoration: underline;">2</span>100  Disease  per i… event            14    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…       <span style="text-decoration: underline;">2</span>840      <span style="text-decoration: underline;">1</span>988  Mountai… per a… event            60    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…        500       350  COVID-19 per m… month            30    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…        463       324. Daily L… per d… day               1    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…        430       301  Sport    per j… event             0.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…        430       301  Daily L… per d… day               1    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> CT scan abdome…        400       280  Medical  per e… event             1    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Mt. Everest as…     <span style="text-decoration: underline;">37</span>932      <span style="text-decoration: underline;">26</span>552. Mountai… per a… event            60    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Himalayan moun…     <span style="text-decoration: underline;">12</span>000       <span style="text-decoration: underline;">8</span>400  Mountai… per e… event            45    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> COVID-19 infec…     <span style="text-decoration: underline;">10</span>000       <span style="text-decoration: underline;">7</span>000  COVID-19 per i… event            14    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Spanish flu in…      <span style="text-decoration: underline;">3</span>000       <span style="text-decoration: underline;">2</span>100  Disease  per i… event            14    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Matterhorn asc…      <span style="text-decoration: underline;">2</span>840       <span style="text-decoration: underline;">1</span>988  Mountai… per a… event            60    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Living in US d…       500        350  COVID-19 per m… month            30    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Living (one da…       463        324. Daily L… per d… day               1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Base jumping (…       430        301  Sport    per j… event             0.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> First day of l…       430        301  Daily L… per d… day               1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> CT scan abdome…       400        280  Medical  per e… event             1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> CT scan chest …       350        245  Medical  per e… event             1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> Barium enema (…       300        210  Medical  per e… event             1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> Coronary angio…       250        175  Medical  per e… event             1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> Airline pilot …       245        172. Occupat… per y… year            365    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> COVID-19 unvac…       234        164. COVID-19 11 we… period           77    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> Interventional…       175        122. Occupat… per y… year            365    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> Caesarean birt…       170        119  Medical  per e… event             1    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> Scuba diving, …       164        115. Sport    per y… year            365    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> Normal backgro…       156.       109. Environ… per y… year            365    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">20</span> Vaginal birth …       120         84  Medical  per e… event             1    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: micromorts_per_day &lt;dbl&gt;, micromorts_per_day_raw &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   source_url &lt;chr&gt;, n_components &lt;int&gt;, hedgeable_pct &lt;dbl&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   confidence &lt;chr&gt;, estimate_range &lt;chr&gt;, source_count &lt;int&gt;,</span></span>

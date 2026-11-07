@@ -64,7 +64,7 @@ Other visualization:
 ``` r
 # All risks
 prepare_risks_plot()
-#> # A tibble: 95 × 16
+#> # A tibble: 97 × 16
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event            60    
@@ -77,7 +77,7 @@ prepare_risks_plot()
 #>  8 Base jumping (…        430       301  Sport    per j… event             0.003
 #>  9 First day of l…        430       301  Daily L… per d… day               1    
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period           77    
-#> # ℹ 85 more rows
+#> # ℹ 87 more rows
 #> # ℹ 9 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
 #> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
 #> #   confidence <chr>, estimate_range <chr>, source_count <int>,
@@ -113,7 +113,7 @@ prepare_risks_plot(categories = "COVID-19")
 
 # Exclude COVID-19
 prepare_risks_plot(exclude_categories = "COVID-19")
-#> # A tibble: 77 × 16
+#> # A tibble: 79 × 16
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event            60    
@@ -126,7 +126,7 @@ prepare_risks_plot(exclude_categories = "COVID-19")
 #>  8 Caesarean birt…        170       119  Medical  per e… event             1    
 #>  9 Scuba diving, …        164       115. Sport    per y… year            365    
 #> 10 Vaginal birth …        120        84  Medical  per e… event             1    
-#> # ℹ 67 more rows
+#> # ℹ 69 more rows
 #> # ℹ 9 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
 #> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
 #> #   confidence <chr>, estimate_range <chr>, source_count <int>,
@@ -155,20 +155,29 @@ prepare_risks_plot(categories = c("Sport", "Travel"))
 
 # Top 20 risks
 prepare_risks_plot(top_n = 20)
-#> # A tibble: 21 × 16
+#> # A tibble: 20 × 16
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
-#>  1 Mt. Everest as…      37932     26552. Mountai… per a… event            60    
-#>  2 Himalayan moun…      12000      8400  Mountai… per e… event            45    
-#>  3 COVID-19 infec…      10000      7000  COVID-19 per i… event            14    
-#>  4 Spanish flu in…       3000      2100  Disease  per i… event            14    
-#>  5 Matterhorn asc…       2840      1988  Mountai… per a… event            60    
-#>  6 Living in US d…        500       350  COVID-19 per m… month            30    
-#>  7 Living (one da…        463       324. Daily L… per d… day               1    
-#>  8 Base jumping (…        430       301  Sport    per j… event             0.003
-#>  9 First day of l…        430       301  Daily L… per d… day               1    
-#> 10 CT scan abdome…        400       280  Medical  per e… event             1    
-#> # ℹ 11 more rows
+#>  1 Mt. Everest as…     37932      26552. Mountai… per a… event            60    
+#>  2 Himalayan moun…     12000       8400  Mountai… per e… event            45    
+#>  3 COVID-19 infec…     10000       7000  COVID-19 per i… event            14    
+#>  4 Spanish flu in…      3000       2100  Disease  per i… event            14    
+#>  5 Matterhorn asc…      2840       1988  Mountai… per a… event            60    
+#>  6 Living in US d…       500        350  COVID-19 per m… month            30    
+#>  7 Living (one da…       463        324. Daily L… per d… day               1    
+#>  8 Base jumping (…       430        301  Sport    per j… event             0.003
+#>  9 First day of l…       430        301  Daily L… per d… day               1    
+#> 10 CT scan abdome…       400        280  Medical  per e… event             1    
+#> 11 CT scan chest …       350        245  Medical  per e… event             1    
+#> 12 Barium enema (…       300        210  Medical  per e… event             1    
+#> 13 Coronary angio…       250        175  Medical  per e… event             1    
+#> 14 Airline pilot …       245        172. Occupat… per y… year            365    
+#> 15 COVID-19 unvac…       234        164. COVID-19 11 we… period           77    
+#> 16 Interventional…       175        122. Occupat… per y… year            365    
+#> 17 Caesarean birt…       170        119  Medical  per e… event             1    
+#> 18 Scuba diving, …       164        115. Sport    per y… year            365    
+#> 19 Normal backgro…       156.       109. Environ… per y… year            365    
+#> 20 Vaginal birth …       120         84  Medical  per e… event             1    
 #> # ℹ 9 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
 #> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
 #> #   confidence <chr>, estimate_range <chr>, source_count <int>,

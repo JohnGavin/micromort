@@ -414,82 +414,83 @@ atomic_risks <- function() {
   # ── Part 5: Annual occupational/environmental/passenger radiation ────────
   # LNT model (ICRP 103 / FDA CT risk guidance): 50 micromorts per mSv
   # Annual doses from UNSCEAR 2020, ICRP 103, FAA CARI-7
-  # KNOWN AFFECTED, NOT YET FIXED (see #196): X-ray technician, Dental
-  # radiographer, Nuclear plant worker, Interventional cardiologist, and
-  # Granite resident use the same pre-fix 1000x-too-low conversion-factor
-  # convention this PR fixes for the other rows below, but this PR does not
-  # have a freshly-verified authoritative annual dose for these 5 specific
-  # occupational/environmental rows.
+  # UNITS CORRECTION ONLY (roborev 15234): X-ray technician, Dental
+  # radiographer, Nuclear plant worker, Interventional cardiologist and
+  # Granite resident carried micromorts literals calibrated at the old
+  # 0.05 micromorts/mSv factor. Their legacy literal / 0.05 gives the annual
+  # dose below, which now goes through msv_to_micromorts() like every other
+  # row. These 5 doses are NOT independently sourced yet (#200-#204).
   unscear_url <- "https://www.unscear.org/unscear/en/publications/2020.html"
   epa_radiation_url <- "https://www.epa.gov/radiation/radiation-sources-and-doses"
-  # Legacy note text, kept verbatim for the 5 unsourced rows (#200-#204).
-  annual_rad_notes <- "LNT model: 0.05 mm/mSv (Brenner & Hall 2007 NEJM)"
+  # Note text for the 5 rows whose dose is not independently sourced yet
+  # (#200-#204); dose is the legacy value rescaled to mSv.
+  annual_rad_notes <- paste0(
+    "LNT model, ", msv_to_micromorts(1), " micromorts/mSv (ICRP 103). ",
+    "Annual dose is the legacy figure re-expressed in mSv; ",
+    "not yet independently sourced"
+  )
 
-  # dose_msv is the single stored value for each sourced row;
-  # micromorts_unsourced holds the legacy literal ONLY for the 5 rows with no
-  # freshly verified dose (#200-#204), left for the owner. Exactly one of the
-  # two is non-NA per row; micromorts are derived once below.
+  # dose_msv is the single stored value for each row; micromorts are derived
+  # once below via msv_to_micromorts().
   annual_rad <- tibble::tribble(
-    ~activity, ~activity_id, ~dose_msv, ~micromorts_unsourced, ~category,
+    ~activity, ~activity_id, ~dose_msv, ~category,
     ~hedgeable, ~hedge_description, ~confidence, ~source_url, ~notes,
 
     # Occupational
     "Airline pilot (annual radiation)", "airline_pilot_annual",
-    cosmic_msv_per_hour * 700, NA_real_, "Occupation",
+    cosmic_msv_per_hour * 700, "Occupation",
     TRUE, "Flight hour limits + route planning", "medium", cdc_air_url,
     "Derived from this file's cosmic_msv_per_hour (CDC-sourced, Part 2) x ~700 flight-hours/year (R/activity_descriptions.R)",
 
     "X-ray technician (annual radiation)", "xray_tech_annual",
-    NA_real_, 0.05, "Occupation",
+    1, "Occupation",
     TRUE, "Lead shielding + ALARA protocols", "medium", unscear_url, annual_rad_notes,
 
     "Dental radiographer (annual radiation)", "dental_radiographer_annual",
-    NA_real_, 0.01, "Occupation",
+    0.2, "Occupation",
     TRUE, "Lead apron + distance protocols", "medium", unscear_url, annual_rad_notes,
 
     "Nuclear plant worker (annual radiation)", "nuclear_worker_annual",
-    NA_real_, 0.10, "Occupation",
+    2, "Occupation",
     TRUE, "Shielding + dosimetry + ALARA", "medium", unscear_url, annual_rad_notes,
 
     "Interventional cardiologist (annual radiation)", "interventional_cardiologist_annual",
-    NA_real_, 0.175, "Occupation",
+    3.5, "Occupation",
     TRUE, "Lead apron + ceiling shield + dosimetry", "medium", unscear_url, annual_rad_notes,
 
     # Passenger (cosmic)
     "Frequent executive flyer (annual cosmic)", "executive_flyer_annual",
-    cosmic_msv_per_hour * (150000 / 500), NA_real_, "Travel",
+    cosmic_msv_per_hour * (150000 / 500), "Travel",
     FALSE, NA_character_, "medium", cdc_air_url,
     "Derived from cosmic_msv_per_hour x ~150,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     "Business traveller (annual cosmic)", "business_traveller_annual",
-    cosmic_msv_per_hour * (40000 / 500), NA_real_, "Travel",
+    cosmic_msv_per_hour * (40000 / 500), "Travel",
     FALSE, NA_character_, "estimated", cdc_air_url,
     "Derived from cosmic_msv_per_hour x ~40,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     "Annual tourist flyer (annual cosmic)", "annual_tourist_annual",
-    cosmic_msv_per_hour * (6000 / 500), NA_real_, "Travel",
+    cosmic_msv_per_hour * (6000 / 500), "Travel",
     FALSE, NA_character_, "estimated", cdc_air_url,
     "Derived from cosmic_msv_per_hour x ~6,000 miles/year @ ~500mph average cruise speed (R/activity_descriptions.R)",
 
     # Environmental
     "Granite resident (annual radon)", "granite_resident_annual",
-    NA_real_, 0.10, "Environment",
+    2, "Environment",
     TRUE, "Radon mitigation + ventilation", "medium", unscear_url, annual_rad_notes,
 
     "High-altitude resident (annual cosmic)", "high_altitude_resident_annual",
-    0.8, NA_real_, "Environment",
+    0.8, "Environment",
     FALSE, NA_character_, "medium", epa_radiation_url,
     "EPA: cosmic dose at sea level 0.3 mSv/yr, Denver (~1,609m) 0.8 mSv/yr -- used as a representative/conservative figure for this row's '2,000m+' framing; a true 2,000m+ resident would receive more",
 
     "Normal background radiation", "background_radiation_annual",
-    3.11, NA_real_, "Environment",
+    3.11, "Environment",
     FALSE, NA_character_, "high", cdc_background_url,
     "CDC natural-background table: 2.28 (inhalation) + 0.33 (cosmic) + 0.29 (ingestion) + 0.21 (terrestrial) = 3.11 mSv/year, at 50 micromorts/mSv"
   ) |>
     dplyr::mutate(
-      micromorts = dplyr::coalesce(
-        msv_to_micromorts(dose_msv), micromorts_unsourced
-      ),
+      micromorts = msv_to_micromorts(dose_msv),
       component = "radiation",
       risk_category = "radiation",
       component_label = "Ionizing radiation dose",
@@ -501,7 +502,7 @@ atomic_risks <- function() {
       condition_variable = NA_character_,
       condition_value = NA_character_
     ) |>
-    dplyr::select(-dose_msv, -micromorts_unsourced)
+    dplyr::select(-dose_msv)
 
   # ── Part 6: Wildlife encounters ──────────────────────────────────────────
 

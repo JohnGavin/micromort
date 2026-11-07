@@ -83,9 +83,10 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
 #' Patient vs Occupational Radiation Comparison
 #'
 #' Cross-tabulates patient X-ray exposure against occupational career
-#' radiation to reveal surprising equivalences. For example, 100 lifetime
-#' chest X-rays (10 micromorts) exceeds a 40-year X-ray technician career
-#' (2 micromorts).
+#' radiation to reveal equivalences. Both sides are converted to micromorts
+#' with the same dose-to-risk factor, so `ratio` equals the ratio of the two
+#' cumulative doses in mSv. Values come from [atomic_risks()]; none are
+#' hand-typed here.
 #'
 #' @param xray_counts Integer vector of patient X-ray counts to compare.
 #'   Default `c(1, 10, 100)`.

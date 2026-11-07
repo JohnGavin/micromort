@@ -159,7 +159,7 @@ common_risks() |> dplyr::filter(category == "COVID-19")
 #> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
 #> #   confidence <chr>, estimate_range <chr>, source_count <int>
 common_risks() |> dplyr::filter(micromorts > 100)
-#> # A tibble: 21 × 15
+#> # A tibble: 22 × 15
 #>    activity        micromorts microlives category period period_type period_days
 #>    <chr>                <dbl>      <dbl> <chr>    <chr>  <chr>             <dbl>
 #>  1 Mt. Everest as…      37932     26552. Mountai… per a… event            60    
@@ -172,7 +172,7 @@ common_risks() |> dplyr::filter(micromorts > 100)
 #>  8 Base jumping (…        430       301  Sport    per j… event             0.003
 #>  9 First day of l…        430       301  Daily L… per d… day               1    
 #> 10 COVID-19 unvac…        234       164. COVID-19 11 we… period           77    
-#> # ℹ 11 more rows
+#> # ℹ 12 more rows
 #> # ℹ 8 more variables: micromorts_per_day <dbl>, micromorts_per_day_raw <dbl>,
 #> #   source_url <chr>, n_components <int>, hedgeable_pct <dbl>,
 #> #   confidence <chr>, estimate_range <chr>, source_count <int>
