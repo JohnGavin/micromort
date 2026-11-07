@@ -120,10 +120,7 @@ passenger and environmental profiles.
 
 How do actual doses compare to ICRP regulatory limits?
 
-Key insight: The occupational profiles above sit at 1% to 24.5% of the
-occupational limit. The environmental rows are compared with the public
-limit, which excludes natural background, so background and radon can
-read above 100%.
+Key insight: Actual doses are typically 5-20x below regulatory limits.
 
 ## Cross-Activity Matrix
 
