@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-11-07 — Radiation dose limits apply to planned exposures only (roborev 15285, owner-approved)
+
+- `radiation_profiles()` gave every non-occupational row a 1 mSv "public limit", so the vignette said natural background (3.11 mSv), a frequent executive flyer (2.1 mSv) and a granite resident (2 mSv) "exceed" it. ICRP 103 (ICRP Publication 103, 2007) dose limits apply only to planned exposure situations, not to natural background, home radon (managed by reference levels), passenger flights or medical exposure of patients.
+- `regulatory_limit_msv` is now 20 for occupational rows (aircrew stay occupational) and `NA` for Travel, Environment and Medical rows, set by an explicit category mapping in `radiation_profiles()` (an unmapped category aborts). New column `limit_basis` says which case applies. No current row is a planned public exposure, so the 1 mSv figure is no longer used.
+- `regulatory_limit_insight()` now describes only rows that have a limit (fold range below 20 mSv) plus one clause that natural and passenger exposures have no ICRP dose limit. The "exceeds the public limit" clause is gone, and activity names are shown without their own parenthetical (no more "Airline pilot (annual radiation))").
+- Vignette table (new display target `vig_radiation_regulatory_display`) shows "none (ICRP limits apply to planned exposures only)" for NA limits, with an ICRP 103 note beneath it.
+- Tests: boundary row exactly at its limit is not "above"; natural rows get NA; occupational rows get 20; the text has no "public limit"/exceed clause and no doubled brackets. Rebuilt `docs/articles/risk_equivalence.{html,md}` and the RDS fallbacks.
+
+## 2026-11-07 — Derive the radiation regulatory-limit sentence from data (roborev 15285)
+
+- `vignettes/risk_equivalence.qmd` said "Actual doses are typically 5-20x below regulatory limits", which disagreed with the table above it: occupational rows (20 mSv limit) are about 4x to 100x below, and the rows compared with the 1 mSv public limit (normal background 3.11, executive flyer 2.1, granite resident 2.0 mSv) are above it.
+- New helper `regulatory_limit_insight()` (`R/radiation_profiles.R`) and target `vig_radiation_regulatory_insight` compute the occupational fold range (with the row at each end) and the non-occupational rows above their limit from the same table as `vig_radiation_regulatory`. A row exactly at its limit does not count as above. The vignette reads that target inline; no arithmetic in the vignette.
+- Tests: `tests/testthat/test-regulatory-limit-insight.R` (fixture with a row on the boundary; real-data check).
+- Rebuilt `docs/articles/risk_equivalence.html` and `.md` only, plus the new RDS fallback `inst/extdata/vignettes/vig_radiation_regulatory_insight.rds`. `docs/search.json` is deliberately not committed (it trips the private-term scanner on a pre-existing term; handled separately).
+
 ## 2026-11-07 — Leaderboard pipeline rechecks every submitted score and reports rejections ([#215](https://github.com/JohnGavin/micromort/issues/215))
 
 - New `validate_quiz_submissions()` (`R/leaderboard_validation.R`) replaces the silent "drop NA score/total" step in `leaderboard_raw`. Rules, first failure wins: score/total present and whole numbers, known `quiz_type`, 0 <= score <= total, total a length the quiz can produce, `n_questions` offered and >= total, known `difficulty`, timestamp parses / not more than 1 day in the future / not before 2026-03-11 (first commit wiring the Sheet), confidence within 0-100, exact duplicates (same timestamp+score+total+type; first kept).
