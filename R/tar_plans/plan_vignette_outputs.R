@@ -825,9 +825,34 @@ plan_vignette_outputs <- list(
           pct_of_limit = round(annual_msv / regulatory_limit_msv * 100, 1)
         ) |>
         dplyr::select(activity, category, annual_msv, regulatory_limit_msv,
-                      pct_of_limit) |>
+                      pct_of_limit, limit_basis) |>
         dplyr::arrange(dplyr::desc(pct_of_limit))
     }
+  ),
+
+  # Display copy of the table: NA limits shown as text, never a bare NA.
+  # (The numeric target above stays the home for the values.)
+  targets::tar_target(
+    vig_radiation_regulatory_display,
+    {
+      none <- "none (ICRP limits apply to planned exposures only)"
+      vig_radiation_regulatory |>
+        dplyr::mutate(
+          regulatory_limit_msv = ifelse(
+            is.na(regulatory_limit_msv), none, format(regulatory_limit_msv)
+          ),
+          pct_of_limit = ifelse(
+            is.na(pct_of_limit), "n/a", format(pct_of_limit)
+          )
+        )
+    }
+  ),
+
+  # Regulatory-limit sentence for vignette prose (roborev 15285): derived from
+  # the same table, never hand-typed
+  targets::tar_target(
+    vig_radiation_regulatory_insight,
+    regulatory_limit_insight(vig_radiation_regulatory)
   ),
 
   # Key insights for vignette prose

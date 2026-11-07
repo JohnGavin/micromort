@@ -61,9 +61,11 @@ test_that("regulatory limits are correct", {
   # Occupational profiles should have 20 mSv limit (ICRP 103)
   occupational <- rp[rp$category == "Occupation", ]
   expect_true(all(occupational$regulatory_limit_msv == 20))
-  # Public profiles should have 1 mSv limit
-  public <- rp[rp$category %in% c("Travel", "Environment"), ]
-  expect_true(all(public$regulatory_limit_msv == 1))
+  # ICRP 103 dose limits cover planned exposure only: natural background, radon,
+  # altitude and passenger cosmic rows have NO limit (not a 1 mSv public limit)
+  other <- rp[rp$category %in% c("Travel", "Environment"), ]
+  expect_true(nrow(other) > 0)
+  expect_true(all(is.na(other$regulatory_limit_msv)))
 })
 
 test_that("xray_equivalents_per_year is correct", {

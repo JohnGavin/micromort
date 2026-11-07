@@ -228,10 +228,17 @@ How do actual doses compare to ICRP regulatory limits?
 ```{r radiation-regulatory}
 #| echo: false
 #| results: asis
-show_target("vig_radiation_regulatory")
+show_target("vig_radiation_regulatory_display")
 ```
 
-Key insight: Actual doses are typically 5-20x below regulatory limits.
+Note: ICRP Publication 103 (2007) dose limits apply only to planned exposure situations (the occupational rows here). They do not apply to natural background, home radon (managed by reference levels), passenger flights or medical exposure of patients, so those rows show no limit.
+
+```{r radiation-regulatory-insight}
+#| echo: false
+ri <- safe_tar_read("vig_radiation_regulatory_insight")
+```
+
+Key insight: `r ri$text`
 
 
 ## Cross-Activity Matrix
