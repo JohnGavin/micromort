@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-06T14:00:09Z",
+  "generated_at": "2026-11-07T12:22:22Z",
   "acute": {
     "overall": {
       "n": 30,
@@ -70,15 +70,15 @@
   },
   "ranking": {
     "overall": {
-      "n": 18,
+      "n": 17,
       "percentiles": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-      "scores_pct": [60, 71.1, 73, 73.5, 79, 80, 80, 82.7, 86.9, 87, 100]
+      "scores_pct": [60, 70.5, 73, 74.6, 80, 80, 80, 83.7, 86.9, 87, 100]
     },
     "by_config": {
       "mixed_5": {
-        "n": 4,
+        "n": 3,
         "percentiles": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        "scores_pct": [66.7, 68.7, 70.7, 72.6, 74.6, 76.7, 78.7, 80.7, 82.7, 84.7, 86.7]
+        "scores_pct": [66.7, 69.4, 72, 74.7, 77.3, 80, 81.3, 82.7, 84, 85.4, 86.7]
       }
     },
     "calibration": {
@@ -98,5 +98,19 @@
         }
       ]
     }
+  },
+  "rejected": {
+    "score_or_total_missing": 0,
+    "score_or_total_not_whole": 0,
+    "quiz_type_unknown": 0,
+    "score_out_of_range": 0,
+    "total_not_producible": 1,
+    "n_questions_inconsistent": 0,
+    "difficulty_unknown": 0,
+    "timestamp_unparseable": 0,
+    "timestamp_in_future": 0,
+    "timestamp_before_launch": 0,
+    "confidence_out_of_range": 0,
+    "duplicate_row": 0
   }
 }

@@ -7,6 +7,15 @@
 - Tests: `tests/testthat/test-regulatory-limit-insight.R` (fixture with a row on the boundary; real-data check).
 - Rebuilt `docs/articles/risk_equivalence.html` and `.md` only, plus the new RDS fallback `inst/extdata/vignettes/vig_radiation_regulatory_insight.rds`. `docs/search.json` is deliberately not committed (it trips the private-term scanner on a pre-existing term; handled separately).
 
+## 2026-11-07 — Leaderboard pipeline rechecks every submitted score and reports rejections ([#215](https://github.com/JohnGavin/micromort/issues/215))
+
+- New `validate_quiz_submissions()` (`R/leaderboard_validation.R`) replaces the silent "drop NA score/total" step in `leaderboard_raw`. Rules, first failure wins: score/total present and whole numbers, known `quiz_type`, 0 <= score <= total, total a length the quiz can produce, `n_questions` offered and >= total, known `difficulty`, timestamp parses / not more than 1 day in the future / not before 2026-03-11 (first commit wiring the Sheet), confidence within 0-100, exact duplicates (same timestamp+score+total+type; first kept).
+- It returns kept rows plus a (rule, count) table: counts only, never row values or IDs. The pipeline logs "kept N, rejected M" and one line per rule.
+- `docs/api/quiz_stats.json` gains an additive `rejected` object (counts by rule); the quiz pages ignore keys they do not read.
+- Confidence is now scaled with a plain `* 100` in the plan, so an out-of-range value is rejected and counted rather than NA-ed with a warning. `confidence_fraction_to_pct()` is unchanged.
+- Allowed lengths and difficulties are named constants checked by a test against the vignette buttons and `R/ranking_quiz.R`. Early ranking rows (before 2026-03-27) may carry a raw pair-count total (choose(k,2), k up to 6) and plain difficulty; that bound is read from the real Sheet, not derivable from code.
+- Tests: `tests/testthat/test-leaderboard-validation.R`.
+
 ## 2026-11-06 — Put the 5 unsourced annual radiation rows on the dose scale (roborev 15234)
 
 - The X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist and Granite resident rows in `R/atomic_risks.R` kept micromorts literals calibrated at the old 0.05 micromorts/mSv factor, so their derived `annual_msv`, cumulative micromorts and X-ray equivalents were 1000x too low. Each now stores its legacy literal divided by 0.05 as `dose_msv` (1, 0.2, 2, 3.5 and 2 mSv/year) and goes through `msv_to_micromorts()`; the `micromorts_unsourced` column is gone. This is a units correction only: the doses are still not independently sourced ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)), and the row notes now say so.
