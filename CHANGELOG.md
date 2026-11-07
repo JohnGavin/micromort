@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-11-07 — Derive the radiation regulatory-limit sentence from data (roborev 15285)
+
+- `vignettes/risk_equivalence.qmd` said "Actual doses are typically 5-20x below regulatory limits", which disagreed with the table above it: occupational rows (20 mSv limit) are about 4x to 100x below, and the rows compared with the 1 mSv public limit (normal background 3.11, executive flyer 2.1, granite resident 2.0 mSv) are above it.
+- New helper `regulatory_limit_insight()` (`R/radiation_profiles.R`) and target `vig_radiation_regulatory_insight` compute the occupational fold range (with the row at each end) and the non-occupational rows above their limit from the same table as `vig_radiation_regulatory`. A row exactly at its limit does not count as above. The vignette reads that target inline; no arithmetic in the vignette.
+- Tests: `tests/testthat/test-regulatory-limit-insight.R` (fixture with a row on the boundary; real-data check).
+- Rebuilt `docs/articles/risk_equivalence.html` and `.md` only, plus the new RDS fallback `inst/extdata/vignettes/vig_radiation_regulatory_insight.rds`. `docs/search.json` is deliberately not committed (it trips the private-term scanner on a pre-existing term; handled separately).
+
 ## 2026-11-06 — Put the 5 unsourced annual radiation rows on the dose scale (roborev 15234)
 
 - The X-ray technician, Dental radiographer, Nuclear plant worker, Interventional cardiologist and Granite resident rows in `R/atomic_risks.R` kept micromorts literals calibrated at the old 0.05 micromorts/mSv factor, so their derived `annual_msv`, cumulative micromorts and X-ray equivalents were 1000x too low. Each now stores its legacy literal divided by 0.05 as `dose_msv` (1, 0.2, 2, 3.5 and 2 mSv/year) and goes through `msv_to_micromorts()`; the `micromorts_unsourced` column is gone. This is a units correction only: the doses are still not independently sourced ([#200](https://github.com/JohnGavin/micromort/issues/200)-[#204](https://github.com/JohnGavin/micromort/issues/204)), and the row notes now say so.
