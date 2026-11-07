@@ -120,12 +120,16 @@ passenger and environmental profiles.
 
 How do actual doses compare to ICRP regulatory limits?
 
+Note: ICRP Publication 103 (2007) dose limits apply only to planned
+exposure situations (the occupational rows here). They do not apply to
+natural background, home radon (managed by reference levels), passenger
+flights or medical exposure of patients, so those rows show no limit.
+
 Key insight: Occupational doses here range from about 4.1x (Airline
-pilot (annual radiation)) to 100x (Dental radiographer (annual
-radiation)) below the 20 mSv occupational limit. Compared with the 1 mSv
-public limit, these rows exceed it: Normal background radiation, 3.11
-mSv; Frequent executive flyer (annual cosmic), 2.1 mSv; Granite resident
-(annual radon), 2 mSv.
+pilot) to 100x (Dental radiographer) below the 20 mSv occupational
+limit. Natural background, home radon and passenger-flight exposures
+have no ICRP dose limit, because ICRP 103 limits apply to planned
+exposure situations only.
 
 ## Cross-Activity Matrix
 
