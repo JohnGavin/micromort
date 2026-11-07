@@ -62,6 +62,25 @@
 <div id="changelog" class="section level1">
 
 <div class="section level2">
+<h2 id="id_2026-11-07--radiation-dose-limits-apply-to-planned-exposures-only-roborev-15285-owner-approved">2026-11-07 — Radiation dose limits apply to planned exposures only (roborev 15285, owner-approved)<a class="anchor" aria-label="anchor" href="#id_2026-11-07--radiation-dose-limits-apply-to-planned-exposures-only-roborev-15285-owner-approved"></a></h2>
+<ul><li>
+<code><a href="reference/radiation_profiles.html">radiation_profiles()</a></code> gave every non-occupational row a 1 mSv “public limit”, so the vignette said natural background (3.11 mSv), a frequent executive flyer (2.1 mSv) and a granite resident (2 mSv) “exceed” it. ICRP 103 (ICRP Publication 103, 2007) dose limits apply only to planned exposure situations, not to natural background, home radon (managed by reference levels), passenger flights or medical exposure of patients.</li>
+<li>
+<code>regulatory_limit_msv</code> is now 20 for occupational rows (aircrew stay occupational) and <code>NA</code> for Travel, Environment and Medical rows, set by an explicit category mapping in <code><a href="reference/radiation_profiles.html">radiation_profiles()</a></code> (an unmapped category aborts). New column <code>limit_basis</code> says which case applies. No current row is a planned public exposure, so the 1 mSv figure is no longer used.</li>
+<li>
+<code>regulatory_limit_insight()</code> now describes only rows that have a limit (fold range below 20 mSv) plus one clause that natural and passenger exposures have no ICRP dose limit. The “exceeds the public limit” clause is gone, and activity names are shown without their own parenthetical (no more “Airline pilot (annual radiation))”).</li>
+<li>Vignette table (new display target <code>vig_radiation_regulatory_display</code>) shows “none (ICRP limits apply to planned exposures only)” for NA limits, with an ICRP 103 note beneath it.</li>
+<li>Tests: boundary row exactly at its limit is not “above”; natural rows get NA; occupational rows get 20; the text has no “public limit”/exceed clause and no doubled brackets. Rebuilt <code>docs/articles/risk_equivalence.{html,md}</code> and the RDS fallbacks.</li>
+</ul></div>
+<div class="section level2">
+<h2 id="id_2026-11-07--derive-the-radiation-regulatory-limit-sentence-from-data-roborev-15285">2026-11-07 — Derive the radiation regulatory-limit sentence from data (roborev 15285)<a class="anchor" aria-label="anchor" href="#id_2026-11-07--derive-the-radiation-regulatory-limit-sentence-from-data-roborev-15285"></a></h2>
+<ul><li>
+<code>vignettes/risk_equivalence.qmd</code> said “Actual doses are typically 5-20x below regulatory limits”, which disagreed with the table above it: occupational rows (20 mSv limit) are about 4x to 100x below, and the rows compared with the 1 mSv public limit (normal background 3.11, executive flyer 2.1, granite resident 2.0 mSv) are above it.</li>
+<li>New helper <code>regulatory_limit_insight()</code> (<code>R/radiation_profiles.R</code>) and target <code>vig_radiation_regulatory_insight</code> compute the occupational fold range (with the row at each end) and the non-occupational rows above their limit from the same table as <code>vig_radiation_regulatory</code>. A row exactly at its limit does not count as above. The vignette reads that target inline; no arithmetic in the vignette.</li>
+<li>Tests: <code>tests/testthat/test-regulatory-limit-insight.R</code> (fixture with a row on the boundary; real-data check).</li>
+<li>Rebuilt <code>docs/articles/risk_equivalence.html</code> and <code>.md</code> only, plus the new RDS fallback <code>inst/extdata/vignettes/vig_radiation_regulatory_insight.rds</code>. <code>docs/search.json</code> is deliberately not committed (it trips the private-term scanner on a pre-existing term; handled separately).</li>
+</ul></div>
+<div class="section level2">
 <h2 id="id_2026-11-07--leaderboard-pipeline-rechecks-every-submitted-score-and-reports-rejections-215">2026-11-07 — Leaderboard pipeline rechecks every submitted score and reports rejections (<a href="https://github.com/JohnGavin/micromort/issues/215" class="external-link">#215</a>)<a class="anchor" aria-label="anchor" href="#id_2026-11-07--leaderboard-pipeline-rechecks-every-submitted-score-and-reports-rejections-215"></a></h2>
 <ul><li>New <code>validate_quiz_submissions()</code> (<code>R/leaderboard_validation.R</code>) replaces the silent “drop NA score/total” step in <code>leaderboard_raw</code>. Rules, first failure wins: score/total present and whole numbers, known <code>quiz_type</code>, 0 &lt;= score &lt;= total, total a length the quiz can produce, <code>n_questions</code> offered and &gt;= total, known <code>difficulty</code>, timestamp parses / not more than 1 day in the future / not before 2026-03-11 (first commit wiring the Sheet), confidence within 0-100, exact duplicates (same timestamp+score+total+type; first kept).</li>
 <li>It returns kept rows plus a (rule, count) table: counts only, never row values or IDs. The pipeline logs “kept N, rejected M” and one line per rule.</li>
