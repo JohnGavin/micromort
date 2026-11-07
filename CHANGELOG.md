@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-07 — Radiation dose limits apply to planned exposures only (roborev 15285, owner-approved)
+
+- `radiation_profiles()` gave every non-occupational row a 1 mSv "public limit", so the vignette said natural background (3.11 mSv), a frequent executive flyer (2.1 mSv) and a granite resident (2 mSv) "exceed" it. ICRP 103 (ICRP Publication 103, 2007) dose limits apply only to planned exposure situations, not to natural background, home radon (managed by reference levels), passenger flights or medical exposure of patients.
+- `regulatory_limit_msv` is now 20 for occupational rows (aircrew stay occupational) and `NA` for Travel, Environment and Medical rows, set by an explicit category mapping in `radiation_profiles()` (an unmapped category aborts). New column `limit_basis` says which case applies. No current row is a planned public exposure, so the 1 mSv figure is no longer used.
+- `regulatory_limit_insight()` now describes only rows that have a limit (fold range below 20 mSv) plus one clause that natural and passenger exposures have no ICRP dose limit. The "exceeds the public limit" clause is gone, and activity names are shown without their own parenthetical (no more "Airline pilot (annual radiation))").
+- Vignette table (new display target `vig_radiation_regulatory_display`) shows "none (ICRP limits apply to planned exposures only)" for NA limits, with an ICRP 103 note beneath it.
+- Tests: boundary row exactly at its limit is not "above"; natural rows get NA; occupational rows get 20; the text has no "public limit"/exceed clause and no doubled brackets. Rebuilt `docs/articles/risk_equivalence.{html,md}` and the RDS fallbacks.
+
 ## 2026-11-07 — Derive the radiation regulatory-limit sentence from data (roborev 15285)
 
 - `vignettes/risk_equivalence.qmd` said "Actual doses are typically 5-20x below regulatory limits", which disagreed with the table above it: occupational rows (20 mSv limit) are about 4x to 100x below, and the rows compared with the 1 mSv public limit (normal background 3.11, executive flyer 2.1, granite resident 2.0 mSv) are above it.

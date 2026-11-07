@@ -13,7 +13,11 @@ columns. Default \code{c(10, 20, 40)}.}
 \value{
 A tibble with columns: activity_id, activity, category,
 annual_msv, annual_micromorts, milestone columns (mm_Ny for each N),
-regulatory_limit_msv, xray_equivalents_per_year.
+regulatory_limit_msv, limit_basis, xray_equivalents_per_year.
+\code{regulatory_limit_msv} is 20 for occupational rows and \code{NA} for rows with
+no applicable limit (natural background, radon, passenger cosmic
+radiation, patient medical exposure): ICRP 103 dose limits apply only to
+planned exposure situations. \code{limit_basis} states which case applies.
 }
 \description{
 Compares annual and cumulative radiation exposure across occupational,
