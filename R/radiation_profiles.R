@@ -80,6 +80,65 @@ radiation_profiles <- function(milestones = c(10, 20, 40)) {
 }
 
 
+#' Regulatory-limit insight for the vignette prose
+#'
+#' Derives, from the regulatory comparison table, the numbers quoted in the
+#' risk-equivalence vignette: how far below the occupational limit the
+#' occupational rows sit (fold range, with the row at each end) and which
+#' non-occupational rows exceed their limit. A row exactly at its limit is not
+#' above it. Fold values are rounded to two significant figures here so the
+#' vignette does no arithmetic.
+#'
+#' @param reg Data frame with columns `activity`, `category`, `annual_msv`,
+#'   `regulatory_limit_msv` (as returned by [radiation_profiles()]).
+#' @return A list: `occ_fold_min`, `occ_fold_min_activity`, `occ_fold_max`,
+#'   `occ_fold_max_activity`, `occ_limit_msv`, `public_limit_msv`,
+#'   `above_activity`, `above_msv`, `above_limit_msv`, `above_text`.
+#' @noRd
+regulatory_limit_insight <- function(reg) {
+  need <- c("activity", "category", "annual_msv", "regulatory_limit_msv")
+  miss <- setdiff(need, names(reg))
+  if (length(miss) > 0) {
+    cli::cli_abort(c(
+      "x" = "{.arg reg} is missing column{?s}: {.field {miss}}.",
+      "i" = "Expected the output of {.fn radiation_profiles}."
+    ))
+  }
+
+  is_occ <- reg$category == "Occupation"
+  occ <- reg[is_occ, , drop = FALSE]
+  if (nrow(occ) == 0) {
+    cli::cli_abort("{.arg reg} has no {.val Occupation} rows.")
+  }
+  fold <- occ$regulatory_limit_msv / occ$annual_msv
+  i_min <- which.min(fold)
+  i_max <- which.max(fold)
+
+  pub <- reg[!is_occ, , drop = FALSE]
+  above <- pub[pub$annual_msv > pub$regulatory_limit_msv, , drop = FALSE]
+  above <- above[order(-above$annual_msv), , drop = FALSE]
+  above_text <- if (nrow(above) == 0) {
+    ""
+  } else {
+    paste0(above$activity, ", ", as.character(above$annual_msv), " mSv",
+           collapse = "; ")
+  }
+
+  list(
+    occ_fold_min = signif(fold[i_min], 2),
+    occ_fold_min_activity = occ$activity[i_min],
+    occ_fold_max = signif(fold[i_max], 2),
+    occ_fold_max_activity = occ$activity[i_max],
+    occ_limit_msv = unique(occ$regulatory_limit_msv)[1],
+    public_limit_msv = if (nrow(pub) > 0) unique(pub$regulatory_limit_msv)[1] else NA_real_,
+    above_activity = above$activity,
+    above_msv = above$annual_msv,
+    above_limit_msv = above$regulatory_limit_msv,
+    above_text = above_text
+  )
+}
+
+
 #' Patient vs Occupational Radiation Comparison
 #'
 #' Cross-tabulates patient X-ray exposure against occupational career

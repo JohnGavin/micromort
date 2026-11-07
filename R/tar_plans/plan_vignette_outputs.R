@@ -830,6 +830,13 @@ plan_vignette_outputs <- list(
     }
   ),
 
+  # Regulatory-limit sentence for vignette prose (roborev 15285): derived from
+  # the same table, never hand-typed
+  targets::tar_target(
+    vig_radiation_regulatory_insight,
+    regulatory_limit_insight(vig_radiation_regulatory)
+  ),
+
   # Key insights for vignette prose
   targets::tar_target(
     vig_radiation_key_insights,

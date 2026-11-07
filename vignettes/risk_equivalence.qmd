@@ -231,7 +231,12 @@ How do actual doses compare to ICRP regulatory limits?
 show_target("vig_radiation_regulatory")
 ```
 
-Key insight: Actual doses are typically 5-20x below regulatory limits.
+```{r radiation-regulatory-insight}
+#| echo: false
+ri <- safe_tar_read("vig_radiation_regulatory_insight")
+```
+
+Key insight: Occupational doses here range from about `r ri$occ_fold_min`x (`r ri$occ_fold_min_activity`) to `r ri$occ_fold_max`x (`r ri$occ_fold_max_activity`) below the `r ri$occ_limit_msv` mSv occupational limit. Compared with the `r ri$public_limit_msv` mSv public limit, these rows exceed it: `r ri$above_text`.
 
 
 ## Cross-Activity Matrix
