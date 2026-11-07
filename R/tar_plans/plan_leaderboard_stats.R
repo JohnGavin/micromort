@@ -5,7 +5,7 @@
 #' lookups. Avoids every user fetching the full Sheet.
 #'
 #' Targets:
-#'   - leaderboard_raw: Fetch and parse Google Sheet data
+#'   - leaderboard_raw: Fetch, recheck (validate_quiz_submissions) and parse Google Sheet data
 #'   - leaderboard_stats_json: Compute quantile stats, write docs/api/quiz_stats.json
 
 plan_leaderboard_stats <- list(
@@ -63,10 +63,11 @@ plan_leaderboard_stats <- list(
       #          5=quiz_type, 6=difficulty, 7=n_questions,
       #          8=avg_confidence_pct (#132, entry.1681143871).
       # Column 8 is PERCENT-FORMATTED in the Sheet ("75%"), so gviz returns
-      # a FRACTION (0.75), not 75. It is converted to 0-100
-      # (avg_confidence_pct) by confidence_fraction_to_pct(), which rejects
-      # (NA + cli_warn) anything outside [0, 1] so a Sheet format change
-      # is loud rather than silently mis-scaled.
+      # a FRACTION (0.75), not 75. It is scaled to 0-100
+      # (avg_confidence_pct) with a plain * 100; anything outside [0, 100]
+      # is then REJECTED AND COUNTED by validate_quiz_submissions()
+      # (#215), so a Sheet format change is loud in the pipeline log and
+      # in quiz_stats.json$rejected rather than silently NA-ed.
       # Google Forms appends new-question columns at the end of the Sheet.
       # Rows submitted before this question existed simply have no 8th
       # cell — extract_val() already returns NA_character_ for a col_idx
@@ -83,18 +84,29 @@ plan_leaderboard_stats <- list(
         quiz_type = vapply(rows, extract_val, character(1), col_idx = 5),
         difficulty = vapply(rows, extract_val, character(1), col_idx = 6),
         n_questions = as.numeric(vapply(rows, extract_val, character(1), col_idx = 7)),
-        avg_confidence_pct = confidence_fraction_to_pct(
+        avg_confidence_pct = 100 *
           as.numeric(vapply(rows, extract_val, character(1), col_idx = 8))
-        )
       )
       # Default quiz_type for old submissions without the field
       df$quiz_type[is.na(df$quiz_type)] <- "acute"
 
-      # Clean: drop rows with missing score/total
-      df <- df[!is.na(df$score) & !is.na(df$total) & df$total > 0, ]
+      # Recheck every row (#215): re-derive what we can, report what is
+      # rejected. Counts only, never row contents.
+      res <- validate_quiz_submissions(df, now = Sys.time())
+      df <- res$kept
       df$score_pct <- round(df$score / df$total * 100, 1)
 
-      cli::cli_alert_info("Leaderboard: {nrow(df)} valid submissions fetched")
+      n_rejected <- sum(res$rejected$count)
+      cli::cli_alert_info(
+        "Leaderboard: kept {nrow(df)}, rejected {n_rejected} of {nrow(df) + n_rejected} submissions"
+      )
+      by_rule <- res$rejected[res$rejected$count > 0, ]
+      for (i in seq_len(nrow(by_rule))) {
+        cli::cli_alert_warning(
+          "  rejected by rule {.field {by_rule$rule[i]}}: {by_rule$count[i]}"
+        )
+      }
+      attr(df, "rejected") <- res$rejected
       df
     },
     cue = targets::tar_cue(mode = "always")
@@ -237,11 +249,16 @@ plan_leaderboard_stats <- list(
       ranking_stats <- build_quiz_stats(ranking_data)
       ranking_stats$calibration <- compute_calibration_stats(ranking_data)
 
+      # Additive field (#215): counts of rejected submissions by rule.
+      # Counts only; the quiz pages ignore keys they do not read.
+      rejected <- rejected_counts_list(attr(df, "rejected"))
+
       stats <- list(
         generated_at = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
         acute = acute_stats,
         chronic = chronic_stats,
-        ranking = ranking_stats
+        ranking = ranking_stats,
+        rejected = rejected
       )
 
       # Write to docs/api/
@@ -262,6 +279,7 @@ plan_leaderboard_stats <- list(
         acute_n = stats$acute$overall$n,
         chronic_n = stats$chronic$overall$n,
         ranking_n = stats$ranking$overall$n,
+        rejected = rejected,
         n_configs = length(stats$acute$by_config) + length(stats$chronic$by_config) + length(stats$ranking$by_config),
         timestamp = Sys.time()
       )
