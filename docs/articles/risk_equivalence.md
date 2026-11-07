@@ -120,7 +120,12 @@ passenger and environmental profiles.
 
 How do actual doses compare to ICRP regulatory limits?
 
-Key insight: Actual doses are typically 5-20x below regulatory limits.
+Key insight: Occupational doses here range from about 4.1x (Airline
+pilot (annual radiation)) to 100x (Dental radiographer (annual
+radiation)) below the 20 mSv occupational limit. Compared with the 1 mSv
+public limit, these rows exceed it: Normal background radiation, 3.11
+mSv; Frequent executive flyer (annual cosmic), 2.1 mSv; Granite resident
+(annual radon), 2 mSv.
 
 ## Cross-Activity Matrix
 
