@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-11-08 — CI: replace magic-nix-cache with cache-nix-action
+
+- `R-CMD-check.yaml` and `leaderboard-refresh.yml` used `DeterminateSystems/magic-nix-cache-action`, which left 11,090 Actions cache entries (10.6 GB) and spent 3.7-10 min per run in its post-job upload, while the run checked restored 0 paths.
+- Both workflows now restore and save the Nix store with `nix-community/cache-nix-action` (v7.0.2, pinned by SHA), keyed on `default.nix`, saved only from `main` and only on a primary-key miss. Cachix stays pull-only. Every action in the two workflows is pinned to a full SHA.
+
 ## 2026-11-07 — Radiation dose limits apply to planned exposures only (roborev 15285, owner-approved)
 
 - `radiation_profiles()` gave every non-occupational row a 1 mSv "public limit", so the vignette said natural background (3.11 mSv), a frequent executive flyer (2.1 mSv) and a granite resident (2 mSv) "exceed" it. ICRP 103 (ICRP Publication 103, 2007) dose limits apply only to planned exposure situations, not to natural background, home radon (managed by reference levels), passenger flights or medical exposure of patients.

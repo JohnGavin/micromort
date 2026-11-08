@@ -36,20 +36,30 @@ jobs:
     timeout-minutes: 40
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
+        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
         with:
           logger: pretty
           log-directives: nix_installer=trace
           backtrace: full
 
-      - name: Setup magic Nix cache
-        uses: DeterminateSystems/magic-nix-cache-action@main
+      # Nix store cache. Replaces magic-nix-cache-action, which wrote ~11k
+      # tiny entries (10 GB) and spent 3.7-10 min per run uploading them.
+      # default.nix is self-contained (imports only a pinned tarball), so it
+      # is the whole key. Only runs on main save (see the save step), so PRs
+      # do not add duplicate entries.
+      - name: Restore the Nix store cache
+        id: nix-cache
+        uses: nix-community/cache-nix-action/restore@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('default.nix') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-
 
+      # Pull-only: no authToken is passed, so nothing is pushed to cachix.
       - name: Setup Cachix (rstats-on-nix + johngavin)
-        uses: cachix/cachix-action@v15
+        uses: cachix/cachix-action@ad2ddac53f961de1989924296a1f236fcfbaa4fc # v15
         with:
           name: rstats-on-nix
           extraPullNames: johngavin
@@ -60,3 +70,9 @@ jobs:
       - name: Run testthat suite
         run: |
           nix-shell default.nix -A shell --run "Rscript -e 'devtools::test(stop_on_failure = TRUE)'"
+
+      - name: Save the Nix store cache
+        if: always() && github.ref == 'refs/heads/main' && steps.nix-cache.outputs.hit-primary-key != 'true'
+        uses: nix-community/cache-nix-action/save@7df957e333c1e5da7721f60227dbba6d06080569 # v7.0.2
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('default.nix') }}
