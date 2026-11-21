@@ -45,6 +45,7 @@ Suggests:
     pkgload,
     plumber,
     readr,
+    readxl,
     rlang,
     rmarkdown,
     rprojroot,

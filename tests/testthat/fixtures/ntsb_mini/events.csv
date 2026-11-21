@@ -1,0 +1,8 @@
+ev_id,ev_type,ev_year,ev_country,inj_tot_f
+"E1","ACC",2020,"USA",3
+"E2","ACC",2020,"USA",0
+"E3","ACC",2020,"USA",1
+"E4","INC",2021,"USA",0
+"E5","ACC",2021,"CA",1
+"E6","ACC",2021,"USA",1
+"E7","ACC",2021,"USA",2

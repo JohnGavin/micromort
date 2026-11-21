@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-21 — Hot-air ballooning micromorts from NTSB accidents and FAA lighter-than-air hours ([#222](https://github.com/JohnGavin/micromort/issues/222))
+
+- New row "Hot-air ballooning, pilot (per flight hour)" in `data-raw/sources/acute_risks_base.csv` with its source registered in `risk_sources.csv` (`ntsb_faa_balloon`). Confidence `low`: 8 pilot deaths in 937,821 aircraft hours over 2012-2024 (95% interval 3.7 to 16.8 micromorts per hour); the FAA hours cover all lighter-than-air craft and are a survey estimate.
+- Numerator: NTSB aviation accident database (`avall.zip`), reduced by `data-raw/07_ntsb_balloon_extract.sh` to `ntsb_balloon_events.csv` (balloon aircraft, fatalities by person category). Denominator: FAA General Aviation and Part 135 Activity Survey Table 3.2, reduced by `data-raw/06_faa_ga_survey_download.sh` to `faa_lta_hours.csv` (2012 to 2024; earlier years are not used) with the URL and sha256 of each workbook; the workbooks are not committed because the repository's document guard keeps spreadsheets out of public repos. The rate is computed by `data-raw/08_balloon_micromort_row.R` through `R/balloon_risk.R`; nothing is typed in by hand.
+- Per flight hour only: no sourced typical flight length, so no per-flight rate. No passenger or sightseeing row: passenger hours are not published, so a passenger rate has no denominator.
+- `acute_risks_base.csv`: quoted the activity "Drinking a glass of wine (daily, chronic risk)" (an unquoted comma shifted its columns and made `micromorts` parse as text, so `targets::tar_make()` failed at `acute_risks_merged`). Regenerating `acute_risks.parquet` with the pipeline also picks up two activity names already edited in the CSV (wine, construction) that the old parquet still had under their previous names.
+- Tests: `tests/testthat/test-balloon-risk.R` (fixture NTSB tables, both FAA table layouts, committed-source recomputation, provenance, order-of-magnitude check against hang gliding and skydiving). `readxl` added to Suggests.
+
 ## 2026-11-08 — CI: replace magic-nix-cache with cache-nix-action
 
 - `R-CMD-check.yaml` and `leaderboard-refresh.yml` used `DeterminateSystems/magic-nix-cache-action`, which left 11,090 Actions cache entries (10.6 GB) and spent 3.7-10 min per run in its post-job upload, while the run checked restored 0 paths.

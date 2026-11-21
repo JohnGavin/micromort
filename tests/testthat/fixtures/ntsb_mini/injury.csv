@@ -1,0 +1,11 @@
+ev_id,Aircraft_Key,inj_person_category,injury_level,inj_person_count
+"E1",1,"Flig","FATL",1
+"E1",1,"Pass","FATL",2
+"E1",1,"Pass","MINR",1
+"E2",1,"Flig","NONE",1
+"E3",1,"Flig","FATL",1
+"E5",1,"Flig","FATL",1
+"E6",1,"Flig","FATL",1
+"E7",1,"Pass","FATL",1
+"E7",1,"LapC","FATL",1
+"E7",2,"Flig","NONE",1

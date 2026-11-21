@@ -72,7 +72,7 @@ Dental X-ray (radiation per scan),0.05,0,Medical,per event,event,1,0.05,https://
 Coronary angiogram (radiation per scan),5,3.5,Medical,per event,event,1,5,https://www.nrc.gov/about-nrc/radiation/health-effects.html,1,0,unknown,low,2025,global,all,2026-03-15
 Barium enema (radiation per scan),3,2.1,Medical,per event,event,1,3,https://www.nrc.gov/about-nrc/radiation/health-effects.html,1,0,unknown,low,2025,global,all,2026-03-15
 CT scan head (radiation per scan),2,1.4,Medical,per event,event,1,2,https://www.nrc.gov/about-nrc/radiation/health-effects.html,1,0,unknown,low,2025,global,all,2026-03-15
-Drinking a glass of wine (daily, chronic risk),0.5,0.3,Daily Life,per day (chronic),chronic,1,0.5,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,low,2025,global,all,2026-03-15
+"Drinking a glass of wine (daily, chronic risk)",0.5,0.3,Daily Life,per day (chronic),chronic,1,0.5,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,low,2025,global,all,2026-03-15
 Cup of coffee,0.01,0,Daily Life,per event,event,1,0.01,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 Commuting by car (30 min),0.13,0.1,Travel,per trip,event,0.17,0.76,https://en.wikipedia.org/wiki/Micromort,1,0,wikipedia_micromort,medium,2025,global,all,2026-03-15
 Commuting by bicycle (30 min),0.12,0.08,Travel,per trip,event,0.17,0.71,https://www.cyclinguk.org/statistics,1,0,cycling_uk_2024,medium,2025,GB,all,2026-04-06
@@ -103,3 +103,4 @@ Mining (per work day),0.9,0.6,Occupation,per day,day,1,0.9,https://www.bls.gov/i
 Agriculture (per work day),0.7,0.5,Occupation,per day,day,1,0.7,https://www.bls.gov/iif/fatal-injuries-tables.htm,1,0,unknown,low,2025,global,all,2026-03-15
 "Construction (all trades, per work day)",0.5,0.3,Occupation,per day,day,1,0.5,https://www.bls.gov/iif/fatal-injuries-tables.htm,1,0,unknown,low,2025,global,all,2026-03-15
 All US workers baseline (per work day),0.15,0.1,Occupation,per day,day,1,0.15,https://www.bls.gov/iif/fatal-injuries-tables.htm,1,0,unknown,low,2025,global,all,2026-03-15
+"Hot-air ballooning, pilot (per flight hour)",8.53,6,Sport,per flight hour,hour,0.041666666666666664,204.7,https://data.ntsb.gov/avdata,1,0,ntsb_faa_balloon,low,2024,US,all,2026-11-21
